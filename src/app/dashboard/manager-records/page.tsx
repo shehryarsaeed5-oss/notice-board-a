@@ -1,15 +1,33 @@
 import type { Metadata } from 'next';
-import ModulePlaceholderPage from '@/components/layout/module-placeholder-page';
+import { ManagerRecordsPage } from '@/features/manager-records/components/manager-records-page';
 
 export const metadata: Metadata = {
   title: 'Manager Records'
 };
 
-export default function Page() {
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function readQueryValue(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+
+  return value;
+}
+
+export default async function Page({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const search = readQueryValue(params.search);
+  const status = readQueryValue(params.status);
+
   return (
-    <ModulePlaceholderPage
-      title='Manager Records'
-      description='Manager profiles and operational oversight entries will be added here.'
+    <ManagerRecordsPage
+      search={search}
+      status={
+        status === 'ACTIVE' || status === 'INACTIVE' || status === 'ARCHIVED' ? status : undefined
+      }
     />
   );
 }
