@@ -8,18 +8,16 @@ type BreadcrumbItem = {
   link: string;
 };
 
-// This allows to add custom title as well
+function humanizeSegment(segment: string): string {
+  return segment
+    .split('-')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 const routeMapping: Record<string, BreadcrumbItem[]> = {
-  '/dashboard': [{ title: 'Dashboard', link: '/dashboard' }],
-  '/dashboard/employee': [
-    { title: 'Dashboard', link: '/dashboard' },
-    { title: 'Employee', link: '/dashboard/employee' }
-  ],
-  '/dashboard/product': [
-    { title: 'Dashboard', link: '/dashboard' },
-    { title: 'Product', link: '/dashboard/product' }
-  ]
-  // Add more custom mappings as needed
+  '/dashboard': [{ title: 'Dashboard', link: '/dashboard' }]
 };
 
 export function useBreadcrumbs() {
@@ -36,7 +34,7 @@ export function useBreadcrumbs() {
     return segments.map((segment, index) => {
       const path = `/${segments.slice(0, index + 1).join('/')}`;
       return {
-        title: segment.charAt(0).toUpperCase() + segment.slice(1),
+        title: humanizeSegment(segment),
         link: path
       };
     });

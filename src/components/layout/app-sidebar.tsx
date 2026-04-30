@@ -91,7 +91,7 @@ export default function AppSidebar({ user }: AppSidebarProps) {
                 </div>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
                   <span className='truncate font-medium'>Cinema Notice Board</span>
-                  <span className='text-muted-foreground truncate text-xs'>Admin console</span>
+                  <span className='text-muted-foreground truncate text-xs'>Admin Panel</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -200,13 +200,9 @@ export default function AppSidebar({ user }: AppSidebarProps) {
                 <DropdownMenuSeparator />
 
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => router.push('/dashboard/profile')}>
-                    <Icons.account className='mr-2 h-4 w-4' />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/dashboard/notifications')}>
-                    <Icons.notification className='mr-2 h-4 w-4' />
-                    Notifications
+                  <DropdownMenuItem onClick={() => router.push('/dashboard/system-settings')}>
+                    <Icons.settings className='mr-2 h-4 w-4' />
+                    System Settings
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />

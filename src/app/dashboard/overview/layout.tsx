@@ -22,104 +22,96 @@ export default function OverViewLayout({
   bar_stats: React.ReactNode;
   area_stats: React.ReactNode;
 }) {
+  const statCards = [
+    {
+      title: 'Active Displays',
+      value: '12',
+      description: 'Online display boards ready to publish notices.',
+      icon: Icons.panelLeft,
+      badge: 'Live'
+    },
+    {
+      title: 'Today Events',
+      value: '4',
+      description: 'Scheduled cinema events for today.',
+      icon: Icons.calendar,
+      badge: 'Today'
+    },
+    {
+      title: 'Staff Records',
+      value: '86',
+      description: 'Current staff entries tracked in the system.',
+      icon: Icons.teams,
+      badge: 'Updated'
+    },
+    {
+      title: 'Movie Shows Today',
+      value: '5',
+      description: 'Movie screenings planned for this shift.',
+      icon: Icons.video,
+      badge: 'Today'
+    },
+    {
+      title: 'Active Ads',
+      value: '18',
+      description: 'Promotions queued for the display network.',
+      icon: Icons.media,
+      badge: 'Running'
+    },
+    {
+      title: 'Sales Targets',
+      value: '21',
+      description: 'Target entries available for review.',
+      icon: Icons.adjustments,
+      badge: 'Planned'
+    }
+  ];
+
   return (
-    <PageContainer>
-      <div className='flex flex-1 flex-col space-y-2'>
-        <div className='flex items-center justify-between'>
-          <h2 className='text-2xl font-bold tracking-tight'>Hi, Welcome back 👋</h2>
+    <PageContainer
+      pageTitle='Notice Board Dashboard'
+      pageDescription='Monitor display activity, schedules, and operational modules from one place.'
+    >
+      <div className='flex flex-1 flex-col space-y-6'>
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3'>
+          {statCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <Card key={card.title} className='@container/card'>
+                <CardHeader>
+                  <CardDescription>{card.title}</CardDescription>
+                  <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
+                    {card.value}
+                  </CardTitle>
+                  <CardAction>
+                    <Badge variant='outline'>
+                      <Icon />
+                      {card.badge}
+                    </Badge>
+                  </CardAction>
+                </CardHeader>
+                <CardFooter className='flex-col items-start gap-1.5 text-sm'>
+                  <div className='line-clamp-1 flex gap-2 font-medium'>
+                    {card.title}
+                    <Icon className='size-4' />
+                  </div>
+                  <div className='text-muted-foreground'>{card.description}</div>
+                </CardFooter>
+              </Card>
+            );
+          })}
         </div>
 
-        <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4'>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Total Revenue</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                $1,250.00
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <Icons.trendingUp />
-                  +12.5%
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Trending up this month <Icons.trendingUp className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>Visitors for the last 6 months</div>
-            </CardFooter>
-          </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>New Customers</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                1,234
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <Icons.trendingDown />
-                  -20%
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Down 20% this period <Icons.trendingDown className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>Acquisition needs attention</div>
-            </CardFooter>
-          </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Active Accounts</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                45,678
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <Icons.trendingUp />
-                  +12.5%
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Strong user retention <Icons.trendingUp className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>Engagement exceed targets</div>
-            </CardFooter>
-          </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Growth Rate</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                4.5%
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <Icons.trendingUp />
-                  +4.5%
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Steady performance increase <Icons.trendingUp className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>Meets growth projections</div>
-            </CardFooter>
-          </Card>
-        </div>
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7'>
-          <div className='col-span-4'>{bar_stats}</div>
-          <div className='col-span-4 md:col-span-3'>
-            {/* sales arallel routes */}
-            {sales}
-          </div>
-          <div className='col-span-4'>{area_stats}</div>
-          <div className='col-span-4 min-h-0 md:col-span-3'>{pie_stats}</div>
-        </div>
+        <Card className='border-dashed'>
+          <CardHeader>
+            <CardDescription>Module readiness</CardDescription>
+            <CardTitle>Coming next phase</CardTitle>
+          </CardHeader>
+          <CardFooter className='text-muted-foreground text-sm leading-6'>
+            Boards, staff, events, schedules, advertisements, and settings will be built as full
+            modules in the next phase. This screen is intentionally placeholder-first.
+          </CardFooter>
+        </Card>
       </div>
     </PageContainer>
   );

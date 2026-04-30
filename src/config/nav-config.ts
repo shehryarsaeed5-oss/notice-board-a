@@ -46,151 +46,98 @@ export const navGroups: NavGroup[] = [
         items: []
       },
       {
-        title: 'Workspaces',
-        url: '/dashboard/workspaces',
-        icon: 'workspace',
+        title: 'Boards / Displays',
+        url: '/dashboard/boards-displays',
+        icon: 'panelLeft',
         isActive: false,
         items: []
       },
       {
-        title: 'Teams',
-        url: '/dashboard/workspaces/team',
+        title: 'Staff Records',
+        url: '/dashboard/staff-records',
         icon: 'teams',
         isActive: false,
-        items: [],
-        access: { requireOrg: true }
-      },
-      {
-        title: 'Product',
-        url: '/dashboard/product',
-        icon: 'product',
-        shortcut: ['p', 'p'],
-        isActive: false,
         items: []
       },
       {
-        title: 'Users',
-        url: '/dashboard/users',
-        icon: 'teams',
-        shortcut: ['u', 'u'],
-        isActive: false,
-        items: []
-      },
-      {
-        title: 'Kanban',
-        url: '/dashboard/kanban',
-        icon: 'kanban',
-        shortcut: ['k', 'k'],
-        isActive: false,
-        items: []
-      },
-      {
-        title: 'Chat',
-        url: '/dashboard/chat',
-        icon: 'chat',
-        shortcut: ['c', 'c'],
-        isActive: false,
-        items: []
-      }
-    ]
-  },
-  {
-    label: 'Elements',
-    items: [
-      {
-        title: 'Forms',
-        url: '#',
-        icon: 'forms',
-        isActive: true,
-        items: [
-          {
-            title: 'Basic Form',
-            url: '/dashboard/forms/basic',
-            icon: 'forms',
-            shortcut: ['f', 'f']
-          },
-          {
-            title: 'Multi-Step Form',
-            url: '/dashboard/forms/multi-step',
-            icon: 'forms'
-          },
-          {
-            title: 'Sheet & Dialog',
-            url: '/dashboard/forms/sheet-form',
-            icon: 'forms'
-          },
-          {
-            title: 'Advanced Patterns',
-            url: '/dashboard/forms/advanced',
-            icon: 'forms'
-          }
-        ]
-      },
-      {
-        title: 'React Query',
-        url: '/dashboard/react-query',
-        icon: 'code',
-        isActive: false,
-        items: []
-      },
-      {
-        title: 'Icons',
-        url: '/dashboard/elements/icons',
-        icon: 'palette',
-        isActive: false,
-        items: []
-      }
-    ]
-  },
-  {
-    label: '',
-    items: [
-      {
-        title: 'Pro',
-        url: '#',
-        icon: 'pro',
-        isActive: true,
-        items: [
-          {
-            title: 'Exclusive',
-            url: '/dashboard/exclusive',
-            icon: 'exclusive',
-            shortcut: ['e', 'e']
-          }
-        ]
-      },
-      {
-        title: 'Account',
-        url: '#',
+        title: 'Manager Records',
+        url: '/dashboard/manager-records',
         icon: 'account',
-        isActive: true,
-        items: [
-          {
-            title: 'Profile',
-            url: '/dashboard/profile',
-            icon: 'profile',
-            shortcut: ['m', 'm']
-          },
-          {
-            title: 'Notifications',
-            url: '/dashboard/notifications',
-            icon: 'notification',
-            shortcut: ['n', 'n']
-          },
-          {
-            title: 'Billing',
-            url: '/dashboard/billing',
-            icon: 'billing',
-            shortcut: ['b', 'b'],
-            access: { requireOrg: true }
-          },
-          {
-            title: 'Login',
-            shortcut: ['l', 'l'],
-            url: '/auth/sign-in',
-            icon: 'login'
-          }
-        ]
+        isActive: false,
+        items: []
+      },
+      {
+        title: 'Attendance',
+        url: '/dashboard/attendance',
+        icon: 'clock',
+        isActive: false,
+        items: []
+      }
+    ]
+  },
+  {
+    label: 'Operations',
+    items: [
+      {
+        title: 'Events',
+        url: '/dashboard/events',
+        icon: 'calendar',
+        isActive: false,
+        items: []
+      },
+      {
+        title: 'Meeting Schedule',
+        url: '/dashboard/meeting-schedule',
+        icon: 'calendar',
+        isActive: false,
+        items: []
+      },
+      {
+        title: 'Advertisements',
+        url: '/dashboard/advertisements',
+        icon: 'media',
+        isActive: false,
+        items: []
+      },
+      {
+        title: 'Weather',
+        url: '/dashboard/weather',
+        icon: 'sun',
+        isActive: false,
+        items: []
+      },
+      {
+        title: 'Movie Schedule',
+        url: '/dashboard/movie-schedule',
+        icon: 'video',
+        isActive: false,
+        items: []
+      },
+      {
+        title: 'Item Sales Target',
+        url: '/dashboard/item-sales-target',
+        icon: 'adjustments',
+        isActive: false,
+        items: []
+      }
+    ]
+  },
+  {
+    label: 'Configuration',
+    items: [
+      {
+        title: 'Display Pages',
+        url: '/dashboard/display-pages',
+        icon: 'page',
+        isActive: false,
+        items: []
+      },
+      {
+        title: 'System Settings',
+        url: '/dashboard/system-settings',
+        icon: 'settings',
+        isActive: false,
+        items: []
       }
     ]
   }

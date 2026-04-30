@@ -1,12 +1,13 @@
 import React from 'react';
+import { Badge } from '../ui/badge';
 import { SidebarTrigger } from '../ui/sidebar';
 import { Separator } from '../ui/separator';
 import { Breadcrumbs } from '../breadcrumbs';
 import SearchInput from '../search-input';
 import { ThemeSelector } from '../themes/theme-selector';
 import { ThemeModeToggle } from '../themes/theme-mode-toggle';
-import CtaGithub from './cta-github';
 import { NotificationCenter } from '@/features/notifications/components/notification-center';
+import { Icons } from '../icons';
 
 export default function Header() {
   return (
@@ -18,7 +19,10 @@ export default function Header() {
       </div>
 
       <div className='flex items-center gap-2 px-4'>
-        <CtaGithub />
+        <Badge variant='outline' className='hidden gap-1.5 sm:inline-flex'>
+          <Icons.dashboard className='size-3.5' />
+          Cinema Notice Board
+        </Badge>
         <div className='hidden md:flex'>
           <SearchInput />
         </div>
