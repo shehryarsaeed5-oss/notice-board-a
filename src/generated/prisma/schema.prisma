@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RecordStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LEAVE
+  LATE
+}
+
+enum AdMediaType {
+  IMAGE
+  VIDEO
+}
+
+model User {
+  id        String       @id @default(cuid())
+  name      String
+  email     String       @unique
+  password  String
+  role      String       @default("admin")
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model StaffMember {
+  id          String       @id @default(cuid())
+  name        String
+  designation String
+  department  String?
+  phone       String?
+  status      RecordStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  attendanceRecords AttendanceRecord[]
+}
+
+model Manager {
+  id          String       @id @default(cuid())
+  name        String
+  designation String?
+  phone       String?
+  status      RecordStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  attendanceRecords ManagerAttendanceRecord[]
+}
+
+model AttendanceRecord {
+  id        String           @id @default(cuid())
+  staffId   String
+  date      DateTime
+  shift     String?
+  status    AttendanceStatus @default(PRESENT)
+  remarks   String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  staff StaffMember @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@index([date])
+  @@index([staffId])
+}
+
+model ManagerAttendanceRecord {
+  id        String           @id @default(cuid())
+  managerId String
+  date      DateTime
+  shift     String?
+  status    AttendanceStatus @default(PRESENT)
+  remarks   String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  manager Manager @relation(fields: [managerId], references: [id], onDelete: Cascade)
+
+  @@index([date])
+  @@index([managerId])
+}
+
+model EventRecord {
+  id          String       @id @default(cuid())
+  title       String
+  clientName  String?
+  companyName String?
+  screenName  String?
+  startAt     DateTime
+  endAt       DateTime?
+  status      RecordStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([startAt])
+}
+
+model MeetingSchedule {
+  id        String       @id @default(cuid())
+  title     String
+  location  String?
+  organizer String?
+  startAt   DateTime
+  endAt     DateTime?
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([startAt])
+}
+
+model Advertisement {
+  id        String       @id @default(cuid())
+  title     String
+  mediaUrl  String
+  mediaType AdMediaType
+  duration  Int?
+  sortOrder Int          @default(0)
+  status    RecordStatus @default(ACTIVE)
+  startAt   DateTime?
+  endAt     DateTime?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model WeatherSetting {
+  id        String   @id @default(cuid())
+  city      String
+  provider  String   @default("weatherapi")
+  apiKey    String?
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MovieSchedule {
+  id         String       @id @default(cuid())
+  movieName  String
+  screenName String
+  showTime   DateTime
+  status     RecordStatus @default(ACTIVE)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@index([showTime])
+}
+
+model ItemSalesTarget {
+  id            String       @id @default(cuid())
+  itemName      String
+  itemCode      String?
+  dailyTarget   Int?
+  weeklyTarget  Int?
+  monthlyTarget Int?
+  status        RecordStatus @default(ACTIVE)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model DisplayPage {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  description String?
+  status      RecordStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
