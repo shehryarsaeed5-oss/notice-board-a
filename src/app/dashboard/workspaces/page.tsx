@@ -1,28 +1,20 @@
-'use client';
-
 import PageContainer from '@/components/layout/page-container';
-import { OrganizationList } from '@clerk/nextjs';
-import { workspacesInfoContent } from '@/config/infoconfig';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Icons } from '@/components/icons';
 
 export default function WorkspacesPage() {
   return (
     <PageContainer
       pageTitle='Workspaces'
-      pageDescription='Manage your workspaces and switch between them'
-      infoContent={workspacesInfoContent}
+      pageDescription='Workspace management will be added in a later phase.'
     >
-      <OrganizationList
-        appearance={{
-          elements: {
-            organizationListBox: 'space-y-2',
-            organizationPreview: 'rounded-lg border p-4 hover:bg-accent',
-            organizationPreviewMainIdentifier: 'text-lg font-semibold',
-            organizationPreviewSecondaryIdentifier: 'text-sm text-muted-foreground'
-          }
-        }}
-        afterSelectOrganizationUrl='/dashboard/workspaces/team'
-        afterCreateOrganizationUrl='/dashboard/workspaces/team'
-      />
+      <Alert>
+        <Icons.info className='h-4 w-4' />
+        <AlertDescription>
+          This route is reserved for a future admin workflow. Local auth is now active, but
+          workspace features are intentionally untouched for phase 1.
+        </AlertDescription>
+      </Alert>
     </PageContainer>
   );
 }

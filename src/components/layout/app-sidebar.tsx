@@ -1,4 +1,7 @@
 'use client';
+
+import { Icons } from '@/components/icons';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   DropdownMenu,
@@ -24,35 +27,78 @@ import {
   SidebarMenuSubItem,
   SidebarRail
 } from '@/components/ui/sidebar';
-import { UserAvatarProfile } from '@/components/user-avatar-profile';
 import { navGroups } from '@/config/nav-config';
-import { useMediaQuery } from '@/hooks/use-media-query';
-import { useOrganization, useUser } from '@clerk/nextjs';
 import { useFilteredNavGroups } from '@/hooks/use-nav';
-import { SignOutButton } from '@clerk/nextjs';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
-import { Icons } from '../icons';
-import { OrgSwitcher } from '../org-switcher';
 
-export default function AppSidebar() {
+interface AppSidebarProps {
+  user: {
+    name: string;
+    email: string;
+    role: string;
+  };
+}
+
+function getInitials(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+
+  if (parts.length === 0) {
+    return 'NB';
+  }
+
+  if (parts.length === 1) {
+    return parts[0]?.slice(0, 2).toUpperCase() ?? 'NB';
+  }
+
+  return `${parts[0]?.[0] ?? ''}${parts[1]?.[0] ?? ''}`.toUpperCase();
+}
+
+export default function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname();
-  const { isOpen } = useMediaQuery();
-  const { user } = useUser();
-  const { organization } = useOrganization();
   const router = useRouter();
   const filteredGroups = useFilteredNavGroups(navGroups);
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
-  React.useEffect(() => {
-    // Side effects based on sidebar state changes
-  }, [isOpen]);
+  const handleLogout = async () => {
+    if (isLoggingOut) {
+      return;
+    }
+
+    setIsLoggingOut(true);
+
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST'
+      });
+      router.replace('/auth/sign-in');
+      router.refresh();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <Sidebar collapsible='icon'>
       <SidebarHeader className='group-data-[collapsible=icon]:pt-4'>
-        <OrgSwitcher />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild size='lg' tooltip='Cinema Notice Board'>
+              <Link href='/dashboard/overview'>
+                <div className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'>
+                  <Icons.dashboard className='size-4' />
+                </div>
+                <div className='grid flex-1 text-left text-sm leading-tight'>
+                  <span className='truncate font-medium'>Cinema Notice Board</span>
+                  <span className='text-muted-foreground truncate text-xs'>Admin console</span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent className='overflow-x-hidden'>
         {filteredGroups.map((group) => (
           <SidebarGroup key={group.label || 'ungrouped'} className='py-0'>
@@ -60,6 +106,7 @@ export default function AppSidebar() {
             <SidebarMenu>
               {group.items.map((item) => {
                 const Icon = item.icon ? Icons[item.icon] : Icons.logo;
+
                 return item?.items && item?.items?.length > 0 ? (
                   <Collapsible
                     key={item.title}
@@ -109,6 +156,7 @@ export default function AppSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
+
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -118,9 +166,13 @@ export default function AppSidebar() {
                   size='lg'
                   className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
                 >
-                  {user && (
-                    <UserAvatarProfile className='h-8 w-8 rounded-lg' showInfo user={user} />
-                  )}
+                  <Avatar className='h-8 w-8 rounded-lg'>
+                    <AvatarFallback className='rounded-lg'>{getInitials(user.name)}</AvatarFallback>
+                  </Avatar>
+                  <div className='grid flex-1 text-left text-sm leading-tight'>
+                    <span className='truncate font-semibold'>{user.name}</span>
+                    <span className='text-muted-foreground truncate text-xs'>{user.email}</span>
+                  </div>
                   <Icons.chevronsDown className='ml-auto size-4' />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -132,9 +184,17 @@ export default function AppSidebar() {
               >
                 <DropdownMenuLabel className='p-0 font-normal'>
                   <div className='px-1 py-1.5'>
-                    {user && (
-                      <UserAvatarProfile className='h-8 w-8 rounded-lg' showInfo user={user} />
-                    )}
+                    <div className='flex items-center gap-2 rounded-md px-2 py-2'>
+                      <Avatar className='h-8 w-8 rounded-lg'>
+                        <AvatarFallback className='rounded-lg'>
+                          {getInitials(user.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className='grid flex-1 text-left text-sm leading-tight'>
+                        <span className='truncate font-semibold'>{user.name}</span>
+                        <span className='text-muted-foreground truncate text-xs'>{user.email}</span>
+                      </div>
+                    </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -144,21 +204,15 @@ export default function AppSidebar() {
                     <Icons.account className='mr-2 h-4 w-4' />
                     Profile
                   </DropdownMenuItem>
-                  {organization && (
-                    <DropdownMenuItem onClick={() => router.push('/dashboard/billing')}>
-                      <Icons.creditCard className='mr-2 h-4 w-4' />
-                      Billing
-                    </DropdownMenuItem>
-                  )}
                   <DropdownMenuItem onClick={() => router.push('/dashboard/notifications')}>
                     <Icons.notification className='mr-2 h-4 w-4' />
                     Notifications
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
                   <Icons.logout className='mr-2 h-4 w-4' />
-                  <SignOutButton redirectUrl='/auth/sign-in' />
+                  {isLoggingOut ? 'Signing out...' : 'Log out'}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

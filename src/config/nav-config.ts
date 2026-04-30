@@ -187,7 +187,7 @@ export const navGroups: NavGroup[] = [
           {
             title: 'Login',
             shortcut: ['l', 'l'],
-            url: '/',
+            url: '/auth/sign-in',
             icon: 'login'
           }
         ]
