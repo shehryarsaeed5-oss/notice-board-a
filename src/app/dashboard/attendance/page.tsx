@@ -1,15 +1,26 @@
 import type { Metadata } from 'next';
-import ModulePlaceholderPage from '@/components/layout/module-placeholder-page';
+import { AttendancePage } from '@/features/attendance/components/attendance-page';
+import { toDateInputValue } from '@/features/attendance/lib/date';
 
 export const metadata: Metadata = {
   title: 'Attendance'
 };
 
-export default function Page() {
-  return (
-    <ModulePlaceholderPage
-      title='Attendance'
-      description='Attendance capture and daily tracking will be implemented in the next phase.'
-    />
-  );
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function readQueryValue(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+
+  return value;
+}
+
+export default async function Page({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const date = readQueryValue(params.date) ?? toDateInputValue(new Date());
+
+  return <AttendancePage date={date} />;
 }
