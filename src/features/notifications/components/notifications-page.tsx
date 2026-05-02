@@ -10,10 +10,10 @@ import { useNotificationStore } from '../utils/store';
 
 const actionRoutes: Record<string, string> = {
   view: '/dashboard/workspaces',
-  'view-product': '/dashboard/product',
-  billing: '/dashboard/billing',
-  open: '/dashboard/kanban',
-  'open-chat': '/dashboard/chat'
+  'view-product': '/dashboard/overview',
+  billing: '/dashboard/system-settings',
+  open: '/dashboard/overview',
+  'open-chat': '/dashboard/overview'
 };
 
 export default function NotificationsPage() {
