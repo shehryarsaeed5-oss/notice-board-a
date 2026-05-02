@@ -11,6 +11,7 @@ import { endOfDay, startOfDay } from '../lib/date';
 import type {
   DisplayBoardAdvertisementItem,
   DisplayBoardAttendanceSummary,
+  DisplayBoardConcessionPriceItem,
   DisplayBoardData,
   DisplayBoardEventItem,
   DisplayBoardMeetingItem,
@@ -84,6 +85,8 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     advertisementsTotal,
     salesTargets,
     salesTargetsTotal,
+    concessionPriceList,
+    concessionPriceListTotal,
     weatherSetting,
     staffExpected,
     managerExpected,
@@ -190,6 +193,18 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
         status: 'ACTIVE'
       }
     }),
+    prisma.concessionPriceItem.findMany({
+      where: {
+        status: 'ACTIVE'
+      },
+      orderBy: [{ sortOrder: 'asc' }, { itemName: 'asc' }],
+      take: 5
+    }),
+    prisma.concessionPriceItem.count({
+      where: {
+        status: 'ACTIVE'
+      }
+    }),
     prisma.weatherSetting.findFirst({
       where: {
         enabled: true
@@ -255,6 +270,10 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     salesTargets: {
       items: salesTargets as DisplayBoardSalesTargetItem[],
       total: salesTargetsTotal
+    },
+    concessionPriceList: {
+      items: concessionPriceList as DisplayBoardConcessionPriceItem[],
+      total: concessionPriceListTotal
     },
     weatherSetting: (weatherSetting
       ? {

@@ -152,6 +152,16 @@ export const navGroups: NavGroup[] = [
         },
         isActive: false,
         items: []
+      },
+      {
+        title: 'Concession Price List',
+        url: '/dashboard/concession-price-list',
+        icon: 'billing',
+        access: {
+          permission: 'concessionPriceList'
+        },
+        isActive: false,
+        items: []
       }
     ]
   },

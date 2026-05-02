@@ -31,6 +31,7 @@ const ALL_PERMISSION_KEYS = [
   'weather',
   'movieSchedule',
   'itemSalesTarget',
+  'concessionPriceList',
   'systemSettings',
   'users'
 ];

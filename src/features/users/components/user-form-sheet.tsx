@@ -61,6 +61,7 @@ const PERMISSION_LABELS: Record<PermissionKey, string> = {
   weather: 'Weather',
   movieSchedule: 'Movie Schedule',
   itemSalesTarget: 'Item Sales Target',
+  concessionPriceList: 'Concession Price List',
   systemSettings: 'System Settings',
   users: 'Users'
 };

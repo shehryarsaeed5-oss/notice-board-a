@@ -68,6 +68,11 @@ export type MovieSchedule = $Result.DefaultSelection<Prisma.$MovieSchedulePayloa
  */
 export type ItemSalesTarget = $Result.DefaultSelection<Prisma.$ItemSalesTargetPayload>;
 /**
+ * Model ConcessionPriceItem
+ *
+ */
+export type ConcessionPriceItem = $Result.DefaultSelection<Prisma.$ConcessionPriceItemPayload>;
+/**
  * Model DisplayPage
  *
  */
@@ -383,6 +388,16 @@ export class PrismaClient<
    * ```
    */
   get itemSalesTarget(): Prisma.ItemSalesTargetDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.concessionPriceItem`: Exposes CRUD operations for the **ConcessionPriceItem** model.
+   * Example usage:
+   * ```ts
+   * // Fetch zero or more ConcessionPriceItems
+   * const concessionPriceItems = await prisma.concessionPriceItem.findMany()
+   * ```
+   */
+  get concessionPriceItem(): Prisma.ConcessionPriceItemDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.displayPage`: Exposes CRUD operations for the **DisplayPage** model.
@@ -842,6 +857,7 @@ export namespace Prisma {
     WeatherSetting: 'WeatherSetting';
     MovieSchedule: 'MovieSchedule';
     ItemSalesTarget: 'ItemSalesTarget';
+    ConcessionPriceItem: 'ConcessionPriceItem';
     DisplayPage: 'DisplayPage';
     SystemSetting: 'SystemSetting';
   };
@@ -878,6 +894,7 @@ export namespace Prisma {
         | 'weatherSetting'
         | 'movieSchedule'
         | 'itemSalesTarget'
+        | 'concessionPriceItem'
         | 'displayPage'
         | 'systemSetting';
       txIsolationLevel: Prisma.TransactionIsolationLevel;
@@ -1697,6 +1714,80 @@ export namespace Prisma {
           };
         };
       };
+      ConcessionPriceItem: {
+        payload: Prisma.$ConcessionPriceItemPayload<ExtArgs>;
+        fields: Prisma.ConcessionPriceItemFieldRefs;
+        operations: {
+          findUnique: {
+            args: Prisma.ConcessionPriceItemFindUniqueArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ConcessionPriceItemPayload> | null;
+          };
+          findUniqueOrThrow: {
+            args: Prisma.ConcessionPriceItemFindUniqueOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ConcessionPriceItemPayload>;
+          };
+          findFirst: {
+            args: Prisma.ConcessionPriceItemFindFirstArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ConcessionPriceItemPayload> | null;
+          };
+          findFirstOrThrow: {
+            args: Prisma.ConcessionPriceItemFindFirstOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ConcessionPriceItemPayload>;
+          };
+          findMany: {
+            args: Prisma.ConcessionPriceItemFindManyArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ConcessionPriceItemPayload>[];
+          };
+          create: {
+            args: Prisma.ConcessionPriceItemCreateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ConcessionPriceItemPayload>;
+          };
+          createMany: {
+            args: Prisma.ConcessionPriceItemCreateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          createManyAndReturn: {
+            args: Prisma.ConcessionPriceItemCreateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ConcessionPriceItemPayload>[];
+          };
+          delete: {
+            args: Prisma.ConcessionPriceItemDeleteArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ConcessionPriceItemPayload>;
+          };
+          update: {
+            args: Prisma.ConcessionPriceItemUpdateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ConcessionPriceItemPayload>;
+          };
+          deleteMany: {
+            args: Prisma.ConcessionPriceItemDeleteManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateMany: {
+            args: Prisma.ConcessionPriceItemUpdateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.ConcessionPriceItemUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ConcessionPriceItemPayload>[];
+          };
+          upsert: {
+            args: Prisma.ConcessionPriceItemUpsertArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ConcessionPriceItemPayload>;
+          };
+          aggregate: {
+            args: Prisma.ConcessionPriceItemAggregateArgs<ExtArgs>;
+            result: $Utils.Optional<AggregateConcessionPriceItem>;
+          };
+          groupBy: {
+            args: Prisma.ConcessionPriceItemGroupByArgs<ExtArgs>;
+            result: $Utils.Optional<ConcessionPriceItemGroupByOutputType>[];
+          };
+          count: {
+            args: Prisma.ConcessionPriceItemCountArgs<ExtArgs>;
+            result: $Utils.Optional<ConcessionPriceItemCountAggregateOutputType> | number;
+          };
+        };
+      };
       DisplayPage: {
         payload: Prisma.$DisplayPagePayload<ExtArgs>;
         fields: Prisma.DisplayPageFieldRefs;
@@ -1968,6 +2059,7 @@ export namespace Prisma {
     weatherSetting?: WeatherSettingOmit;
     movieSchedule?: MovieScheduleOmit;
     itemSalesTarget?: ItemSalesTargetOmit;
+    concessionPriceItem?: ConcessionPriceItemOmit;
     displayPage?: DisplayPageOmit;
     systemSetting?: SystemSettingOmit;
   };
@@ -15891,6 +15983,1293 @@ export namespace Prisma {
   };
 
   /**
+   * Model ConcessionPriceItem
+   */
+
+  export type AggregateConcessionPriceItem = {
+    _count: ConcessionPriceItemCountAggregateOutputType | null;
+    _avg: ConcessionPriceItemAvgAggregateOutputType | null;
+    _sum: ConcessionPriceItemSumAggregateOutputType | null;
+    _min: ConcessionPriceItemMinAggregateOutputType | null;
+    _max: ConcessionPriceItemMaxAggregateOutputType | null;
+  };
+
+  export type ConcessionPriceItemAvgAggregateOutputType = {
+    price: number | null;
+    sortOrder: number | null;
+  };
+
+  export type ConcessionPriceItemSumAggregateOutputType = {
+    price: number | null;
+    sortOrder: number | null;
+  };
+
+  export type ConcessionPriceItemMinAggregateOutputType = {
+    id: string | null;
+    itemName: string | null;
+    category: string | null;
+    price: number | null;
+    sortOrder: number | null;
+    status: $Enums.RecordStatus | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type ConcessionPriceItemMaxAggregateOutputType = {
+    id: string | null;
+    itemName: string | null;
+    category: string | null;
+    price: number | null;
+    sortOrder: number | null;
+    status: $Enums.RecordStatus | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type ConcessionPriceItemCountAggregateOutputType = {
+    id: number;
+    itemName: number;
+    category: number;
+    price: number;
+    sortOrder: number;
+    status: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+  };
+
+  export type ConcessionPriceItemAvgAggregateInputType = {
+    price?: true;
+    sortOrder?: true;
+  };
+
+  export type ConcessionPriceItemSumAggregateInputType = {
+    price?: true;
+    sortOrder?: true;
+  };
+
+  export type ConcessionPriceItemMinAggregateInputType = {
+    id?: true;
+    itemName?: true;
+    category?: true;
+    price?: true;
+    sortOrder?: true;
+    status?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type ConcessionPriceItemMaxAggregateInputType = {
+    id?: true;
+    itemName?: true;
+    category?: true;
+    price?: true;
+    sortOrder?: true;
+    status?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type ConcessionPriceItemCountAggregateInputType = {
+    id?: true;
+    itemName?: true;
+    category?: true;
+    price?: true;
+    sortOrder?: true;
+    status?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+  };
+
+  export type ConcessionPriceItemAggregateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which ConcessionPriceItem to aggregate.
+     */
+    where?: ConcessionPriceItemWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ConcessionPriceItems to fetch.
+     */
+    orderBy?:
+      | ConcessionPriceItemOrderByWithRelationInput
+      | ConcessionPriceItemOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: ConcessionPriceItemWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ConcessionPriceItems from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ConcessionPriceItems.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned ConcessionPriceItems
+     **/
+    _count?: true | ConcessionPriceItemCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+     **/
+    _avg?: ConcessionPriceItemAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: ConcessionPriceItemSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+     **/
+    _min?: ConcessionPriceItemMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+     **/
+    _max?: ConcessionPriceItemMaxAggregateInputType;
+  };
+
+  export type GetConcessionPriceItemAggregateType<T extends ConcessionPriceItemAggregateArgs> = {
+    [P in keyof T & keyof AggregateConcessionPriceItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateConcessionPriceItem[P]>
+      : GetScalarType<T[P], AggregateConcessionPriceItem[P]>;
+  };
+
+  export type ConcessionPriceItemGroupByArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    where?: ConcessionPriceItemWhereInput;
+    orderBy?:
+      | ConcessionPriceItemOrderByWithAggregationInput
+      | ConcessionPriceItemOrderByWithAggregationInput[];
+    by: ConcessionPriceItemScalarFieldEnum[] | ConcessionPriceItemScalarFieldEnum;
+    having?: ConcessionPriceItemScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: ConcessionPriceItemCountAggregateInputType | true;
+    _avg?: ConcessionPriceItemAvgAggregateInputType;
+    _sum?: ConcessionPriceItemSumAggregateInputType;
+    _min?: ConcessionPriceItemMinAggregateInputType;
+    _max?: ConcessionPriceItemMaxAggregateInputType;
+  };
+
+  export type ConcessionPriceItemGroupByOutputType = {
+    id: string;
+    itemName: string;
+    category: string | null;
+    price: number;
+    sortOrder: number;
+    status: $Enums.RecordStatus;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: ConcessionPriceItemCountAggregateOutputType | null;
+    _avg: ConcessionPriceItemAvgAggregateOutputType | null;
+    _sum: ConcessionPriceItemSumAggregateOutputType | null;
+    _min: ConcessionPriceItemMinAggregateOutputType | null;
+    _max: ConcessionPriceItemMaxAggregateOutputType | null;
+  };
+
+  type GetConcessionPriceItemGroupByPayload<T extends ConcessionPriceItemGroupByArgs> =
+    Prisma.PrismaPromise<
+      Array<
+        PickEnumerable<ConcessionPriceItemGroupByOutputType, T['by']> & {
+          [P in keyof T & keyof ConcessionPriceItemGroupByOutputType]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ConcessionPriceItemGroupByOutputType[P]>
+            : GetScalarType<T[P], ConcessionPriceItemGroupByOutputType[P]>;
+        }
+      >
+    >;
+
+  export type ConcessionPriceItemSelect<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      itemName?: boolean;
+      category?: boolean;
+      price?: boolean;
+      sortOrder?: boolean;
+      status?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['concessionPriceItem']
+  >;
+
+  export type ConcessionPriceItemSelectCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      itemName?: boolean;
+      category?: boolean;
+      price?: boolean;
+      sortOrder?: boolean;
+      status?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['concessionPriceItem']
+  >;
+
+  export type ConcessionPriceItemSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      itemName?: boolean;
+      category?: boolean;
+      price?: boolean;
+      sortOrder?: boolean;
+      status?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['concessionPriceItem']
+  >;
+
+  export type ConcessionPriceItemSelectScalar = {
+    id?: boolean;
+    itemName?: boolean;
+    category?: boolean;
+    price?: boolean;
+    sortOrder?: boolean;
+    status?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+  };
+
+  export type ConcessionPriceItemOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetOmit<
+    'id' | 'itemName' | 'category' | 'price' | 'sortOrder' | 'status' | 'createdAt' | 'updatedAt',
+    ExtArgs['result']['concessionPriceItem']
+  >;
+
+  export type $ConcessionPriceItemPayload<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    name: 'ConcessionPriceItem';
+    objects: {};
+    scalars: $Extensions.GetPayloadResult<
+      {
+        id: string;
+        itemName: string;
+        category: string | null;
+        price: number;
+        sortOrder: number;
+        status: $Enums.RecordStatus;
+        createdAt: Date;
+        updatedAt: Date;
+      },
+      ExtArgs['result']['concessionPriceItem']
+    >;
+    composites: {};
+  };
+
+  type ConcessionPriceItemGetPayload<
+    S extends boolean | null | undefined | ConcessionPriceItemDefaultArgs
+  > = $Result.GetResult<Prisma.$ConcessionPriceItemPayload, S>;
+
+  type ConcessionPriceItemCountArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = Omit<ConcessionPriceItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: ConcessionPriceItemCountAggregateInputType | true;
+  };
+
+  export interface ConcessionPriceItemDelegate<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > {
+    [K: symbol]: {
+      types: Prisma.TypeMap<ExtArgs>['model']['ConcessionPriceItem'];
+      meta: { name: 'ConcessionPriceItem' };
+    };
+    /**
+     * Find zero or one ConcessionPriceItem that matches the filter.
+     * @param {ConcessionPriceItemFindUniqueArgs} args - Arguments to find a ConcessionPriceItem
+     * @example
+     * // Get one ConcessionPriceItem
+     * const concessionPriceItem = await prisma.concessionPriceItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ConcessionPriceItemFindUniqueArgs>(
+      args: SelectSubset<T, ConcessionPriceItemFindUniqueArgs<ExtArgs>>
+    ): Prisma__ConcessionPriceItemClient<
+      $Result.GetResult<
+        Prisma.$ConcessionPriceItemPayload<ExtArgs>,
+        T,
+        'findUnique',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find one ConcessionPriceItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ConcessionPriceItemFindUniqueOrThrowArgs} args - Arguments to find a ConcessionPriceItem
+     * @example
+     * // Get one ConcessionPriceItem
+     * const concessionPriceItem = await prisma.concessionPriceItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ConcessionPriceItemFindUniqueOrThrowArgs>(
+      args: SelectSubset<T, ConcessionPriceItemFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__ConcessionPriceItemClient<
+      $Result.GetResult<
+        Prisma.$ConcessionPriceItemPayload<ExtArgs>,
+        T,
+        'findUniqueOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first ConcessionPriceItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConcessionPriceItemFindFirstArgs} args - Arguments to find a ConcessionPriceItem
+     * @example
+     * // Get one ConcessionPriceItem
+     * const concessionPriceItem = await prisma.concessionPriceItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ConcessionPriceItemFindFirstArgs>(
+      args?: SelectSubset<T, ConcessionPriceItemFindFirstArgs<ExtArgs>>
+    ): Prisma__ConcessionPriceItemClient<
+      $Result.GetResult<
+        Prisma.$ConcessionPriceItemPayload<ExtArgs>,
+        T,
+        'findFirst',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first ConcessionPriceItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConcessionPriceItemFindFirstOrThrowArgs} args - Arguments to find a ConcessionPriceItem
+     * @example
+     * // Get one ConcessionPriceItem
+     * const concessionPriceItem = await prisma.concessionPriceItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ConcessionPriceItemFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, ConcessionPriceItemFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__ConcessionPriceItemClient<
+      $Result.GetResult<
+        Prisma.$ConcessionPriceItemPayload<ExtArgs>,
+        T,
+        'findFirstOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find zero or more ConcessionPriceItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConcessionPriceItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ConcessionPriceItems
+     * const concessionPriceItems = await prisma.concessionPriceItem.findMany()
+     *
+     * // Get first 10 ConcessionPriceItems
+     * const concessionPriceItems = await prisma.concessionPriceItem.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const concessionPriceItemWithIdOnly = await prisma.concessionPriceItem.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends ConcessionPriceItemFindManyArgs>(
+      args?: SelectSubset<T, ConcessionPriceItemFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ConcessionPriceItemPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create a ConcessionPriceItem.
+     * @param {ConcessionPriceItemCreateArgs} args - Arguments to create a ConcessionPriceItem.
+     * @example
+     * // Create one ConcessionPriceItem
+     * const ConcessionPriceItem = await prisma.concessionPriceItem.create({
+     *   data: {
+     *     // ... data to create a ConcessionPriceItem
+     *   }
+     * })
+     *
+     */
+    create<T extends ConcessionPriceItemCreateArgs>(
+      args: SelectSubset<T, ConcessionPriceItemCreateArgs<ExtArgs>>
+    ): Prisma__ConcessionPriceItemClient<
+      $Result.GetResult<
+        Prisma.$ConcessionPriceItemPayload<ExtArgs>,
+        T,
+        'create',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Create many ConcessionPriceItems.
+     * @param {ConcessionPriceItemCreateManyArgs} args - Arguments to create many ConcessionPriceItems.
+     * @example
+     * // Create many ConcessionPriceItems
+     * const concessionPriceItem = await prisma.concessionPriceItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends ConcessionPriceItemCreateManyArgs>(
+      args?: SelectSubset<T, ConcessionPriceItemCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Create many ConcessionPriceItems and returns the data saved in the database.
+     * @param {ConcessionPriceItemCreateManyAndReturnArgs} args - Arguments to create many ConcessionPriceItems.
+     * @example
+     * // Create many ConcessionPriceItems
+     * const concessionPriceItem = await prisma.concessionPriceItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many ConcessionPriceItems and only return the `id`
+     * const concessionPriceItemWithIdOnly = await prisma.concessionPriceItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends ConcessionPriceItemCreateManyAndReturnArgs>(
+      args?: SelectSubset<T, ConcessionPriceItemCreateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ConcessionPriceItemPayload<ExtArgs>,
+        T,
+        'createManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Delete a ConcessionPriceItem.
+     * @param {ConcessionPriceItemDeleteArgs} args - Arguments to delete one ConcessionPriceItem.
+     * @example
+     * // Delete one ConcessionPriceItem
+     * const ConcessionPriceItem = await prisma.concessionPriceItem.delete({
+     *   where: {
+     *     // ... filter to delete one ConcessionPriceItem
+     *   }
+     * })
+     *
+     */
+    delete<T extends ConcessionPriceItemDeleteArgs>(
+      args: SelectSubset<T, ConcessionPriceItemDeleteArgs<ExtArgs>>
+    ): Prisma__ConcessionPriceItemClient<
+      $Result.GetResult<
+        Prisma.$ConcessionPriceItemPayload<ExtArgs>,
+        T,
+        'delete',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Update one ConcessionPriceItem.
+     * @param {ConcessionPriceItemUpdateArgs} args - Arguments to update one ConcessionPriceItem.
+     * @example
+     * // Update one ConcessionPriceItem
+     * const concessionPriceItem = await prisma.concessionPriceItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends ConcessionPriceItemUpdateArgs>(
+      args: SelectSubset<T, ConcessionPriceItemUpdateArgs<ExtArgs>>
+    ): Prisma__ConcessionPriceItemClient<
+      $Result.GetResult<
+        Prisma.$ConcessionPriceItemPayload<ExtArgs>,
+        T,
+        'update',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Delete zero or more ConcessionPriceItems.
+     * @param {ConcessionPriceItemDeleteManyArgs} args - Arguments to filter ConcessionPriceItems to delete.
+     * @example
+     * // Delete a few ConcessionPriceItems
+     * const { count } = await prisma.concessionPriceItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends ConcessionPriceItemDeleteManyArgs>(
+      args?: SelectSubset<T, ConcessionPriceItemDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more ConcessionPriceItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConcessionPriceItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ConcessionPriceItems
+     * const concessionPriceItem = await prisma.concessionPriceItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends ConcessionPriceItemUpdateManyArgs>(
+      args: SelectSubset<T, ConcessionPriceItemUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more ConcessionPriceItems and returns the data updated in the database.
+     * @param {ConcessionPriceItemUpdateManyAndReturnArgs} args - Arguments to update many ConcessionPriceItems.
+     * @example
+     * // Update many ConcessionPriceItems
+     * const concessionPriceItem = await prisma.concessionPriceItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more ConcessionPriceItems and only return the `id`
+     * const concessionPriceItemWithIdOnly = await prisma.concessionPriceItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends ConcessionPriceItemUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, ConcessionPriceItemUpdateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ConcessionPriceItemPayload<ExtArgs>,
+        T,
+        'updateManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create or update one ConcessionPriceItem.
+     * @param {ConcessionPriceItemUpsertArgs} args - Arguments to update or create a ConcessionPriceItem.
+     * @example
+     * // Update or create a ConcessionPriceItem
+     * const concessionPriceItem = await prisma.concessionPriceItem.upsert({
+     *   create: {
+     *     // ... data to create a ConcessionPriceItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ConcessionPriceItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ConcessionPriceItemUpsertArgs>(
+      args: SelectSubset<T, ConcessionPriceItemUpsertArgs<ExtArgs>>
+    ): Prisma__ConcessionPriceItemClient<
+      $Result.GetResult<
+        Prisma.$ConcessionPriceItemPayload<ExtArgs>,
+        T,
+        'upsert',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Count the number of ConcessionPriceItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConcessionPriceItemCountArgs} args - Arguments to filter ConcessionPriceItems to count.
+     * @example
+     * // Count the number of ConcessionPriceItems
+     * const count = await prisma.concessionPriceItem.count({
+     *   where: {
+     *     // ... the filter for the ConcessionPriceItems we want to count
+     *   }
+     * })
+     **/
+    count<T extends ConcessionPriceItemCountArgs>(
+      args?: Subset<T, ConcessionPriceItemCountArgs>
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ConcessionPriceItemCountAggregateOutputType>
+        : number
+    >;
+
+    /**
+     * Allows you to perform aggregations operations on a ConcessionPriceItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConcessionPriceItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+     **/
+    aggregate<T extends ConcessionPriceItemAggregateArgs>(
+      args: Subset<T, ConcessionPriceItemAggregateArgs>
+    ): Prisma.PrismaPromise<GetConcessionPriceItemAggregateType<T>>;
+
+    /**
+     * Group by ConcessionPriceItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConcessionPriceItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+     **/
+    groupBy<
+      T extends ConcessionPriceItemGroupByArgs,
+      HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ConcessionPriceItemGroupByArgs['orderBy'] }
+        : { orderBy?: ConcessionPriceItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+        ? `Error: "by" must not be empty.`
+        : HavingValid extends False
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [Error, 'Field ', P, ` in "having" needs to be provided in "by"`];
+            }[HavingFields]
+          : 'take' extends Keys<T>
+            ? 'orderBy' extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : 'skip' extends Keys<T>
+              ? 'orderBy' extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+    >(
+      args: SubsetIntersection<T, ConcessionPriceItemGroupByArgs, OrderByArg> & InputErrors
+    ): {} extends InputErrors
+      ? GetConcessionPriceItemGroupByPayload<T>
+      : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the ConcessionPriceItem model
+     */
+    readonly fields: ConcessionPriceItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ConcessionPriceItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ConcessionPriceItemClient<
+    T,
+    Null = never,
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+      onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
+    ): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(
+      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null
+    ): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+  /**
+   * Fields of the ConcessionPriceItem model
+   */
+  interface ConcessionPriceItemFieldRefs {
+    readonly id: FieldRef<'ConcessionPriceItem', 'String'>;
+    readonly itemName: FieldRef<'ConcessionPriceItem', 'String'>;
+    readonly category: FieldRef<'ConcessionPriceItem', 'String'>;
+    readonly price: FieldRef<'ConcessionPriceItem', 'Float'>;
+    readonly sortOrder: FieldRef<'ConcessionPriceItem', 'Int'>;
+    readonly status: FieldRef<'ConcessionPriceItem', 'RecordStatus'>;
+    readonly createdAt: FieldRef<'ConcessionPriceItem', 'DateTime'>;
+    readonly updatedAt: FieldRef<'ConcessionPriceItem', 'DateTime'>;
+  }
+
+  // Custom InputTypes
+  /**
+   * ConcessionPriceItem findUnique
+   */
+  export type ConcessionPriceItemFindUniqueArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+    /**
+     * Filter, which ConcessionPriceItem to fetch.
+     */
+    where: ConcessionPriceItemWhereUniqueInput;
+  };
+
+  /**
+   * ConcessionPriceItem findUniqueOrThrow
+   */
+  export type ConcessionPriceItemFindUniqueOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+    /**
+     * Filter, which ConcessionPriceItem to fetch.
+     */
+    where: ConcessionPriceItemWhereUniqueInput;
+  };
+
+  /**
+   * ConcessionPriceItem findFirst
+   */
+  export type ConcessionPriceItemFindFirstArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+    /**
+     * Filter, which ConcessionPriceItem to fetch.
+     */
+    where?: ConcessionPriceItemWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ConcessionPriceItems to fetch.
+     */
+    orderBy?:
+      | ConcessionPriceItemOrderByWithRelationInput
+      | ConcessionPriceItemOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ConcessionPriceItems.
+     */
+    cursor?: ConcessionPriceItemWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ConcessionPriceItems from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ConcessionPriceItems.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ConcessionPriceItems.
+     */
+    distinct?: ConcessionPriceItemScalarFieldEnum | ConcessionPriceItemScalarFieldEnum[];
+  };
+
+  /**
+   * ConcessionPriceItem findFirstOrThrow
+   */
+  export type ConcessionPriceItemFindFirstOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+    /**
+     * Filter, which ConcessionPriceItem to fetch.
+     */
+    where?: ConcessionPriceItemWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ConcessionPriceItems to fetch.
+     */
+    orderBy?:
+      | ConcessionPriceItemOrderByWithRelationInput
+      | ConcessionPriceItemOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ConcessionPriceItems.
+     */
+    cursor?: ConcessionPriceItemWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ConcessionPriceItems from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ConcessionPriceItems.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ConcessionPriceItems.
+     */
+    distinct?: ConcessionPriceItemScalarFieldEnum | ConcessionPriceItemScalarFieldEnum[];
+  };
+
+  /**
+   * ConcessionPriceItem findMany
+   */
+  export type ConcessionPriceItemFindManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+    /**
+     * Filter, which ConcessionPriceItems to fetch.
+     */
+    where?: ConcessionPriceItemWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ConcessionPriceItems to fetch.
+     */
+    orderBy?:
+      | ConcessionPriceItemOrderByWithRelationInput
+      | ConcessionPriceItemOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing ConcessionPriceItems.
+     */
+    cursor?: ConcessionPriceItemWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ConcessionPriceItems from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ConcessionPriceItems.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ConcessionPriceItems.
+     */
+    distinct?: ConcessionPriceItemScalarFieldEnum | ConcessionPriceItemScalarFieldEnum[];
+  };
+
+  /**
+   * ConcessionPriceItem create
+   */
+  export type ConcessionPriceItemCreateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+    /**
+     * The data needed to create a ConcessionPriceItem.
+     */
+    data: XOR<ConcessionPriceItemCreateInput, ConcessionPriceItemUncheckedCreateInput>;
+  };
+
+  /**
+   * ConcessionPriceItem createMany
+   */
+  export type ConcessionPriceItemCreateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to create many ConcessionPriceItems.
+     */
+    data: ConcessionPriceItemCreateManyInput | ConcessionPriceItemCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * ConcessionPriceItem createManyAndReturn
+   */
+  export type ConcessionPriceItemCreateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+    /**
+     * The data used to create many ConcessionPriceItems.
+     */
+    data: ConcessionPriceItemCreateManyInput | ConcessionPriceItemCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * ConcessionPriceItem update
+   */
+  export type ConcessionPriceItemUpdateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+    /**
+     * The data needed to update a ConcessionPriceItem.
+     */
+    data: XOR<ConcessionPriceItemUpdateInput, ConcessionPriceItemUncheckedUpdateInput>;
+    /**
+     * Choose, which ConcessionPriceItem to update.
+     */
+    where: ConcessionPriceItemWhereUniqueInput;
+  };
+
+  /**
+   * ConcessionPriceItem updateMany
+   */
+  export type ConcessionPriceItemUpdateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to update ConcessionPriceItems.
+     */
+    data: XOR<
+      ConcessionPriceItemUpdateManyMutationInput,
+      ConcessionPriceItemUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which ConcessionPriceItems to update
+     */
+    where?: ConcessionPriceItemWhereInput;
+    /**
+     * Limit how many ConcessionPriceItems to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * ConcessionPriceItem updateManyAndReturn
+   */
+  export type ConcessionPriceItemUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+    /**
+     * The data used to update ConcessionPriceItems.
+     */
+    data: XOR<
+      ConcessionPriceItemUpdateManyMutationInput,
+      ConcessionPriceItemUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which ConcessionPriceItems to update
+     */
+    where?: ConcessionPriceItemWhereInput;
+    /**
+     * Limit how many ConcessionPriceItems to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * ConcessionPriceItem upsert
+   */
+  export type ConcessionPriceItemUpsertArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+    /**
+     * The filter to search for the ConcessionPriceItem to update in case it exists.
+     */
+    where: ConcessionPriceItemWhereUniqueInput;
+    /**
+     * In case the ConcessionPriceItem found by the `where` argument doesn't exist, create a new ConcessionPriceItem with this data.
+     */
+    create: XOR<ConcessionPriceItemCreateInput, ConcessionPriceItemUncheckedCreateInput>;
+    /**
+     * In case the ConcessionPriceItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ConcessionPriceItemUpdateInput, ConcessionPriceItemUncheckedUpdateInput>;
+  };
+
+  /**
+   * ConcessionPriceItem delete
+   */
+  export type ConcessionPriceItemDeleteArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+    /**
+     * Filter which ConcessionPriceItem to delete.
+     */
+    where: ConcessionPriceItemWhereUniqueInput;
+  };
+
+  /**
+   * ConcessionPriceItem deleteMany
+   */
+  export type ConcessionPriceItemDeleteManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which ConcessionPriceItems to delete
+     */
+    where?: ConcessionPriceItemWhereInput;
+    /**
+     * Limit how many ConcessionPriceItems to delete.
+     */
+    limit?: number;
+  };
+
+  /**
+   * ConcessionPriceItem without action
+   */
+  export type ConcessionPriceItemDefaultArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ConcessionPriceItem
+     */
+    select?: ConcessionPriceItemSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ConcessionPriceItem
+     */
+    omit?: ConcessionPriceItemOmit<ExtArgs> | null;
+  };
+
+  /**
    * Model DisplayPage
    */
 
@@ -18417,6 +19796,20 @@ export namespace Prisma {
   export type ItemSalesTargetScalarFieldEnum =
     (typeof ItemSalesTargetScalarFieldEnum)[keyof typeof ItemSalesTargetScalarFieldEnum];
 
+  export const ConcessionPriceItemScalarFieldEnum: {
+    id: 'id';
+    itemName: 'itemName';
+    category: 'category';
+    price: 'price';
+    sortOrder: 'sortOrder';
+    status: 'status';
+    createdAt: 'createdAt';
+    updatedAt: 'updatedAt';
+  };
+
+  export type ConcessionPriceItemScalarFieldEnum =
+    (typeof ConcessionPriceItemScalarFieldEnum)[keyof typeof ConcessionPriceItemScalarFieldEnum];
+
   export const DisplayPageScalarFieldEnum: {
     id: 'id';
     name: 'name';
@@ -19405,6 +20798,82 @@ export namespace Prisma {
     status?: EnumRecordStatusWithAggregatesFilter<'ItemSalesTarget'> | $Enums.RecordStatus;
     createdAt?: DateTimeWithAggregatesFilter<'ItemSalesTarget'> | Date | string;
     updatedAt?: DateTimeWithAggregatesFilter<'ItemSalesTarget'> | Date | string;
+  };
+
+  export type ConcessionPriceItemWhereInput = {
+    AND?: ConcessionPriceItemWhereInput | ConcessionPriceItemWhereInput[];
+    OR?: ConcessionPriceItemWhereInput[];
+    NOT?: ConcessionPriceItemWhereInput | ConcessionPriceItemWhereInput[];
+    id?: StringFilter<'ConcessionPriceItem'> | string;
+    itemName?: StringFilter<'ConcessionPriceItem'> | string;
+    category?: StringNullableFilter<'ConcessionPriceItem'> | string | null;
+    price?: FloatFilter<'ConcessionPriceItem'> | number;
+    sortOrder?: IntFilter<'ConcessionPriceItem'> | number;
+    status?: EnumRecordStatusFilter<'ConcessionPriceItem'> | $Enums.RecordStatus;
+    createdAt?: DateTimeFilter<'ConcessionPriceItem'> | Date | string;
+    updatedAt?: DateTimeFilter<'ConcessionPriceItem'> | Date | string;
+  };
+
+  export type ConcessionPriceItemOrderByWithRelationInput = {
+    id?: SortOrder;
+    itemName?: SortOrder;
+    category?: SortOrderInput | SortOrder;
+    price?: SortOrder;
+    sortOrder?: SortOrder;
+    status?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type ConcessionPriceItemWhereUniqueInput = Prisma.AtLeast<
+    {
+      id?: string;
+      AND?: ConcessionPriceItemWhereInput | ConcessionPriceItemWhereInput[];
+      OR?: ConcessionPriceItemWhereInput[];
+      NOT?: ConcessionPriceItemWhereInput | ConcessionPriceItemWhereInput[];
+      itemName?: StringFilter<'ConcessionPriceItem'> | string;
+      category?: StringNullableFilter<'ConcessionPriceItem'> | string | null;
+      price?: FloatFilter<'ConcessionPriceItem'> | number;
+      sortOrder?: IntFilter<'ConcessionPriceItem'> | number;
+      status?: EnumRecordStatusFilter<'ConcessionPriceItem'> | $Enums.RecordStatus;
+      createdAt?: DateTimeFilter<'ConcessionPriceItem'> | Date | string;
+      updatedAt?: DateTimeFilter<'ConcessionPriceItem'> | Date | string;
+    },
+    'id'
+  >;
+
+  export type ConcessionPriceItemOrderByWithAggregationInput = {
+    id?: SortOrder;
+    itemName?: SortOrder;
+    category?: SortOrderInput | SortOrder;
+    price?: SortOrder;
+    sortOrder?: SortOrder;
+    status?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+    _count?: ConcessionPriceItemCountOrderByAggregateInput;
+    _avg?: ConcessionPriceItemAvgOrderByAggregateInput;
+    _max?: ConcessionPriceItemMaxOrderByAggregateInput;
+    _min?: ConcessionPriceItemMinOrderByAggregateInput;
+    _sum?: ConcessionPriceItemSumOrderByAggregateInput;
+  };
+
+  export type ConcessionPriceItemScalarWhereWithAggregatesInput = {
+    AND?:
+      | ConcessionPriceItemScalarWhereWithAggregatesInput
+      | ConcessionPriceItemScalarWhereWithAggregatesInput[];
+    OR?: ConcessionPriceItemScalarWhereWithAggregatesInput[];
+    NOT?:
+      | ConcessionPriceItemScalarWhereWithAggregatesInput
+      | ConcessionPriceItemScalarWhereWithAggregatesInput[];
+    id?: StringWithAggregatesFilter<'ConcessionPriceItem'> | string;
+    itemName?: StringWithAggregatesFilter<'ConcessionPriceItem'> | string;
+    category?: StringNullableWithAggregatesFilter<'ConcessionPriceItem'> | string | null;
+    price?: FloatWithAggregatesFilter<'ConcessionPriceItem'> | number;
+    sortOrder?: IntWithAggregatesFilter<'ConcessionPriceItem'> | number;
+    status?: EnumRecordStatusWithAggregatesFilter<'ConcessionPriceItem'> | $Enums.RecordStatus;
+    createdAt?: DateTimeWithAggregatesFilter<'ConcessionPriceItem'> | Date | string;
+    updatedAt?: DateTimeWithAggregatesFilter<'ConcessionPriceItem'> | Date | string;
   };
 
   export type DisplayPageWhereInput = {
@@ -20419,6 +21888,83 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
   };
 
+  export type ConcessionPriceItemCreateInput = {
+    id?: string;
+    itemName: string;
+    category?: string | null;
+    price: number;
+    sortOrder?: number;
+    status?: $Enums.RecordStatus;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type ConcessionPriceItemUncheckedCreateInput = {
+    id?: string;
+    itemName: string;
+    category?: string | null;
+    price: number;
+    sortOrder?: number;
+    status?: $Enums.RecordStatus;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type ConcessionPriceItemUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    itemName?: StringFieldUpdateOperationsInput | string;
+    category?: NullableStringFieldUpdateOperationsInput | string | null;
+    price?: FloatFieldUpdateOperationsInput | number;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
+    status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ConcessionPriceItemUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    itemName?: StringFieldUpdateOperationsInput | string;
+    category?: NullableStringFieldUpdateOperationsInput | string | null;
+    price?: FloatFieldUpdateOperationsInput | number;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
+    status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ConcessionPriceItemCreateManyInput = {
+    id?: string;
+    itemName: string;
+    category?: string | null;
+    price: number;
+    sortOrder?: number;
+    status?: $Enums.RecordStatus;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type ConcessionPriceItemUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    itemName?: StringFieldUpdateOperationsInput | string;
+    category?: NullableStringFieldUpdateOperationsInput | string | null;
+    price?: FloatFieldUpdateOperationsInput | number;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
+    status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ConcessionPriceItemUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    itemName?: StringFieldUpdateOperationsInput | string;
+    category?: NullableStringFieldUpdateOperationsInput | string | null;
+    price?: FloatFieldUpdateOperationsInput | number;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
+    status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
   export type DisplayPageCreateInput = {
     id?: string;
     name: string;
@@ -21220,6 +22766,76 @@ export namespace Prisma {
     monthlyTarget?: SortOrder;
   };
 
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>;
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>;
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>;
+    lt?: number | FloatFieldRefInput<$PrismaModel>;
+    lte?: number | FloatFieldRefInput<$PrismaModel>;
+    gt?: number | FloatFieldRefInput<$PrismaModel>;
+    gte?: number | FloatFieldRefInput<$PrismaModel>;
+    not?: NestedFloatFilter<$PrismaModel> | number;
+  };
+
+  export type ConcessionPriceItemCountOrderByAggregateInput = {
+    id?: SortOrder;
+    itemName?: SortOrder;
+    category?: SortOrder;
+    price?: SortOrder;
+    sortOrder?: SortOrder;
+    status?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type ConcessionPriceItemAvgOrderByAggregateInput = {
+    price?: SortOrder;
+    sortOrder?: SortOrder;
+  };
+
+  export type ConcessionPriceItemMaxOrderByAggregateInput = {
+    id?: SortOrder;
+    itemName?: SortOrder;
+    category?: SortOrder;
+    price?: SortOrder;
+    sortOrder?: SortOrder;
+    status?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type ConcessionPriceItemMinOrderByAggregateInput = {
+    id?: SortOrder;
+    itemName?: SortOrder;
+    category?: SortOrder;
+    price?: SortOrder;
+    sortOrder?: SortOrder;
+    status?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type ConcessionPriceItemSumOrderByAggregateInput = {
+    price?: SortOrder;
+    sortOrder?: SortOrder;
+  };
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>;
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>;
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>;
+    lt?: number | FloatFieldRefInput<$PrismaModel>;
+    lte?: number | FloatFieldRefInput<$PrismaModel>;
+    gt?: number | FloatFieldRefInput<$PrismaModel>;
+    gte?: number | FloatFieldRefInput<$PrismaModel>;
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number;
+    _count?: NestedIntFilter<$PrismaModel>;
+    _avg?: NestedFloatFilter<$PrismaModel>;
+    _sum?: NestedFloatFilter<$PrismaModel>;
+    _min?: NestedFloatFilter<$PrismaModel>;
+    _max?: NestedFloatFilter<$PrismaModel>;
+  };
+
   export type DisplayPageCountOrderByAggregateInput = {
     id?: SortOrder;
     name?: SortOrder;
@@ -21563,6 +23179,14 @@ export namespace Prisma {
     set?: boolean;
   };
 
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number;
+    increment?: number;
+    decrement?: number;
+    multiply?: number;
+    divide?: number;
+  };
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>;
     in?: string[] | ListStringFieldRefInput<$PrismaModel>;
@@ -21813,6 +23437,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>;
     _min?: NestedBoolFilter<$PrismaModel>;
     _max?: NestedBoolFilter<$PrismaModel>;
+  };
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>;
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>;
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>;
+    lt?: number | FloatFieldRefInput<$PrismaModel>;
+    lte?: number | FloatFieldRefInput<$PrismaModel>;
+    gt?: number | FloatFieldRefInput<$PrismaModel>;
+    gte?: number | FloatFieldRefInput<$PrismaModel>;
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number;
+    _count?: NestedIntFilter<$PrismaModel>;
+    _avg?: NestedFloatFilter<$PrismaModel>;
+    _sum?: NestedFloatFilter<$PrismaModel>;
+    _min?: NestedFloatFilter<$PrismaModel>;
+    _max?: NestedFloatFilter<$PrismaModel>;
   };
 
   export type AttendanceRecordCreateWithoutStaffInput = {

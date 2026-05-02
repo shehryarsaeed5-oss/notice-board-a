@@ -56,6 +56,15 @@ export interface DisplayBoardSalesTargetItem {
   status: RecordStatus;
 }
 
+export interface DisplayBoardConcessionPriceItem {
+  id: string;
+  itemName: string;
+  category: string | null;
+  price: number;
+  sortOrder: number;
+  status: RecordStatus;
+}
+
 export interface DisplayBoardWeatherSetting {
   id: string;
   city: string;
@@ -93,6 +102,10 @@ export interface DisplayBoardData {
   };
   salesTargets: {
     items: DisplayBoardSalesTargetItem[];
+    total: number;
+  };
+  concessionPriceList: {
+    items: DisplayBoardConcessionPriceItem[];
     total: number;
   };
   weatherSetting: DisplayBoardWeatherSetting | null;

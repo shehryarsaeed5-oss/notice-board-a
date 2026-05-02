@@ -68,8 +68,13 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
     movieSchedules: { items: Array<Record<string, unknown>>; total: number };
     advertisements: { items: Array<Record<string, unknown>>; total: number };
     salesTargets: DisplayBoardData['salesTargets'];
+    concessionPriceList?: DisplayBoardData['concessionPriceList'];
     weatherSetting: DisplayBoardData['weatherSetting'];
     attendanceSummary: DisplayBoardData['attendanceSummary'];
+  };
+  const concessionPriceList = board.concessionPriceList ?? {
+    items: [],
+    total: 0
   };
 
   return {
@@ -100,6 +105,7 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
       total: board.advertisements.total
     },
     salesTargets: board.salesTargets,
+    concessionPriceList,
     weatherSetting: board.weatherSetting,
     attendanceSummary: board.attendanceSummary
   };

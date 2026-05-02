@@ -18,6 +18,7 @@ const VISIBLE_MEETING_COUNT = 4;
 const VISIBLE_MOVIE_COUNT = 4;
 const VISIBLE_AD_COUNT = 3;
 const VISIBLE_TARGET_COUNT = 4;
+const VISIBLE_CONCESSION_COUNT = 4;
 
 function formatTime(value: Date) {
   return format(value, 'h:mm a');
@@ -37,6 +38,12 @@ function formatTarget(value: number | null) {
 
 function formatDuration(value: number | null) {
   return value === null ? '—' : `${value}s`;
+}
+
+function formatPrice(value: number) {
+  return `Rs. ${new Intl.NumberFormat('en-PK', {
+    maximumFractionDigits: 2
+  }).format(value)}`;
 }
 
 function SectionCard({
@@ -192,6 +199,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
     movieSchedules,
     advertisements,
     salesTargets,
+    concessionPriceList,
     weatherSetting,
     attendanceSummary
   } = data;
@@ -202,6 +210,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const visibleMovies = movieSchedules.items.slice(0, VISIBLE_MOVIE_COUNT);
   const visibleAds = advertisements.items.slice(0, VISIBLE_AD_COUNT);
   const visibleTargets = salesTargets.items.slice(0, VISIBLE_TARGET_COUNT);
+  const visibleConcessions = concessionPriceList.items.slice(0, VISIBLE_CONCESSION_COUNT);
   const currentDate = formatDate(renderedAt);
   const updatedAt = formatDateTime(generatedAt);
   const totalAttendance = attendanceSummary.staffMarked + attendanceSummary.managerMarked;
@@ -441,7 +450,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             </SectionCard>
           </div>
 
-          <div className='grid min-h-0 gap-4 xl:grid-rows-[minmax(0,0.72fr)_minmax(0,1.02fr)_minmax(0,1.1fr)_minmax(0,1fr)]'>
+          <div className='grid min-h-0 gap-4 xl:grid-rows-[minmax(0,0.62fr)_minmax(0,0.82fr)_minmax(0,0.92fr)_minmax(0,1fr)_minmax(0,0.78fr)]'>
             <SectionCard
               title='Weather'
               description='Live configuration'
@@ -603,6 +612,53 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                         <StatBlock label='Daily' value={formatTarget(target.dailyTarget)} />
                         <StatBlock label='Weekly' value={formatTarget(target.weeklyTarget)} />
                         <StatBlock label='Monthly' value={formatTarget(target.monthlyTarget)} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </SectionCard>
+
+            <SectionCard
+              title='Concession Price List'
+              description='Live counter prices'
+              icon={Icons.billing}
+              count={concessionPriceList.total}
+              footer={
+                concessionPriceList.total > visibleConcessions.length ? (
+                  <div className='flex justify-end'>
+                    <CompactMorePill
+                      label={`Showing ${visibleConcessions.length} of ${concessionPriceList.total} items`}
+                    />
+                  </div>
+                ) : null
+              }
+            >
+              {visibleConcessions.length === 0 ? (
+                <EmptySection message='No active concession price items are currently available.' />
+              ) : (
+                <div className='space-y-2'>
+                  {visibleConcessions.map((item) => (
+                    <div
+                      key={item.id}
+                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
+                    >
+                      <div className='flex items-start justify-between gap-3'>
+                        <div className='min-w-0'>
+                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                            {item.itemName}
+                          </div>
+                          <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
+                            {item.category && <RecordChip>{item.category}</RecordChip>}
+                            <RecordChip>{item.status}</RecordChip>
+                          </div>
+                        </div>
+                        <Badge className='border-amber-400/30 bg-amber-400/15 text-amber-100'>
+                          {formatPrice(item.price)}
+                        </Badge>
+                      </div>
+                      <div className='mt-2 flex flex-wrap gap-2 text-xs text-zinc-400'>
+                        <RecordChip>Sort {item.sortOrder}</RecordChip>
                       </div>
                     </div>
                   ))}

@@ -242,6 +242,17 @@ exports.Prisma.ItemSalesTargetScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ConcessionPriceItemScalarFieldEnum = {
+  id: 'id',
+  itemName: 'itemName',
+  category: 'category',
+  price: 'price',
+  sortOrder: 'sortOrder',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.DisplayPageScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -304,6 +315,7 @@ exports.Prisma.ModelName = {
   WeatherSetting: 'WeatherSetting',
   MovieSchedule: 'MovieSchedule',
   ItemSalesTarget: 'ItemSalesTarget',
+  ConcessionPriceItem: 'ConcessionPriceItem',
   DisplayPage: 'DisplayPage',
   SystemSetting: 'SystemSetting'
 };

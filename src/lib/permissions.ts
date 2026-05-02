@@ -13,6 +13,7 @@ export const ALL_PERMISSION_KEYS = [
   'weather',
   'movieSchedule',
   'itemSalesTarget',
+  'concessionPriceList',
   'systemSettings',
   'users'
 ] as const;
@@ -61,6 +62,7 @@ export const ROUTE_PERMISSION_MAP: PermissionRouteRule[] = [
   { pattern: '/dashboard/weather', permission: 'weather' },
   { pattern: '/dashboard/movie-schedule', permission: 'movieSchedule' },
   { pattern: '/dashboard/item-sales-target', permission: 'itemSalesTarget' },
+  { pattern: '/dashboard/concession-price-list', permission: 'concessionPriceList' },
   { pattern: '/dashboard/system-settings', permission: 'systemSettings' }
 ];
 
@@ -76,6 +78,7 @@ export const API_PERMISSION_MAP: PermissionApiRule[] = [
   { pattern: '/api/advertisements', permission: 'advertisements' },
   { pattern: '/api/weather-settings', permission: 'weather' },
   { pattern: '/api/item-sales-target', permission: 'itemSalesTarget' },
+  { pattern: '/api/concession-price-list', permission: 'concessionPriceList' },
   { pattern: '/api/system-settings', permission: 'systemSettings' }
 ];
 
