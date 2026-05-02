@@ -4,13 +4,20 @@ import type { ComponentType, ReactNode } from 'react';
 import { Icons } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { getDisplayBoardBySlug } from '../api/service';
 import { DisplayBoardAutoRefresh } from './display-board-auto-refresh';
 import { DisplayBoardClock } from './display-board-clock';
-import { getDisplayBoardBySlug } from '../api/service';
 
 interface DisplayBoardPageProps {
   slug: string;
 }
+
+const VISIBLE_EVENT_COUNT = 4;
+const VISIBLE_MEETING_COUNT = 4;
+const VISIBLE_MOVIE_COUNT = 4;
+const VISIBLE_AD_COUNT = 3;
+const VISIBLE_TARGET_COUNT = 4;
 
 function formatTime(value: Date) {
   return format(value, 'h:mm a');
@@ -18,6 +25,10 @@ function formatTime(value: Date) {
 
 function formatDate(value: Date) {
   return format(value, 'EEEE, MMM d, yyyy');
+}
+
+function formatDateTime(value: Date) {
+  return format(value, 'EEEE, MMM d, yyyy • h:mm a');
 }
 
 function formatTarget(value: number | null) {
@@ -33,35 +44,92 @@ function SectionCard({
   description,
   icon: Icon,
   count,
-  children
+  children,
+  footer
 }: {
   title: string;
   description: string;
   icon: ComponentType<{ className?: string }>;
   count: number;
   children: ReactNode;
+  footer?: ReactNode;
 }) {
   return (
-    <Card className='border-white/10 bg-white/5 text-zinc-50 shadow-2xl backdrop-blur'>
-      <CardHeader className='pb-3'>
+    <Card className='flex h-full min-h-0 flex-col overflow-hidden border-white/10 bg-white/6 text-zinc-50 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl'>
+      <CardHeader className='shrink-0 pb-3'>
         <div className='flex items-start justify-between gap-3'>
-          <div>
-            <CardDescription className='text-zinc-300'>{description}</CardDescription>
-            <CardTitle className='mt-1 text-xl text-zinc-50'>{title}</CardTitle>
+          <div className='space-y-1'>
+            <CardDescription className='text-[11px] uppercase tracking-[0.28em] text-zinc-400'>
+              {description}
+            </CardDescription>
+            <CardTitle className='text-lg font-semibold text-zinc-50 xl:text-[21px]'>
+              {title}
+            </CardTitle>
           </div>
-          <Badge variant='outline' className='border-white/10 bg-white/5 text-zinc-100'>
-            <Icon className='mr-1 size-3.5' />
+          <Badge
+            variant='outline'
+            className='rounded-full border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-100'
+          >
+            <Icon className='mr-1.5 size-3.5' />
             {count.toLocaleString()}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className='space-y-3'>{children}</CardContent>
+      <CardContent className='flex min-h-0 flex-1 flex-col gap-3 pt-0'>
+        {children}
+        {footer}
+      </CardContent>
     </Card>
   );
 }
 
 function EmptySection({ message }: { message: string }) {
-  return <div className='text-sm text-zinc-400'>{message}</div>;
+  return (
+    <div className='flex items-center gap-2 rounded-2xl border border-dashed border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-400'>
+      <Icons.info className='size-4 shrink-0 text-amber-300/80' />
+      <span>{message}</span>
+    </div>
+  );
+}
+
+function CompactMorePill({ label }: { label: string }) {
+  return (
+    <div className='inline-flex items-center rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 text-[11px] font-medium tracking-wide text-amber-200'>
+      {label}
+    </div>
+  );
+}
+
+function RecordChip({ children }: { children: ReactNode }) {
+  return (
+    <span className='inline-flex items-center rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium tracking-wide text-zinc-100'>
+      {children}
+    </span>
+  );
+}
+
+function StatBlock({
+  label,
+  value,
+  tone = 'zinc'
+}: {
+  label: string;
+  value: string;
+  tone?: 'zinc' | 'emerald' | 'amber';
+}) {
+  const toneClass =
+    tone === 'emerald'
+      ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200'
+      : tone === 'amber'
+        ? 'border-amber-400/20 bg-amber-400/10 text-amber-100'
+        : 'border-white/10 bg-white/5 text-zinc-100';
+
+  return (
+    <div className={`rounded-2xl border px-3 py-2.5 ${toneClass}`}>
+      <div className='text-[11px] uppercase tracking-[0.24em] text-current/70'>{label}</div>
+      <div className='mt-1 text-base font-semibold text-current'>{value}</div>
+    </div>
+  );
 }
 
 function DisplayBoardUnavailable({
@@ -72,11 +140,11 @@ function DisplayBoardUnavailable({
   reason: 'inactive' | 'not_found';
 }) {
   return (
-    <main className='relative min-h-screen overflow-hidden bg-zinc-950 text-zinc-50'>
+    <main className='relative min-h-[100dvh] overflow-hidden bg-zinc-950 text-zinc-50'>
       <DisplayBoardAutoRefresh />
-      <div className='absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.14),transparent_35%),linear-gradient(180deg,#09090b_0%,#020202_100%)]' />
-      <div className='relative flex min-h-screen items-center justify-center p-6'>
-        <Card className='max-w-2xl border-white/10 bg-white/5 text-center shadow-2xl backdrop-blur'>
+      <div className='absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.16),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.06),transparent_25%),linear-gradient(180deg,#09090b_0%,#020202_100%)]' />
+      <div className='relative flex min-h-[100dvh] items-center justify-center p-6'>
+        <Card className='max-w-2xl border-white/10 bg-white/6 text-center shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-xl'>
           <CardHeader>
             <CardDescription className='text-zinc-300'>Public display board</CardDescription>
             <CardTitle className='text-3xl text-zinc-50'>
@@ -128,61 +196,144 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
     attendanceSummary
   } = data;
 
+  const renderedAt = new Date();
+  const visibleEvents = events.items.slice(0, VISIBLE_EVENT_COUNT);
+  const visibleMeetings = meetings.items.slice(0, VISIBLE_MEETING_COUNT);
+  const visibleMovies = movieSchedules.items.slice(0, VISIBLE_MOVIE_COUNT);
+  const visibleAds = advertisements.items.slice(0, VISIBLE_AD_COUNT);
+  const visibleTargets = salesTargets.items.slice(0, VISIBLE_TARGET_COUNT);
+  const currentDate = formatDate(renderedAt);
+  const updatedAt = formatDateTime(generatedAt);
+  const totalAttendance = attendanceSummary.staffMarked + attendanceSummary.managerMarked;
+  const expectedAttendance = attendanceSummary.staffExpected + attendanceSummary.managerExpected;
+
   return (
-    <main className='relative min-h-screen overflow-hidden bg-zinc-950 text-zinc-50'>
+    <main className='relative min-h-[100dvh] overflow-hidden bg-zinc-950 text-zinc-50'>
       <DisplayBoardAutoRefresh />
-      <div className='absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.14),transparent_35%),linear-gradient(180deg,#09090b_0%,#020202_100%)]' />
+      <div className='absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.2),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.07),transparent_24%),radial-gradient(circle_at_50%_120%,rgba(180,83,9,0.12),transparent_30%),linear-gradient(180deg,#09090b_0%,#020202_100%)]' />
       <div className='absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500' />
 
-      <div className='relative flex min-h-screen flex-col gap-5 p-6 xl:p-8'>
-        <header className='flex flex-col gap-3 border-b border-white/10 pb-5 xl:flex-row xl:items-end xl:justify-between'>
-          <div className='space-y-1'>
-            <div className='flex items-center gap-3'>
-              <Badge className='border-amber-400/30 bg-amber-400/15 text-amber-200'>
+      <div className='relative flex min-h-[100dvh] flex-col gap-4 p-4 md:p-6 xl:h-[100dvh] xl:min-h-0 xl:overflow-hidden xl:p-6 2xl:p-8'>
+        <header className='shrink-0 grid gap-4 xl:grid-cols-[minmax(0,1.72fr)_minmax(340px,0.9fr)]'>
+          <div className='rounded-[30px] border border-white/10 bg-white/6 px-5 py-4 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl xl:px-6 xl:py-5'>
+            <div className='flex flex-wrap items-center gap-2'>
+              <Badge className='border-amber-400/30 bg-amber-400/15 px-3 py-1 text-amber-200'>
                 Live Display
               </Badge>
-              <Badge variant='outline' className='border-white/10 bg-white/5 text-zinc-100'>
+              <Badge
+                variant='outline'
+                className='border-white/10 bg-white/5 px-3 py-1 text-zinc-100'
+              >
                 {displayPage.slug}
               </Badge>
+              <Badge
+                variant='outline'
+                className='border-white/10 bg-white/5 px-3 py-1 text-zinc-100'
+              >
+                Premium cinema board
+              </Badge>
             </div>
-            <h1 className='text-3xl font-semibold tracking-tight text-balance text-zinc-50 md:text-5xl'>
-              {displayPage.name}
-            </h1>
-            <p className='max-w-3xl text-sm text-zinc-300 md:text-base'>
-              Public cinema display board for events, meetings, movie shows, advertisements, sales
-              targets, weather, and attendance.
-            </p>
+
+            <div className='mt-4 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between'>
+              <div className='space-y-2'>
+                <h1 className='text-3xl font-semibold tracking-tight text-balance text-zinc-50 md:text-5xl xl:text-6xl'>
+                  {displayPage.name}
+                </h1>
+                <p className='max-w-4xl text-sm leading-6 text-zinc-300 md:text-[15px] xl:max-w-5xl'>
+                  Today&apos;s cinema notice board for events, meetings, movie shows,
+                  advertisements, sales targets, weather, and attendance.
+                </p>
+              </div>
+
+              <div className='rounded-3xl border border-white/10 bg-black/20 px-4 py-3 shadow-inner shadow-black/20 xl:min-w-[320px] xl:px-5'>
+                <div className='text-[11px] font-medium uppercase tracking-[0.28em] text-amber-200/80'>
+                  Current date / time
+                </div>
+                <div className='mt-2 flex items-end gap-3'>
+                  <div className='text-3xl font-semibold leading-none tracking-tight text-zinc-50 md:text-4xl xl:text-5xl'>
+                    <DisplayBoardClock initialIso={renderedAt.toISOString()} />
+                  </div>
+                  <div className='pb-1 text-sm text-zinc-300 md:text-[15px]'>{currentDate}</div>
+                </div>
+                <div className='mt-3 text-[11px] uppercase tracking-[0.22em] text-zinc-400'>
+                  Last updated
+                </div>
+                <div className='mt-1 text-sm text-zinc-100 md:text-[15px]'>{updatedAt}</div>
+              </div>
+            </div>
           </div>
 
-          <div className='flex flex-col gap-2 text-right'>
-            <div className='text-sm text-zinc-400'>Updated</div>
-            <div className='text-lg font-medium text-zinc-100 md:text-2xl'>
-              <DisplayBoardClock initialIso={generatedAt.toISOString()} />
+          <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-1'>
+            <div className='rounded-[30px] border border-white/10 bg-white/6 px-5 py-4 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl'>
+              <div className='flex items-start justify-between gap-3'>
+                <div>
+                  <div className='text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400'>
+                    Weather
+                  </div>
+                  <div className='mt-2 text-xl font-semibold text-zinc-50 xl:text-[22px]'>
+                    {weatherSetting ? weatherSetting.city : 'No weather setting'}
+                  </div>
+                  <div className='mt-1 text-sm text-zinc-300'>
+                    {weatherSetting
+                      ? `Provider: ${weatherSetting.provider}`
+                      : 'No enabled provider'}
+                  </div>
+                </div>
+                <Badge
+                  className={
+                    weatherSetting
+                      ? 'border-emerald-400/30 bg-emerald-400/15 text-emerald-200'
+                      : 'border-white/10 bg-white/5 text-zinc-200'
+                  }
+                >
+                  {weatherSetting ? 'Enabled' : 'Inactive'}
+                </Badge>
+              </div>
             </div>
-            <div className='text-sm text-zinc-400'>{formatDate(generatedAt)}</div>
+
+            <div className='rounded-[30px] border border-white/10 bg-white/6 px-5 py-4 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl'>
+              <div className='text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400'>
+                Attendance
+              </div>
+              <div className='mt-2 text-xl font-semibold text-zinc-50 xl:text-[22px]'>
+                {totalAttendance} marked today
+              </div>
+              <div className='mt-1 text-sm text-zinc-300'>{expectedAttendance} expected</div>
+            </div>
           </div>
         </header>
 
-        <section className='grid gap-4 xl:grid-cols-3'>
-          <div className='space-y-4 xl:col-span-2'>
+        <section className='grid flex-1 min-h-0 gap-4 xl:grid-cols-[minmax(0,1.72fr)_minmax(360px,0.9fr)]'>
+          <div className='grid min-h-0 gap-4 xl:grid-rows-[minmax(0,1.08fr)_minmax(0,0.97fr)_minmax(0,0.95fr)]'>
             <SectionCard
               title='Today Events'
-              description='Active event records scheduled for today.'
+              description='Scheduled today'
               icon={Icons.calendar}
               count={events.total}
+              footer={
+                events.total > visibleEvents.length ? (
+                  <div className='flex justify-end'>
+                    <CompactMorePill
+                      label={`Showing ${visibleEvents.length} of ${events.total} events`}
+                    />
+                  </div>
+                ) : null
+              }
             >
-              {events.items.length === 0 ? (
+              {visibleEvents.length === 0 ? (
                 <EmptySection message='No active events scheduled for today.' />
               ) : (
-                <div className='space-y-3'>
-                  {events.items.map((event) => (
+                <div className='space-y-2'>
+                  {visibleEvents.map((event) => (
                     <div
                       key={event.id}
-                      className='rounded-xl border border-white/10 bg-black/20 p-4'
+                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
                     >
                       <div className='flex items-start justify-between gap-3'>
-                        <div>
-                          <div className='font-medium text-zinc-50'>{event.title}</div>
+                        <div className='min-w-0'>
+                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                            {event.title}
+                          </div>
                           <div className='mt-1 text-sm text-zinc-300'>
                             {event.clientName ?? event.companyName ?? 'General event'}
                           </div>
@@ -192,60 +343,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                         </Badge>
                       </div>
                       <div className='mt-3 flex flex-wrap gap-2 text-xs text-zinc-400'>
-                        {event.screenName && (
-                          <Badge variant='outline' className='border-white/10 bg-white/5'>
-                            {event.screenName}
-                          </Badge>
-                        )}
-                        {event.endAt && (
-                          <Badge variant='outline' className='border-white/10 bg-white/5'>
-                            Ends {formatTime(event.endAt)}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </SectionCard>
-
-            <SectionCard
-              title='Meetings'
-              description='Today’s active meeting schedule.'
-              icon={Icons.clock}
-              count={meetings.total}
-            >
-              {meetings.items.length === 0 ? (
-                <EmptySection message='No active meetings scheduled for today.' />
-              ) : (
-                <div className='space-y-3'>
-                  {meetings.items.map((meeting) => (
-                    <div
-                      key={meeting.id}
-                      className='rounded-xl border border-white/10 bg-black/20 p-4'
-                    >
-                      <div className='flex items-start justify-between gap-3'>
-                        <div>
-                          <div className='font-medium text-zinc-50'>{meeting.title}</div>
-                          <div className='mt-1 text-sm text-zinc-300'>
-                            {meeting.organizer ?? 'No organizer listed'}
-                          </div>
-                        </div>
-                        <Badge className='border-white/10 bg-white/5 text-zinc-100'>
-                          {formatTime(meeting.startAt)}
-                        </Badge>
-                      </div>
-                      <div className='mt-3 flex flex-wrap gap-2 text-xs text-zinc-400'>
-                        {meeting.location && (
-                          <Badge variant='outline' className='border-white/10 bg-white/5'>
-                            {meeting.location}
-                          </Badge>
-                        )}
-                        {meeting.endAt && (
-                          <Badge variant='outline' className='border-white/10 bg-white/5'>
-                            Ends {formatTime(meeting.endAt)}
-                          </Badge>
-                        )}
+                        {event.screenName && <RecordChip>{event.screenName}</RecordChip>}
+                        {event.endAt && <RecordChip>Ends {formatTime(event.endAt)}</RecordChip>}
                       </div>
                     </div>
                   ))}
@@ -255,22 +354,33 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
 
             <SectionCard
               title='Movie Schedule'
-              description='Today’s active movie showtimes.'
+              description="Today's showtimes"
               icon={Icons.video}
               count={movieSchedules.total}
+              footer={
+                movieSchedules.total > visibleMovies.length ? (
+                  <div className='flex justify-end'>
+                    <CompactMorePill
+                      label={`Showing ${visibleMovies.length} of ${movieSchedules.total} shows`}
+                    />
+                  </div>
+                ) : null
+              }
             >
-              {movieSchedules.items.length === 0 ? (
+              {visibleMovies.length === 0 ? (
                 <EmptySection message='No active movie shows scheduled for today.' />
               ) : (
-                <div className='space-y-3'>
-                  {movieSchedules.items.map((movie) => (
+                <div className='space-y-2'>
+                  {visibleMovies.map((movie) => (
                     <div
                       key={movie.id}
-                      className='rounded-xl border border-white/10 bg-black/20 p-4'
+                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
                     >
                       <div className='flex items-start justify-between gap-3'>
-                        <div>
-                          <div className='font-medium text-zinc-50'>{movie.movieName}</div>
+                        <div className='min-w-0'>
+                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                            {movie.movieName}
+                          </div>
                           <div className='mt-1 text-sm text-zinc-300'>{movie.screenName}</div>
                         </div>
                         <Badge className='border-white/10 bg-white/5 text-zinc-100'>
@@ -282,20 +392,69 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                 </div>
               )}
             </SectionCard>
+
+            <SectionCard
+              title='Meeting Schedule'
+              description="Today's meetings"
+              icon={Icons.clock}
+              count={meetings.total}
+              footer={
+                meetings.total > visibleMeetings.length ? (
+                  <div className='flex justify-end'>
+                    <CompactMorePill
+                      label={`Showing ${visibleMeetings.length} of ${meetings.total} meetings`}
+                    />
+                  </div>
+                ) : null
+              }
+            >
+              {visibleMeetings.length === 0 ? (
+                <EmptySection message='No active meetings scheduled for today.' />
+              ) : (
+                <div className='space-y-2'>
+                  {visibleMeetings.map((meeting) => (
+                    <div
+                      key={meeting.id}
+                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
+                    >
+                      <div className='flex items-start justify-between gap-3'>
+                        <div className='min-w-0'>
+                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                            {meeting.title}
+                          </div>
+                          <div className='mt-1 text-sm text-zinc-300'>
+                            {meeting.organizer ?? 'No organizer listed'}
+                          </div>
+                        </div>
+                        <Badge className='border-white/10 bg-white/5 text-zinc-100'>
+                          {formatTime(meeting.startAt)}
+                        </Badge>
+                      </div>
+                      <div className='mt-3 flex flex-wrap gap-2 text-xs text-zinc-400'>
+                        {meeting.location && <RecordChip>{meeting.location}</RecordChip>}
+                        {meeting.endAt && <RecordChip>Ends {formatTime(meeting.endAt)}</RecordChip>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </SectionCard>
           </div>
 
-          <div className='space-y-4'>
+          <div className='grid min-h-0 gap-4 xl:grid-rows-[minmax(0,0.72fr)_minmax(0,1.02fr)_minmax(0,1.1fr)_minmax(0,1fr)]'>
             <SectionCard
               title='Weather'
-              description='Current weather configuration in use.'
+              description='Live configuration'
               icon={Icons.sun}
               count={weatherSetting ? 1 : 0}
             >
               {weatherSetting ? (
-                <div className='space-y-3 rounded-xl border border-white/10 bg-black/20 p-4'>
+                <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-4'>
                   <div className='flex items-center justify-between gap-3'>
                     <div>
-                      <div className='font-medium text-zinc-50'>{weatherSetting.city}</div>
+                      <div className='text-lg font-medium text-zinc-50 xl:text-[20px]'>
+                        {weatherSetting.city}
+                      </div>
                       <div className='mt-1 text-sm text-zinc-300'>
                         Provider: {weatherSetting.provider}
                       </div>
@@ -311,16 +470,16 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             </SectionCard>
 
             <SectionCard
-              title='Attendance'
-              description='Today’s staff and manager attendance summary.'
+              title='Attendance Summary'
+              description="Today's status"
               icon={Icons.teams}
-              count={attendanceSummary.staffMarked + attendanceSummary.managerMarked}
+              count={totalAttendance}
             >
-              <div className='space-y-4'>
-                <div className='rounded-xl border border-white/10 bg-black/20 p-4'>
+              <div className='grid gap-3'>
+                <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3'>
                   <div className='flex items-center justify-between gap-3'>
                     <div>
-                      <div className='font-medium text-zinc-50'>Staff</div>
+                      <div className='text-[15px] font-medium text-zinc-50'>Staff</div>
                       <div className='mt-1 text-sm text-zinc-300'>
                         {attendanceSummary.staffMarked} / {attendanceSummary.staffExpected} marked
                       </div>
@@ -331,17 +490,17 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   </div>
                   <div className='mt-3 flex flex-wrap gap-2'>
                     {(['PRESENT', 'ABSENT', 'LEAVE', 'LATE'] as const).map((status) => (
-                      <Badge key={status} variant='outline' className='border-white/10 bg-white/5'>
+                      <RecordChip key={status}>
                         {status}: {attendanceSummary.staffCounts[status]}
-                      </Badge>
+                      </RecordChip>
                     ))}
                   </div>
                 </div>
 
-                <div className='rounded-xl border border-white/10 bg-black/20 p-4'>
+                <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3'>
                   <div className='flex items-center justify-between gap-3'>
                     <div>
-                      <div className='font-medium text-zinc-50'>Managers</div>
+                      <div className='text-[15px] font-medium text-zinc-50'>Managers</div>
                       <div className='mt-1 text-sm text-zinc-300'>
                         {attendanceSummary.managerMarked} / {attendanceSummary.managerExpected}{' '}
                         marked
@@ -353,9 +512,9 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   </div>
                   <div className='mt-3 flex flex-wrap gap-2'>
                     {(['PRESENT', 'ABSENT', 'LEAVE', 'LATE'] as const).map((status) => (
-                      <Badge key={status} variant='outline' className='border-white/10 bg-white/5'>
+                      <RecordChip key={status}>
                         {status}: {attendanceSummary.managerCounts[status]}
-                      </Badge>
+                      </RecordChip>
                     ))}
                   </div>
                 </div>
@@ -364,30 +523,41 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
 
             <SectionCard
               title='Advertisements'
-              description='Active advertisements ready for the screen.'
+              description='Ready for the screen'
               icon={Icons.media}
               count={advertisements.total}
+              footer={
+                advertisements.total > visibleAds.length ? (
+                  <div className='flex justify-end'>
+                    <CompactMorePill
+                      label={`Showing ${visibleAds.length} of ${advertisements.total} ads`}
+                    />
+                  </div>
+                ) : null
+              }
             >
-              {advertisements.items.length === 0 ? (
+              {visibleAds.length === 0 ? (
                 <EmptySection message='No active advertisements are currently available.' />
               ) : (
-                <div className='space-y-3'>
-                  {advertisements.items.map((ad) => (
-                    <div key={ad.id} className='rounded-xl border border-white/10 bg-black/20 p-4'>
+                <div className='space-y-2'>
+                  {visibleAds.map((ad) => (
+                    <div
+                      key={ad.id}
+                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
+                    >
                       <div className='flex items-start justify-between gap-3'>
                         <div className='min-w-0'>
-                          <div className='truncate font-medium text-zinc-50'>{ad.title}</div>
-                          <div className='mt-1 text-sm text-zinc-300'>
-                            {ad.mediaType} {ad.duration ? `• ${formatDuration(ad.duration)}` : ''}
+                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                            {ad.title}
+                          </div>
+                          <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
+                            <RecordChip>{ad.mediaType}</RecordChip>
+                            <RecordChip>{formatDuration(ad.duration)}</RecordChip>
+                            <RecordChip>Order {ad.sortOrder}</RecordChip>
                           </div>
                         </div>
-                        <Badge
-                          variant='outline'
-                          className='border-white/10 bg-white/5 text-zinc-100'
-                        >
-                          Order {ad.sortOrder}
-                        </Badge>
                       </div>
+                      <div className='mt-2 truncate text-xs text-zinc-400'>{ad.mediaUrl}</div>
                     </div>
                   ))}
                 </div>
@@ -396,33 +566,43 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
 
             <SectionCard
               title='Sales Targets'
-              description='Active item sales targets.'
+              description='Active targets'
               icon={Icons.adjustments}
               count={salesTargets.total}
+              footer={
+                salesTargets.total > visibleTargets.length ? (
+                  <div className='flex justify-end'>
+                    <CompactMorePill
+                      label={`Showing ${visibleTargets.length} of ${salesTargets.total} targets`}
+                    />
+                  </div>
+                ) : null
+              }
             >
-              {salesTargets.items.length === 0 ? (
+              {visibleTargets.length === 0 ? (
                 <EmptySection message='No active sales targets are currently available.' />
               ) : (
-                <div className='space-y-3'>
-                  {salesTargets.items.map((target) => (
+                <div className='space-y-2'>
+                  {visibleTargets.map((target) => (
                     <div
                       key={target.id}
-                      className='rounded-xl border border-white/10 bg-black/20 p-4'
+                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
                     >
-                      <div className='font-medium text-zinc-50'>{target.itemName}</div>
-                      <div className='mt-2 grid grid-cols-3 gap-2 text-xs text-zinc-300'>
-                        <div className='rounded-lg border border-white/10 bg-white/5 p-2'>
-                          <div className='text-zinc-400'>Daily</div>
-                          <div className='text-zinc-50'>{formatTarget(target.dailyTarget)}</div>
+                      <div className='flex items-start justify-between gap-3'>
+                        <div className='min-w-0'>
+                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                            {target.itemName}
+                          </div>
+                          <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
+                            {target.itemCode && <RecordChip>{target.itemCode}</RecordChip>}
+                            <RecordChip>{target.status}</RecordChip>
+                          </div>
                         </div>
-                        <div className='rounded-lg border border-white/10 bg-white/5 p-2'>
-                          <div className='text-zinc-400'>Weekly</div>
-                          <div className='text-zinc-50'>{formatTarget(target.weeklyTarget)}</div>
-                        </div>
-                        <div className='rounded-lg border border-white/10 bg-white/5 p-2'>
-                          <div className='text-zinc-400'>Monthly</div>
-                          <div className='text-zinc-50'>{formatTarget(target.monthlyTarget)}</div>
-                        </div>
+                      </div>
+                      <div className='mt-3 grid grid-cols-3 gap-2 text-xs text-zinc-300'>
+                        <StatBlock label='Daily' value={formatTarget(target.dailyTarget)} />
+                        <StatBlock label='Weekly' value={formatTarget(target.weeklyTarget)} />
+                        <StatBlock label='Monthly' value={formatTarget(target.monthlyTarget)} />
                       </div>
                     </div>
                   ))}

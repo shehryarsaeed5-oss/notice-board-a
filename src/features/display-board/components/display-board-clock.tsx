@@ -18,5 +18,5 @@ export function DisplayBoardClock({ initialIso }: DisplayBoardClockProps) {
     return () => window.clearInterval(handle);
   }, []);
 
-  return <span>{format(now, 'EEEE, MMM d, yyyy • h:mm:ss a')}</span>;
+  return <span>{format(now, 'h:mm:ss a')}</span>;
 }
