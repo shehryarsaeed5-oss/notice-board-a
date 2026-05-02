@@ -1,15 +1,11 @@
 import type { Metadata } from 'next';
-import ModulePlaceholderPage from '@/components/layout/module-placeholder-page';
+
+import { WeatherSettingsPage } from '@/features/weather-settings/components/weather-settings-page';
 
 export const metadata: Metadata = {
-  title: 'Weather'
+  title: 'Weather Settings'
 };
 
-export default function Page() {
-  return (
-    <ModulePlaceholderPage
-      title='Weather'
-      description='Weather settings and location-based display logic will be added later.'
-    />
-  );
+export default async function Page() {
+  return <WeatherSettingsPage />;
 }
