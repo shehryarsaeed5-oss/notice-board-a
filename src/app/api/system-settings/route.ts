@@ -1,16 +1,27 @@
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { requireApiAccess } from '@/lib/access';
 import { getSystemSettings, saveSystemSettings } from '@/features/system-settings/api/service';
 import { systemSettingsSchema } from '@/features/system-settings/schemas/system-settings';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const forbidden = await requireApiAccess('/api/system-settings', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const systemSettings = await getSystemSettings();
 
   return NextResponse.json({ systemSettings });
 }
 
 export async function PUT(request: NextRequest) {
+  const forbidden = await requireApiAccess('/api/system-settings', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const body = await request.json();
   const parsed = systemSettingsSchema.safeParse(body);
 

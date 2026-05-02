@@ -41,6 +41,9 @@ export const navGroups: NavGroup[] = [
         title: 'Dashboard',
         url: '/dashboard/overview',
         icon: 'dashboard',
+        access: {
+          permission: 'dashboard'
+        },
         isActive: false,
         shortcut: ['d', 'd'],
         items: []
@@ -49,6 +52,9 @@ export const navGroups: NavGroup[] = [
         title: 'Boards / Displays',
         url: '/dashboard/boards-displays',
         icon: 'panelLeft',
+        access: {
+          permission: 'boardsDisplays'
+        },
         isActive: false,
         items: []
       },
@@ -56,6 +62,9 @@ export const navGroups: NavGroup[] = [
         title: 'Staff Records',
         url: '/dashboard/staff-records',
         icon: 'teams',
+        access: {
+          permission: 'staffRecords'
+        },
         isActive: false,
         items: []
       },
@@ -63,6 +72,9 @@ export const navGroups: NavGroup[] = [
         title: 'Manager Records',
         url: '/dashboard/manager-records',
         icon: 'account',
+        access: {
+          permission: 'managerRecords'
+        },
         isActive: false,
         items: []
       },
@@ -70,6 +82,9 @@ export const navGroups: NavGroup[] = [
         title: 'Attendance',
         url: '/dashboard/attendance',
         icon: 'clock',
+        access: {
+          permission: 'attendance'
+        },
         isActive: false,
         items: []
       }
@@ -82,6 +97,9 @@ export const navGroups: NavGroup[] = [
         title: 'Events',
         url: '/dashboard/events',
         icon: 'calendar',
+        access: {
+          permission: 'events'
+        },
         isActive: false,
         items: []
       },
@@ -89,6 +107,9 @@ export const navGroups: NavGroup[] = [
         title: 'Meeting Schedule',
         url: '/dashboard/meeting-schedule',
         icon: 'calendar',
+        access: {
+          permission: 'meetingSchedule'
+        },
         isActive: false,
         items: []
       },
@@ -96,6 +117,9 @@ export const navGroups: NavGroup[] = [
         title: 'Advertisements',
         url: '/dashboard/advertisements',
         icon: 'media',
+        access: {
+          permission: 'advertisements'
+        },
         isActive: false,
         items: []
       },
@@ -103,6 +127,9 @@ export const navGroups: NavGroup[] = [
         title: 'Weather',
         url: '/dashboard/weather',
         icon: 'sun',
+        access: {
+          permission: 'weather'
+        },
         isActive: false,
         items: []
       },
@@ -110,6 +137,9 @@ export const navGroups: NavGroup[] = [
         title: 'Movie Schedule',
         url: '/dashboard/movie-schedule',
         icon: 'video',
+        access: {
+          permission: 'movieSchedule'
+        },
         isActive: false,
         items: []
       },
@@ -117,6 +147,9 @@ export const navGroups: NavGroup[] = [
         title: 'Item Sales Target',
         url: '/dashboard/item-sales-target',
         icon: 'adjustments',
+        access: {
+          permission: 'itemSalesTarget'
+        },
         isActive: false,
         items: []
       }
@@ -129,6 +162,9 @@ export const navGroups: NavGroup[] = [
         title: 'Display Pages',
         url: '/dashboard/display-pages',
         icon: 'page',
+        access: {
+          permission: 'displayPages'
+        },
         isActive: false,
         items: []
       },
@@ -136,6 +172,19 @@ export const navGroups: NavGroup[] = [
         title: 'System Settings',
         url: '/dashboard/system-settings',
         icon: 'settings',
+        access: {
+          permission: 'systemSettings'
+        },
+        isActive: false,
+        items: []
+      },
+      {
+        title: 'Users',
+        url: '/dashboard/users',
+        icon: 'userPen',
+        access: {
+          permission: 'users'
+        },
         isActive: false,
         items: []
       }

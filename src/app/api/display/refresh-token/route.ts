@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { requireApiAccess } from '@/lib/access';
 import {
   bumpDisplayBoardRefreshToken,
   getDisplayBoardRefreshToken
@@ -17,6 +18,11 @@ export async function GET() {
 }
 
 export async function POST() {
+  const forbidden = await requireApiAccess('/api/display/refresh-token', 'POST');
+  if (forbidden) {
+    return forbidden;
+  }
+
   await bumpDisplayBoardRefreshToken();
   const token = await getDisplayBoardRefreshToken();
 

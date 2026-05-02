@@ -2154,6 +2154,7 @@ export namespace Prisma {
     email: number;
     password: number;
     role: number;
+    permissions: number;
     status: number;
     createdAt: number;
     updatedAt: number;
@@ -2188,6 +2189,7 @@ export namespace Prisma {
     email?: true;
     password?: true;
     role?: true;
+    permissions?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -2272,6 +2274,7 @@ export namespace Prisma {
     email: string;
     password: string;
     role: string;
+    permissions: string[];
     status: $Enums.RecordStatus;
     createdAt: Date;
     updatedAt: Date;
@@ -2300,6 +2303,7 @@ export namespace Prisma {
         email?: boolean;
         password?: boolean;
         role?: boolean;
+        permissions?: boolean;
         status?: boolean;
         createdAt?: boolean;
         updatedAt?: boolean;
@@ -2316,6 +2320,7 @@ export namespace Prisma {
       email?: boolean;
       password?: boolean;
       role?: boolean;
+      permissions?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -2332,6 +2337,7 @@ export namespace Prisma {
       email?: boolean;
       password?: boolean;
       role?: boolean;
+      permissions?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -2345,6 +2351,7 @@ export namespace Prisma {
     email?: boolean;
     password?: boolean;
     role?: boolean;
+    permissions?: boolean;
     status?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -2352,7 +2359,15 @@ export namespace Prisma {
 
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     $Extensions.GetOmit<
-      'id' | 'name' | 'email' | 'password' | 'role' | 'status' | 'createdAt' | 'updatedAt',
+      | 'id'
+      | 'name'
+      | 'email'
+      | 'password'
+      | 'role'
+      | 'permissions'
+      | 'status'
+      | 'createdAt'
+      | 'updatedAt',
       ExtArgs['result']['user']
     >;
 
@@ -2366,6 +2381,7 @@ export namespace Prisma {
         email: string;
         password: string;
         role: string;
+        permissions: string[];
         status: $Enums.RecordStatus;
         createdAt: Date;
         updatedAt: Date;
@@ -2883,6 +2899,7 @@ export namespace Prisma {
     readonly email: FieldRef<'User', 'String'>;
     readonly password: FieldRef<'User', 'String'>;
     readonly role: FieldRef<'User', 'String'>;
+    readonly permissions: FieldRef<'User', 'String[]'>;
     readonly status: FieldRef<'User', 'RecordStatus'>;
     readonly createdAt: FieldRef<'User', 'DateTime'>;
     readonly updatedAt: FieldRef<'User', 'DateTime'>;
@@ -18248,6 +18265,7 @@ export namespace Prisma {
     email: 'email';
     password: 'password';
     role: 'role';
+    permissions: 'permissions';
     status: 'status';
     createdAt: 'createdAt';
     updatedAt: 'updatedAt';
@@ -18557,6 +18575,7 @@ export namespace Prisma {
     email?: StringFilter<'User'> | string;
     password?: StringFilter<'User'> | string;
     role?: StringFilter<'User'> | string;
+    permissions?: StringNullableListFilter<'User'>;
     status?: EnumRecordStatusFilter<'User'> | $Enums.RecordStatus;
     createdAt?: DateTimeFilter<'User'> | Date | string;
     updatedAt?: DateTimeFilter<'User'> | Date | string;
@@ -18568,6 +18587,7 @@ export namespace Prisma {
     email?: SortOrder;
     password?: SortOrder;
     role?: SortOrder;
+    permissions?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -18583,6 +18603,7 @@ export namespace Prisma {
       name?: StringFilter<'User'> | string;
       password?: StringFilter<'User'> | string;
       role?: StringFilter<'User'> | string;
+      permissions?: StringNullableListFilter<'User'>;
       status?: EnumRecordStatusFilter<'User'> | $Enums.RecordStatus;
       createdAt?: DateTimeFilter<'User'> | Date | string;
       updatedAt?: DateTimeFilter<'User'> | Date | string;
@@ -18596,6 +18617,7 @@ export namespace Prisma {
     email?: SortOrder;
     password?: SortOrder;
     role?: SortOrder;
+    permissions?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -18613,6 +18635,7 @@ export namespace Prisma {
     email?: StringWithAggregatesFilter<'User'> | string;
     password?: StringWithAggregatesFilter<'User'> | string;
     role?: StringWithAggregatesFilter<'User'> | string;
+    permissions?: StringNullableListFilter<'User'>;
     status?: EnumRecordStatusWithAggregatesFilter<'User'> | $Enums.RecordStatus;
     createdAt?: DateTimeWithAggregatesFilter<'User'> | Date | string;
     updatedAt?: DateTimeWithAggregatesFilter<'User'> | Date | string;
@@ -19514,6 +19537,7 @@ export namespace Prisma {
     email: string;
     password: string;
     role?: string;
+    permissions?: UserCreatepermissionsInput | string[];
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -19525,6 +19549,7 @@ export namespace Prisma {
     email: string;
     password: string;
     role?: string;
+    permissions?: UserCreatepermissionsInput | string[];
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -19536,6 +19561,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string;
     password?: StringFieldUpdateOperationsInput | string;
     role?: StringFieldUpdateOperationsInput | string;
+    permissions?: UserUpdatepermissionsInput | string[];
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -19547,6 +19573,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string;
     password?: StringFieldUpdateOperationsInput | string;
     role?: StringFieldUpdateOperationsInput | string;
+    permissions?: UserUpdatepermissionsInput | string[];
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -19558,6 +19585,7 @@ export namespace Prisma {
     email: string;
     password: string;
     role?: string;
+    permissions?: UserCreatepermissionsInput | string[];
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -19569,6 +19597,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string;
     password?: StringFieldUpdateOperationsInput | string;
     role?: StringFieldUpdateOperationsInput | string;
+    permissions?: UserUpdatepermissionsInput | string[];
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -19580,6 +19609,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string;
     password?: StringFieldUpdateOperationsInput | string;
     role?: StringFieldUpdateOperationsInput | string;
+    permissions?: UserUpdatepermissionsInput | string[];
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -20530,6 +20560,14 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string;
   };
 
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null;
+    has?: string | StringFieldRefInput<$PrismaModel> | null;
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>;
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>;
+    isEmpty?: boolean;
+  };
+
   export type EnumRecordStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.RecordStatus | EnumRecordStatusFieldRefInput<$PrismaModel>;
     in?: $Enums.RecordStatus[] | ListEnumRecordStatusFieldRefInput<$PrismaModel>;
@@ -20554,6 +20592,7 @@ export namespace Prisma {
     email?: SortOrder;
     password?: SortOrder;
     role?: SortOrder;
+    permissions?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -21235,8 +21274,17 @@ export namespace Prisma {
     updatedAt?: SortOrder;
   };
 
+  export type UserCreatepermissionsInput = {
+    set: string[];
+  };
+
   export type StringFieldUpdateOperationsInput = {
     set?: string;
+  };
+
+  export type UserUpdatepermissionsInput = {
+    set?: string[];
+    push?: string | string[];
   };
 
   export type EnumRecordStatusFieldUpdateOperationsInput = {

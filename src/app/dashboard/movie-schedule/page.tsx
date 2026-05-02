@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { requireRouteAccess } from '@/lib/access';
 import type { MovieScheduleStatus } from '@/features/movie-schedule/api/types';
 import { MovieSchedulePage } from '@/features/movie-schedule/components/movie-schedule-page';
 
@@ -20,6 +21,7 @@ function readQueryValue(value: string | string[] | undefined): string | undefine
 }
 
 export default async function Page({ searchParams }: PageProps) {
+  await requireRouteAccess('/dashboard/movie-schedule');
   const params = await searchParams;
   const search = readQueryValue(params.search);
   const status = readQueryValue(params.status);

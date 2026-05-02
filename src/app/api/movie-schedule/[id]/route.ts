@@ -1,12 +1,18 @@
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { requireApiAccess } from '@/lib/access';
 import { archiveMovieSchedule, updateMovieSchedule } from '@/features/movie-schedule/api/service';
 import { movieScheduleSchema } from '@/features/movie-schedule/schemas/movie-schedule';
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function PUT(request: NextRequest, { params }: Params) {
+  const forbidden = await requireApiAccess('/api/movie-schedule', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const { id } = await params;
   const body = await request.json();
   const parsed = movieScheduleSchema.safeParse(body);
@@ -29,6 +35,11 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(request: NextRequest, { params }: Params) {
+  const forbidden = await requireApiAccess('/api/movie-schedule', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const { id } = await params;
   await request.json().catch(() => null);
   const movieSchedule = await archiveMovieSchedule(id);

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { requireRouteAccess } from '@/lib/access';
 import type {
   AdvertisementMediaType,
   AdvertisementStatus
@@ -31,6 +32,7 @@ function isAdvertisementMediaType(value?: string): value is AdvertisementMediaTy
 }
 
 export default async function Page({ searchParams }: PageProps) {
+  await requireRouteAccess('/dashboard/advertisements');
   const params = await searchParams;
   const search = readQueryValue(params.search);
   const status = readQueryValue(params.status);

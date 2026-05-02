@@ -1,12 +1,18 @@
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { requireApiAccess } from '@/lib/access';
 import { archiveManager, updateManager } from '@/features/manager-records/api/service';
 import { managerSchema } from '@/features/manager-records/schemas/manager';
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function PUT(request: NextRequest, { params }: Params) {
+  const forbidden = await requireApiAccess('/api/manager-records', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const { id } = await params;
   const body = await request.json();
   const parsed = managerSchema.safeParse(body);
@@ -30,6 +36,11 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(request: NextRequest, { params }: Params) {
+  const forbidden = await requireApiAccess('/api/manager-records', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const { id } = await params;
   await request.json().catch(() => null);
   const manager = await archiveManager(id);

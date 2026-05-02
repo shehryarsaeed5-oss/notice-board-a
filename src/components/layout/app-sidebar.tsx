@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/sidebar';
 import { navGroups } from '@/config/nav-config';
 import { useFilteredNavGroups } from '@/hooks/use-nav';
+import { hasPermission } from '@/lib/permissions';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import * as React from 'react';
@@ -38,6 +39,7 @@ interface AppSidebarProps {
     name: string;
     email: string;
     role: string;
+    permissions: string[];
   };
 }
 
@@ -58,7 +60,7 @@ function getInitials(name: string) {
 export default function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const filteredGroups = useFilteredNavGroups(navGroups);
+  const filteredGroups = useFilteredNavGroups(navGroups, user);
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
   const handleLogout = async () => {
@@ -199,13 +201,17 @@ export default function AppSidebar({ user }: AppSidebarProps) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
 
-                <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => router.push('/dashboard/system-settings')}>
-                    <Icons.settings className='mr-2 h-4 w-4' />
-                    System Settings
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                {hasPermission(user, 'systemSettings') && (
+                  <>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem onClick={() => router.push('/dashboard/system-settings')}>
+                        <Icons.settings className='mr-2 h-4 w-4' />
+                        System Settings
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
                   <Icons.logout className='mr-2 h-4 w-4' />
                   {isLoggingOut ? 'Signing out...' : 'Log out'}

@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { requireApiAccess } from '@/lib/access';
 import { createStaffMember, getStaffMembers } from '@/features/staff-records/api/service';
 import { staffMemberSchema } from '@/features/staff-records/schemas/staff-member';
 
 export async function GET(request: NextRequest) {
+  const forbidden = await requireApiAccess('/api/staff-records', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const searchParams = request.nextUrl.searchParams;
   const search = searchParams.get('search') ?? undefined;
   const status = searchParams.get('status') ?? undefined;
@@ -18,6 +24,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const forbidden = await requireApiAccess('/api/staff-records', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const body = await request.json();
   const parsed = staffMemberSchema.safeParse(body);
 

@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { requireApiAccess } from '@/lib/access';
 import {
   archiveDisplayPage,
   DisplayPageSlugConflictError,
@@ -11,6 +12,11 @@ import { displayPageSchema } from '@/features/display-pages/schemas/display-page
 type Params = { params: Promise<{ id: string }> };
 
 export async function PUT(request: NextRequest, { params }: Params) {
+  const forbidden = await requireApiAccess('/api/display-pages', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const { id } = await params;
   const body = await request.json();
   const parsed = displayPageSchema.safeParse(body);
@@ -47,6 +53,11 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(request: NextRequest, { params }: Params) {
+  const forbidden = await requireApiAccess('/api/display-pages', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const { id } = await params;
   await request.json().catch(() => null);
   const displayPage = await archiveDisplayPage(id);

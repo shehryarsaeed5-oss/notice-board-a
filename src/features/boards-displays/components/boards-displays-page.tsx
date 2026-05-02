@@ -15,6 +15,8 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { getCurrentAdminSession } from '@/lib/auth';
+import { hasPermission } from '@/lib/permissions';
 
 import { getDisplayPages } from '@/features/display-pages/api/service';
 import type { DisplayPageRecord } from '@/features/display-pages/api/types';
@@ -108,6 +110,8 @@ function EmptyDisplaysState() {
 }
 
 export async function BoardsDisplaysPage() {
+  const session = await getCurrentAdminSession();
+  const canManageDisplayPages = session ? hasPermission(session.user, 'displayPages') : false;
   const { displayPages } = await getDisplayPages();
 
   const activeDisplays = countStatus(displayPages, 'ACTIVE');
@@ -206,12 +210,16 @@ export async function BoardsDisplaysPage() {
                             {formatDate(displayPage.createdAt)}
                           </TableCell>
                           <TableCell className='text-right'>
-                            <Button asChild variant='outline' size='sm'>
-                              <Link href={manageHref}>
-                                <Icons.settings className='mr-2 h-4 w-4' />
-                                Manage
-                              </Link>
-                            </Button>
+                            {canManageDisplayPages ? (
+                              <Button asChild variant='outline' size='sm'>
+                                <Link href={manageHref}>
+                                  <Icons.settings className='mr-2 h-4 w-4' />
+                                  Manage
+                                </Link>
+                              </Button>
+                            ) : (
+                              <span className='text-muted-foreground text-xs'>No access</span>
+                            )}
                           </TableCell>
                         </TableRow>
                       );

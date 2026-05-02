@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { requireApiAccess } from '@/lib/access';
 import {
   archiveStaffMember,
   deleteStaffMember,
@@ -10,6 +11,11 @@ import { staffMemberSchema } from '@/features/staff-records/schemas/staff-member
 type Params = { params: Promise<{ id: string }> };
 
 export async function PUT(request: NextRequest, { params }: Params) {
+  const forbidden = await requireApiAccess('/api/staff-records', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const { id } = await params;
   const body = await request.json();
   const parsed = staffMemberSchema.safeParse(body);
@@ -33,6 +39,11 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(request: NextRequest, { params }: Params) {
+  const forbidden = await requireApiAccess('/api/staff-records', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const { id } = await params;
   await request.json().catch(() => null);
   const staffMember = await archiveStaffMember(id);
@@ -44,6 +55,11 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
+  const forbidden = await requireApiAccess('/api/staff-records', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const { id } = await params;
   await request.json().catch(() => null);
   const staffMember = await deleteStaffMember(id);

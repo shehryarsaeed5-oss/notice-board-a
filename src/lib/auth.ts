@@ -8,12 +8,14 @@ import {
   createSessionToken,
   verifySessionToken
 } from '@/lib/auth-session';
+import { normalizeUserRole } from '@/lib/permissions';
 
 export interface AdminSessionUser {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role: ReturnType<typeof normalizeUserRole>;
+  permissions: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -45,6 +47,7 @@ export async function getCurrentAdminSession(): Promise<AdminSession | null> {
       name: true,
       email: true,
       role: true,
+      permissions: true,
       createdAt: true,
       updatedAt: true,
       status: true
@@ -61,7 +64,8 @@ export async function getCurrentAdminSession(): Promise<AdminSession | null> {
       id: user.id,
       name: user.name,
       email: user.email,
-      role: user.role,
+      role: normalizeUserRole(user.role),
+      permissions: user.permissions,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt
     }

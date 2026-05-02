@@ -1,10 +1,16 @@
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { requireApiAccess } from '@/lib/access';
 import { createMovieSchedule, getMovieSchedules } from '@/features/movie-schedule/api/service';
 import { movieScheduleSchema } from '@/features/movie-schedule/schemas/movie-schedule';
 
 export async function GET(request: NextRequest) {
+  const forbidden = await requireApiAccess('/api/movie-schedule', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const searchParams = request.nextUrl.searchParams;
   const search = searchParams.get('search') ?? undefined;
   const status = searchParams.get('status') ?? undefined;
@@ -21,6 +27,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const forbidden = await requireApiAccess('/api/movie-schedule', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const body = await request.json();
   const parsed = movieScheduleSchema.safeParse(body);
 

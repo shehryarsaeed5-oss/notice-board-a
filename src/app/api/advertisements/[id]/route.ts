@@ -1,12 +1,18 @@
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { requireApiAccess } from '@/lib/access';
 import { archiveAdvertisement, updateAdvertisement } from '@/features/advertisements/api/service';
 import { advertisementSchema } from '@/features/advertisements/schemas/advertisement';
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function PUT(request: NextRequest, { params }: Params) {
+  const forbidden = await requireApiAccess('/api/advertisements', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const { id } = await params;
   const body = await request.json();
   const parsed = advertisementSchema.safeParse(body);
@@ -30,6 +36,11 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(request: NextRequest, { params }: Params) {
+  const forbidden = await requireApiAccess('/api/advertisements', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const { id } = await params;
   await request.json().catch(() => null);
   const advertisement = await archiveAdvertisement(id);

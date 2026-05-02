@@ -1,36 +1,12 @@
 'use client';
 
 import type { NavGroup, NavItem } from '@/types';
+import { filterNavGroupsByUser, type PermissionUser } from '@/lib/permissions';
 
-function isLocalAuthRestricted(item: NavItem) {
-  return Boolean(item.access?.requireOrg || item.access?.plan || item.access?.feature);
+export function useFilteredNavItems(items: NavItem[], user?: PermissionUser) {
+  return filterNavGroupsByUser([{ label: '', items }], user)[0]?.items ?? [];
 }
 
-function filterNavItems(items: NavItem[]): NavItem[] {
-  return items
-    .filter((item) => !isLocalAuthRestricted(item))
-    .map((item) => {
-      if (!item.items || item.items.length === 0) {
-        return item;
-      }
-
-      return {
-        ...item,
-        items: filterNavItems(item.items)
-      };
-    })
-    .filter((item) => !item.items || item.items.length > 0 || item.url !== '#');
-}
-
-export function useFilteredNavItems(items: NavItem[]) {
-  return filterNavItems(items);
-}
-
-export function useFilteredNavGroups(groups: NavGroup[]) {
-  return groups
-    .map((group) => ({
-      ...group,
-      items: filterNavItems(group.items)
-    }))
-    .filter((group) => group.items.length > 0);
+export function useFilteredNavGroups(groups: NavGroup[], user?: PermissionUser) {
+  return filterNavGroupsByUser(groups, user);
 }

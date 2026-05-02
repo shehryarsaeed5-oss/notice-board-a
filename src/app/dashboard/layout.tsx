@@ -5,6 +5,7 @@ import { InfoSidebar } from '@/components/layout/info-sidebar';
 import { InfobarProvider } from '@/components/ui/infobar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { requireAdminSession } from '@/lib/auth';
+import { getUserPermissions } from '@/lib/permissions';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 
@@ -29,7 +30,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
           user={{
             name: session.user.name,
             email: session.user.email,
-            role: session.user.role
+            role: session.user.role,
+            permissions: getUserPermissions(session.user)
           }}
         />
         <SidebarInset>

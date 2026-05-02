@@ -18,6 +18,22 @@ const prisma = new PrismaClient({
 const PASSWORD_SCHEME = 'pbkdf2_sha256';
 const PASSWORD_ITERATIONS = 310000;
 const PASSWORD_KEY_LENGTH = 32;
+const ALL_PERMISSION_KEYS = [
+  'dashboard',
+  'boardsDisplays',
+  'displayPages',
+  'staffRecords',
+  'managerRecords',
+  'attendance',
+  'events',
+  'meetingSchedule',
+  'advertisements',
+  'weather',
+  'movieSchedule',
+  'itemSalesTarget',
+  'systemSettings',
+  'users'
+];
 
 function hashPassword(password) {
   const salt = randomBytes(16);
@@ -43,14 +59,16 @@ async function main() {
     update: {
       name: 'Admin User',
       password: passwordHash,
-      role: 'admin',
+      role: 'ADMIN',
+      permissions: ALL_PERMISSION_KEYS,
       status: 'ACTIVE'
     },
     create: {
       name: 'Admin User',
       email,
       password: passwordHash,
-      role: 'admin',
+      role: 'ADMIN',
+      permissions: ALL_PERMISSION_KEYS,
       status: 'ACTIVE'
     }
   });

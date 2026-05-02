@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
+import { requireApiAccess } from '@/lib/access';
 import { getAttendancePageData, saveAttendanceRows } from '@/features/attendance/api/service';
 import { ATTENDANCE_STATUSES } from '@/features/attendance/api/types';
 
@@ -21,6 +22,11 @@ const saveAttendanceSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
+  const forbidden = await requireApiAccess('/api/attendance', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const searchParams = request.nextUrl.searchParams;
   const date = searchParams.get('date') ?? undefined;
   const typeParam = searchParams.get('type');
@@ -36,6 +42,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const forbidden = await requireApiAccess('/api/attendance', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const body = await request.json();
   const parsed = saveAttendanceSchema.safeParse(body);
 

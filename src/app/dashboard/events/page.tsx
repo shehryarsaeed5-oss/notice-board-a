@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { requireRouteAccess } from '@/lib/access';
 import { EventsPage } from '@/features/events/components/events-page';
 import type { EventRecordStatus } from '@/features/events/api/types';
 
@@ -20,6 +21,7 @@ function readQueryValue(value: string | string[] | undefined): string | undefine
 }
 
 export default async function Page({ searchParams }: PageProps) {
+  await requireRouteAccess('/dashboard/events');
   const params = await searchParams;
   const search = readQueryValue(params.search);
   const status = readQueryValue(params.status);

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { requireRouteAccess } from '@/lib/access';
 import type { DisplayPageStatus } from '@/features/display-pages/api/types';
 import { DisplayPagesPage } from '@/features/display-pages/components/display-pages-page';
 
@@ -20,6 +21,7 @@ function readQueryValue(value: string | string[] | undefined): string | undefine
 }
 
 export default async function Page({ searchParams }: PageProps) {
+  await requireRouteAccess('/dashboard/display-pages');
   const params = await searchParams;
   const search = readQueryValue(params.search);
   const status = readQueryValue(params.status);

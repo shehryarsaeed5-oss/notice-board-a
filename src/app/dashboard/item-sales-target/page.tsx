@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { requireRouteAccess } from '@/lib/access';
 import type { ItemSalesTargetStatus } from '@/features/item-sales-target/api/types';
 import { ItemSalesTargetPage } from '@/features/item-sales-target/components/item-sales-target-page';
 
@@ -20,6 +21,7 @@ function readQueryValue(value: string | string[] | undefined): string | undefine
 }
 
 export default async function Page({ searchParams }: PageProps) {
+  await requireRouteAccess('/dashboard/item-sales-target');
   const params = await searchParams;
   const search = readQueryValue(params.search);
   const status = readQueryValue(params.status);

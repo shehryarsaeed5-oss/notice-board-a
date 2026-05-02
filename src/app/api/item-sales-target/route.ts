@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { requireApiAccess } from '@/lib/access';
 import {
   createItemSalesTarget,
   getItemSalesTargets
@@ -8,6 +9,11 @@ import {
 import { itemSalesTargetSchema } from '@/features/item-sales-target/schemas/item-sales-target';
 
 export async function GET(request: NextRequest) {
+  const forbidden = await requireApiAccess('/api/item-sales-target', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const searchParams = request.nextUrl.searchParams;
   const search = searchParams.get('search') ?? undefined;
   const status = searchParams.get('status') ?? undefined;
@@ -22,6 +28,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const forbidden = await requireApiAccess('/api/item-sales-target', request.method);
+  if (forbidden) {
+    return forbidden;
+  }
+
   const body = await request.json();
   const parsed = itemSalesTargetSchema.safeParse(body);
 
