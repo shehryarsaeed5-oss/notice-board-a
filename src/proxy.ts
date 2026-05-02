@@ -15,6 +15,10 @@ async function readSession(req: NextRequest) {
 export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const session = await readSession(req);
+  const isAuthApi = pathname.startsWith('/api/auth/');
+  const isPublicDisplayRefreshGet =
+    pathname === '/api/display/refresh-token' && req.method === 'GET';
+  const isProtectedApi = pathname.startsWith('/api') && !isAuthApi && !isPublicDisplayRefreshGet;
 
   if (pathname.startsWith('/dashboard')) {
     if (!session) {
@@ -22,6 +26,10 @@ export default async function proxy(req: NextRequest) {
       signInUrl.searchParams.set('redirectTo', pathname);
       return NextResponse.redirect(signInUrl);
     }
+  }
+
+  if (isProtectedApi && !session) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   if ((pathname === '/auth' || pathname.startsWith('/auth/sign-in')) && session) {
