@@ -2,6 +2,7 @@ import 'server-only';
 
 import { prisma } from '@/lib/prisma';
 import { parseDateTimeInputValue } from '@/lib/date-time';
+import { bumpDisplayBoardRefreshToken } from '@/features/display-board/api/cache';
 import type {
   MeetingScheduleFormValues,
   MeetingScheduleListFilters,
@@ -85,7 +86,7 @@ export async function getMeetingSchedules(
 }
 
 export async function createMeetingSchedule(values: MeetingScheduleFormValues) {
-  return prisma.meetingSchedule.create({
+  const meeting = await prisma.meetingSchedule.create({
     data: {
       title: values.title.trim(),
       location: normalizeOptionalText(values.location),
@@ -95,10 +96,14 @@ export async function createMeetingSchedule(values: MeetingScheduleFormValues) {
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return meeting;
 }
 
 export async function updateMeetingSchedule(id: string, values: MeetingScheduleFormValues) {
-  return prisma.meetingSchedule.update({
+  const meeting = await prisma.meetingSchedule.update({
     where: { id },
     data: {
       title: values.title.trim(),
@@ -109,13 +114,21 @@ export async function updateMeetingSchedule(id: string, values: MeetingScheduleF
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return meeting;
 }
 
 export async function archiveMeetingSchedule(id: string) {
-  return prisma.meetingSchedule.update({
+  const meeting = await prisma.meetingSchedule.update({
     where: { id },
     data: {
       status: 'ARCHIVED'
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return meeting;
 }

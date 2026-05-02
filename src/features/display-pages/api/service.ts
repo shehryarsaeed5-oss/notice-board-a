@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { prisma } from '@/lib/prisma';
+import { bumpDisplayBoardRefreshToken } from '@/features/display-board/api/cache';
 
 import { normalizeDisplayPageSlug } from '../lib/slug';
 import type { DisplayPageFormValues, DisplayPageListFilters, DisplayPageListResult } from './types';
@@ -103,7 +104,7 @@ export async function createDisplayPage(values: DisplayPageFormValues) {
 
   await assertSlugIsUnique(slug);
 
-  return prisma.displayPage.create({
+  const displayPage = await prisma.displayPage.create({
     data: {
       name: normalizeRequiredText(values.name),
       slug,
@@ -111,6 +112,10 @@ export async function createDisplayPage(values: DisplayPageFormValues) {
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return displayPage;
 }
 
 export async function updateDisplayPage(id: string, values: DisplayPageFormValues) {
@@ -118,7 +123,7 @@ export async function updateDisplayPage(id: string, values: DisplayPageFormValue
 
   await assertSlugIsUnique(slug, id);
 
-  return prisma.displayPage.update({
+  const displayPage = await prisma.displayPage.update({
     where: { id },
     data: {
       name: normalizeRequiredText(values.name),
@@ -127,13 +132,21 @@ export async function updateDisplayPage(id: string, values: DisplayPageFormValue
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return displayPage;
 }
 
 export async function archiveDisplayPage(id: string) {
-  return prisma.displayPage.update({
+  const displayPage = await prisma.displayPage.update({
     where: { id },
     data: {
       status: 'ARCHIVED'
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return displayPage;
 }

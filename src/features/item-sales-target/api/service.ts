@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { prisma } from '@/lib/prisma';
+import { bumpDisplayBoardRefreshToken } from '@/features/display-board/api/cache';
 import type {
   ItemSalesTargetFormValues,
   ItemSalesTargetListFilters,
@@ -83,7 +84,7 @@ export async function getItemSalesTargets(
 }
 
 export async function createItemSalesTarget(values: ItemSalesTargetFormValues) {
-  return prisma.itemSalesTarget.create({
+  const itemSalesTarget = await prisma.itemSalesTarget.create({
     data: {
       itemName: normalizeRequiredText(values.itemName),
       itemCode: normalizeOptionalText(values.itemCode),
@@ -93,10 +94,14 @@ export async function createItemSalesTarget(values: ItemSalesTargetFormValues) {
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return itemSalesTarget;
 }
 
 export async function updateItemSalesTarget(id: string, values: ItemSalesTargetFormValues) {
-  return prisma.itemSalesTarget.update({
+  const itemSalesTarget = await prisma.itemSalesTarget.update({
     where: { id },
     data: {
       itemName: normalizeRequiredText(values.itemName),
@@ -107,13 +112,21 @@ export async function updateItemSalesTarget(id: string, values: ItemSalesTargetF
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return itemSalesTarget;
 }
 
 export async function archiveItemSalesTarget(id: string) {
-  return prisma.itemSalesTarget.update({
+  const itemSalesTarget = await prisma.itemSalesTarget.update({
     where: { id },
     data: {
       status: 'ARCHIVED'
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return itemSalesTarget;
 }

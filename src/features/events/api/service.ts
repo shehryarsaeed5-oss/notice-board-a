@@ -2,6 +2,7 @@ import 'server-only';
 
 import { prisma } from '@/lib/prisma';
 import { parseDateTimeInputValue } from '@/lib/date-time';
+import { bumpDisplayBoardRefreshToken } from '@/features/display-board/api/cache';
 import type { EventRecordFormValues, EventRecordListFilters, EventRecordListResult } from './types';
 
 function normalizeSearchTerm(value?: string): string | undefined {
@@ -87,7 +88,7 @@ export async function getEventRecords(
 }
 
 export async function createEventRecord(values: EventRecordFormValues) {
-  return prisma.eventRecord.create({
+  const event = await prisma.eventRecord.create({
     data: {
       title: values.title.trim(),
       clientName: normalizeOptionalText(values.clientName),
@@ -98,10 +99,14 @@ export async function createEventRecord(values: EventRecordFormValues) {
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return event;
 }
 
 export async function updateEventRecord(id: string, values: EventRecordFormValues) {
-  return prisma.eventRecord.update({
+  const event = await prisma.eventRecord.update({
     where: { id },
     data: {
       title: values.title.trim(),
@@ -113,13 +118,21 @@ export async function updateEventRecord(id: string, values: EventRecordFormValue
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return event;
 }
 
 export async function archiveEventRecord(id: string) {
-  return prisma.eventRecord.update({
+  const event = await prisma.eventRecord.update({
     where: { id },
     data: {
       status: 'ARCHIVED'
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return event;
 }

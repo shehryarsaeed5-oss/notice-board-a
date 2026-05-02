@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { prisma } from '@/lib/prisma';
+import { bumpDisplayBoardRefreshToken } from '@/features/display-board/api/cache';
 import type {
   WeatherSettingFormValues,
   WeatherSettingRecord,
@@ -71,6 +72,8 @@ export async function createWeatherSetting(values: WeatherSettingFormValues) {
     }
   });
 
+  await bumpDisplayBoardRefreshToken();
+
   return toWeatherSettingRecord(weatherSetting)!;
 }
 
@@ -85,6 +88,8 @@ export async function updateWeatherSetting(id: string, values: WeatherSettingFor
     }
   });
 
+  await bumpDisplayBoardRefreshToken();
+
   return toWeatherSettingRecord(weatherSetting)!;
 }
 
@@ -95,6 +100,8 @@ export async function setWeatherSettingEnabled(id: string, values: WeatherSettin
       enabled: normalizeEnabled(values.enabled)
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
 
   return toWeatherSettingRecord(weatherSetting)!;
 }

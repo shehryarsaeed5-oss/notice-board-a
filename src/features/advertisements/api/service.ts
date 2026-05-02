@@ -2,6 +2,7 @@ import 'server-only';
 
 import { prisma } from '@/lib/prisma';
 import { parseDateTimeInputValue } from '@/lib/date-time';
+import { bumpDisplayBoardRefreshToken } from '@/features/display-board/api/cache';
 import type {
   AdvertisementFormValues,
   AdvertisementListFilters,
@@ -99,7 +100,7 @@ export async function getAdvertisements(
 }
 
 export async function createAdvertisement(values: AdvertisementFormValues) {
-  return prisma.advertisement.create({
+  const advertisement = await prisma.advertisement.create({
     data: {
       title: normalizeRequiredText(values.title),
       mediaUrl: normalizeRequiredText(values.mediaUrl),
@@ -111,10 +112,14 @@ export async function createAdvertisement(values: AdvertisementFormValues) {
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return advertisement;
 }
 
 export async function updateAdvertisement(id: string, values: AdvertisementFormValues) {
-  return prisma.advertisement.update({
+  const advertisement = await prisma.advertisement.update({
     where: { id },
     data: {
       title: normalizeRequiredText(values.title),
@@ -127,13 +132,21 @@ export async function updateAdvertisement(id: string, values: AdvertisementFormV
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return advertisement;
 }
 
 export async function archiveAdvertisement(id: string) {
-  return prisma.advertisement.update({
+  const advertisement = await prisma.advertisement.update({
     where: { id },
     data: {
       status: 'ARCHIVED'
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return advertisement;
 }

@@ -2,6 +2,7 @@ import 'server-only';
 
 import { prisma } from '@/lib/prisma';
 import { parseDateTimeInputValue } from '@/lib/date-time';
+import { bumpDisplayBoardRefreshToken } from '@/features/display-board/api/cache';
 import { endOfDay, parseDateInputValue, startOfDay } from '../lib/date';
 import type {
   MovieScheduleFormValues,
@@ -79,7 +80,7 @@ export async function getMovieSchedules(
 }
 
 export async function createMovieSchedule(values: MovieScheduleFormValues) {
-  return prisma.movieSchedule.create({
+  const movieSchedule = await prisma.movieSchedule.create({
     data: {
       movieName: normalizeRequiredText(values.movieName),
       screenName: normalizeRequiredText(values.screenName),
@@ -87,10 +88,14 @@ export async function createMovieSchedule(values: MovieScheduleFormValues) {
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return movieSchedule;
 }
 
 export async function updateMovieSchedule(id: string, values: MovieScheduleFormValues) {
-  return prisma.movieSchedule.update({
+  const movieSchedule = await prisma.movieSchedule.update({
     where: { id },
     data: {
       movieName: normalizeRequiredText(values.movieName),
@@ -99,13 +104,21 @@ export async function updateMovieSchedule(id: string, values: MovieScheduleFormV
       status: values.status
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return movieSchedule;
 }
 
 export async function archiveMovieSchedule(id: string) {
-  return prisma.movieSchedule.update({
+  const movieSchedule = await prisma.movieSchedule.update({
     where: { id },
     data: {
       status: 'ARCHIVED'
     }
   });
+
+  await bumpDisplayBoardRefreshToken();
+
+  return movieSchedule;
 }

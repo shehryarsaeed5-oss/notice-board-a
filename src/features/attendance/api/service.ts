@@ -2,6 +2,7 @@ import 'server-only';
 
 import { prisma } from '@/lib/prisma';
 import { endOfDay, parseDateInputValue, startOfDay, toDateInputValue } from '../lib/date';
+import { bumpDisplayBoardRefreshToken } from '@/features/display-board/api/cache';
 import type {
   AttendancePageData,
   AttendanceSavePayload,
@@ -193,10 +194,15 @@ export async function getAttendanceByType(dateInput: string | undefined, type: A
 export async function saveAttendanceRows(payload: AttendanceSavePayload) {
   const date = parseDateInputValue(payload.date);
   const rows = payload.rows.filter((row) => row.personId);
+  let saved;
 
   if (payload.type === 'staff') {
-    return upsertStaffAttendance(date, rows);
+    saved = await upsertStaffAttendance(date, rows);
+  } else {
+    saved = await upsertManagerAttendance(date, rows);
   }
 
-  return upsertManagerAttendance(date, rows);
+  await bumpDisplayBoardRefreshToken();
+
+  return saved;
 }

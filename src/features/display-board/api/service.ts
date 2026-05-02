@@ -2,6 +2,11 @@ import 'server-only';
 
 import { prisma } from '@/lib/prisma';
 
+import {
+  getCachedDisplayBoardData,
+  getDisplayBoardRefreshToken,
+  setCachedDisplayBoardData
+} from './cache';
 import { endOfDay, startOfDay } from '../lib/date';
 import type {
   DisplayBoardAdvertisementItem,
@@ -51,7 +56,7 @@ function normalizeAvailability(
   return displayPage.status === 'ACTIVE' ? 'active' : 'inactive';
 }
 
-export async function getDisplayBoardBySlug(slug: string): Promise<DisplayBoardResult> {
+async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardResult> {
   const displayPage = await prisma.displayPage.findUnique({
     where: { slug: slug.trim() }
   });
@@ -266,4 +271,39 @@ export async function getDisplayBoardBySlug(slug: string): Promise<DisplayBoardR
     availability,
     data
   };
+}
+
+export async function getDisplayBoardBySlug(slug: string): Promise<DisplayBoardResult> {
+  const normalizedSlug = slug.trim();
+  const displayPage = await prisma.displayPage.findUnique({
+    where: { slug: normalizedSlug },
+    select: { status: true }
+  });
+
+  const availability = normalizeAvailability(displayPage);
+
+  if (!displayPage || displayPage.status !== 'ACTIVE') {
+    return {
+      availability,
+      data: null
+    };
+  }
+
+  const version = await getDisplayBoardRefreshToken();
+  const cachedData = await getCachedDisplayBoardData(normalizedSlug, version);
+
+  if (cachedData) {
+    return {
+      availability: 'active',
+      data: cachedData
+    };
+  }
+
+  const freshResult = await loadDisplayBoardFromDatabase(normalizedSlug);
+
+  if (freshResult.data) {
+    await setCachedDisplayBoardData(normalizedSlug, version, freshResult.data);
+  }
+
+  return freshResult;
 }
