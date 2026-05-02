@@ -1,15 +1,39 @@
 import type { Metadata } from 'next';
-import ModulePlaceholderPage from '@/components/layout/module-placeholder-page';
+
+import type { MovieScheduleStatus } from '@/features/movie-schedule/api/types';
+import { MovieSchedulePage } from '@/features/movie-schedule/components/movie-schedule-page';
 
 export const metadata: Metadata = {
   title: 'Movie Schedule'
 };
 
-export default function Page() {
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function readQueryValue(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+
+  return value;
+}
+
+export default async function Page({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const search = readQueryValue(params.search);
+  const status = readQueryValue(params.status);
+  const showDate = readQueryValue(params.showDate);
+
   return (
-    <ModulePlaceholderPage
-      title='Movie Schedule'
-      description='Movie scheduling and showtime management will arrive in the next phase.'
+    <MovieSchedulePage
+      search={search}
+      status={
+        status === 'ACTIVE' || status === 'INACTIVE' || status === 'ARCHIVED'
+          ? (status as MovieScheduleStatus)
+          : undefined
+      }
+      showDate={showDate}
     />
   );
 }
