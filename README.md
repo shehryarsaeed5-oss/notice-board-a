@@ -182,7 +182,7 @@ To configure the environment for this project, refer to the `env.example.txt` fi
 
 For detailed instructions on configuring Clerk authentication (including organizations/workspaces/teams), please refer to [clerk_setup.md](./docs/clerk_setup.md).
 
-You should now be able to access the application at http://localhost:3000.
+You should now be able to access the application at http://localhost:3006.
 
 > [!WARNING]
 > After cloning or forking the repository, be cautious when pulling or syncing with the latest changes, as this may result in breaking conflicts.
@@ -205,6 +205,37 @@ Run `node scripts/cleanup.js --help` for all options. Delete `scripts/cleanup.js
 ## Deploy
 
 This project includes production-ready Dockerfiles (`Dockerfile` for Node.js, `Dockerfile.bun` for Bun) using standalone output mode. For all deployment options, see the [Next.js Deployment Documentation](https://nextjs.org/docs/app/getting-started/deploying).
+
+### Windows Production Runbook
+
+This project uses local PostgreSQL authentication and an admin session cookie. Clerk references in this repository are legacy template pages only and are not required for the Notice Board production runtime.
+
+1. Install dependencies:
+   - `npm install`
+2. Configure environment:
+   - Copy `env.example.txt` to `.env.local`
+   - Set `DATABASE_URL`
+   - Set `AUTH_SESSION_SECRET`
+   - Set `REDIS_URL` if Redis is available
+3. Run the database migration:
+   - `npx prisma migrate deploy`
+4. Seed data if needed:
+   - `npm run seed`
+5. Build production assets:
+   - `npm run build`
+6. Start locally on Windows:
+   - `npm start`
+7. Manage with PM2:
+   - `pm2 start ecosystem.config.js --env production`
+   - `pm2 restart notice-board-a --update-env`
+   - `pm2 status`
+   - `pm2 logs notice-board-a`
+   - If Windows blocks PM2 log access, set `PM2_HOME` to a writable folder or run the helper scripts in `scripts/`.
+
+Useful URLs:
+
+- Admin: http://localhost:3006
+- Display: http://localhost:3006/display/lobby-main
 
 ### Docker
 
