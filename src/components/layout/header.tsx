@@ -6,7 +6,6 @@ import { Breadcrumbs } from '../breadcrumbs';
 import SearchInput from '../search-input';
 import { ThemeSelector } from '../themes/theme-selector';
 import { ThemeModeToggle } from '../themes/theme-mode-toggle';
-import { NotificationCenter } from '@/features/notifications/components/notification-center';
 import { Icons } from '../icons';
 
 export default function Header() {
@@ -30,7 +29,6 @@ export default function Header() {
         <div className='hidden sm:block'>
           <ThemeSelector />
         </div>
-        <NotificationCenter />
       </div>
     </header>
   );

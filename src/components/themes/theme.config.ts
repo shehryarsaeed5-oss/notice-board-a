@@ -18,7 +18,7 @@ export const THEMES = [
     value: 'supabase'
   },
   {
-    name: 'Vercel',
+    name: 'Default',
     value: 'vercel'
   },
   {
