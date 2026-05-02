@@ -114,6 +114,10 @@ export async function bumpDisplayBoardRefreshToken(): Promise<void> {
   await redisIncr(DISPLAY_BOARD_REFRESH_TOKEN_KEY);
 }
 
+export async function invalidateDisplayBoardCache(): Promise<void> {
+  await bumpDisplayBoardRefreshToken();
+}
+
 export async function getCachedDisplayBoardData(slug: string, version: string) {
   const cached = await redisGet(`display-board:${slug}`);
 

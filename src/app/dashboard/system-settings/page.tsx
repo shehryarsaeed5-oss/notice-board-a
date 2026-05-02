@@ -1,15 +1,14 @@
 import type { Metadata } from 'next';
-import ModulePlaceholderPage from '@/components/layout/module-placeholder-page';
+
+import { getSystemSettings } from '@/features/system-settings/api/service';
+import { SystemSettingsPage } from '@/features/system-settings/components/system-settings-page';
 
 export const metadata: Metadata = {
-  title: 'System Settings'
+  title: 'Dashboard: System Settings'
 };
 
-export default function Page() {
-  return (
-    <ModulePlaceholderPage
-      title='System Settings'
-      description='System settings, configuration, and operational controls come next.'
-    />
-  );
+export default async function Page() {
+  const systemSettings = await getSystemSettings();
+
+  return <SystemSettingsPage initialSettings={systemSettings} />;
 }
