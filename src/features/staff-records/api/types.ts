@@ -8,6 +8,7 @@ export interface StaffMemberRecord {
   designation: string;
   department: string | null;
   phone: string | null;
+  sortOrder: number;
   status: StaffRecordStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -18,6 +19,7 @@ export interface StaffMemberFormValues {
   designation: string;
   department?: string;
   phone?: string;
+  sortOrder?: number | string | null;
   status: StaffRecordStatus;
 }
 

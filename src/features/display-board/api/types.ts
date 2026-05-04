@@ -65,6 +65,27 @@ export interface DisplayBoardConcessionPriceItem {
   status: RecordStatus;
 }
 
+export interface DisplayBoardAttendanceStaffItem {
+  id: string;
+  name: string;
+  designation: string;
+  department: string | null;
+  sortOrder: number;
+  shift: string | null;
+  status: AttendanceStatus;
+  remarks: string | null;
+}
+
+export interface DisplayBoardAttendanceManagerItem {
+  id: string;
+  name: string;
+  designation: string | null;
+  sortOrder: number;
+  shift: string | null;
+  status: AttendanceStatus;
+  remarks: string | null;
+}
+
 export interface DisplayBoardWeatherSetting {
   id: string;
   city: string;
@@ -107,6 +128,16 @@ export interface DisplayBoardData {
   concessionPriceList: {
     items: DisplayBoardConcessionPriceItem[];
     total: number;
+  };
+  attendance: {
+    staff: {
+      items: DisplayBoardAttendanceStaffItem[];
+      total: number;
+    };
+    managers: {
+      items: DisplayBoardAttendanceManagerItem[];
+      total: number;
+    };
   };
   weatherSetting: DisplayBoardWeatherSetting | null;
   attendanceSummary: DisplayBoardAttendanceSummary;

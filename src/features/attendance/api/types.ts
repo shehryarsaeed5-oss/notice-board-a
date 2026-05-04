@@ -21,6 +21,7 @@ export interface AttendancePersonRow {
   name: string;
   designation: string;
   department?: string | null;
+  sortOrder: number;
   shift: string;
   status: AttendanceStatus;
   remarks: string;
@@ -30,6 +31,7 @@ export interface AttendanceManagerRow {
   id: string;
   name: string;
   designation: string | null;
+  sortOrder: number;
   shift: string;
   status: AttendanceStatus;
   remarks: string;

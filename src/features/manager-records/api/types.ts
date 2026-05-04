@@ -7,6 +7,7 @@ export interface ManagerRecord {
   name: string;
   designation: string | null;
   phone: string | null;
+  sortOrder: number;
   status: ManagerRecordStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -16,6 +17,7 @@ export interface ManagerFormValues {
   name: string;
   designation?: string;
   phone?: string;
+  sortOrder?: number | string | null;
   status: ManagerRecordStatus;
 }
 

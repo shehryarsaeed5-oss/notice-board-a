@@ -12,6 +12,8 @@ import type {
   DisplayBoardAdvertisementItem,
   DisplayBoardAttendanceSummary,
   DisplayBoardConcessionPriceItem,
+  DisplayBoardAttendanceManagerItem,
+  DisplayBoardAttendanceStaffItem,
   DisplayBoardData,
   DisplayBoardEventItem,
   DisplayBoardMeetingItem,
@@ -45,6 +47,18 @@ function countAttendanceRecords<T extends { status: string }>(records: T[]) {
 
     return acc;
   }, emptyAttendanceCounts());
+}
+
+function sortByRoster(
+  left: { sortOrder: number; name: string },
+  right: { sortOrder: number; name: string }
+) {
+  return left.sortOrder - right.sortOrder || left.name.localeCompare(right.name);
+}
+
+function normalizeShift(value: string | null | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
 }
 
 function normalizeAvailability(
@@ -227,6 +241,9 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
           gte: start,
           lt: end
         }
+      },
+      include: {
+        staff: true
       }
     }),
     prisma.managerAttendanceRecord.findMany({
@@ -235,9 +252,37 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
           gte: start,
           lt: end
         }
+      },
+      include: {
+        manager: true
       }
     })
   ]);
+
+  const staffAttendance = staffAttendanceRecords
+    .map((record) => ({
+      id: record.staff.id,
+      name: record.staff.name,
+      designation: record.staff.designation,
+      department: record.staff.department,
+      sortOrder: record.staff.sortOrder,
+      shift: normalizeShift(record.shift),
+      status: record.status,
+      remarks: normalizeShift(record.remarks)
+    }))
+    .sort(sortByRoster);
+
+  const managerAttendance = managerAttendanceRecords
+    .map((record) => ({
+      id: record.manager.id,
+      name: record.manager.name,
+      designation: record.manager.designation,
+      sortOrder: record.manager.sortOrder,
+      shift: normalizeShift(record.shift),
+      status: record.status,
+      remarks: normalizeShift(record.remarks)
+    }))
+    .sort(sortByRoster);
 
   const attendanceSummary: DisplayBoardAttendanceSummary = {
     staffExpected,
@@ -274,6 +319,16 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     concessionPriceList: {
       items: concessionPriceList as DisplayBoardConcessionPriceItem[],
       total: concessionPriceListTotal
+    },
+    attendance: {
+      staff: {
+        items: staffAttendance as DisplayBoardAttendanceStaffItem[],
+        total: staffAttendance.length
+      },
+      managers: {
+        items: managerAttendance as DisplayBoardAttendanceManagerItem[],
+        total: managerAttendance.length
+      }
     },
     weatherSetting: (weatherSetting
       ? {

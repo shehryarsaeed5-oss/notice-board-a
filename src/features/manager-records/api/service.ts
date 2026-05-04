@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { invalidateDisplayBoardCache } from '@/features/display-board/api/cache';
 import { prisma } from '@/lib/prisma';
 import type { ManagerFormValues, ManagerListFilters, ManagerListResult } from './types';
 
@@ -23,6 +24,20 @@ function normalizeOptionalText(value?: string): string | null {
 
 function normalizeRequiredText(value: string): string {
   return value.trim();
+}
+
+function normalizeSortOrder(value?: number | string | null): number {
+  if (value === null || value === undefined || value === '') {
+    return 0;
+  }
+
+  const parsed = typeof value === 'string' ? Number(value) : value;
+
+  if (typeof parsed !== 'number' || !Number.isFinite(parsed) || parsed < 0) {
+    return 0;
+  }
+
+  return Math.trunc(parsed);
 }
 
 function buildWhere(filters: ManagerListFilters) {
@@ -63,7 +78,7 @@ export async function getManagers(filters: ManagerListFilters = {}): Promise<Man
 
   const managers = await prisma.manager.findMany({
     where,
-    orderBy: [{ createdAt: 'desc' }, { name: 'asc' }]
+    orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }]
   });
 
   return {
@@ -73,33 +88,47 @@ export async function getManagers(filters: ManagerListFilters = {}): Promise<Man
 }
 
 export async function createManager(values: ManagerFormValues) {
-  return prisma.manager.create({
+  const manager = await prisma.manager.create({
     data: {
       name: normalizeRequiredText(values.name),
       designation: normalizeOptionalText(values.designation),
       phone: normalizeOptionalText(values.phone),
+      sortOrder: normalizeSortOrder(values.sortOrder),
       status: values.status
     }
   });
+
+  await invalidateDisplayBoardCache();
+
+  return manager;
 }
 
 export async function updateManager(id: string, values: ManagerFormValues) {
-  return prisma.manager.update({
+  const manager = await prisma.manager.update({
     where: { id },
     data: {
       name: normalizeRequiredText(values.name),
       designation: normalizeOptionalText(values.designation),
       phone: normalizeOptionalText(values.phone),
+      sortOrder: normalizeSortOrder(values.sortOrder),
       status: values.status
     }
   });
+
+  await invalidateDisplayBoardCache();
+
+  return manager;
 }
 
 export async function archiveManager(id: string) {
-  return prisma.manager.update({
+  const manager = await prisma.manager.update({
     where: { id },
     data: {
       status: 'ARCHIVED'
     }
   });
+
+  await invalidateDisplayBoardCache();
+
+  return manager;
 }

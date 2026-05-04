@@ -134,6 +134,7 @@ exports.Prisma.StaffMemberScalarFieldEnum = {
   designation: 'designation',
   department: 'department',
   phone: 'phone',
+  sortOrder: 'sortOrder',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -144,6 +145,7 @@ exports.Prisma.ManagerScalarFieldEnum = {
   name: 'name',
   designation: 'designation',
   phone: 'phone',
+  sortOrder: 'sortOrder',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

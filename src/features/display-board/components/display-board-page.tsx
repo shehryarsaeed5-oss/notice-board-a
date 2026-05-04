@@ -4,6 +4,7 @@ import type { ComponentType, ReactNode } from 'react';
 import { Icons } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 import { getDisplayBoardBySlug } from '../api/service';
 import { DisplayBoardAutoRefresh } from './display-board-auto-refresh';
@@ -19,6 +20,8 @@ const VISIBLE_MOVIE_COUNT = 4;
 const VISIBLE_AD_COUNT = 3;
 const VISIBLE_TARGET_COUNT = 4;
 const VISIBLE_CONCESSION_COUNT = 4;
+const VISIBLE_STAFF_ATTENDANCE_COUNT = 6;
+const VISIBLE_MANAGER_ATTENDANCE_COUNT = 3;
 
 function formatTime(value: Date) {
   return format(value, 'h:mm a');
@@ -44,6 +47,80 @@ function formatPrice(value: number) {
   return `Rs. ${new Intl.NumberFormat('en-PK', {
     maximumFractionDigits: 2
   }).format(value)}`;
+}
+
+function statusTone(status: 'PRESENT' | 'ABSENT' | 'LEAVE' | 'LATE') {
+  switch (status) {
+    case 'PRESENT':
+      return 'border-emerald-400/30 bg-emerald-400/15 text-emerald-100';
+    case 'ABSENT':
+      return 'border-rose-400/30 bg-rose-400/10 text-rose-100';
+    case 'LEAVE':
+      return 'border-amber-400/30 bg-amber-400/10 text-amber-100';
+    case 'LATE':
+      return 'border-orange-400/30 bg-orange-400/10 text-orange-100';
+  }
+}
+
+function SummaryStatPill({
+  label,
+  value,
+  tone
+}: {
+  label: string;
+  value: number;
+  tone: 'emerald' | 'rose' | 'amber' | 'orange' | 'zinc';
+}) {
+  const toneClass =
+    tone === 'zinc'
+      ? 'border-white/10 bg-white/5 text-zinc-100'
+      : tone === 'emerald'
+        ? statusTone('PRESENT')
+        : tone === 'rose'
+          ? statusTone('ABSENT')
+          : tone === 'amber'
+            ? statusTone('LEAVE')
+            : statusTone('LATE');
+
+  return (
+    <div className={cn('rounded-2xl border px-3 py-2.5', toneClass)}>
+      <div className='text-[11px] uppercase tracking-[0.24em] text-current/70'>{label}</div>
+      <div className='mt-1 text-base font-semibold text-current'>{value.toLocaleString()}</div>
+    </div>
+  );
+}
+
+function AttendanceRosterItem({
+  name,
+  designation,
+  department,
+  shift,
+  remarks
+}: {
+  name: string;
+  designation: string | null;
+  department?: string | null;
+  shift: string | null;
+  remarks?: string | null;
+}) {
+  return (
+    <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'>
+      <div className='flex items-start justify-between gap-3'>
+        <div className='min-w-0'>
+          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>{name}</div>
+          <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
+            {designation && <RecordChip>{designation}</RecordChip>}
+            {department && <RecordChip>{department}</RecordChip>}
+          </div>
+        </div>
+        <Badge className='border-emerald-400/30 bg-emerald-400/15 text-emerald-100'>PRESENT</Badge>
+      </div>
+      <div className='mt-2 flex flex-wrap gap-2 text-xs text-zinc-400'>
+        <RecordChip>Shift: {shift ?? '—'}</RecordChip>
+      </div>
+      {remarks ? <div className='mt-2 text-xs text-zinc-400'>{remarks}</div> : null}
+    </div>
+  );
 }
 
 function SectionCard({
@@ -200,6 +277,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
     advertisements,
     salesTargets,
     concessionPriceList,
+    attendance,
     weatherSetting,
     attendanceSummary
   } = data;
@@ -211,6 +289,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const visibleAds = advertisements.items.slice(0, VISIBLE_AD_COUNT);
   const visibleTargets = salesTargets.items.slice(0, VISIBLE_TARGET_COUNT);
   const visibleConcessions = concessionPriceList.items.slice(0, VISIBLE_CONCESSION_COUNT);
+  const presentStaff = attendance.staff.items.filter((item) => item.status === 'PRESENT');
+  const presentManagers = attendance.managers.items.filter((item) => item.status === 'PRESENT');
   const currentDate = formatDate(renderedAt);
   const updatedAt = formatDateTime(generatedAt);
   const totalAttendance = attendanceSummary.staffMarked + attendanceSummary.managerMarked;
@@ -450,7 +530,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             </SectionCard>
           </div>
 
-          <div className='grid min-h-0 gap-4 xl:grid-rows-[minmax(0,0.62fr)_minmax(0,0.82fr)_minmax(0,0.92fr)_minmax(0,1fr)_minmax(0,0.78fr)]'>
+          <div className='grid min-h-0 gap-4 xl:grid-rows-[minmax(0,0.62fr)_minmax(0,1.18fr)_minmax(0,0.92fr)_minmax(0,0.82fr)_minmax(0,0.76fr)]'>
             <SectionCard
               title='Weather'
               description='Live configuration'
@@ -480,54 +560,130 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
 
             <SectionCard
               title='Attendance Summary'
-              description="Today's status"
+              description="Today's roster and status"
               icon={Icons.teams}
               count={totalAttendance}
             >
-              <div className='grid gap-3'>
-                <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3'>
-                  <div className='flex items-center justify-between gap-3'>
-                    <div>
-                      <div className='text-[15px] font-medium text-zinc-50'>Staff</div>
-                      <div className='mt-1 text-sm text-zinc-300'>
-                        {attendanceSummary.staffMarked} / {attendanceSummary.staffExpected} marked
-                      </div>
-                    </div>
-                    <Badge variant='outline' className='border-white/10 bg-white/5 text-zinc-100'>
-                      Total {attendanceSummary.staffExpected}
-                    </Badge>
+              {attendanceSummary.staffMarked + attendanceSummary.managerMarked === 0 ? (
+                <EmptySection message='Attendance not marked yet.' />
+              ) : (
+                <div className='space-y-4'>
+                  <div className='grid grid-cols-2 gap-2 xl:grid-cols-5'>
+                    <SummaryStatPill
+                      label='Staff Present'
+                      value={attendanceSummary.staffCounts.PRESENT}
+                      tone='emerald'
+                    />
+                    <SummaryStatPill
+                      label='Absent'
+                      value={attendanceSummary.staffCounts.ABSENT}
+                      tone='rose'
+                    />
+                    <SummaryStatPill
+                      label='Leave'
+                      value={attendanceSummary.staffCounts.LEAVE}
+                      tone='amber'
+                    />
+                    <SummaryStatPill
+                      label='Late'
+                      value={attendanceSummary.staffCounts.LATE}
+                      tone='orange'
+                    />
+                    <SummaryStatPill
+                      label='Manager Present'
+                      value={attendanceSummary.managerCounts.PRESENT}
+                      tone='emerald'
+                    />
                   </div>
-                  <div className='mt-3 flex flex-wrap gap-2'>
-                    {(['PRESENT', 'ABSENT', 'LEAVE', 'LATE'] as const).map((status) => (
-                      <RecordChip key={status}>
-                        {status}: {attendanceSummary.staffCounts[status]}
-                      </RecordChip>
-                    ))}
-                  </div>
-                </div>
 
-                <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3'>
-                  <div className='flex items-center justify-between gap-3'>
-                    <div>
-                      <div className='text-[15px] font-medium text-zinc-50'>Managers</div>
-                      <div className='mt-1 text-sm text-zinc-300'>
-                        {attendanceSummary.managerMarked} / {attendanceSummary.managerExpected}{' '}
-                        marked
+                  <div className='grid gap-4 xl:grid-cols-2'>
+                    <div className='space-y-3 rounded-[26px] border border-white/10 bg-black/18 p-4'>
+                      <div className='flex items-center justify-between gap-3'>
+                        <div>
+                          <div className='text-sm uppercase tracking-[0.24em] text-zinc-400'>
+                            Staff Present
+                          </div>
+                          <div className='mt-1 text-lg font-semibold text-zinc-50'>
+                            {attendanceSummary.staffCounts.PRESENT.toLocaleString()} present
+                          </div>
+                        </div>
+                        <Badge
+                          variant='outline'
+                          className='border-white/10 bg-white/5 text-zinc-100'
+                        >
+                          {presentStaff.length} shown
+                        </Badge>
                       </div>
+                      {presentStaff.length === 0 ? (
+                        <EmptySection message='No present staff entries yet.' />
+                      ) : (
+                        <div className='space-y-2'>
+                          {presentStaff.slice(0, VISIBLE_STAFF_ATTENDANCE_COUNT).map((item) => (
+                            <AttendanceRosterItem
+                              key={item.id}
+                              name={item.name}
+                              designation={item.designation}
+                              department={item.department}
+                              shift={item.shift}
+                              remarks={item.remarks}
+                            />
+                          ))}
+                          {presentStaff.length > VISIBLE_STAFF_ATTENDANCE_COUNT && (
+                            <CompactMorePill
+                              label={`+${
+                                presentStaff.length - VISIBLE_STAFF_ATTENDANCE_COUNT
+                              } more staff`}
+                            />
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <Badge variant='outline' className='border-white/10 bg-white/5 text-zinc-100'>
-                      Total {attendanceSummary.managerExpected}
-                    </Badge>
-                  </div>
-                  <div className='mt-3 flex flex-wrap gap-2'>
-                    {(['PRESENT', 'ABSENT', 'LEAVE', 'LATE'] as const).map((status) => (
-                      <RecordChip key={status}>
-                        {status}: {attendanceSummary.managerCounts[status]}
-                      </RecordChip>
-                    ))}
+
+                    <div className='space-y-3 rounded-[26px] border border-white/10 bg-black/18 p-4'>
+                      <div className='flex items-center justify-between gap-3'>
+                        <div>
+                          <div className='text-sm uppercase tracking-[0.24em] text-zinc-400'>
+                            Manager Present
+                          </div>
+                          <div className='mt-1 text-lg font-semibold text-zinc-50'>
+                            {attendanceSummary.managerCounts.PRESENT.toLocaleString()} present
+                          </div>
+                        </div>
+                        <Badge
+                          variant='outline'
+                          className='border-white/10 bg-white/5 text-zinc-100'
+                        >
+                          {presentManagers.length} shown
+                        </Badge>
+                      </div>
+                      {presentManagers.length === 0 ? (
+                        <EmptySection message='No present manager entries yet.' />
+                      ) : (
+                        <div className='space-y-2'>
+                          {presentManagers
+                            .slice(0, VISIBLE_MANAGER_ATTENDANCE_COUNT)
+                            .map((item) => (
+                              <AttendanceRosterItem
+                                key={item.id}
+                                name={item.name}
+                                designation={item.designation}
+                                shift={item.shift}
+                                remarks={item.remarks}
+                              />
+                            ))}
+                          {presentManagers.length > VISIBLE_MANAGER_ATTENDANCE_COUNT && (
+                            <CompactMorePill
+                              label={`+${
+                                presentManagers.length - VISIBLE_MANAGER_ATTENDANCE_COUNT
+                              } more managers`}
+                            />
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </SectionCard>
 
             <SectionCard

@@ -3390,8 +3390,18 @@ export namespace Prisma {
 
   export type AggregateStaffMember = {
     _count: StaffMemberCountAggregateOutputType | null;
+    _avg: StaffMemberAvgAggregateOutputType | null;
+    _sum: StaffMemberSumAggregateOutputType | null;
     _min: StaffMemberMinAggregateOutputType | null;
     _max: StaffMemberMaxAggregateOutputType | null;
+  };
+
+  export type StaffMemberAvgAggregateOutputType = {
+    sortOrder: number | null;
+  };
+
+  export type StaffMemberSumAggregateOutputType = {
+    sortOrder: number | null;
   };
 
   export type StaffMemberMinAggregateOutputType = {
@@ -3400,6 +3410,7 @@ export namespace Prisma {
     designation: string | null;
     department: string | null;
     phone: string | null;
+    sortOrder: number | null;
     status: $Enums.RecordStatus | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -3411,6 +3422,7 @@ export namespace Prisma {
     designation: string | null;
     department: string | null;
     phone: string | null;
+    sortOrder: number | null;
     status: $Enums.RecordStatus | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -3422,10 +3434,19 @@ export namespace Prisma {
     designation: number;
     department: number;
     phone: number;
+    sortOrder: number;
     status: number;
     createdAt: number;
     updatedAt: number;
     _all: number;
+  };
+
+  export type StaffMemberAvgAggregateInputType = {
+    sortOrder?: true;
+  };
+
+  export type StaffMemberSumAggregateInputType = {
+    sortOrder?: true;
   };
 
   export type StaffMemberMinAggregateInputType = {
@@ -3434,6 +3455,7 @@ export namespace Prisma {
     designation?: true;
     department?: true;
     phone?: true;
+    sortOrder?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -3445,6 +3467,7 @@ export namespace Prisma {
     designation?: true;
     department?: true;
     phone?: true;
+    sortOrder?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -3456,6 +3479,7 @@ export namespace Prisma {
     designation?: true;
     department?: true;
     phone?: true;
+    sortOrder?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -3502,6 +3526,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      *
+     * Select which fields to average
+     **/
+    _avg?: StaffMemberAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: StaffMemberSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
      * Select which fields to find the minimum value
      **/
     _min?: StaffMemberMinAggregateInputType;
@@ -3531,6 +3567,8 @@ export namespace Prisma {
     take?: number;
     skip?: number;
     _count?: StaffMemberCountAggregateInputType | true;
+    _avg?: StaffMemberAvgAggregateInputType;
+    _sum?: StaffMemberSumAggregateInputType;
     _min?: StaffMemberMinAggregateInputType;
     _max?: StaffMemberMaxAggregateInputType;
   };
@@ -3541,10 +3579,13 @@ export namespace Prisma {
     designation: string;
     department: string | null;
     phone: string | null;
+    sortOrder: number;
     status: $Enums.RecordStatus;
     createdAt: Date;
     updatedAt: Date;
     _count: StaffMemberCountAggregateOutputType | null;
+    _avg: StaffMemberAvgAggregateOutputType | null;
+    _sum: StaffMemberSumAggregateOutputType | null;
     _min: StaffMemberMinAggregateOutputType | null;
     _max: StaffMemberMaxAggregateOutputType | null;
   };
@@ -3570,6 +3611,7 @@ export namespace Prisma {
       designation?: boolean;
       department?: boolean;
       phone?: boolean;
+      sortOrder?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -3588,6 +3630,7 @@ export namespace Prisma {
       designation?: boolean;
       department?: boolean;
       phone?: boolean;
+      sortOrder?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -3604,6 +3647,7 @@ export namespace Prisma {
       designation?: boolean;
       department?: boolean;
       phone?: boolean;
+      sortOrder?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -3617,6 +3661,7 @@ export namespace Prisma {
     designation?: boolean;
     department?: boolean;
     phone?: boolean;
+    sortOrder?: boolean;
     status?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -3624,7 +3669,15 @@ export namespace Prisma {
 
   export type StaffMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     $Extensions.GetOmit<
-      'id' | 'name' | 'designation' | 'department' | 'phone' | 'status' | 'createdAt' | 'updatedAt',
+      | 'id'
+      | 'name'
+      | 'designation'
+      | 'department'
+      | 'phone'
+      | 'sortOrder'
+      | 'status'
+      | 'createdAt'
+      | 'updatedAt',
       ExtArgs['result']['staffMember']
     >;
   export type StaffMemberInclude<
@@ -3654,6 +3707,7 @@ export namespace Prisma {
         designation: string;
         department: string | null;
         phone: string | null;
+        sortOrder: number;
         status: $Enums.RecordStatus;
         createdAt: Date;
         updatedAt: Date;
@@ -4211,6 +4265,7 @@ export namespace Prisma {
     readonly designation: FieldRef<'StaffMember', 'String'>;
     readonly department: FieldRef<'StaffMember', 'String'>;
     readonly phone: FieldRef<'StaffMember', 'String'>;
+    readonly sortOrder: FieldRef<'StaffMember', 'Int'>;
     readonly status: FieldRef<'StaffMember', 'RecordStatus'>;
     readonly createdAt: FieldRef<'StaffMember', 'DateTime'>;
     readonly updatedAt: FieldRef<'StaffMember', 'DateTime'>;
@@ -4685,8 +4740,18 @@ export namespace Prisma {
 
   export type AggregateManager = {
     _count: ManagerCountAggregateOutputType | null;
+    _avg: ManagerAvgAggregateOutputType | null;
+    _sum: ManagerSumAggregateOutputType | null;
     _min: ManagerMinAggregateOutputType | null;
     _max: ManagerMaxAggregateOutputType | null;
+  };
+
+  export type ManagerAvgAggregateOutputType = {
+    sortOrder: number | null;
+  };
+
+  export type ManagerSumAggregateOutputType = {
+    sortOrder: number | null;
   };
 
   export type ManagerMinAggregateOutputType = {
@@ -4694,6 +4759,7 @@ export namespace Prisma {
     name: string | null;
     designation: string | null;
     phone: string | null;
+    sortOrder: number | null;
     status: $Enums.RecordStatus | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -4704,6 +4770,7 @@ export namespace Prisma {
     name: string | null;
     designation: string | null;
     phone: string | null;
+    sortOrder: number | null;
     status: $Enums.RecordStatus | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -4714,10 +4781,19 @@ export namespace Prisma {
     name: number;
     designation: number;
     phone: number;
+    sortOrder: number;
     status: number;
     createdAt: number;
     updatedAt: number;
     _all: number;
+  };
+
+  export type ManagerAvgAggregateInputType = {
+    sortOrder?: true;
+  };
+
+  export type ManagerSumAggregateInputType = {
+    sortOrder?: true;
   };
 
   export type ManagerMinAggregateInputType = {
@@ -4725,6 +4801,7 @@ export namespace Prisma {
     name?: true;
     designation?: true;
     phone?: true;
+    sortOrder?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -4735,6 +4812,7 @@ export namespace Prisma {
     name?: true;
     designation?: true;
     phone?: true;
+    sortOrder?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -4745,6 +4823,7 @@ export namespace Prisma {
     name?: true;
     designation?: true;
     phone?: true;
+    sortOrder?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -4791,6 +4870,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      *
+     * Select which fields to average
+     **/
+    _avg?: ManagerAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: ManagerSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
      * Select which fields to find the minimum value
      **/
     _min?: ManagerMinAggregateInputType;
@@ -4820,6 +4911,8 @@ export namespace Prisma {
     take?: number;
     skip?: number;
     _count?: ManagerCountAggregateInputType | true;
+    _avg?: ManagerAvgAggregateInputType;
+    _sum?: ManagerSumAggregateInputType;
     _min?: ManagerMinAggregateInputType;
     _max?: ManagerMaxAggregateInputType;
   };
@@ -4829,10 +4922,13 @@ export namespace Prisma {
     name: string;
     designation: string | null;
     phone: string | null;
+    sortOrder: number;
     status: $Enums.RecordStatus;
     createdAt: Date;
     updatedAt: Date;
     _count: ManagerCountAggregateOutputType | null;
+    _avg: ManagerAvgAggregateOutputType | null;
+    _sum: ManagerSumAggregateOutputType | null;
     _min: ManagerMinAggregateOutputType | null;
     _max: ManagerMaxAggregateOutputType | null;
   };
@@ -4856,6 +4952,7 @@ export namespace Prisma {
         name?: boolean;
         designation?: boolean;
         phone?: boolean;
+        sortOrder?: boolean;
         status?: boolean;
         createdAt?: boolean;
         updatedAt?: boolean;
@@ -4873,6 +4970,7 @@ export namespace Prisma {
       name?: boolean;
       designation?: boolean;
       phone?: boolean;
+      sortOrder?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -4888,6 +4986,7 @@ export namespace Prisma {
       name?: boolean;
       designation?: boolean;
       phone?: boolean;
+      sortOrder?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -4900,6 +4999,7 @@ export namespace Prisma {
     name?: boolean;
     designation?: boolean;
     phone?: boolean;
+    sortOrder?: boolean;
     status?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -4907,7 +5007,7 @@ export namespace Prisma {
 
   export type ManagerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     $Extensions.GetOmit<
-      'id' | 'name' | 'designation' | 'phone' | 'status' | 'createdAt' | 'updatedAt',
+      'id' | 'name' | 'designation' | 'phone' | 'sortOrder' | 'status' | 'createdAt' | 'updatedAt',
       ExtArgs['result']['manager']
     >;
   export type ManagerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4933,6 +5033,7 @@ export namespace Prisma {
           name: string;
           designation: string | null;
           phone: string | null;
+          sortOrder: number;
           status: $Enums.RecordStatus;
           createdAt: Date;
           updatedAt: Date;
@@ -5468,6 +5569,7 @@ export namespace Prisma {
     readonly name: FieldRef<'Manager', 'String'>;
     readonly designation: FieldRef<'Manager', 'String'>;
     readonly phone: FieldRef<'Manager', 'String'>;
+    readonly sortOrder: FieldRef<'Manager', 'Int'>;
     readonly status: FieldRef<'Manager', 'RecordStatus'>;
     readonly createdAt: FieldRef<'Manager', 'DateTime'>;
     readonly updatedAt: FieldRef<'Manager', 'DateTime'>;
@@ -19658,6 +19760,7 @@ export namespace Prisma {
     designation: 'designation';
     department: 'department';
     phone: 'phone';
+    sortOrder: 'sortOrder';
     status: 'status';
     createdAt: 'createdAt';
     updatedAt: 'updatedAt';
@@ -19671,6 +19774,7 @@ export namespace Prisma {
     name: 'name';
     designation: 'designation';
     phone: 'phone';
+    sortOrder: 'sortOrder';
     status: 'status';
     createdAt: 'createdAt';
     updatedAt: 'updatedAt';
@@ -19899,6 +20003,16 @@ export namespace Prisma {
   >;
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>;
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>;
+
+  /**
    * Reference to a field of type 'AttendanceStatus'
    */
   export type EnumAttendanceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
@@ -19929,16 +20043,6 @@ export namespace Prisma {
     $PrismaModel,
     'AdMediaType[]'
   >;
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>;
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>;
 
   /**
    * Reference to a field of type 'Boolean'
@@ -20043,6 +20147,7 @@ export namespace Prisma {
     designation?: StringFilter<'StaffMember'> | string;
     department?: StringNullableFilter<'StaffMember'> | string | null;
     phone?: StringNullableFilter<'StaffMember'> | string | null;
+    sortOrder?: IntFilter<'StaffMember'> | number;
     status?: EnumRecordStatusFilter<'StaffMember'> | $Enums.RecordStatus;
     createdAt?: DateTimeFilter<'StaffMember'> | Date | string;
     updatedAt?: DateTimeFilter<'StaffMember'> | Date | string;
@@ -20055,6 +20160,7 @@ export namespace Prisma {
     designation?: SortOrder;
     department?: SortOrderInput | SortOrder;
     phone?: SortOrderInput | SortOrder;
+    sortOrder?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -20071,6 +20177,7 @@ export namespace Prisma {
       designation?: StringFilter<'StaffMember'> | string;
       department?: StringNullableFilter<'StaffMember'> | string | null;
       phone?: StringNullableFilter<'StaffMember'> | string | null;
+      sortOrder?: IntFilter<'StaffMember'> | number;
       status?: EnumRecordStatusFilter<'StaffMember'> | $Enums.RecordStatus;
       createdAt?: DateTimeFilter<'StaffMember'> | Date | string;
       updatedAt?: DateTimeFilter<'StaffMember'> | Date | string;
@@ -20085,12 +20192,15 @@ export namespace Prisma {
     designation?: SortOrder;
     department?: SortOrderInput | SortOrder;
     phone?: SortOrderInput | SortOrder;
+    sortOrder?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
     _count?: StaffMemberCountOrderByAggregateInput;
+    _avg?: StaffMemberAvgOrderByAggregateInput;
     _max?: StaffMemberMaxOrderByAggregateInput;
     _min?: StaffMemberMinOrderByAggregateInput;
+    _sum?: StaffMemberSumOrderByAggregateInput;
   };
 
   export type StaffMemberScalarWhereWithAggregatesInput = {
@@ -20102,6 +20212,7 @@ export namespace Prisma {
     designation?: StringWithAggregatesFilter<'StaffMember'> | string;
     department?: StringNullableWithAggregatesFilter<'StaffMember'> | string | null;
     phone?: StringNullableWithAggregatesFilter<'StaffMember'> | string | null;
+    sortOrder?: IntWithAggregatesFilter<'StaffMember'> | number;
     status?: EnumRecordStatusWithAggregatesFilter<'StaffMember'> | $Enums.RecordStatus;
     createdAt?: DateTimeWithAggregatesFilter<'StaffMember'> | Date | string;
     updatedAt?: DateTimeWithAggregatesFilter<'StaffMember'> | Date | string;
@@ -20115,6 +20226,7 @@ export namespace Prisma {
     name?: StringFilter<'Manager'> | string;
     designation?: StringNullableFilter<'Manager'> | string | null;
     phone?: StringNullableFilter<'Manager'> | string | null;
+    sortOrder?: IntFilter<'Manager'> | number;
     status?: EnumRecordStatusFilter<'Manager'> | $Enums.RecordStatus;
     createdAt?: DateTimeFilter<'Manager'> | Date | string;
     updatedAt?: DateTimeFilter<'Manager'> | Date | string;
@@ -20126,6 +20238,7 @@ export namespace Prisma {
     name?: SortOrder;
     designation?: SortOrderInput | SortOrder;
     phone?: SortOrderInput | SortOrder;
+    sortOrder?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -20141,6 +20254,7 @@ export namespace Prisma {
       name?: StringFilter<'Manager'> | string;
       designation?: StringNullableFilter<'Manager'> | string | null;
       phone?: StringNullableFilter<'Manager'> | string | null;
+      sortOrder?: IntFilter<'Manager'> | number;
       status?: EnumRecordStatusFilter<'Manager'> | $Enums.RecordStatus;
       createdAt?: DateTimeFilter<'Manager'> | Date | string;
       updatedAt?: DateTimeFilter<'Manager'> | Date | string;
@@ -20154,12 +20268,15 @@ export namespace Prisma {
     name?: SortOrder;
     designation?: SortOrderInput | SortOrder;
     phone?: SortOrderInput | SortOrder;
+    sortOrder?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
     _count?: ManagerCountOrderByAggregateInput;
+    _avg?: ManagerAvgOrderByAggregateInput;
     _max?: ManagerMaxOrderByAggregateInput;
     _min?: ManagerMinOrderByAggregateInput;
+    _sum?: ManagerSumOrderByAggregateInput;
   };
 
   export type ManagerScalarWhereWithAggregatesInput = {
@@ -20170,6 +20287,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<'Manager'> | string;
     designation?: StringNullableWithAggregatesFilter<'Manager'> | string | null;
     phone?: StringNullableWithAggregatesFilter<'Manager'> | string | null;
+    sortOrder?: IntWithAggregatesFilter<'Manager'> | number;
     status?: EnumRecordStatusWithAggregatesFilter<'Manager'> | $Enums.RecordStatus;
     createdAt?: DateTimeWithAggregatesFilter<'Manager'> | Date | string;
     updatedAt?: DateTimeWithAggregatesFilter<'Manager'> | Date | string;
@@ -21090,6 +21208,7 @@ export namespace Prisma {
     designation: string;
     department?: string | null;
     phone?: string | null;
+    sortOrder?: number;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -21102,6 +21221,7 @@ export namespace Prisma {
     designation: string;
     department?: string | null;
     phone?: string | null;
+    sortOrder?: number;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -21114,6 +21234,7 @@ export namespace Prisma {
     designation?: StringFieldUpdateOperationsInput | string;
     department?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -21126,6 +21247,7 @@ export namespace Prisma {
     designation?: StringFieldUpdateOperationsInput | string;
     department?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -21138,6 +21260,7 @@ export namespace Prisma {
     designation: string;
     department?: string | null;
     phone?: string | null;
+    sortOrder?: number;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -21149,6 +21272,7 @@ export namespace Prisma {
     designation?: StringFieldUpdateOperationsInput | string;
     department?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -21160,6 +21284,7 @@ export namespace Prisma {
     designation?: StringFieldUpdateOperationsInput | string;
     department?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -21170,6 +21295,7 @@ export namespace Prisma {
     name: string;
     designation?: string | null;
     phone?: string | null;
+    sortOrder?: number;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -21181,6 +21307,7 @@ export namespace Prisma {
     name: string;
     designation?: string | null;
     phone?: string | null;
+    sortOrder?: number;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -21192,6 +21319,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string;
     designation?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -21203,6 +21331,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string;
     designation?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -21214,6 +21343,7 @@ export namespace Prisma {
     name: string;
     designation?: string | null;
     phone?: string | null;
+    sortOrder?: number;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -21224,6 +21354,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string;
     designation?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -21234,6 +21365,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string;
     designation?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -22223,6 +22355,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null;
   };
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>;
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>;
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>;
+    lt?: number | IntFieldRefInput<$PrismaModel>;
+    lte?: number | IntFieldRefInput<$PrismaModel>;
+    gt?: number | IntFieldRefInput<$PrismaModel>;
+    gte?: number | IntFieldRefInput<$PrismaModel>;
+    not?: NestedIntFilter<$PrismaModel> | number;
+  };
+
   export type AttendanceRecordListRelationFilter = {
     every?: AttendanceRecordWhereInput;
     some?: AttendanceRecordWhereInput;
@@ -22244,9 +22387,14 @@ export namespace Prisma {
     designation?: SortOrder;
     department?: SortOrder;
     phone?: SortOrder;
+    sortOrder?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
+  };
+
+  export type StaffMemberAvgOrderByAggregateInput = {
+    sortOrder?: SortOrder;
   };
 
   export type StaffMemberMaxOrderByAggregateInput = {
@@ -22255,6 +22403,7 @@ export namespace Prisma {
     designation?: SortOrder;
     department?: SortOrder;
     phone?: SortOrder;
+    sortOrder?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -22266,9 +22415,14 @@ export namespace Prisma {
     designation?: SortOrder;
     department?: SortOrder;
     phone?: SortOrder;
+    sortOrder?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
+  };
+
+  export type StaffMemberSumOrderByAggregateInput = {
+    sortOrder?: SortOrder;
   };
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -22289,6 +22443,22 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>;
   };
 
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>;
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>;
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>;
+    lt?: number | IntFieldRefInput<$PrismaModel>;
+    lte?: number | IntFieldRefInput<$PrismaModel>;
+    gt?: number | IntFieldRefInput<$PrismaModel>;
+    gte?: number | IntFieldRefInput<$PrismaModel>;
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number;
+    _count?: NestedIntFilter<$PrismaModel>;
+    _avg?: NestedFloatFilter<$PrismaModel>;
+    _sum?: NestedIntFilter<$PrismaModel>;
+    _min?: NestedIntFilter<$PrismaModel>;
+    _max?: NestedIntFilter<$PrismaModel>;
+  };
+
   export type ManagerAttendanceRecordListRelationFilter = {
     every?: ManagerAttendanceRecordWhereInput;
     some?: ManagerAttendanceRecordWhereInput;
@@ -22304,9 +22474,14 @@ export namespace Prisma {
     name?: SortOrder;
     designation?: SortOrder;
     phone?: SortOrder;
+    sortOrder?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
+  };
+
+  export type ManagerAvgOrderByAggregateInput = {
+    sortOrder?: SortOrder;
   };
 
   export type ManagerMaxOrderByAggregateInput = {
@@ -22314,6 +22489,7 @@ export namespace Prisma {
     name?: SortOrder;
     designation?: SortOrder;
     phone?: SortOrder;
+    sortOrder?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -22324,9 +22500,14 @@ export namespace Prisma {
     name?: SortOrder;
     designation?: SortOrder;
     phone?: SortOrder;
+    sortOrder?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
+  };
+
+  export type ManagerSumOrderByAggregateInput = {
+    sortOrder?: SortOrder;
   };
 
   export type EnumAttendanceStatusFilter<$PrismaModel = never> = {
@@ -22540,17 +22721,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null;
   };
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>;
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>;
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>;
-    lt?: number | IntFieldRefInput<$PrismaModel>;
-    lte?: number | IntFieldRefInput<$PrismaModel>;
-    gt?: number | IntFieldRefInput<$PrismaModel>;
-    gte?: number | IntFieldRefInput<$PrismaModel>;
-    not?: NestedIntFilter<$PrismaModel> | number;
-  };
-
   export type AdvertisementCountOrderByAggregateInput = {
     id?: SortOrder;
     title?: SortOrder;
@@ -22627,22 +22797,6 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>;
     _min?: NestedIntNullableFilter<$PrismaModel>;
     _max?: NestedIntNullableFilter<$PrismaModel>;
-  };
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>;
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>;
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>;
-    lt?: number | IntFieldRefInput<$PrismaModel>;
-    lte?: number | IntFieldRefInput<$PrismaModel>;
-    gt?: number | IntFieldRefInput<$PrismaModel>;
-    gte?: number | IntFieldRefInput<$PrismaModel>;
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number;
-    _count?: NestedIntFilter<$PrismaModel>;
-    _avg?: NestedFloatFilter<$PrismaModel>;
-    _sum?: NestedIntFilter<$PrismaModel>;
-    _min?: NestedIntFilter<$PrismaModel>;
-    _max?: NestedIntFilter<$PrismaModel>;
   };
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -22945,6 +23099,14 @@ export namespace Prisma {
     set?: string | null;
   };
 
+  export type IntFieldUpdateOperationsInput = {
+    set?: number;
+    increment?: number;
+    decrement?: number;
+    multiply?: number;
+    divide?: number;
+  };
+
   export type AttendanceRecordUpdateManyWithoutStaffNestedInput = {
     create?:
       | XOR<
@@ -23167,14 +23329,6 @@ export namespace Prisma {
     divide?: number;
   };
 
-  export type IntFieldUpdateOperationsInput = {
-    set?: number;
-    increment?: number;
-    decrement?: number;
-    multiply?: number;
-    divide?: number;
-  };
-
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean;
   };
@@ -23313,6 +23467,33 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null;
   };
 
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>;
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>;
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>;
+    lt?: number | IntFieldRefInput<$PrismaModel>;
+    lte?: number | IntFieldRefInput<$PrismaModel>;
+    gt?: number | IntFieldRefInput<$PrismaModel>;
+    gte?: number | IntFieldRefInput<$PrismaModel>;
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number;
+    _count?: NestedIntFilter<$PrismaModel>;
+    _avg?: NestedFloatFilter<$PrismaModel>;
+    _sum?: NestedIntFilter<$PrismaModel>;
+    _min?: NestedIntFilter<$PrismaModel>;
+    _max?: NestedIntFilter<$PrismaModel>;
+  };
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>;
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>;
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>;
+    lt?: number | FloatFieldRefInput<$PrismaModel>;
+    lte?: number | FloatFieldRefInput<$PrismaModel>;
+    gt?: number | FloatFieldRefInput<$PrismaModel>;
+    gte?: number | FloatFieldRefInput<$PrismaModel>;
+    not?: NestedFloatFilter<$PrismaModel> | number;
+  };
+
   export type NestedEnumAttendanceStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.AttendanceStatus | EnumAttendanceStatusFieldRefInput<$PrismaModel>;
     in?: $Enums.AttendanceStatus[] | ListEnumAttendanceStatusFieldRefInput<$PrismaModel>;
@@ -23397,33 +23578,6 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>;
     gte?: number | FloatFieldRefInput<$PrismaModel>;
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null;
-  };
-
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>;
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>;
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>;
-    lt?: number | IntFieldRefInput<$PrismaModel>;
-    lte?: number | IntFieldRefInput<$PrismaModel>;
-    gt?: number | IntFieldRefInput<$PrismaModel>;
-    gte?: number | IntFieldRefInput<$PrismaModel>;
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number;
-    _count?: NestedIntFilter<$PrismaModel>;
-    _avg?: NestedFloatFilter<$PrismaModel>;
-    _sum?: NestedIntFilter<$PrismaModel>;
-    _min?: NestedIntFilter<$PrismaModel>;
-    _max?: NestedIntFilter<$PrismaModel>;
-  };
-
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>;
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>;
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>;
-    lt?: number | FloatFieldRefInput<$PrismaModel>;
-    lte?: number | FloatFieldRefInput<$PrismaModel>;
-    gt?: number | FloatFieldRefInput<$PrismaModel>;
-    gte?: number | FloatFieldRefInput<$PrismaModel>;
-    not?: NestedFloatFilter<$PrismaModel> | number;
   };
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -23613,6 +23767,7 @@ export namespace Prisma {
     designation: string;
     department?: string | null;
     phone?: string | null;
+    sortOrder?: number;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -23624,6 +23779,7 @@ export namespace Prisma {
     designation: string;
     department?: string | null;
     phone?: string | null;
+    sortOrder?: number;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -23663,6 +23819,7 @@ export namespace Prisma {
     designation?: StringFieldUpdateOperationsInput | string;
     department?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -23674,6 +23831,7 @@ export namespace Prisma {
     designation?: StringFieldUpdateOperationsInput | string;
     department?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -23684,6 +23842,7 @@ export namespace Prisma {
     name: string;
     designation?: string | null;
     phone?: string | null;
+    sortOrder?: number;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -23694,6 +23853,7 @@ export namespace Prisma {
     name: string;
     designation?: string | null;
     phone?: string | null;
+    sortOrder?: number;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -23732,6 +23892,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string;
     designation?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -23742,6 +23903,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string;
     designation?: NullableStringFieldUpdateOperationsInput | string | null;
     phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    sortOrder?: IntFieldUpdateOperationsInput | number;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;

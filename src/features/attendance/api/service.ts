@@ -109,7 +109,7 @@ async function getStaffRows(date: Date): Promise<AttendancePersonRow[]> {
   const [staffMembers, attendanceRecords] = await Promise.all([
     prisma.staffMember.findMany({
       where: { status: 'ACTIVE' },
-      orderBy: [{ name: 'asc' }]
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }]
     }),
     prisma.attendanceRecord.findMany({
       where: {
@@ -132,6 +132,7 @@ async function getStaffRows(date: Date): Promise<AttendancePersonRow[]> {
       name: staff.name,
       designation: staff.designation,
       department: staff.department,
+      sortOrder: staff.sortOrder,
       shift: attendance?.shift ?? '',
       status: (attendance?.status ?? 'PRESENT') as AttendanceStatus,
       remarks: attendance?.remarks ?? ''
@@ -143,7 +144,7 @@ async function getManagerRows(date: Date): Promise<AttendanceManagerRow[]> {
   const [managers, attendanceRecords] = await Promise.all([
     prisma.manager.findMany({
       where: { status: 'ACTIVE' },
-      orderBy: [{ name: 'asc' }]
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }]
     }),
     prisma.managerAttendanceRecord.findMany({
       where: {
@@ -167,6 +168,7 @@ async function getManagerRows(date: Date): Promise<AttendanceManagerRow[]> {
       id: manager.id,
       name: manager.name,
       designation: manager.designation,
+      sortOrder: manager.sortOrder,
       shift: attendance?.shift ?? '',
       status: (attendance?.status ?? 'PRESENT') as AttendanceStatus,
       remarks: attendance?.remarks ?? ''

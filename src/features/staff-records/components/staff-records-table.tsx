@@ -48,6 +48,7 @@ export function StaffRecordsTable({ staffMembers }: StaffRecordsTableProps) {
             <TableHeader className='bg-muted/50'>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Sort Order</TableHead>
                 <TableHead>Designation</TableHead>
                 <TableHead>Department</TableHead>
                 <TableHead>Phone</TableHead>
@@ -59,7 +60,7 @@ export function StaffRecordsTable({ staffMembers }: StaffRecordsTableProps) {
             <TableBody>
               {staffMembers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className='text-muted-foreground h-24 text-center'>
+                  <TableCell colSpan={8} className='text-muted-foreground h-24 text-center'>
                     No staff records found.
                   </TableCell>
                 </TableRow>
@@ -67,6 +68,7 @@ export function StaffRecordsTable({ staffMembers }: StaffRecordsTableProps) {
                 staffMembers.map((staff) => (
                   <TableRow key={staff.id}>
                     <TableCell className='font-medium'>{staff.name}</TableCell>
+                    <TableCell className='whitespace-nowrap'>{staff.sortOrder}</TableCell>
                     <TableCell>{staff.designation}</TableCell>
                     <TableCell>{formatField(staff.department)}</TableCell>
                     <TableCell>{formatField(staff.phone)}</TableCell>

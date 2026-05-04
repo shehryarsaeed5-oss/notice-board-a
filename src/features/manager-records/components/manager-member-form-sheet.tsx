@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/sheet';
 import { useAppForm, useFormFields } from '@/components/ui/tanstack-form';
 import { createManager, updateManager } from '../api/client';
+import { managerSchema } from '../schemas/manager';
 import type { ManagerFormSchemaValues } from '../schemas/manager';
 import type { ManagerRecord, ManagerRecordStatus } from '../api/types';
 
@@ -72,15 +73,23 @@ export function ManagerMemberFormSheet({
       name: manager?.name ?? '',
       designation: manager?.designation ?? '',
       phone: manager?.phone ?? '',
+      sortOrder: manager?.sortOrder ?? 0,
       status: manager?.status ?? 'ACTIVE'
     } as ManagerFormSchemaValues,
     onSubmit: async ({ value }) => {
-      if (isEdit && manager) {
-        await updateMutation.mutateAsync({ id: manager.id, values: value });
+      const parsed = managerSchema.safeParse(value);
+
+      if (!parsed.success) {
+        toast.error('Please fix the manager form errors');
         return;
       }
 
-      await createMutation.mutateAsync(value);
+      if (isEdit && manager) {
+        await updateMutation.mutateAsync({ id: manager.id, values: parsed.data });
+        return;
+      }
+
+      await createMutation.mutateAsync(parsed.data);
     }
   });
 
@@ -118,6 +127,28 @@ export function ManagerMemberFormSheet({
               />
 
               <FormTextField name='phone' label='Phone' type='tel' placeholder='0300 1234567' />
+
+              <FormTextField
+                name='sortOrder'
+                label='Sort Order'
+                type='number'
+                min={0}
+                step={1}
+                placeholder='0'
+                validators={{
+                  onBlur: z.preprocess((value) => {
+                    if (value === '' || value === null || value === undefined) {
+                      return undefined;
+                    }
+
+                    if (typeof value === 'string' && value.trim() === '') {
+                      return undefined;
+                    }
+
+                    return typeof value === 'string' ? Number(value) : value;
+                  }, z.number().int().nonnegative().default(0))
+                }}
+              />
 
               <FormSelectField
                 name='status'

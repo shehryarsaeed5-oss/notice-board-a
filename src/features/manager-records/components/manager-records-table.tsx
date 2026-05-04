@@ -48,6 +48,7 @@ export function ManagerRecordsTable({ managers }: ManagerRecordsTableProps) {
             <TableHeader className='bg-muted/50'>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Sort Order</TableHead>
                 <TableHead>Designation</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Status</TableHead>
@@ -58,7 +59,7 @@ export function ManagerRecordsTable({ managers }: ManagerRecordsTableProps) {
             <TableBody>
               {managers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className='text-muted-foreground h-24 text-center'>
+                  <TableCell colSpan={7} className='text-muted-foreground h-24 text-center'>
                     No manager records found.
                   </TableCell>
                 </TableRow>
@@ -66,6 +67,7 @@ export function ManagerRecordsTable({ managers }: ManagerRecordsTableProps) {
                 managers.map((manager) => (
                   <TableRow key={manager.id}>
                     <TableCell className='font-medium'>{manager.name}</TableCell>
+                    <TableCell className='whitespace-nowrap'>{manager.sortOrder}</TableCell>
                     <TableCell>{formatField(manager.designation)}</TableCell>
                     <TableCell>{formatField(manager.phone)}</TableCell>
                     <TableCell>

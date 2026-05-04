@@ -73,18 +73,23 @@ export function StaffMemberFormSheet({
       designation: staffMember?.designation ?? '',
       department: staffMember?.department ?? '',
       phone: staffMember?.phone ?? '',
+      sortOrder: staffMember?.sortOrder ?? 0,
       status: staffMember?.status ?? 'ACTIVE'
     } as StaffMemberFormSchemaValues,
-    validators: {
-      onSubmit: staffMemberSchema
-    },
     onSubmit: async ({ value }) => {
-      if (isEdit && staffMember) {
-        await updateMutation.mutateAsync({ id: staffMember.id, values: value });
+      const parsed = staffMemberSchema.safeParse(value);
+
+      if (!parsed.success) {
+        toast.error('Please fix the staff form errors');
         return;
       }
 
-      await createMutation.mutateAsync(value);
+      if (isEdit && staffMember) {
+        await updateMutation.mutateAsync({ id: staffMember.id, values: parsed.data });
+        return;
+      }
+
+      await createMutation.mutateAsync(parsed.data);
     }
   });
 
@@ -128,6 +133,28 @@ export function StaffMemberFormSheet({
               <FormTextField name='department' label='Department' placeholder='Operations' />
 
               <FormTextField name='phone' label='Phone' type='tel' placeholder='0300 1234567' />
+
+              <FormTextField
+                name='sortOrder'
+                label='Sort Order'
+                type='number'
+                min={0}
+                step={1}
+                placeholder='0'
+                validators={{
+                  onBlur: z.preprocess((value) => {
+                    if (value === '' || value === null || value === undefined) {
+                      return undefined;
+                    }
+
+                    if (typeof value === 'string' && value.trim() === '') {
+                      return undefined;
+                    }
+
+                    return typeof value === 'string' ? Number(value) : value;
+                  }, z.number().int().nonnegative().default(0))
+                }}
+              />
 
               <FormSelectField
                 name='status'

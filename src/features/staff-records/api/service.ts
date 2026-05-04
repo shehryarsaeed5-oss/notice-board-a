@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { invalidateDisplayBoardCache } from '@/features/display-board/api/cache';
 import { prisma } from '@/lib/prisma';
 import type { StaffMemberFormValues, StaffMemberListFilters, StaffMemberListResult } from './types';
 
@@ -23,6 +24,20 @@ function normalizeOptionalText(value?: string): string | null {
 
 function normalizeRequiredText(value: string): string {
   return value.trim();
+}
+
+function normalizeSortOrder(value?: number | string | null): number {
+  if (value === null || value === undefined || value === '') {
+    return 0;
+  }
+
+  const parsed = typeof value === 'string' ? Number(value) : value;
+
+  if (typeof parsed !== 'number' || !Number.isFinite(parsed) || parsed < 0) {
+    return 0;
+  }
+
+  return Math.trunc(parsed);
 }
 
 function buildWhere(filters: StaffMemberListFilters) {
@@ -71,7 +86,7 @@ export async function getStaffMembers(
 
   const staffMembers = await prisma.staffMember.findMany({
     where,
-    orderBy: [{ createdAt: 'desc' }, { name: 'asc' }]
+    orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }]
   });
 
   return {
@@ -81,37 +96,51 @@ export async function getStaffMembers(
 }
 
 export async function createStaffMember(values: StaffMemberFormValues) {
-  return prisma.staffMember.create({
+  const staffMember = await prisma.staffMember.create({
     data: {
       name: normalizeRequiredText(values.name),
       designation: normalizeRequiredText(values.designation),
       department: normalizeOptionalText(values.department),
       phone: normalizeOptionalText(values.phone),
+      sortOrder: normalizeSortOrder(values.sortOrder),
       status: values.status
     }
   });
+
+  await invalidateDisplayBoardCache();
+
+  return staffMember;
 }
 
 export async function updateStaffMember(id: string, values: StaffMemberFormValues) {
-  return prisma.staffMember.update({
+  const staffMember = await prisma.staffMember.update({
     where: { id },
     data: {
       name: normalizeRequiredText(values.name),
       designation: normalizeRequiredText(values.designation),
       department: normalizeOptionalText(values.department),
       phone: normalizeOptionalText(values.phone),
+      sortOrder: normalizeSortOrder(values.sortOrder),
       status: values.status
     }
   });
+
+  await invalidateDisplayBoardCache();
+
+  return staffMember;
 }
 
 export async function archiveStaffMember(id: string) {
-  return prisma.staffMember.update({
+  const staffMember = await prisma.staffMember.update({
     where: { id },
     data: {
       status: 'ARCHIVED'
     }
   });
+
+  await invalidateDisplayBoardCache();
+
+  return staffMember;
 }
 
 export async function deleteStaffMember(id: string) {
@@ -124,15 +153,23 @@ export async function deleteStaffMember(id: string) {
   }
 
   if (existing.status !== 'ARCHIVED') {
-    return prisma.staffMember.update({
+    const staffMember = await prisma.staffMember.update({
       where: { id },
       data: {
         status: 'ARCHIVED'
       }
     });
+
+    await invalidateDisplayBoardCache();
+
+    return staffMember;
   }
 
-  return prisma.staffMember.delete({
+  const staffMember = await prisma.staffMember.delete({
     where: { id }
   });
+
+  await invalidateDisplayBoardCache();
+
+  return staffMember;
 }

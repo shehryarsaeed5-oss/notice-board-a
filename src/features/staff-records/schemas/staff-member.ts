@@ -1,11 +1,24 @@
 import * as z from 'zod';
 import { STAFF_RECORD_STATUSES } from '../api/types';
 
+function optionalNonNegativeInteger(value: unknown) {
+  if (value === '' || value === null || value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value === 'string' && value.trim() === '') {
+    return undefined;
+  }
+
+  return typeof value === 'string' ? Number(value) : value;
+}
+
 export const staffMemberSchema = z.object({
   name: z.string().trim().min(2, 'Name is required'),
   designation: z.string().trim().min(2, 'Designation is required'),
   department: z.string().trim().optional().or(z.literal('')),
   phone: z.string().trim().optional().or(z.literal('')),
+  sortOrder: z.preprocess(optionalNonNegativeInteger, z.number().int().nonnegative().default(0)),
   status: z.enum(STAFF_RECORD_STATUSES)
 });
 
