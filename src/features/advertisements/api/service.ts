@@ -22,16 +22,13 @@ function normalizeStatus(value?: string): 'ACTIVE' | 'INACTIVE' | 'ARCHIVED' | u
   return undefined;
 }
 
-function normalizeMediaType(value?: string): 'IMAGE' | 'VIDEO' | undefined {
-  if (value === 'IMAGE' || value === 'VIDEO') {
-    return value;
-  }
-
-  return undefined;
-}
-
 function normalizeRequiredText(value: string): string {
   return value.trim();
+}
+
+function normalizeOptionalText(value?: string): string | null {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
 }
 
 function normalizeOptionalDateTime(value?: string): Date | null {
@@ -49,19 +46,12 @@ function normalizeOptionalNumber(value?: number | string | null): number | null 
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function normalizeSortOrder(value?: number | string | null): number {
-  const normalized = normalizeOptionalNumber(value);
-  return normalized ?? 0;
-}
-
 function buildWhere(filters: AdvertisementListFilters) {
   const search = normalizeSearchTerm(filters.search);
   const status = normalizeStatus(filters.status);
-  const mediaType = normalizeMediaType(filters.mediaType);
 
   return {
     ...(status ? { status } : {}),
-    ...(mediaType ? { mediaType } : {}),
     ...(search
       ? {
           OR: [
@@ -72,7 +62,25 @@ function buildWhere(filters: AdvertisementListFilters) {
               }
             },
             {
-              mediaUrl: {
+              contactPerson: {
+                contains: search,
+                mode: 'insensitive' as const
+              }
+            },
+            {
+              phone: {
+                contains: search,
+                mode: 'insensitive' as const
+              }
+            },
+            {
+              adLocation: {
+                contains: search,
+                mode: 'insensitive' as const
+              }
+            },
+            {
+              remarks: {
                 contains: search,
                 mode: 'insensitive' as const
               }
@@ -90,7 +98,7 @@ export async function getAdvertisements(
 
   const advertisements = await prisma.advertisement.findMany({
     where,
-    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }, { title: 'asc' }]
+    orderBy: [{ title: 'asc' }, { createdAt: 'desc' }]
   });
 
   return {
@@ -103,10 +111,11 @@ export async function createAdvertisement(values: AdvertisementFormValues) {
   const advertisement = await prisma.advertisement.create({
     data: {
       title: normalizeRequiredText(values.title),
-      mediaUrl: normalizeRequiredText(values.mediaUrl),
-      mediaType: values.mediaType,
-      duration: normalizeOptionalNumber(values.duration),
-      sortOrder: normalizeSortOrder(values.sortOrder),
+      contactPerson: normalizeOptionalText(values.contactPerson),
+      phone: normalizeOptionalText(values.phone),
+      contractAmount: normalizeOptionalNumber(values.contractAmount),
+      adLocation: normalizeOptionalText(values.adLocation),
+      remarks: normalizeOptionalText(values.remarks),
       startAt: normalizeOptionalDateTime(values.startAt),
       endAt: normalizeOptionalDateTime(values.endAt),
       status: values.status
@@ -123,10 +132,11 @@ export async function updateAdvertisement(id: string, values: AdvertisementFormV
     where: { id },
     data: {
       title: normalizeRequiredText(values.title),
-      mediaUrl: normalizeRequiredText(values.mediaUrl),
-      mediaType: values.mediaType,
-      duration: normalizeOptionalNumber(values.duration),
-      sortOrder: normalizeSortOrder(values.sortOrder),
+      contactPerson: normalizeOptionalText(values.contactPerson),
+      phone: normalizeOptionalText(values.phone),
+      contractAmount: normalizeOptionalNumber(values.contractAmount),
+      adLocation: normalizeOptionalText(values.adLocation),
+      remarks: normalizeOptionalText(values.remarks),
       startAt: normalizeOptionalDateTime(values.startAt),
       endAt: normalizeOptionalDateTime(values.endAt),
       status: values.status

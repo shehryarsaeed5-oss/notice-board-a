@@ -31,7 +31,7 @@ export function AdvertisementActions({ advertisement }: AdvertisementActionsProp
   const archiveMutation = useMutation({
     mutationFn: () => archiveAdvertisement(advertisement.id),
     onSuccess: () => {
-      toast.success('Advertisement archived');
+      toast.success('Contract archived');
       setArchiveOpen(false);
       router.refresh();
     },
@@ -50,8 +50,8 @@ export function AdvertisementActions({ advertisement }: AdvertisementActionsProp
       <Modal
         isOpen={archiveOpen}
         onClose={() => setArchiveOpen(false)}
-        title='Archive advertisement?'
-        description='This will move the advertisement record to ARCHIVED status.'
+        title='Archive contract?'
+        description='This will move the advertisement contract record to ARCHIVED status.'
       >
         <div className='flex items-center justify-end gap-2 pt-6'>
           <Button variant='outline' onClick={() => setArchiveOpen(false)}>
@@ -71,7 +71,7 @@ export function AdvertisementActions({ advertisement }: AdvertisementActionsProp
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' size='icon' className='size-8'>
-            <span className='sr-only'>Open advertisement actions</span>
+            <span className='sr-only'>Open contract actions</span>
             <Icons.ellipsis className='size-4' />
           </Button>
         </DropdownMenuTrigger>

@@ -15,33 +15,24 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import type { AdvertisementMediaType, AdvertisementStatus } from '../api/types';
+import type { AdvertisementStatus } from '../api/types';
 
 interface AdvertisementFiltersProps {
   search?: string;
   status?: AdvertisementStatus;
-  mediaType?: AdvertisementMediaType;
 }
 
-export function AdvertisementFilters({
-  search = '',
-  status,
-  mediaType
-}: AdvertisementFiltersProps) {
+export function AdvertisementFilters({ search = '', status }: AdvertisementFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [searchValue, setSearchValue] = useState(search);
   const [statusValue, setStatusValue] = useState<AdvertisementStatus | 'ALL'>(status ?? 'ALL');
-  const [mediaTypeValue, setMediaTypeValue] = useState<AdvertisementMediaType | 'ALL'>(
-    mediaType ?? 'ALL'
-  );
 
   useEffect(() => {
     setSearchValue(search);
     setStatusValue(status ?? 'ALL');
-    setMediaTypeValue(mediaType ?? 'ALL');
-  }, [search, status, mediaType]);
+  }, [search, status]);
 
   const applyFilters = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -60,12 +51,6 @@ export function AdvertisementFilters({
       params.delete('status');
     }
 
-    if (mediaTypeValue !== 'ALL') {
-      params.set('mediaType', mediaTypeValue);
-    } else {
-      params.delete('mediaType');
-    }
-
     const query = params.toString();
     router.replace(query ? `${pathname}?${query}` : pathname);
   };
@@ -73,7 +58,6 @@ export function AdvertisementFilters({
   const resetFilters = () => {
     setSearchValue('');
     setStatusValue('ALL');
-    setMediaTypeValue('ALL');
     router.replace(pathname);
   };
 
@@ -82,7 +66,7 @@ export function AdvertisementFilters({
       onSubmit={applyFilters}
       className='border-border/60 bg-card/80 flex flex-col gap-3 rounded-xl border p-4 shadow-sm xl:flex-row xl:items-end xl:justify-between'
     >
-      <div className='grid gap-3 md:grid-cols-3 xl:flex-1'>
+      <div className='grid gap-3 md:grid-cols-2 xl:flex-1'>
         <div className='space-y-2'>
           <Label htmlFor='advertisements-search'>Search</Label>
           <div className='relative'>
@@ -91,7 +75,7 @@ export function AdvertisementFilters({
               id='advertisements-search'
               value={searchValue}
               onChange={(event) => setSearchValue(event.target.value)}
-              placeholder='Title or media URL'
+              placeholder='Company, contact person, phone, or location'
               className='pl-9'
             />
           </div>
@@ -111,23 +95,6 @@ export function AdvertisementFilters({
               <SelectItem value='ACTIVE'>Active</SelectItem>
               <SelectItem value='INACTIVE'>Inactive</SelectItem>
               <SelectItem value='ARCHIVED'>Archived</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className='space-y-2'>
-          <Label htmlFor='advertisements-media-type'>Media type</Label>
-          <Select
-            value={mediaTypeValue}
-            onValueChange={(value) => setMediaTypeValue(value as AdvertisementMediaType | 'ALL')}
-          >
-            <SelectTrigger id='advertisements-media-type'>
-              <SelectValue placeholder='All types' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='ALL'>All types</SelectItem>
-              <SelectItem value='IMAGE'>Image</SelectItem>
-              <SelectItem value='VIDEO'>Video</SelectItem>
             </SelectContent>
           </Select>
         </div>

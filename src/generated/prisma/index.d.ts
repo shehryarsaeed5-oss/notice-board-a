@@ -11148,20 +11148,27 @@ export namespace Prisma {
   export type AdvertisementAvgAggregateOutputType = {
     duration: number | null;
     sortOrder: number | null;
+    contractAmount: number | null;
   };
 
   export type AdvertisementSumAggregateOutputType = {
     duration: number | null;
     sortOrder: number | null;
+    contractAmount: number | null;
   };
 
   export type AdvertisementMinAggregateOutputType = {
     id: string | null;
     title: string | null;
+    contactPerson: string | null;
+    phone: string | null;
     mediaUrl: string | null;
     mediaType: $Enums.AdMediaType | null;
     duration: number | null;
     sortOrder: number | null;
+    contractAmount: number | null;
+    adLocation: string | null;
+    remarks: string | null;
     status: $Enums.RecordStatus | null;
     startAt: Date | null;
     endAt: Date | null;
@@ -11172,10 +11179,15 @@ export namespace Prisma {
   export type AdvertisementMaxAggregateOutputType = {
     id: string | null;
     title: string | null;
+    contactPerson: string | null;
+    phone: string | null;
     mediaUrl: string | null;
     mediaType: $Enums.AdMediaType | null;
     duration: number | null;
     sortOrder: number | null;
+    contractAmount: number | null;
+    adLocation: string | null;
+    remarks: string | null;
     status: $Enums.RecordStatus | null;
     startAt: Date | null;
     endAt: Date | null;
@@ -11186,10 +11198,15 @@ export namespace Prisma {
   export type AdvertisementCountAggregateOutputType = {
     id: number;
     title: number;
+    contactPerson: number;
+    phone: number;
     mediaUrl: number;
     mediaType: number;
     duration: number;
     sortOrder: number;
+    contractAmount: number;
+    adLocation: number;
+    remarks: number;
     status: number;
     startAt: number;
     endAt: number;
@@ -11201,20 +11218,27 @@ export namespace Prisma {
   export type AdvertisementAvgAggregateInputType = {
     duration?: true;
     sortOrder?: true;
+    contractAmount?: true;
   };
 
   export type AdvertisementSumAggregateInputType = {
     duration?: true;
     sortOrder?: true;
+    contractAmount?: true;
   };
 
   export type AdvertisementMinAggregateInputType = {
     id?: true;
     title?: true;
+    contactPerson?: true;
+    phone?: true;
     mediaUrl?: true;
     mediaType?: true;
     duration?: true;
     sortOrder?: true;
+    contractAmount?: true;
+    adLocation?: true;
+    remarks?: true;
     status?: true;
     startAt?: true;
     endAt?: true;
@@ -11225,10 +11249,15 @@ export namespace Prisma {
   export type AdvertisementMaxAggregateInputType = {
     id?: true;
     title?: true;
+    contactPerson?: true;
+    phone?: true;
     mediaUrl?: true;
     mediaType?: true;
     duration?: true;
     sortOrder?: true;
+    contractAmount?: true;
+    adLocation?: true;
+    remarks?: true;
     status?: true;
     startAt?: true;
     endAt?: true;
@@ -11239,10 +11268,15 @@ export namespace Prisma {
   export type AdvertisementCountAggregateInputType = {
     id?: true;
     title?: true;
+    contactPerson?: true;
+    phone?: true;
     mediaUrl?: true;
     mediaType?: true;
     duration?: true;
     sortOrder?: true;
+    contractAmount?: true;
+    adLocation?: true;
+    remarks?: true;
     status?: true;
     startAt?: true;
     endAt?: true;
@@ -11341,10 +11375,15 @@ export namespace Prisma {
   export type AdvertisementGroupByOutputType = {
     id: string;
     title: string;
-    mediaUrl: string;
-    mediaType: $Enums.AdMediaType;
+    contactPerson: string | null;
+    phone: string | null;
+    mediaUrl: string | null;
+    mediaType: $Enums.AdMediaType | null;
     duration: number | null;
     sortOrder: number;
+    contractAmount: number | null;
+    adLocation: string | null;
+    remarks: string | null;
     status: $Enums.RecordStatus;
     startAt: Date | null;
     endAt: Date | null;
@@ -11375,10 +11414,15 @@ export namespace Prisma {
     {
       id?: boolean;
       title?: boolean;
+      contactPerson?: boolean;
+      phone?: boolean;
       mediaUrl?: boolean;
       mediaType?: boolean;
       duration?: boolean;
       sortOrder?: boolean;
+      contractAmount?: boolean;
+      adLocation?: boolean;
+      remarks?: boolean;
       status?: boolean;
       startAt?: boolean;
       endAt?: boolean;
@@ -11394,10 +11438,15 @@ export namespace Prisma {
     {
       id?: boolean;
       title?: boolean;
+      contactPerson?: boolean;
+      phone?: boolean;
       mediaUrl?: boolean;
       mediaType?: boolean;
       duration?: boolean;
       sortOrder?: boolean;
+      contractAmount?: boolean;
+      adLocation?: boolean;
+      remarks?: boolean;
       status?: boolean;
       startAt?: boolean;
       endAt?: boolean;
@@ -11413,10 +11462,15 @@ export namespace Prisma {
     {
       id?: boolean;
       title?: boolean;
+      contactPerson?: boolean;
+      phone?: boolean;
       mediaUrl?: boolean;
       mediaType?: boolean;
       duration?: boolean;
       sortOrder?: boolean;
+      contractAmount?: boolean;
+      adLocation?: boolean;
+      remarks?: boolean;
       status?: boolean;
       startAt?: boolean;
       endAt?: boolean;
@@ -11429,10 +11483,15 @@ export namespace Prisma {
   export type AdvertisementSelectScalar = {
     id?: boolean;
     title?: boolean;
+    contactPerson?: boolean;
+    phone?: boolean;
     mediaUrl?: boolean;
     mediaType?: boolean;
     duration?: boolean;
     sortOrder?: boolean;
+    contractAmount?: boolean;
+    adLocation?: boolean;
+    remarks?: boolean;
     status?: boolean;
     startAt?: boolean;
     endAt?: boolean;
@@ -11445,10 +11504,15 @@ export namespace Prisma {
   > = $Extensions.GetOmit<
     | 'id'
     | 'title'
+    | 'contactPerson'
+    | 'phone'
     | 'mediaUrl'
     | 'mediaType'
     | 'duration'
     | 'sortOrder'
+    | 'contractAmount'
+    | 'adLocation'
+    | 'remarks'
     | 'status'
     | 'startAt'
     | 'endAt'
@@ -11466,10 +11530,15 @@ export namespace Prisma {
       {
         id: string;
         title: string;
-        mediaUrl: string;
-        mediaType: $Enums.AdMediaType;
+        contactPerson: string | null;
+        phone: string | null;
+        mediaUrl: string | null;
+        mediaType: $Enums.AdMediaType | null;
         duration: number | null;
         sortOrder: number;
+        contractAmount: number | null;
+        adLocation: string | null;
+        remarks: string | null;
         status: $Enums.RecordStatus;
         startAt: Date | null;
         endAt: Date | null;
@@ -12017,10 +12086,15 @@ export namespace Prisma {
   interface AdvertisementFieldRefs {
     readonly id: FieldRef<'Advertisement', 'String'>;
     readonly title: FieldRef<'Advertisement', 'String'>;
+    readonly contactPerson: FieldRef<'Advertisement', 'String'>;
+    readonly phone: FieldRef<'Advertisement', 'String'>;
     readonly mediaUrl: FieldRef<'Advertisement', 'String'>;
     readonly mediaType: FieldRef<'Advertisement', 'AdMediaType'>;
     readonly duration: FieldRef<'Advertisement', 'Int'>;
     readonly sortOrder: FieldRef<'Advertisement', 'Int'>;
+    readonly contractAmount: FieldRef<'Advertisement', 'Float'>;
+    readonly adLocation: FieldRef<'Advertisement', 'String'>;
+    readonly remarks: FieldRef<'Advertisement', 'String'>;
     readonly status: FieldRef<'Advertisement', 'RecordStatus'>;
     readonly startAt: FieldRef<'Advertisement', 'DateTime'>;
     readonly endAt: FieldRef<'Advertisement', 'DateTime'>;
@@ -19845,10 +19919,15 @@ export namespace Prisma {
   export const AdvertisementScalarFieldEnum: {
     id: 'id';
     title: 'title';
+    contactPerson: 'contactPerson';
+    phone: 'phone';
     mediaUrl: 'mediaUrl';
     mediaType: 'mediaType';
     duration: 'duration';
     sortOrder: 'sortOrder';
+    contractAmount: 'contractAmount';
+    adLocation: 'adLocation';
+    remarks: 'remarks';
     status: 'status';
     startAt: 'startAt';
     endAt: 'endAt';
@@ -20045,11 +20124,6 @@ export namespace Prisma {
   >;
 
   /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>;
-
-  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>;
@@ -20058,6 +20132,11 @@ export namespace Prisma {
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>;
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>;
 
   /**
    * Deep Input Types
@@ -20614,10 +20693,15 @@ export namespace Prisma {
     NOT?: AdvertisementWhereInput | AdvertisementWhereInput[];
     id?: StringFilter<'Advertisement'> | string;
     title?: StringFilter<'Advertisement'> | string;
-    mediaUrl?: StringFilter<'Advertisement'> | string;
-    mediaType?: EnumAdMediaTypeFilter<'Advertisement'> | $Enums.AdMediaType;
+    contactPerson?: StringNullableFilter<'Advertisement'> | string | null;
+    phone?: StringNullableFilter<'Advertisement'> | string | null;
+    mediaUrl?: StringNullableFilter<'Advertisement'> | string | null;
+    mediaType?: EnumAdMediaTypeNullableFilter<'Advertisement'> | $Enums.AdMediaType | null;
     duration?: IntNullableFilter<'Advertisement'> | number | null;
     sortOrder?: IntFilter<'Advertisement'> | number;
+    contractAmount?: FloatNullableFilter<'Advertisement'> | number | null;
+    adLocation?: StringNullableFilter<'Advertisement'> | string | null;
+    remarks?: StringNullableFilter<'Advertisement'> | string | null;
     status?: EnumRecordStatusFilter<'Advertisement'> | $Enums.RecordStatus;
     startAt?: DateTimeNullableFilter<'Advertisement'> | Date | string | null;
     endAt?: DateTimeNullableFilter<'Advertisement'> | Date | string | null;
@@ -20628,10 +20712,15 @@ export namespace Prisma {
   export type AdvertisementOrderByWithRelationInput = {
     id?: SortOrder;
     title?: SortOrder;
-    mediaUrl?: SortOrder;
-    mediaType?: SortOrder;
+    contactPerson?: SortOrderInput | SortOrder;
+    phone?: SortOrderInput | SortOrder;
+    mediaUrl?: SortOrderInput | SortOrder;
+    mediaType?: SortOrderInput | SortOrder;
     duration?: SortOrderInput | SortOrder;
     sortOrder?: SortOrder;
+    contractAmount?: SortOrderInput | SortOrder;
+    adLocation?: SortOrderInput | SortOrder;
+    remarks?: SortOrderInput | SortOrder;
     status?: SortOrder;
     startAt?: SortOrderInput | SortOrder;
     endAt?: SortOrderInput | SortOrder;
@@ -20646,10 +20735,15 @@ export namespace Prisma {
       OR?: AdvertisementWhereInput[];
       NOT?: AdvertisementWhereInput | AdvertisementWhereInput[];
       title?: StringFilter<'Advertisement'> | string;
-      mediaUrl?: StringFilter<'Advertisement'> | string;
-      mediaType?: EnumAdMediaTypeFilter<'Advertisement'> | $Enums.AdMediaType;
+      contactPerson?: StringNullableFilter<'Advertisement'> | string | null;
+      phone?: StringNullableFilter<'Advertisement'> | string | null;
+      mediaUrl?: StringNullableFilter<'Advertisement'> | string | null;
+      mediaType?: EnumAdMediaTypeNullableFilter<'Advertisement'> | $Enums.AdMediaType | null;
       duration?: IntNullableFilter<'Advertisement'> | number | null;
       sortOrder?: IntFilter<'Advertisement'> | number;
+      contractAmount?: FloatNullableFilter<'Advertisement'> | number | null;
+      adLocation?: StringNullableFilter<'Advertisement'> | string | null;
+      remarks?: StringNullableFilter<'Advertisement'> | string | null;
       status?: EnumRecordStatusFilter<'Advertisement'> | $Enums.RecordStatus;
       startAt?: DateTimeNullableFilter<'Advertisement'> | Date | string | null;
       endAt?: DateTimeNullableFilter<'Advertisement'> | Date | string | null;
@@ -20662,10 +20756,15 @@ export namespace Prisma {
   export type AdvertisementOrderByWithAggregationInput = {
     id?: SortOrder;
     title?: SortOrder;
-    mediaUrl?: SortOrder;
-    mediaType?: SortOrder;
+    contactPerson?: SortOrderInput | SortOrder;
+    phone?: SortOrderInput | SortOrder;
+    mediaUrl?: SortOrderInput | SortOrder;
+    mediaType?: SortOrderInput | SortOrder;
     duration?: SortOrderInput | SortOrder;
     sortOrder?: SortOrder;
+    contractAmount?: SortOrderInput | SortOrder;
+    adLocation?: SortOrderInput | SortOrder;
+    remarks?: SortOrderInput | SortOrder;
     status?: SortOrder;
     startAt?: SortOrderInput | SortOrder;
     endAt?: SortOrderInput | SortOrder;
@@ -20688,10 +20787,18 @@ export namespace Prisma {
       | AdvertisementScalarWhereWithAggregatesInput[];
     id?: StringWithAggregatesFilter<'Advertisement'> | string;
     title?: StringWithAggregatesFilter<'Advertisement'> | string;
-    mediaUrl?: StringWithAggregatesFilter<'Advertisement'> | string;
-    mediaType?: EnumAdMediaTypeWithAggregatesFilter<'Advertisement'> | $Enums.AdMediaType;
+    contactPerson?: StringNullableWithAggregatesFilter<'Advertisement'> | string | null;
+    phone?: StringNullableWithAggregatesFilter<'Advertisement'> | string | null;
+    mediaUrl?: StringNullableWithAggregatesFilter<'Advertisement'> | string | null;
+    mediaType?:
+      | EnumAdMediaTypeNullableWithAggregatesFilter<'Advertisement'>
+      | $Enums.AdMediaType
+      | null;
     duration?: IntNullableWithAggregatesFilter<'Advertisement'> | number | null;
     sortOrder?: IntWithAggregatesFilter<'Advertisement'> | number;
+    contractAmount?: FloatNullableWithAggregatesFilter<'Advertisement'> | number | null;
+    adLocation?: StringNullableWithAggregatesFilter<'Advertisement'> | string | null;
+    remarks?: StringNullableWithAggregatesFilter<'Advertisement'> | string | null;
     status?: EnumRecordStatusWithAggregatesFilter<'Advertisement'> | $Enums.RecordStatus;
     startAt?: DateTimeNullableWithAggregatesFilter<'Advertisement'> | Date | string | null;
     endAt?: DateTimeNullableWithAggregatesFilter<'Advertisement'> | Date | string | null;
@@ -21701,10 +21808,15 @@ export namespace Prisma {
   export type AdvertisementCreateInput = {
     id?: string;
     title: string;
-    mediaUrl: string;
-    mediaType: $Enums.AdMediaType;
+    contactPerson?: string | null;
+    phone?: string | null;
+    mediaUrl?: string | null;
+    mediaType?: $Enums.AdMediaType | null;
     duration?: number | null;
     sortOrder?: number;
+    contractAmount?: number | null;
+    adLocation?: string | null;
+    remarks?: string | null;
     status?: $Enums.RecordStatus;
     startAt?: Date | string | null;
     endAt?: Date | string | null;
@@ -21715,10 +21827,15 @@ export namespace Prisma {
   export type AdvertisementUncheckedCreateInput = {
     id?: string;
     title: string;
-    mediaUrl: string;
-    mediaType: $Enums.AdMediaType;
+    contactPerson?: string | null;
+    phone?: string | null;
+    mediaUrl?: string | null;
+    mediaType?: $Enums.AdMediaType | null;
     duration?: number | null;
     sortOrder?: number;
+    contractAmount?: number | null;
+    adLocation?: string | null;
+    remarks?: string | null;
     status?: $Enums.RecordStatus;
     startAt?: Date | string | null;
     endAt?: Date | string | null;
@@ -21729,10 +21846,15 @@ export namespace Prisma {
   export type AdvertisementUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string;
     title?: StringFieldUpdateOperationsInput | string;
-    mediaUrl?: StringFieldUpdateOperationsInput | string;
-    mediaType?: EnumAdMediaTypeFieldUpdateOperationsInput | $Enums.AdMediaType;
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null;
+    phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null;
+    mediaType?: NullableEnumAdMediaTypeFieldUpdateOperationsInput | $Enums.AdMediaType | null;
     duration?: NullableIntFieldUpdateOperationsInput | number | null;
     sortOrder?: IntFieldUpdateOperationsInput | number;
+    contractAmount?: NullableFloatFieldUpdateOperationsInput | number | null;
+    adLocation?: NullableStringFieldUpdateOperationsInput | string | null;
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -21743,10 +21865,15 @@ export namespace Prisma {
   export type AdvertisementUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string;
     title?: StringFieldUpdateOperationsInput | string;
-    mediaUrl?: StringFieldUpdateOperationsInput | string;
-    mediaType?: EnumAdMediaTypeFieldUpdateOperationsInput | $Enums.AdMediaType;
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null;
+    phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null;
+    mediaType?: NullableEnumAdMediaTypeFieldUpdateOperationsInput | $Enums.AdMediaType | null;
     duration?: NullableIntFieldUpdateOperationsInput | number | null;
     sortOrder?: IntFieldUpdateOperationsInput | number;
+    contractAmount?: NullableFloatFieldUpdateOperationsInput | number | null;
+    adLocation?: NullableStringFieldUpdateOperationsInput | string | null;
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -21757,10 +21884,15 @@ export namespace Prisma {
   export type AdvertisementCreateManyInput = {
     id?: string;
     title: string;
-    mediaUrl: string;
-    mediaType: $Enums.AdMediaType;
+    contactPerson?: string | null;
+    phone?: string | null;
+    mediaUrl?: string | null;
+    mediaType?: $Enums.AdMediaType | null;
     duration?: number | null;
     sortOrder?: number;
+    contractAmount?: number | null;
+    adLocation?: string | null;
+    remarks?: string | null;
     status?: $Enums.RecordStatus;
     startAt?: Date | string | null;
     endAt?: Date | string | null;
@@ -21771,10 +21903,15 @@ export namespace Prisma {
   export type AdvertisementUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string;
     title?: StringFieldUpdateOperationsInput | string;
-    mediaUrl?: StringFieldUpdateOperationsInput | string;
-    mediaType?: EnumAdMediaTypeFieldUpdateOperationsInput | $Enums.AdMediaType;
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null;
+    phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null;
+    mediaType?: NullableEnumAdMediaTypeFieldUpdateOperationsInput | $Enums.AdMediaType | null;
     duration?: NullableIntFieldUpdateOperationsInput | number | null;
     sortOrder?: IntFieldUpdateOperationsInput | number;
+    contractAmount?: NullableFloatFieldUpdateOperationsInput | number | null;
+    adLocation?: NullableStringFieldUpdateOperationsInput | string | null;
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -21785,10 +21922,15 @@ export namespace Prisma {
   export type AdvertisementUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string;
     title?: StringFieldUpdateOperationsInput | string;
-    mediaUrl?: StringFieldUpdateOperationsInput | string;
-    mediaType?: EnumAdMediaTypeFieldUpdateOperationsInput | $Enums.AdMediaType;
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null;
+    phone?: NullableStringFieldUpdateOperationsInput | string | null;
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null;
+    mediaType?: NullableEnumAdMediaTypeFieldUpdateOperationsInput | $Enums.AdMediaType | null;
     duration?: NullableIntFieldUpdateOperationsInput | number | null;
     sortOrder?: IntFieldUpdateOperationsInput | number;
+    contractAmount?: NullableFloatFieldUpdateOperationsInput | number | null;
+    adLocation?: NullableStringFieldUpdateOperationsInput | string | null;
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -22703,11 +22845,11 @@ export namespace Prisma {
     updatedAt?: SortOrder;
   };
 
-  export type EnumAdMediaTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.AdMediaType | EnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    in?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    notIn?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    not?: NestedEnumAdMediaTypeFilter<$PrismaModel> | $Enums.AdMediaType;
+  export type EnumAdMediaTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.AdMediaType | EnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    in?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    notIn?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    not?: NestedEnumAdMediaTypeNullableFilter<$PrismaModel> | $Enums.AdMediaType | null;
   };
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -22721,13 +22863,29 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null;
   };
 
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null;
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null;
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null;
+    lt?: number | FloatFieldRefInput<$PrismaModel>;
+    lte?: number | FloatFieldRefInput<$PrismaModel>;
+    gt?: number | FloatFieldRefInput<$PrismaModel>;
+    gte?: number | FloatFieldRefInput<$PrismaModel>;
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null;
+  };
+
   export type AdvertisementCountOrderByAggregateInput = {
     id?: SortOrder;
     title?: SortOrder;
+    contactPerson?: SortOrder;
+    phone?: SortOrder;
     mediaUrl?: SortOrder;
     mediaType?: SortOrder;
     duration?: SortOrder;
     sortOrder?: SortOrder;
+    contractAmount?: SortOrder;
+    adLocation?: SortOrder;
+    remarks?: SortOrder;
     status?: SortOrder;
     startAt?: SortOrder;
     endAt?: SortOrder;
@@ -22738,15 +22896,21 @@ export namespace Prisma {
   export type AdvertisementAvgOrderByAggregateInput = {
     duration?: SortOrder;
     sortOrder?: SortOrder;
+    contractAmount?: SortOrder;
   };
 
   export type AdvertisementMaxOrderByAggregateInput = {
     id?: SortOrder;
     title?: SortOrder;
+    contactPerson?: SortOrder;
+    phone?: SortOrder;
     mediaUrl?: SortOrder;
     mediaType?: SortOrder;
     duration?: SortOrder;
     sortOrder?: SortOrder;
+    contractAmount?: SortOrder;
+    adLocation?: SortOrder;
+    remarks?: SortOrder;
     status?: SortOrder;
     startAt?: SortOrder;
     endAt?: SortOrder;
@@ -22757,10 +22921,15 @@ export namespace Prisma {
   export type AdvertisementMinOrderByAggregateInput = {
     id?: SortOrder;
     title?: SortOrder;
+    contactPerson?: SortOrder;
+    phone?: SortOrder;
     mediaUrl?: SortOrder;
     mediaType?: SortOrder;
     duration?: SortOrder;
     sortOrder?: SortOrder;
+    contractAmount?: SortOrder;
+    adLocation?: SortOrder;
+    remarks?: SortOrder;
     status?: SortOrder;
     startAt?: SortOrder;
     endAt?: SortOrder;
@@ -22771,16 +22940,20 @@ export namespace Prisma {
   export type AdvertisementSumOrderByAggregateInput = {
     duration?: SortOrder;
     sortOrder?: SortOrder;
+    contractAmount?: SortOrder;
   };
 
-  export type EnumAdMediaTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.AdMediaType | EnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    in?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    notIn?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    not?: NestedEnumAdMediaTypeWithAggregatesFilter<$PrismaModel> | $Enums.AdMediaType;
-    _count?: NestedIntFilter<$PrismaModel>;
-    _min?: NestedEnumAdMediaTypeFilter<$PrismaModel>;
-    _max?: NestedEnumAdMediaTypeFilter<$PrismaModel>;
+  export type EnumAdMediaTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AdMediaType | EnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    in?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    notIn?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    not?:
+      | NestedEnumAdMediaTypeNullableWithAggregatesFilter<$PrismaModel>
+      | $Enums.AdMediaType
+      | null;
+    _count?: NestedIntNullableFilter<$PrismaModel>;
+    _min?: NestedEnumAdMediaTypeNullableFilter<$PrismaModel>;
+    _max?: NestedEnumAdMediaTypeNullableFilter<$PrismaModel>;
   };
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -22797,6 +22970,22 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>;
     _min?: NestedIntNullableFilter<$PrismaModel>;
     _max?: NestedIntNullableFilter<$PrismaModel>;
+  };
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null;
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null;
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null;
+    lt?: number | FloatFieldRefInput<$PrismaModel>;
+    lte?: number | FloatFieldRefInput<$PrismaModel>;
+    gt?: number | FloatFieldRefInput<$PrismaModel>;
+    gte?: number | FloatFieldRefInput<$PrismaModel>;
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null;
+    _count?: NestedIntNullableFilter<$PrismaModel>;
+    _avg?: NestedFloatNullableFilter<$PrismaModel>;
+    _sum?: NestedFloatNullableFilter<$PrismaModel>;
+    _min?: NestedFloatNullableFilter<$PrismaModel>;
+    _max?: NestedFloatNullableFilter<$PrismaModel>;
   };
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -23317,11 +23506,19 @@ export namespace Prisma {
     set?: Date | string | null;
   };
 
-  export type EnumAdMediaTypeFieldUpdateOperationsInput = {
-    set?: $Enums.AdMediaType;
+  export type NullableEnumAdMediaTypeFieldUpdateOperationsInput = {
+    set?: $Enums.AdMediaType | null;
   };
 
   export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null;
+    increment?: number;
+    decrement?: number;
+    multiply?: number;
+    divide?: number;
+  };
+
+  export type NullableFloatFieldUpdateOperationsInput = {
     set?: number | null;
     increment?: number;
     decrement?: number;
@@ -23536,21 +23733,35 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>;
   };
 
-  export type NestedEnumAdMediaTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.AdMediaType | EnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    in?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    notIn?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    not?: NestedEnumAdMediaTypeFilter<$PrismaModel> | $Enums.AdMediaType;
+  export type NestedEnumAdMediaTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.AdMediaType | EnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    in?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    notIn?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    not?: NestedEnumAdMediaTypeNullableFilter<$PrismaModel> | $Enums.AdMediaType | null;
   };
 
-  export type NestedEnumAdMediaTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.AdMediaType | EnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    in?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    notIn?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel>;
-    not?: NestedEnumAdMediaTypeWithAggregatesFilter<$PrismaModel> | $Enums.AdMediaType;
-    _count?: NestedIntFilter<$PrismaModel>;
-    _min?: NestedEnumAdMediaTypeFilter<$PrismaModel>;
-    _max?: NestedEnumAdMediaTypeFilter<$PrismaModel>;
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null;
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null;
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null;
+    lt?: number | FloatFieldRefInput<$PrismaModel>;
+    lte?: number | FloatFieldRefInput<$PrismaModel>;
+    gt?: number | FloatFieldRefInput<$PrismaModel>;
+    gte?: number | FloatFieldRefInput<$PrismaModel>;
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null;
+  };
+
+  export type NestedEnumAdMediaTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AdMediaType | EnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    in?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    notIn?: $Enums.AdMediaType[] | ListEnumAdMediaTypeFieldRefInput<$PrismaModel> | null;
+    not?:
+      | NestedEnumAdMediaTypeNullableWithAggregatesFilter<$PrismaModel>
+      | $Enums.AdMediaType
+      | null;
+    _count?: NestedIntNullableFilter<$PrismaModel>;
+    _min?: NestedEnumAdMediaTypeNullableFilter<$PrismaModel>;
+    _max?: NestedEnumAdMediaTypeNullableFilter<$PrismaModel>;
   };
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -23569,7 +23780,7 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>;
   };
 
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null;
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null;
     notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null;
@@ -23577,7 +23788,12 @@ export namespace Prisma {
     lte?: number | FloatFieldRefInput<$PrismaModel>;
     gt?: number | FloatFieldRefInput<$PrismaModel>;
     gte?: number | FloatFieldRefInput<$PrismaModel>;
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null;
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null;
+    _count?: NestedIntNullableFilter<$PrismaModel>;
+    _avg?: NestedFloatNullableFilter<$PrismaModel>;
+    _sum?: NestedFloatNullableFilter<$PrismaModel>;
+    _min?: NestedFloatNullableFilter<$PrismaModel>;
+    _max?: NestedFloatNullableFilter<$PrismaModel>;
   };
 
   export type NestedBoolFilter<$PrismaModel = never> = {

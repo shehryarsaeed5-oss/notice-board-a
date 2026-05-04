@@ -39,8 +39,8 @@ function formatTarget(value: number | null) {
   return value === null ? '—' : value.toLocaleString();
 }
 
-function formatDuration(value: number | null) {
-  return value === null ? '—' : `${value}s`;
+function formatShortDate(value: Date | null) {
+  return value ? format(value, 'MMM d, yyyy') : '—';
 }
 
 function formatPrice(value: number) {
@@ -691,22 +691,22 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             </SectionCard>
 
             <SectionCard
-              title='Advertisements'
-              description='Ready for the screen'
+              title='Advertisement Contracts'
+              description='Active company contracts'
               icon={Icons.media}
               count={advertisements.total}
               footer={
                 advertisements.total > visibleAds.length ? (
                   <div className='flex justify-end'>
                     <CompactMorePill
-                      label={`Showing ${visibleAds.length} of ${advertisements.total} ads`}
+                      label={`Showing ${visibleAds.length} of ${advertisements.total} contracts`}
                     />
                   </div>
                 ) : null
               }
             >
               {visibleAds.length === 0 ? (
-                <EmptySection message='No active advertisements are currently available.' />
+                <EmptySection message='No active advertisement contracts are currently available.' />
               ) : (
                 <div className='space-y-2'>
                   {visibleAds.map((ad) => (
@@ -720,13 +720,14 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                             {ad.title}
                           </div>
                           <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
-                            <RecordChip>{ad.mediaType}</RecordChip>
-                            <RecordChip>{formatDuration(ad.duration)}</RecordChip>
-                            <RecordChip>Order {ad.sortOrder}</RecordChip>
+                            <RecordChip>Active contract</RecordChip>
+                            <RecordChip>
+                              {formatShortDate(ad.startAt)} - {formatShortDate(ad.endAt)}
+                            </RecordChip>
+                            {ad.adLocation && <RecordChip>{ad.adLocation}</RecordChip>}
                           </div>
                         </div>
                       </div>
-                      <div className='mt-2 truncate text-xs text-zinc-400'>{ad.mediaUrl}</div>
                     </div>
                   ))}
                 </div>

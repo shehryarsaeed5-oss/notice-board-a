@@ -1,14 +1,11 @@
 import type { Metadata } from 'next';
 
 import { requireRouteAccess } from '@/lib/access';
-import type {
-  AdvertisementMediaType,
-  AdvertisementStatus
-} from '@/features/advertisements/api/types';
+import type { AdvertisementStatus } from '@/features/advertisements/api/types';
 import { AdvertisementPage } from '@/features/advertisements/components/advertisement-page';
 
 export const metadata: Metadata = {
-  title: 'Advertisements'
+  title: 'Advertisement Contracts'
 };
 
 type PageProps = {
@@ -27,22 +24,16 @@ function isAdvertisementStatus(value?: string): value is AdvertisementStatus {
   return value === 'ACTIVE' || value === 'INACTIVE' || value === 'ARCHIVED';
 }
 
-function isAdvertisementMediaType(value?: string): value is AdvertisementMediaType {
-  return value === 'IMAGE' || value === 'VIDEO';
-}
-
 export default async function Page({ searchParams }: PageProps) {
   await requireRouteAccess('/dashboard/advertisements');
   const params = await searchParams;
   const search = readQueryValue(params.search);
   const status = readQueryValue(params.status);
-  const mediaType = readQueryValue(params.mediaType);
 
   return (
     <AdvertisementPage
       search={search}
       status={isAdvertisementStatus(status) ? status : undefined}
-      mediaType={isAdvertisementMediaType(mediaType) ? mediaType : undefined}
     />
   );
 }

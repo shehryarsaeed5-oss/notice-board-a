@@ -20,22 +20,13 @@ import {
 import { useAppForm, useFormFields } from '@/components/ui/tanstack-form';
 import { formatDateTimeInputValue } from '@/lib/date-time';
 import { createAdvertisement, updateAdvertisement } from '../api/client';
-import type {
-  AdvertisementMediaType,
-  AdvertisementRecord,
-  AdvertisementStatus
-} from '../api/types';
+import type { AdvertisementRecord, AdvertisementStatus } from '../api/types';
 import { advertisementSchema, type AdvertisementFormSchemaValues } from '../schemas/advertisement';
 
 const STATUS_OPTIONS: Array<{ value: AdvertisementStatus; label: string }> = [
   { value: 'ACTIVE', label: 'Active' },
   { value: 'INACTIVE', label: 'Inactive' },
   { value: 'ARCHIVED', label: 'Archived' }
-];
-
-const MEDIA_TYPE_OPTIONS: Array<{ value: AdvertisementMediaType; label: string }> = [
-  { value: 'IMAGE', label: 'Image' },
-  { value: 'VIDEO', label: 'Video' }
 ];
 
 interface AdvertisementFormSheetProps {
@@ -81,10 +72,11 @@ export function AdvertisementFormSheet({
   const form = useAppForm({
     defaultValues: {
       title: advertisement?.title ?? '',
-      mediaUrl: advertisement?.mediaUrl ?? '',
-      mediaType: advertisement?.mediaType ?? 'IMAGE',
-      duration: advertisement?.duration ?? '',
-      sortOrder: advertisement?.sortOrder ?? 0,
+      contactPerson: advertisement?.contactPerson ?? '',
+      phone: advertisement?.phone ?? '',
+      contractAmount: advertisement?.contractAmount ?? '',
+      adLocation: advertisement?.adLocation ?? '',
+      remarks: advertisement?.remarks ?? '',
       startAt: advertisement?.startAt ? formatDateTimeInputValue(advertisement.startAt) : '',
       endAt: advertisement?.endAt ? formatDateTimeInputValue(advertisement.endAt) : '',
       status: advertisement?.status ?? 'ACTIVE'
@@ -106,17 +98,20 @@ export function AdvertisementFormSheet({
     }
   });
 
-  const { FormTextField, FormSelectField } = useFormFields<AdvertisementFormSchemaValues>();
+  const { FormTextField, FormSelectField, FormTextareaField } =
+    useFormFields<AdvertisementFormSchemaValues>();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className='flex flex-col sm:max-w-2xl'>
         <SheetHeader>
-          <SheetTitle>{isEdit ? 'Edit Advertisement' : 'Add Advertisement'}</SheetTitle>
+          <SheetTitle>
+            {isEdit ? 'Edit Advertisement Contract' : 'Add Advertisement Contract'}
+          </SheetTitle>
           <SheetDescription>
             {isEdit
-              ? 'Update the advertisement information below.'
-              : 'Create a new advertisement record for the dashboard.'}
+              ? 'Update the company contract details below.'
+              : 'Create a new advertisement contract record for the dashboard.'}
           </SheetDescription>
         </SheetHeader>
 
@@ -125,56 +120,32 @@ export function AdvertisementFormSheet({
             <form.Form id='advertisement-form' className='space-y-4'>
               <FormTextField
                 name='title'
-                label='Title'
+                label='Company Name'
                 required
-                placeholder='Weekend Feature Spot'
+                placeholder='Notice Board Media Group'
                 validators={{
-                  onBlur: z.string().trim().min(2, 'Title is required')
-                }}
-              />
-
-              <FormTextField
-                name='mediaUrl'
-                label='Media URL'
-                required
-                placeholder='https://...'
-                validators={{
-                  onBlur: z.string().trim().min(1, 'Media URL is required')
+                  onBlur: z.string().trim().min(2, 'Company name is required')
                 }}
               />
 
               <div className='grid gap-4 md:grid-cols-2'>
-                <FormSelectField
-                  name='mediaType'
-                  label='Media Type'
-                  required
-                  options={MEDIA_TYPE_OPTIONS}
-                  placeholder='Select media type'
-                  validators={{
-                    onBlur: z.enum(['IMAGE', 'VIDEO'])
-                  }}
+                <FormTextField
+                  name='contactPerson'
+                  label='Contact Person'
+                  placeholder='Optional contact'
                 />
 
-                <FormSelectField
-                  name='status'
-                  label='Status'
-                  required
-                  options={STATUS_OPTIONS}
-                  placeholder='Select status'
-                  validators={{
-                    onBlur: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED'])
-                  }}
-                />
+                <FormTextField name='phone' label='Phone' placeholder='Optional phone' />
               </div>
 
               <div className='grid gap-4 md:grid-cols-2'>
                 <FormTextField
-                  name='duration'
-                  label='Duration'
+                  name='contractAmount'
+                  label='Contract Amount'
                   type='number'
                   min={0}
-                  step={1}
-                  placeholder='Optional duration'
+                  step='0.01'
+                  placeholder='Optional amount'
                   validators={{
                     onBlur: z.preprocess((value) => {
                       if (value === '' || value === null || value === undefined) {
@@ -186,32 +157,34 @@ export function AdvertisementFormSheet({
                       }
 
                       return typeof value === 'string' ? Number(value) : value;
-                    }, z.number().int().nonnegative().optional())
+                    }, z.number().positive().optional())
                   }}
                 />
 
                 <FormTextField
-                  name='sortOrder'
-                  label='Sort Order'
-                  type='number'
-                  min={0}
-                  step={1}
-                  placeholder='0'
-                  validators={{
-                    onBlur: z.preprocess((value) => {
-                      if (value === '' || value === null || value === undefined) {
-                        return undefined;
-                      }
-
-                      if (typeof value === 'string' && value.trim() === '') {
-                        return undefined;
-                      }
-
-                      return typeof value === 'string' ? Number(value) : value;
-                    }, z.number().int().nonnegative().default(0))
-                  }}
+                  name='adLocation'
+                  label='Ad Location / Screen'
+                  placeholder='Optional location or screen'
                 />
               </div>
+
+              <FormTextareaField
+                name='remarks'
+                label='Remarks'
+                placeholder='Optional remarks'
+                rows={4}
+              />
+
+              <FormSelectField
+                name='status'
+                label='Status'
+                required
+                options={STATUS_OPTIONS}
+                placeholder='Select status'
+                validators={{
+                  onBlur: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED'])
+                }}
+              />
 
               <div className='grid gap-4 md:grid-cols-2'>
                 <form.AppField
@@ -222,7 +195,9 @@ export function AdvertisementFormSheet({
                     return (
                       <field.FieldSet>
                         <field.Field>
-                          <field.FieldLabel htmlFor={field.name}>Start</field.FieldLabel>
+                          <field.FieldLabel htmlFor={field.name}>
+                            Contract Start Date
+                          </field.FieldLabel>
                           <Input
                             id={field.name}
                             name={field.name}
@@ -247,7 +222,9 @@ export function AdvertisementFormSheet({
                     return (
                       <field.FieldSet>
                         <field.Field>
-                          <field.FieldLabel htmlFor={field.name}>End</field.FieldLabel>
+                          <field.FieldLabel htmlFor={field.name}>
+                            Contract End Date
+                          </field.FieldLabel>
                           <Input
                             id={field.name}
                             name={field.name}
@@ -278,7 +255,7 @@ export function AdvertisementFormSheet({
             isLoading={createMutation.isPending || updateMutation.isPending}
           >
             <Icons.check />
-            {isEdit ? 'Update Advertisement' : 'Create Advertisement'}
+            {isEdit ? 'Update Contract' : 'Create Contract'}
           </Button>
         </SheetFooter>
       </SheetContent>
@@ -293,7 +270,7 @@ export function AdvertisementFormSheetTrigger() {
     <>
       <Button onClick={() => setOpen(true)}>
         <Icons.add className='mr-2 h-4 w-4' />
-        Add Advertisement
+        Add Advertisement Contract
       </Button>
       <AdvertisementFormSheet open={open} onOpenChange={setOpen} />
     </>

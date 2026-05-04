@@ -130,17 +130,30 @@ model MeetingSchedule {
 }
 
 model Advertisement {
-  id        String       @id @default(cuid())
-  title     String
-  mediaUrl  String
-  mediaType AdMediaType
-  duration  Int?
-  sortOrder Int          @default(0)
-  status    RecordStatus @default(ACTIVE)
-  startAt   DateTime?
-  endAt     DateTime?
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id             String       @id @default(cuid())
+  title          String
+  contactPerson  String?
+  phone          String?
+  mediaUrl       String?
+  mediaType      AdMediaType?
+  duration       Int?
+  sortOrder      Int          @default(0)
+  contractAmount Float?
+  adLocation     String?
+  remarks        String?
+  status         RecordStatus @default(ACTIVE)
+  startAt        DateTime?
+  endAt          DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([status])
+  @@index([title])
+  @@index([contactPerson])
+  @@index([phone])
+  @@index([adLocation])
+  @@index([startAt])
+  @@index([endAt])
 }
 
 model WeatherSetting {

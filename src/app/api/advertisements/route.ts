@@ -14,13 +14,11 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const search = searchParams.get('search') ?? undefined;
   const status = searchParams.get('status') ?? undefined;
-  const mediaType = searchParams.get('mediaType') ?? undefined;
 
   const data = await getAdvertisements({
     search,
     status:
-      status === 'ACTIVE' || status === 'INACTIVE' || status === 'ARCHIVED' ? status : undefined,
-    mediaType: mediaType === 'IMAGE' || mediaType === 'VIDEO' ? mediaType : undefined
+      status === 'ACTIVE' || status === 'INACTIVE' || status === 'ARCHIVED' ? status : undefined
   });
 
   return NextResponse.json(data);

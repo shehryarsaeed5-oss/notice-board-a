@@ -37,10 +37,15 @@ export interface DisplayBoardMovieItem {
 export interface DisplayBoardAdvertisementItem {
   id: string;
   title: string;
-  mediaUrl: string;
-  mediaType: AdvertisementMediaType;
-  duration: number | null;
-  sortOrder: number;
+  contactPerson: string | null;
+  phone: string | null;
+  contractAmount: number | null;
+  adLocation: string | null;
+  remarks: string | null;
+  mediaUrl?: string | null;
+  mediaType?: AdvertisementMediaType | null;
+  duration?: number | null;
+  sortOrder?: number;
   status: AdvertisementStatus;
   startAt: Date | null;
   endAt: Date | null;

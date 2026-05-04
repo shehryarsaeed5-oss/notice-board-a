@@ -1,16 +1,20 @@
 export const ADVERTISEMENT_STATUSES = ['ACTIVE', 'INACTIVE', 'ARCHIVED'] as const;
-export const ADVERTISEMENT_MEDIA_TYPES = ['IMAGE', 'VIDEO'] as const;
+export type AdvertisementMediaType = 'IMAGE' | 'VIDEO';
 
 export type AdvertisementStatus = (typeof ADVERTISEMENT_STATUSES)[number];
-export type AdvertisementMediaType = (typeof ADVERTISEMENT_MEDIA_TYPES)[number];
 
 export interface AdvertisementRecord {
   id: string;
   title: string;
-  mediaUrl: string;
-  mediaType: AdvertisementMediaType;
+  contactPerson: string | null;
+  phone: string | null;
+  mediaUrl: string | null;
+  mediaType: 'IMAGE' | 'VIDEO' | null;
   duration: number | null;
   sortOrder: number;
+  contractAmount: number | null;
+  adLocation: string | null;
+  remarks: string | null;
   status: AdvertisementStatus;
   startAt: Date | null;
   endAt: Date | null;
@@ -20,8 +24,11 @@ export interface AdvertisementRecord {
 
 export interface AdvertisementFormValues {
   title: string;
-  mediaUrl: string;
-  mediaType: AdvertisementMediaType;
+  contactPerson?: string;
+  phone?: string;
+  contractAmount?: number | '' | null;
+  adLocation?: string;
+  remarks?: string;
   duration?: number | '' | null;
   sortOrder?: number | '' | null;
   startAt?: string;
@@ -32,7 +39,6 @@ export interface AdvertisementFormValues {
 export interface AdvertisementListFilters {
   search?: string;
   status?: AdvertisementStatus;
-  mediaType?: AdvertisementMediaType;
 }
 
 export interface AdvertisementListResult {

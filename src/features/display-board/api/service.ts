@@ -56,6 +56,17 @@ function sortByRoster(
   return left.sortOrder - right.sortOrder || left.name.localeCompare(right.name);
 }
 
+function isActiveContractNow(
+  advertisement: { startAt: Date | null; endAt: Date | null },
+  now: Date
+) {
+  if (!advertisement.startAt || !advertisement.endAt) {
+    return false;
+  }
+
+  return advertisement.startAt <= now && advertisement.endAt >= now;
+}
+
 function normalizeShift(value: string | null | undefined): string | null {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
@@ -96,7 +107,6 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     movieSchedules,
     movieSchedulesTotal,
     advertisements,
-    advertisementsTotal,
     salesTargets,
     salesTargetsTotal,
     concessionPriceList,
@@ -169,31 +179,9 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     }),
     prisma.advertisement.findMany({
       where: {
-        status: 'ACTIVE',
-        AND: [
-          {
-            OR: [{ startAt: null }, { startAt: { lte: now } }]
-          },
-          {
-            OR: [{ endAt: null }, { endAt: { gte: now } }]
-          }
-        ]
+        status: 'ACTIVE'
       },
-      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }, { title: 'asc' }],
-      take: 5
-    }),
-    prisma.advertisement.count({
-      where: {
-        status: 'ACTIVE',
-        AND: [
-          {
-            OR: [{ startAt: null }, { startAt: { lte: now } }]
-          },
-          {
-            OR: [{ endAt: null }, { endAt: { gte: now } }]
-          }
-        ]
-      }
+      orderBy: [{ startAt: 'asc' }, { title: 'asc' }]
     }),
     prisma.itemSalesTarget.findMany({
       where: {
@@ -259,6 +247,12 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     })
   ]);
 
+  const activeAdvertisements = advertisements.filter((advertisement) =>
+    isActiveContractNow(advertisement, now)
+  );
+  const visibleAdvertisements =
+    activeAdvertisements.length > 0 ? activeAdvertisements : advertisements;
+
   const staffAttendance = staffAttendanceRecords
     .map((record) => ({
       id: record.staff.id,
@@ -309,8 +303,8 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
       total: movieSchedulesTotal
     },
     advertisements: {
-      items: advertisements as DisplayBoardAdvertisementItem[],
-      total: advertisementsTotal
+      items: visibleAdvertisements.slice(0, 5) as DisplayBoardAdvertisementItem[],
+      total: visibleAdvertisements.length
     },
     salesTargets: {
       items: salesTargets as DisplayBoardSalesTargetItem[],

@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { Icons } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import type { AdvertisementRecord } from '../api/types';
 import { AdvertisementActions } from './advertisement-actions';
@@ -32,15 +31,8 @@ function getStatusClass(status: AdvertisementRecord['status']) {
   }
 }
 
-function getMediaTypeClass(mediaType: AdvertisementRecord['mediaType']) {
-  switch (mediaType) {
-    case 'IMAGE':
-      return 'border-sky-500/30 bg-sky-500/10 text-sky-300';
-    case 'VIDEO':
-      return 'border-violet-500/30 bg-violet-500/10 text-violet-300';
-    default:
-      return '';
-  }
+function formatField(value: string | null) {
+  return value?.trim() ? value : '—';
 }
 
 function formatDateTime(value: Date | null) {
@@ -48,22 +40,24 @@ function formatDateTime(value: Date | null) {
     return '—';
   }
 
-  return format(value, 'MMM d, yyyy h:mm a');
+  return format(value, 'MMM d, yyyy');
 }
 
-function formatNumber(value: number | null) {
+function formatAmount(value: number | null) {
   if (value === null) {
     return '—';
   }
 
-  return value.toLocaleString();
+  return `Rs. ${new Intl.NumberFormat('en-PK', {
+    maximumFractionDigits: 2
+  }).format(value)}`;
 }
 
 export function AdvertisementTable({ advertisements }: AdvertisementTableProps) {
   return (
     <Card className='border-border/60 bg-card/90 shadow-sm'>
       <CardHeader>
-        <CardDescription>Advertisement records</CardDescription>
+        <CardDescription>Advertisement contract records</CardDescription>
         <CardTitle>{advertisements.length.toLocaleString()} record(s)</CardTitle>
       </CardHeader>
       <CardContent>
@@ -71,13 +65,13 @@ export function AdvertisementTable({ advertisements }: AdvertisementTableProps) 
           <Table>
             <TableHeader className='bg-muted/50'>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Media Type</TableHead>
-                <TableHead>Media URL</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Sort Order</TableHead>
-                <TableHead>Start</TableHead>
-                <TableHead>End</TableHead>
+                <TableHead>Company Name</TableHead>
+                <TableHead>Contact Person</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Contract Start</TableHead>
+                <TableHead>Contract End</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Location/Screen</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className='text-right'>Actions</TableHead>
               </TableRow>
@@ -86,74 +80,26 @@ export function AdvertisementTable({ advertisements }: AdvertisementTableProps) 
               {advertisements.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={9} className='text-muted-foreground h-24 text-center'>
-                    No advertisements found.
+                    No advertisement contracts found.
                   </TableCell>
                 </TableRow>
               ) : (
                 advertisements.map((advertisement) => (
                   <TableRow key={advertisement.id}>
-                    <TableCell className='align-top'>
-                      <div className='space-y-2'>
-                        <div className='font-medium'>{advertisement.title}</div>
-                        {advertisement.mediaType === 'IMAGE' && advertisement.mediaUrl ? (
-                          <div className='flex items-center gap-3'>
-                            <div className='border-border/60 bg-muted flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border'>
-                              <img
-                                src={advertisement.mediaUrl}
-                                alt={advertisement.title}
-                                loading='lazy'
-                                referrerPolicy='no-referrer'
-                                className='h-full w-full object-cover'
-                              />
-                            </div>
-                            <span className='text-muted-foreground text-xs'>Image preview</span>
-                          </div>
-                        ) : (
-                          <Badge
-                            variant='outline'
-                            className='border-violet-500/30 bg-violet-500/10 text-violet-300'
-                          >
-                            <Icons.video className='mr-1 size-3.5' />
-                            Video media
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant='outline'
-                        className={cn('gap-1.5', getMediaTypeClass(advertisement.mediaType))}
-                      >
-                        {advertisement.mediaType === 'IMAGE' ? (
-                          <Icons.media className='size-3.5' />
-                        ) : (
-                          <Icons.video className='size-3.5' />
-                        )}
-                        {advertisement.mediaType}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className='max-w-[18rem] whitespace-nowrap align-top'>
-                      <a
-                        href={advertisement.mediaUrl}
-                        target='_blank'
-                        rel='noreferrer'
-                        title={advertisement.mediaUrl}
-                        className='text-primary hover:underline'
-                      >
-                        {advertisement.mediaUrl}
-                      </a>
-                    </TableCell>
-                    <TableCell className='whitespace-nowrap'>
-                      {formatNumber(advertisement.duration)}
-                    </TableCell>
-                    <TableCell className='whitespace-nowrap'>
-                      {formatNumber(advertisement.sortOrder)}
-                    </TableCell>
+                    <TableCell className='font-medium'>{advertisement.title}</TableCell>
+                    <TableCell>{formatField(advertisement.contactPerson)}</TableCell>
+                    <TableCell>{formatField(advertisement.phone)}</TableCell>
                     <TableCell className='whitespace-nowrap'>
                       {formatDateTime(advertisement.startAt)}
                     </TableCell>
                     <TableCell className='whitespace-nowrap'>
                       {formatDateTime(advertisement.endAt)}
+                    </TableCell>
+                    <TableCell className='whitespace-nowrap'>
+                      {formatAmount(advertisement.contractAmount)}
+                    </TableCell>
+                    <TableCell className='max-w-[16rem]'>
+                      {formatField(advertisement.adLocation)}
                     </TableCell>
                     <TableCell>
                       <Badge
