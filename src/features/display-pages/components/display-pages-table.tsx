@@ -14,6 +14,10 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import {
+  DISPLAY_BLOCKS,
+  getEnabledSortedDisplayBlocks
+} from '@/features/display-pages/lib/display-layout-config';
 import { statusBadgeClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
@@ -86,6 +90,7 @@ export function DisplayPagesTable({ displayPages }: DisplayPagesTableProps) {
                   sort={sort}
                   onSort={handleSort}
                 />
+                <TableHead>Display</TableHead>
                 <SortableTableHead
                   label='Display URL'
                   sortKey='displayUrl'
@@ -104,13 +109,14 @@ export function DisplayPagesTable({ displayPages }: DisplayPagesTableProps) {
             <TableBody>
               {sortedDisplayPages.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className='text-muted-foreground h-24 text-center'>
+                  <TableCell colSpan={8} className='text-muted-foreground h-24 text-center'>
                     No display pages found.
                   </TableCell>
                 </TableRow>
               ) : (
                 sortedDisplayPages.map((displayPage) => {
                   const displayUrl = createDisplayPageUrl(displayPage.slug);
+                  const enabledBlocks = getEnabledSortedDisplayBlocks(displayPage.layoutConfig);
 
                   return (
                     <TableRow key={displayPage.id}>
@@ -126,6 +132,22 @@ export function DisplayPagesTable({ displayPages }: DisplayPagesTableProps) {
                         >
                           {displayPage.status}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className='flex flex-wrap gap-1.5'>
+                          <Badge
+                            variant='outline'
+                            className='border-border/60 bg-muted/40 text-foreground'
+                          >
+                            {displayPage.resolutionWidth}x{displayPage.resolutionHeight}
+                          </Badge>
+                          <Badge
+                            variant='outline'
+                            className='border-border/60 bg-muted/40 text-foreground'
+                          >
+                            {enabledBlocks.length}/{DISPLAY_BLOCKS.length} blocks
+                          </Badge>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className='flex min-w-0 items-center gap-2'>

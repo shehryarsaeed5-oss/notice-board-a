@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { getActiveAlerts } from '@/features/alerts/api/service';
 import { getEnabledSyncedMovieScheduleRowsForDate } from '@/features/movie-schedule-sync/api/service';
 import { getItemSalesTargetDisplaySummaryForDisplay } from '@/features/item-sales-target/import/api/service';
+import { normalizeDisplayLayoutConfig } from '@/features/display-pages/lib/display-layout-config';
 
 import {
   getCachedDisplayBoardData,
@@ -122,6 +123,13 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
       data: null
     };
   }
+
+  const normalizedDisplayPage = {
+    ...displayPage,
+    resolutionWidth: displayPage.resolutionWidth ?? 1920,
+    resolutionHeight: displayPage.resolutionHeight ?? 1080,
+    layoutConfig: normalizeDisplayLayoutConfig(displayPage.layoutConfig)
+  };
 
   const now = new Date();
   const { start, end } = getTodayRange(now);
@@ -320,7 +328,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
   };
 
   const data: DisplayBoardData = {
-    displayPage,
+    displayPage: normalizedDisplayPage,
     generatedAt: now,
     events: {
       items: events as DisplayBoardEventItem[],

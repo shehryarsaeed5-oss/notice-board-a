@@ -8,6 +8,8 @@ import * as z from 'zod';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { FieldDescription, FieldLegend, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Sheet,
@@ -22,6 +24,11 @@ import { useAppForm, useFormFields } from '@/components/ui/tanstack-form';
 import { createDisplayPage, updateDisplayPage } from '../api/client';
 import type { DisplayPageRecord, DisplayPageStatus } from '../api/types';
 import { normalizeDisplayPageSlug } from '../lib/slug';
+import {
+  DISPLAY_BLOCKS,
+  getDefaultDisplayLayoutConfig,
+  normalizeDisplayLayoutConfig
+} from '../lib/display-layout-config';
 import { displayPageSchema, type DisplayPageFormSchemaValues } from '../schemas/display-page';
 
 const STATUS_OPTIONS: Array<{ value: DisplayPageStatus; label: string }> = [
@@ -36,6 +43,20 @@ interface DisplayPageFormSheetProps {
   displayPage?: DisplayPageRecord;
 }
 
+function getDefaultFormValues(displayPage?: DisplayPageRecord): DisplayPageFormSchemaValues {
+  return {
+    name: displayPage?.name ?? '',
+    slug: displayPage?.slug ?? '',
+    description: displayPage?.description ?? '',
+    resolutionWidth: displayPage?.resolutionWidth ?? 1920,
+    resolutionHeight: displayPage?.resolutionHeight ?? 1080,
+    layoutConfig: normalizeDisplayLayoutConfig(
+      displayPage?.layoutConfig ?? getDefaultDisplayLayoutConfig()
+    ),
+    status: displayPage?.status ?? 'ACTIVE'
+  };
+}
+
 export function DisplayPageFormSheet({
   open,
   onOpenChange,
@@ -44,12 +65,6 @@ export function DisplayPageFormSheet({
   const router = useRouter();
   const isEdit = !!displayPage;
   const slugTouchedRef = useRef(false);
-
-  useEffect(() => {
-    if (!open) {
-      slugTouchedRef.current = false;
-    }
-  }, [open]);
 
   const createMutation = useMutation({
     mutationFn: createDisplayPage,
@@ -80,12 +95,7 @@ export function DisplayPageFormSheet({
   });
 
   const form = useAppForm({
-    defaultValues: {
-      name: displayPage?.name ?? '',
-      slug: displayPage?.slug ?? '',
-      description: displayPage?.description ?? '',
-      status: displayPage?.status ?? 'ACTIVE'
-    } as DisplayPageFormSchemaValues,
+    defaultValues: getDefaultFormValues(displayPage) as DisplayPageFormSchemaValues,
     onSubmit: async ({ value }) => {
       const parsed = displayPageSchema.safeParse(value);
 
@@ -103,12 +113,19 @@ export function DisplayPageFormSheet({
     }
   });
 
+  useEffect(() => {
+    if (!open) {
+      slugTouchedRef.current = false;
+      form.reset();
+    }
+  }, [form, open]);
+
   const { FormTextField, FormSelectField, FormTextareaField } =
     useFormFields<DisplayPageFormSchemaValues>();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className='flex flex-col sm:max-w-2xl'>
+      <SheetContent className='flex flex-col sm:max-w-3xl'>
         <SheetHeader>
           <SheetTitle>{isEdit ? 'Edit Display Page' : 'Add Display Page'}</SheetTitle>
           <SheetDescription>
@@ -120,71 +137,73 @@ export function DisplayPageFormSheet({
 
         <div className='flex-1 overflow-auto'>
           <form.AppForm>
-            <form.Form id='display-page-form' className='space-y-4'>
-              <FormTextField
-                name='name'
-                label='Name'
-                required
-                placeholder='Lobby Main'
-                validators={{
-                  onBlur: z.string().trim().min(1, 'Name is required')
-                }}
-                listeners={{
-                  onChange: ({ value, fieldApi }) => {
-                    if (isEdit || slugTouchedRef.current) {
-                      return;
+            <form.Form id='display-page-form' className='space-y-5'>
+              <div className='grid gap-4 md:grid-cols-2'>
+                <FormTextField
+                  name='name'
+                  label='Name'
+                  required
+                  placeholder='Lobby Main'
+                  validators={{
+                    onBlur: z.string().trim().min(1, 'Name is required')
+                  }}
+                  listeners={{
+                    onChange: ({ value, fieldApi }) => {
+                      if (isEdit || slugTouchedRef.current) {
+                        return;
+                      }
+
+                      fieldApi.form.setFieldValue(
+                        'slug',
+                        normalizeDisplayPageSlug(String(value ?? ''))
+                      );
                     }
+                  }}
+                />
 
-                    fieldApi.form.setFieldValue(
-                      'slug',
-                      normalizeDisplayPageSlug(String(value ?? ''))
+                <form.AppField
+                  name='slug'
+                  children={(field) => {
+                    const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+
+                    return (
+                      <field.FieldSet>
+                        <field.Field>
+                          <field.FieldLabel htmlFor={field.name}>Slug</field.FieldLabel>
+                          <Input
+                            id={field.name}
+                            name={field.name}
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(event) => {
+                              slugTouchedRef.current = true;
+                              field.handleChange(normalizeDisplayPageSlug(event.target.value));
+                            }}
+                            placeholder='lobby-main'
+                            autoComplete='off'
+                            spellCheck={false}
+                            aria-invalid={isInvalid}
+                          />
+                          <p className='text-muted-foreground text-xs'>
+                            Auto-generated from the name while creating. Use lowercase letters,
+                            numbers, and hyphens.
+                          </p>
+                          <field.FieldError />
+                        </field.Field>
+                      </field.FieldSet>
                     );
-                  }
-                }}
-              />
-
-              <form.AppField
-                name='slug'
-                children={(field) => {
-                  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
-
-                  return (
-                    <field.FieldSet>
-                      <field.Field>
-                        <field.FieldLabel htmlFor={field.name}>Slug</field.FieldLabel>
-                        <Input
-                          id={field.name}
-                          name={field.name}
-                          value={field.state.value}
-                          onBlur={field.handleBlur}
-                          onChange={(event) => {
-                            slugTouchedRef.current = true;
-                            field.handleChange(normalizeDisplayPageSlug(event.target.value));
-                          }}
-                          placeholder='lobby-main'
-                          autoComplete='off'
-                          spellCheck={false}
-                          aria-invalid={isInvalid}
-                        />
-                        <p className='text-muted-foreground text-xs'>
-                          Auto-generated from the name while creating. Use lowercase letters,
-                          numbers, and hyphens.
-                        </p>
-                        <field.FieldError />
-                      </field.Field>
-                    </field.FieldSet>
-                  );
-                }}
-                validators={{
-                  onBlur: z
-                    .string()
-                    .trim()
-                    .min(1, 'Slug is required')
-                    .refine((value) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value), {
-                      message: 'Slug must be lowercase URL-safe, like lobby-main'
-                    })
-                }}
-              />
+                  }}
+                  validators={{
+                    onBlur: z
+                      .string()
+                      .trim()
+                      .min(1, 'Slug is required')
+                      .refine((value) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value), {
+                        message: 'Slug must be lowercase URL-safe, like lobby-main'
+                      })
+                  }}
+                />
+              </div>
 
               <FormTextareaField
                 name='description'
@@ -192,6 +211,45 @@ export function DisplayPageFormSheet({
                 placeholder='Optional description for the display page'
                 rows={4}
               />
+
+              <FieldSet className='gap-4 rounded-xl border border-border/60 bg-muted/20 p-4'>
+                <div className='flex flex-col gap-1.5'>
+                  <FieldLegend className='mb-0 text-sm font-medium'>
+                    TV / LCD Display Settings
+                  </FieldLegend>
+                  <FieldDescription>
+                    Set the target screen resolution for this display page.
+                  </FieldDescription>
+                </div>
+
+                <div className='grid gap-4 md:grid-cols-2'>
+                  <FormTextField
+                    name='resolutionWidth'
+                    label='Resolution Width'
+                    required
+                    type='number'
+                    min={1}
+                    step={1}
+                    placeholder='1920'
+                    validators={{
+                      onBlur: z.coerce.number().int().positive('Resolution width must be positive')
+                    }}
+                  />
+
+                  <FormTextField
+                    name='resolutionHeight'
+                    label='Resolution Height'
+                    required
+                    type='number'
+                    min={1}
+                    step={1}
+                    placeholder='1080'
+                    validators={{
+                      onBlur: z.coerce.number().int().positive('Resolution height must be positive')
+                    }}
+                  />
+                </div>
+              </FieldSet>
 
               <FormSelectField
                 name='status'
@@ -201,6 +259,144 @@ export function DisplayPageFormSheet({
                 placeholder='Select status'
                 validators={{
                   onBlur: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED'])
+                }}
+              />
+
+              <form.AppField
+                name='layoutConfig'
+                children={(field) => {
+                  const layoutConfig = field.state.value ?? getDefaultDisplayLayoutConfig();
+
+                  return (
+                    <FieldSet className='gap-4 rounded-xl border border-border/60 bg-muted/20 p-4'>
+                      <div className='flex flex-col gap-1.5'>
+                        <FieldLegend className='mb-0 text-sm font-medium'>
+                          Display Blocks
+                        </FieldLegend>
+                        <FieldDescription>
+                          Enable the widgets that should appear on the public display and set their
+                          row limits.
+                        </FieldDescription>
+                      </div>
+
+                      <div className='grid gap-3'>
+                        {DISPLAY_BLOCKS.map((definition) => {
+                          const block =
+                            layoutConfig.blocks.find((item) => item.key === definition.key) ??
+                            getDefaultDisplayLayoutConfig().blocks.find(
+                              (item) => item.key === definition.key
+                            );
+
+                          if (!block) {
+                            return null;
+                          }
+
+                          return (
+                            <div
+                              key={definition.key}
+                              className='grid gap-3 rounded-xl border border-border/60 bg-background/70 p-3 md:grid-cols-[minmax(0,1fr)_120px_120px]'
+                            >
+                              <label className='flex items-start gap-3'>
+                                <Checkbox
+                                  checked={block.enabled}
+                                  onCheckedChange={(checked) => {
+                                    const nextBlocks = layoutConfig.blocks.map((item) =>
+                                      item.key === definition.key
+                                        ? {
+                                            ...item,
+                                            enabled: checked === true
+                                          }
+                                        : item
+                                    );
+
+                                    field.handleChange({ blocks: nextBlocks });
+                                    field.handleBlur();
+                                  }}
+                                />
+
+                                <span className='flex flex-col gap-1'>
+                                  <span className='text-sm font-medium text-foreground'>
+                                    {definition.label}
+                                  </span>
+                                  <span className='text-muted-foreground text-xs'>
+                                    Default {definition.defaultSortOrder} · rows{' '}
+                                    {definition.minRowLimit}-{definition.maxRowLimit}
+                                  </span>
+                                </span>
+                              </label>
+
+                              <div className='grid gap-1.5'>
+                                <label
+                                  htmlFor={`sort-${definition.key}`}
+                                  className='text-xs font-medium text-muted-foreground'
+                                >
+                                  Sort Order
+                                </label>
+                                <Input
+                                  id={`sort-${definition.key}`}
+                                  type='number'
+                                  min={0}
+                                  step={1}
+                                  value={block.sortOrder}
+                                  onBlur={field.handleBlur}
+                                  onChange={(event) => {
+                                    const nextValue = Number(event.target.value || 0);
+                                    const nextBlocks = layoutConfig.blocks.map((item) =>
+                                      item.key === definition.key
+                                        ? {
+                                            ...item,
+                                            sortOrder: Number.isFinite(nextValue)
+                                              ? nextValue
+                                              : definition.defaultSortOrder
+                                          }
+                                        : item
+                                    );
+
+                                    field.handleChange({ blocks: nextBlocks });
+                                  }}
+                                />
+                              </div>
+
+                              <div className='grid gap-1.5'>
+                                <label
+                                  htmlFor={`rows-${definition.key}`}
+                                  className='text-xs font-medium text-muted-foreground'
+                                >
+                                  Row Limit
+                                </label>
+                                <Input
+                                  id={`rows-${definition.key}`}
+                                  type='number'
+                                  min={definition.minRowLimit}
+                                  max={definition.maxRowLimit}
+                                  step={1}
+                                  value={block.rowLimit}
+                                  onBlur={field.handleBlur}
+                                  onChange={(event) => {
+                                    const nextValue = Number(event.target.value || 0);
+                                    const nextBlocks = layoutConfig.blocks.map((item) =>
+                                      item.key === definition.key
+                                        ? {
+                                            ...item,
+                                            rowLimit: Number.isFinite(nextValue)
+                                              ? nextValue
+                                              : definition.defaultRowLimit
+                                          }
+                                        : item
+                                    );
+
+                                    field.handleChange({ blocks: nextBlocks });
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <field.FieldError />
+                    </FieldSet>
+                  );
                 }}
               />
             </form.Form>

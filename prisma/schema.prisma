@@ -350,13 +350,16 @@ model ConcessionPriceItem {
 }
 
 model DisplayPage {
-  id          String       @id @default(cuid())
-  name        String
-  slug        String       @unique
-  description String?
-  status      RecordStatus @default(ACTIVE)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id              String       @id @default(cuid())
+  name            String
+  slug            String       @unique
+  description     String?
+  resolutionWidth Int          @default(1920)
+  resolutionHeight Int         @default(1080)
+  layoutConfig    Json?
+  status          RecordStatus @default(ACTIVE)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 }
 
 model SystemSetting {

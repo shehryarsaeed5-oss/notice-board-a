@@ -375,6 +375,9 @@ exports.Prisma.DisplayPageScalarFieldEnum = {
   name: 'name',
   slug: 'slug',
   description: 'description',
+  resolutionWidth: 'resolutionWidth',
+  resolutionHeight: 'resolutionHeight',
+  layoutConfig: 'layoutConfig',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

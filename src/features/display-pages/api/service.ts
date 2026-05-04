@@ -1,8 +1,10 @@
 import 'server-only';
 
-import { prisma } from '@/lib/prisma';
+import { Prisma } from '@/generated/prisma';
 import { bumpDisplayBoardRefreshToken } from '@/features/display-board/api/cache';
+import { prisma } from '@/lib/prisma';
 
+import { normalizeDisplayLayoutConfig } from '../lib/display-layout-config';
 import { normalizeDisplayPageSlug } from '../lib/slug';
 import type { DisplayPageFormValues, DisplayPageListFilters, DisplayPageListResult } from './types';
 
@@ -33,6 +35,26 @@ function normalizeRequiredText(value: string): string {
 function normalizeOptionalText(value?: string): string | null {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
+}
+
+function normalizeDisplayPageRecord(displayPage: {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  resolutionWidth: number | null;
+  resolutionHeight: number | null;
+  layoutConfig: unknown;
+  status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+  createdAt: Date;
+  updatedAt: Date;
+}) {
+  return {
+    ...displayPage,
+    resolutionWidth: displayPage.resolutionWidth ?? 1920,
+    resolutionHeight: displayPage.resolutionHeight ?? 1080,
+    layoutConfig: normalizeDisplayLayoutConfig(displayPage.layoutConfig)
+  };
 }
 
 function normalizeSlug(value: string): string {
@@ -94,7 +116,7 @@ export async function getDisplayPages(
   });
 
   return {
-    displayPages,
+    displayPages: displayPages.map(normalizeDisplayPageRecord),
     total: displayPages.length
   };
 }
@@ -109,13 +131,18 @@ export async function createDisplayPage(values: DisplayPageFormValues) {
       name: normalizeRequiredText(values.name),
       slug,
       description: normalizeOptionalText(values.description),
+      resolutionWidth: values.resolutionWidth,
+      resolutionHeight: values.resolutionHeight,
+      layoutConfig: normalizeDisplayLayoutConfig(
+        values.layoutConfig
+      ) as unknown as Prisma.InputJsonValue,
       status: values.status
     }
   });
 
   await bumpDisplayBoardRefreshToken();
 
-  return displayPage;
+  return normalizeDisplayPageRecord(displayPage);
 }
 
 export async function updateDisplayPage(id: string, values: DisplayPageFormValues) {
@@ -129,13 +156,18 @@ export async function updateDisplayPage(id: string, values: DisplayPageFormValue
       name: normalizeRequiredText(values.name),
       slug,
       description: normalizeOptionalText(values.description),
+      resolutionWidth: values.resolutionWidth,
+      resolutionHeight: values.resolutionHeight,
+      layoutConfig: normalizeDisplayLayoutConfig(
+        values.layoutConfig
+      ) as unknown as Prisma.InputJsonValue,
       status: values.status
     }
   });
 
   await bumpDisplayBoardRefreshToken();
 
-  return displayPage;
+  return normalizeDisplayPageRecord(displayPage);
 }
 
 export async function archiveDisplayPage(id: string) {
@@ -148,5 +180,5 @@ export async function archiveDisplayPage(id: string) {
 
   await bumpDisplayBoardRefreshToken();
 
-  return displayPage;
+  return normalizeDisplayPageRecord(displayPage);
 }

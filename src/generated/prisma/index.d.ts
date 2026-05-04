@@ -27704,8 +27704,20 @@ export namespace Prisma {
 
   export type AggregateDisplayPage = {
     _count: DisplayPageCountAggregateOutputType | null;
+    _avg: DisplayPageAvgAggregateOutputType | null;
+    _sum: DisplayPageSumAggregateOutputType | null;
     _min: DisplayPageMinAggregateOutputType | null;
     _max: DisplayPageMaxAggregateOutputType | null;
+  };
+
+  export type DisplayPageAvgAggregateOutputType = {
+    resolutionWidth: number | null;
+    resolutionHeight: number | null;
+  };
+
+  export type DisplayPageSumAggregateOutputType = {
+    resolutionWidth: number | null;
+    resolutionHeight: number | null;
   };
 
   export type DisplayPageMinAggregateOutputType = {
@@ -27713,6 +27725,8 @@ export namespace Prisma {
     name: string | null;
     slug: string | null;
     description: string | null;
+    resolutionWidth: number | null;
+    resolutionHeight: number | null;
     status: $Enums.RecordStatus | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -27723,6 +27737,8 @@ export namespace Prisma {
     name: string | null;
     slug: string | null;
     description: string | null;
+    resolutionWidth: number | null;
+    resolutionHeight: number | null;
     status: $Enums.RecordStatus | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -27733,10 +27749,23 @@ export namespace Prisma {
     name: number;
     slug: number;
     description: number;
+    resolutionWidth: number;
+    resolutionHeight: number;
+    layoutConfig: number;
     status: number;
     createdAt: number;
     updatedAt: number;
     _all: number;
+  };
+
+  export type DisplayPageAvgAggregateInputType = {
+    resolutionWidth?: true;
+    resolutionHeight?: true;
+  };
+
+  export type DisplayPageSumAggregateInputType = {
+    resolutionWidth?: true;
+    resolutionHeight?: true;
   };
 
   export type DisplayPageMinAggregateInputType = {
@@ -27744,6 +27773,8 @@ export namespace Prisma {
     name?: true;
     slug?: true;
     description?: true;
+    resolutionWidth?: true;
+    resolutionHeight?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -27754,6 +27785,8 @@ export namespace Prisma {
     name?: true;
     slug?: true;
     description?: true;
+    resolutionWidth?: true;
+    resolutionHeight?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -27764,6 +27797,9 @@ export namespace Prisma {
     name?: true;
     slug?: true;
     description?: true;
+    resolutionWidth?: true;
+    resolutionHeight?: true;
+    layoutConfig?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -27810,6 +27846,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      *
+     * Select which fields to average
+     **/
+    _avg?: DisplayPageAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: DisplayPageSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
      * Select which fields to find the minimum value
      **/
     _min?: DisplayPageMinAggregateInputType;
@@ -27839,6 +27887,8 @@ export namespace Prisma {
     take?: number;
     skip?: number;
     _count?: DisplayPageCountAggregateInputType | true;
+    _avg?: DisplayPageAvgAggregateInputType;
+    _sum?: DisplayPageSumAggregateInputType;
     _min?: DisplayPageMinAggregateInputType;
     _max?: DisplayPageMaxAggregateInputType;
   };
@@ -27848,10 +27898,15 @@ export namespace Prisma {
     name: string;
     slug: string;
     description: string | null;
+    resolutionWidth: number;
+    resolutionHeight: number;
+    layoutConfig: JsonValue | null;
     status: $Enums.RecordStatus;
     createdAt: Date;
     updatedAt: Date;
     _count: DisplayPageCountAggregateOutputType | null;
+    _avg: DisplayPageAvgAggregateOutputType | null;
+    _sum: DisplayPageSumAggregateOutputType | null;
     _min: DisplayPageMinAggregateOutputType | null;
     _max: DisplayPageMaxAggregateOutputType | null;
   };
@@ -27876,6 +27931,9 @@ export namespace Prisma {
       name?: boolean;
       slug?: boolean;
       description?: boolean;
+      resolutionWidth?: boolean;
+      resolutionHeight?: boolean;
+      layoutConfig?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -27891,6 +27949,9 @@ export namespace Prisma {
       name?: boolean;
       slug?: boolean;
       description?: boolean;
+      resolutionWidth?: boolean;
+      resolutionHeight?: boolean;
+      layoutConfig?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -27906,6 +27967,9 @@ export namespace Prisma {
       name?: boolean;
       slug?: boolean;
       description?: boolean;
+      resolutionWidth?: boolean;
+      resolutionHeight?: boolean;
+      layoutConfig?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -27918,6 +27982,9 @@ export namespace Prisma {
     name?: boolean;
     slug?: boolean;
     description?: boolean;
+    resolutionWidth?: boolean;
+    resolutionHeight?: boolean;
+    layoutConfig?: boolean;
     status?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -27925,7 +27992,16 @@ export namespace Prisma {
 
   export type DisplayPageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
     $Extensions.GetOmit<
-      'id' | 'name' | 'slug' | 'description' | 'status' | 'createdAt' | 'updatedAt',
+      | 'id'
+      | 'name'
+      | 'slug'
+      | 'description'
+      | 'resolutionWidth'
+      | 'resolutionHeight'
+      | 'layoutConfig'
+      | 'status'
+      | 'createdAt'
+      | 'updatedAt',
       ExtArgs['result']['displayPage']
     >;
 
@@ -27940,6 +28016,9 @@ export namespace Prisma {
         name: string;
         slug: string;
         description: string | null;
+        resolutionWidth: number;
+        resolutionHeight: number;
+        layoutConfig: Prisma.JsonValue | null;
         status: $Enums.RecordStatus;
         createdAt: Date;
         updatedAt: Date;
@@ -28485,6 +28564,9 @@ export namespace Prisma {
     readonly name: FieldRef<'DisplayPage', 'String'>;
     readonly slug: FieldRef<'DisplayPage', 'String'>;
     readonly description: FieldRef<'DisplayPage', 'String'>;
+    readonly resolutionWidth: FieldRef<'DisplayPage', 'Int'>;
+    readonly resolutionHeight: FieldRef<'DisplayPage', 'Int'>;
+    readonly layoutConfig: FieldRef<'DisplayPage', 'Json'>;
     readonly status: FieldRef<'DisplayPage', 'RecordStatus'>;
     readonly createdAt: FieldRef<'DisplayPage', 'DateTime'>;
     readonly updatedAt: FieldRef<'DisplayPage', 'DateTime'>;
@@ -30382,6 +30464,9 @@ export namespace Prisma {
     name: 'name';
     slug: 'slug';
     description: 'description';
+    resolutionWidth: 'resolutionWidth';
+    resolutionHeight: 'resolutionHeight';
+    layoutConfig: 'layoutConfig';
     status: 'status';
     createdAt: 'createdAt';
     updatedAt: 'updatedAt';
@@ -32248,6 +32333,9 @@ export namespace Prisma {
     name?: StringFilter<'DisplayPage'> | string;
     slug?: StringFilter<'DisplayPage'> | string;
     description?: StringNullableFilter<'DisplayPage'> | string | null;
+    resolutionWidth?: IntFilter<'DisplayPage'> | number;
+    resolutionHeight?: IntFilter<'DisplayPage'> | number;
+    layoutConfig?: JsonNullableFilter<'DisplayPage'>;
     status?: EnumRecordStatusFilter<'DisplayPage'> | $Enums.RecordStatus;
     createdAt?: DateTimeFilter<'DisplayPage'> | Date | string;
     updatedAt?: DateTimeFilter<'DisplayPage'> | Date | string;
@@ -32258,6 +32346,9 @@ export namespace Prisma {
     name?: SortOrder;
     slug?: SortOrder;
     description?: SortOrderInput | SortOrder;
+    resolutionWidth?: SortOrder;
+    resolutionHeight?: SortOrder;
+    layoutConfig?: SortOrderInput | SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -32272,6 +32363,9 @@ export namespace Prisma {
       NOT?: DisplayPageWhereInput | DisplayPageWhereInput[];
       name?: StringFilter<'DisplayPage'> | string;
       description?: StringNullableFilter<'DisplayPage'> | string | null;
+      resolutionWidth?: IntFilter<'DisplayPage'> | number;
+      resolutionHeight?: IntFilter<'DisplayPage'> | number;
+      layoutConfig?: JsonNullableFilter<'DisplayPage'>;
       status?: EnumRecordStatusFilter<'DisplayPage'> | $Enums.RecordStatus;
       createdAt?: DateTimeFilter<'DisplayPage'> | Date | string;
       updatedAt?: DateTimeFilter<'DisplayPage'> | Date | string;
@@ -32284,12 +32378,17 @@ export namespace Prisma {
     name?: SortOrder;
     slug?: SortOrder;
     description?: SortOrderInput | SortOrder;
+    resolutionWidth?: SortOrder;
+    resolutionHeight?: SortOrder;
+    layoutConfig?: SortOrderInput | SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
     _count?: DisplayPageCountOrderByAggregateInput;
+    _avg?: DisplayPageAvgOrderByAggregateInput;
     _max?: DisplayPageMaxOrderByAggregateInput;
     _min?: DisplayPageMinOrderByAggregateInput;
+    _sum?: DisplayPageSumOrderByAggregateInput;
   };
 
   export type DisplayPageScalarWhereWithAggregatesInput = {
@@ -32300,6 +32399,9 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<'DisplayPage'> | string;
     slug?: StringWithAggregatesFilter<'DisplayPage'> | string;
     description?: StringNullableWithAggregatesFilter<'DisplayPage'> | string | null;
+    resolutionWidth?: IntWithAggregatesFilter<'DisplayPage'> | number;
+    resolutionHeight?: IntWithAggregatesFilter<'DisplayPage'> | number;
+    layoutConfig?: JsonNullableWithAggregatesFilter<'DisplayPage'>;
     status?: EnumRecordStatusWithAggregatesFilter<'DisplayPage'> | $Enums.RecordStatus;
     createdAt?: DateTimeWithAggregatesFilter<'DisplayPage'> | Date | string;
     updatedAt?: DateTimeWithAggregatesFilter<'DisplayPage'> | Date | string;
@@ -34156,6 +34258,9 @@ export namespace Prisma {
     name: string;
     slug: string;
     description?: string | null;
+    resolutionWidth?: number;
+    resolutionHeight?: number;
+    layoutConfig?: NullableJsonNullValueInput | InputJsonValue;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -34166,6 +34271,9 @@ export namespace Prisma {
     name: string;
     slug: string;
     description?: string | null;
+    resolutionWidth?: number;
+    resolutionHeight?: number;
+    layoutConfig?: NullableJsonNullValueInput | InputJsonValue;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -34176,6 +34284,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string;
     slug?: StringFieldUpdateOperationsInput | string;
     description?: NullableStringFieldUpdateOperationsInput | string | null;
+    resolutionWidth?: IntFieldUpdateOperationsInput | number;
+    resolutionHeight?: IntFieldUpdateOperationsInput | number;
+    layoutConfig?: NullableJsonNullValueInput | InputJsonValue;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -34186,6 +34297,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string;
     slug?: StringFieldUpdateOperationsInput | string;
     description?: NullableStringFieldUpdateOperationsInput | string | null;
+    resolutionWidth?: IntFieldUpdateOperationsInput | number;
+    resolutionHeight?: IntFieldUpdateOperationsInput | number;
+    layoutConfig?: NullableJsonNullValueInput | InputJsonValue;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -34196,6 +34310,9 @@ export namespace Prisma {
     name: string;
     slug: string;
     description?: string | null;
+    resolutionWidth?: number;
+    resolutionHeight?: number;
+    layoutConfig?: NullableJsonNullValueInput | InputJsonValue;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -34206,6 +34323,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string;
     slug?: StringFieldUpdateOperationsInput | string;
     description?: NullableStringFieldUpdateOperationsInput | string | null;
+    resolutionWidth?: IntFieldUpdateOperationsInput | number;
+    resolutionHeight?: IntFieldUpdateOperationsInput | number;
+    layoutConfig?: NullableJsonNullValueInput | InputJsonValue;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -34216,6 +34336,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string;
     slug?: StringFieldUpdateOperationsInput | string;
     description?: NullableStringFieldUpdateOperationsInput | string | null;
+    resolutionWidth?: IntFieldUpdateOperationsInput | number;
+    resolutionHeight?: IntFieldUpdateOperationsInput | number;
+    layoutConfig?: NullableJsonNullValueInput | InputJsonValue;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -35564,9 +35687,17 @@ export namespace Prisma {
     name?: SortOrder;
     slug?: SortOrder;
     description?: SortOrder;
+    resolutionWidth?: SortOrder;
+    resolutionHeight?: SortOrder;
+    layoutConfig?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
+  };
+
+  export type DisplayPageAvgOrderByAggregateInput = {
+    resolutionWidth?: SortOrder;
+    resolutionHeight?: SortOrder;
   };
 
   export type DisplayPageMaxOrderByAggregateInput = {
@@ -35574,6 +35705,8 @@ export namespace Prisma {
     name?: SortOrder;
     slug?: SortOrder;
     description?: SortOrder;
+    resolutionWidth?: SortOrder;
+    resolutionHeight?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -35584,9 +35717,16 @@ export namespace Prisma {
     name?: SortOrder;
     slug?: SortOrder;
     description?: SortOrder;
+    resolutionWidth?: SortOrder;
+    resolutionHeight?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
+  };
+
+  export type DisplayPageSumOrderByAggregateInput = {
+    resolutionWidth?: SortOrder;
+    resolutionHeight?: SortOrder;
   };
 
   export type SystemSettingCountOrderByAggregateInput = {

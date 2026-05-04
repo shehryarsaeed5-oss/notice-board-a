@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "DisplayPage"
+ADD COLUMN "resolutionWidth" INTEGER NOT NULL DEFAULT 1920,
+ADD COLUMN "resolutionHeight" INTEGER NOT NULL DEFAULT 1080,
+ADD COLUMN "layoutConfig" JSONB;
