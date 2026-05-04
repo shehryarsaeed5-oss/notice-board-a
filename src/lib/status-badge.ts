@@ -2,14 +2,14 @@ export type BadgeTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 
 const BADGE_TONE_CLASSES: Record<BadgeTone, string> = {
   success:
-    'border-emerald-700/40 bg-emerald-950/35 text-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200',
+    'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300',
   warning:
-    'border-amber-700/40 bg-amber-950/35 text-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200',
+    'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300',
   danger:
-    'border-rose-700/40 bg-rose-950/35 text-rose-100 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200',
-  info: 'border-sky-700/40 bg-sky-950/35 text-sky-100 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200',
+    'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-300',
+  info: 'border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-300',
   neutral:
-    'border-slate-600/40 bg-slate-900/55 text-slate-200 dark:border-border/60 dark:bg-muted/50 dark:text-foreground'
+    'border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300'
 };
 
 const STATUS_TONE_MAP: Record<string, BadgeTone> = {
