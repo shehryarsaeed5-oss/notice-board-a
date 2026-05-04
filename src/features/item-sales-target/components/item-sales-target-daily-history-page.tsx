@@ -51,6 +51,20 @@ interface ItemSalesTargetDailyHistoryPageProps {
   overview: ItemSalesTargetDailyHistoryOverview;
 }
 
+interface HistoryTableTotals {
+  dailyTarget: number;
+  totalQty: number;
+  paidQty: number;
+  focQty: number;
+  remainingQty: number;
+  paidAmount: number;
+  discountAmount: number;
+  achievedPercent: number | null;
+  importedCount: number;
+  missingCount: number;
+  latestImportedAt: Date | null;
+}
+
 function formatDate(value: Date | null | undefined) {
   return value ? format(value, 'MMM d, yyyy') : '—';
 }
@@ -181,7 +195,13 @@ function SelectedTargetCard({ overview }: { overview: ItemSalesTargetDailyHistor
   );
 }
 
-function HistoryTable({ rows }: { rows: ItemSalesTargetDailyHistoryRow[] }) {
+function HistoryTable({
+  rows,
+  selectedTargetName
+}: {
+  rows: ItemSalesTargetDailyHistoryRow[];
+  selectedTargetName: string | null;
+}) {
   const [sort, setSort] = useState<SortState<HistorySortKey> | null>({
     key: 'date',
     direction: 'asc'
@@ -226,6 +246,47 @@ function HistoryTable({ rows }: { rows: ItemSalesTargetDailyHistoryRow[] }) {
       }),
     [rows, sort]
   );
+
+  const totals = useMemo<HistoryTableTotals>(() => {
+    const totalDailyTarget = rows.reduce((total, row) => total + (row.dailyTarget ?? 0), 0);
+    const totalQty = rows.reduce((total, row) => total + (row.totalQty ?? 0), 0);
+    const paidQty = rows.reduce((total, row) => total + (row.paidQty ?? 0), 0);
+    const focQty = rows.reduce((total, row) => total + (row.focQty ?? 0), 0);
+    const remainingQty = rows.reduce((total, row) => total + (row.remainingQty ?? 0), 0);
+    const paidAmount = rows.reduce((total, row) => total + (row.paidAmount ?? 0), 0);
+    const discountAmount = rows.reduce((total, row) => total + (row.discountAmount ?? 0), 0);
+    const achievedPercent =
+      totalDailyTarget > 0
+        ? Math.max(0, Math.min(100, Math.round((paidQty / totalDailyTarget) * 100)))
+        : null;
+    const importedCount = rows.filter((row) => row.importStatus === 'IMPORTED').length;
+    const missingCount = rows.filter((row) => row.importStatus === 'MISSING').length;
+    const latestImportedAt = rows.reduce<Date | null>((latest, row) => {
+      if (!row.lastImportedAt) {
+        return latest;
+      }
+
+      if (!latest || row.lastImportedAt > latest) {
+        return row.lastImportedAt;
+      }
+
+      return latest;
+    }, null);
+
+    return {
+      dailyTarget: totalDailyTarget,
+      totalQty,
+      paidQty,
+      focQty,
+      remainingQty,
+      paidAmount,
+      discountAmount,
+      achievedPercent,
+      importedCount,
+      missingCount,
+      latestImportedAt
+    };
+  }, [rows]);
 
   const handleSort = (key: HistorySortKey) => {
     setSort((current) => toggleSort(current, key));
@@ -344,6 +405,24 @@ function HistoryTable({ rows }: { rows: ItemSalesTargetDailyHistoryRow[] }) {
               </TableRow>
             ))
           )}
+          {sortedRows.length > 0 ? (
+            <TableRow className='border-t border-border bg-muted/40 font-semibold'>
+              <TableCell className='whitespace-nowrap'>Total</TableCell>
+              <TableCell>{selectedTargetName ?? '—'}</TableCell>
+              <TableCell>—</TableCell>
+              <TableCell>{formatNumber(totals.dailyTarget)}</TableCell>
+              <TableCell>{formatNumber(totals.totalQty)}</TableCell>
+              <TableCell>{formatNumber(totals.paidQty)}</TableCell>
+              <TableCell>{formatNumber(totals.focQty)}</TableCell>
+              <TableCell>{formatNumber(totals.remainingQty)}</TableCell>
+              <TableCell>{formatPercent(totals.achievedPercent)}</TableCell>
+              <TableCell>{formatMoney(totals.paidAmount)}</TableCell>
+              <TableCell>{formatMoney(totals.discountAmount)}</TableCell>
+              <TableCell>{`${totals.importedCount} imported / ${totals.missingCount} missing`}</TableCell>
+              <TableCell>—</TableCell>
+              <TableCell>{formatDateTime(totals.latestImportedAt)}</TableCell>
+            </TableRow>
+          ) : null}
         </TableBody>
       </Table>
     </div>
@@ -527,7 +606,10 @@ export function ItemSalesTargetDailyHistoryPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <HistoryTable rows={overview.rows} />
+            <HistoryTable
+              rows={overview.rows}
+              selectedTargetName={selectedTarget?.itemName ?? null}
+            />
           </CardContent>
         </Card>
       ) : (
