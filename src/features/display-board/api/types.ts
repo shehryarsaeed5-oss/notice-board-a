@@ -4,6 +4,7 @@ import type {
   AdvertisementMediaType,
   AdvertisementStatus
 } from '@/features/advertisements/api/types';
+import type { AlertType } from '@/features/alerts/api/types';
 import type { WeatherSettingProvider } from '@/features/weather-settings/api/types';
 
 export type RecordStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
@@ -49,6 +50,17 @@ export interface DisplayBoardAdvertisementItem {
   status: AdvertisementStatus;
   startAt: Date | null;
   endAt: Date | null;
+}
+
+export interface DisplayBoardAlertItem {
+  id: string;
+  title: string;
+  message: string | null;
+  alertType: AlertType;
+  priority: number;
+  startAt: Date;
+  endAt: Date;
+  status: RecordStatus;
 }
 
 export interface DisplayBoardSalesTargetItem {
@@ -124,6 +136,10 @@ export interface DisplayBoardData {
   };
   advertisements: {
     items: DisplayBoardAdvertisementItem[];
+    total: number;
+  };
+  alerts: {
+    items: DisplayBoardAlertItem[];
     total: number;
   };
   salesTargets: {

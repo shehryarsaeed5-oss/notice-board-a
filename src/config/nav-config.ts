@@ -114,6 +114,16 @@ export const navGroups: NavGroup[] = [
         items: []
       },
       {
+        title: 'Alerts',
+        url: '/dashboard/alerts',
+        icon: 'warning',
+        access: {
+          permission: 'alerts'
+        },
+        isActive: false,
+        items: []
+      },
+      {
         title: 'Advertisements',
         url: '/dashboard/advertisements',
         icon: 'media',

@@ -59,6 +59,14 @@ function reviveAdvertisement(value: Record<string, unknown>) {
   };
 }
 
+function reviveAlert(value: Record<string, unknown>) {
+  return {
+    ...value,
+    startAt: toDate(value.startAt),
+    endAt: toDate(value.endAt)
+  };
+}
+
 function reviveDisplayBoardData(data: unknown): DisplayBoardData {
   const board = data as {
     displayPage: Record<string, unknown>;
@@ -67,11 +75,16 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
     meetings: { items: Array<Record<string, unknown>>; total: number };
     movieSchedules: { items: Array<Record<string, unknown>>; total: number };
     advertisements: { items: Array<Record<string, unknown>>; total: number };
+    alerts?: { items: Array<Record<string, unknown>>; total: number };
     salesTargets: DisplayBoardData['salesTargets'];
     concessionPriceList?: DisplayBoardData['concessionPriceList'];
     attendance?: DisplayBoardData['attendance'];
     weatherSetting: DisplayBoardData['weatherSetting'];
     attendanceSummary: DisplayBoardData['attendanceSummary'];
+  };
+  const alerts = board.alerts ?? {
+    items: [],
+    total: 0
   };
   const concessionPriceList = board.concessionPriceList ?? {
     items: [],
@@ -108,6 +121,10 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
         reviveAdvertisement(item)
       ) as DisplayBoardData['advertisements']['items'],
       total: board.advertisements.total
+    },
+    alerts: {
+      items: alerts.items.map((item) => reviveAlert(item)) as DisplayBoardData['alerts']['items'],
+      total: alerts.total
     },
     salesTargets: board.salesTargets,
     concessionPriceList,

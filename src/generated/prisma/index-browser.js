@@ -198,6 +198,19 @@ exports.Prisma.MeetingScheduleScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AlertScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  message: 'message',
+  alertType: 'alertType',
+  priority: 'priority',
+  startAt: 'startAt',
+  endAt: 'endAt',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.AdvertisementScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -318,6 +331,7 @@ exports.Prisma.ModelName = {
   ManagerAttendanceRecord: 'ManagerAttendanceRecord',
   EventRecord: 'EventRecord',
   MeetingSchedule: 'MeetingSchedule',
+  Alert: 'Alert',
   Advertisement: 'Advertisement',
   WeatherSetting: 'WeatherSetting',
   MovieSchedule: 'MovieSchedule',

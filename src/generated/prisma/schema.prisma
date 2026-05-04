@@ -129,6 +129,24 @@ model MeetingSchedule {
   @@index([startAt])
 }
 
+model Alert {
+  id        String       @id @default(cuid())
+  title     String
+  message   String?
+  alertType String       @default("INFO")
+  priority  Int          @default(0)
+  startAt   DateTime
+  endAt     DateTime
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([status])
+  @@index([startAt])
+  @@index([endAt])
+  @@index([priority])
+}
+
 model Advertisement {
   id             String       @id @default(cuid())
   title          String

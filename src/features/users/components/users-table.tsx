@@ -67,6 +67,7 @@ const PERMISSION_LABELS: Record<string, string> = {
   attendance: 'Attendance',
   events: 'Events',
   meetingSchedule: 'Meeting Schedule',
+  alerts: 'Alerts',
   advertisements: 'Advertisements',
   weather: 'Weather',
   movieSchedule: 'Movie Schedule',

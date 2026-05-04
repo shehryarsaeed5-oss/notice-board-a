@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { cn } from '@/lib/utils';
 
 import { getDisplayBoardBySlug } from '../api/service';
+import type { DisplayBoardAlertItem } from '../api/types';
 import { DisplayBoardAutoRefresh } from './display-board-auto-refresh';
 import { DisplayBoardClock } from './display-board-clock';
 
@@ -18,6 +19,7 @@ const VISIBLE_EVENT_COUNT = 4;
 const VISIBLE_MEETING_COUNT = 4;
 const VISIBLE_MOVIE_COUNT = 4;
 const VISIBLE_AD_COUNT = 3;
+const VISIBLE_ALERT_COUNT = 3;
 const VISIBLE_TARGET_COUNT = 4;
 const VISIBLE_CONCESSION_COUNT = 4;
 const VISIBLE_STAFF_ATTENDANCE_COUNT = 6;
@@ -47,6 +49,88 @@ function formatPrice(value: number) {
   return `Rs. ${new Intl.NumberFormat('en-PK', {
     maximumFractionDigits: 2
   }).format(value)}`;
+}
+
+function formatAlertExpiry(value: Date) {
+  return format(value, 'MMM d, h:mm a');
+}
+
+function getAlertTheme(alertType: DisplayBoardAlertItem['alertType']) {
+  switch (alertType) {
+    case 'INFO':
+      return {
+        accent: 'border-sky-400/25 bg-sky-500/10',
+        badge: 'border-sky-400/30 bg-sky-400/15 text-sky-100',
+        icon: Icons.info,
+        iconClass: 'text-sky-200'
+      };
+    case 'WARNING':
+      return {
+        accent: 'border-amber-400/25 bg-amber-500/12',
+        badge: 'border-amber-400/30 bg-amber-400/15 text-amber-100',
+        icon: Icons.warning,
+        iconClass: 'text-amber-200'
+      };
+    case 'URGENT':
+      return {
+        accent: 'border-rose-400/30 bg-rose-500/15 shadow-[0_0_0_1px_rgba(251,113,133,0.15)]',
+        badge: 'border-rose-400/30 bg-rose-400/15 text-rose-100',
+        icon: Icons.alertCircle,
+        iconClass: 'text-rose-200'
+      };
+    case 'SUCCESS':
+      return {
+        accent: 'border-emerald-400/25 bg-emerald-500/12',
+        badge: 'border-emerald-400/30 bg-emerald-400/15 text-emerald-100',
+        icon: Icons.circleCheck,
+        iconClass: 'text-emerald-200'
+      };
+    default:
+      return {
+        accent: 'border-white/10 bg-white/6',
+        badge: 'border-white/10 bg-white/5 text-zinc-100',
+        icon: Icons.info,
+        iconClass: 'text-zinc-200'
+      };
+  }
+}
+
+function AlertBannerCard({ alert }: { alert: DisplayBoardAlertItem }) {
+  const theme = getAlertTheme(alert.alertType);
+
+  return (
+    <div
+      className={cn(
+        'rounded-[24px] border px-4 py-3.5 text-zinc-50 backdrop-blur-xl',
+        theme.accent,
+        alert.alertType === 'URGENT' ? 'animate-pulse' : ''
+      )}
+    >
+      <div className='flex items-start justify-between gap-3'>
+        <div className='min-w-0'>
+          <div className='flex items-center gap-2'>
+            <theme.icon className={cn('size-4 shrink-0', theme.iconClass)} />
+            <div className='truncate text-[15px] font-semibold tracking-tight text-zinc-50 xl:text-base'>
+              {alert.title}
+            </div>
+          </div>
+          {alert.message ? (
+            <div className='mt-2 max-h-10 overflow-hidden text-sm leading-5 text-zinc-100/90'>
+              {alert.message}
+            </div>
+          ) : null}
+        </div>
+        <Badge variant='outline' className={cn('rounded-full px-3 py-1 text-xs', theme.badge)}>
+          {alert.alertType}
+        </Badge>
+      </div>
+
+      <div className='mt-3 flex flex-wrap gap-2 text-xs text-zinc-200/80'>
+        <RecordChip>Priority {alert.priority}</RecordChip>
+        <RecordChip>Until {formatAlertExpiry(alert.endAt)}</RecordChip>
+      </div>
+    </div>
+  );
 }
 
 function statusTone(status: 'PRESENT' | 'ABSENT' | 'LEAVE' | 'LATE') {
@@ -275,6 +359,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
     meetings,
     movieSchedules,
     advertisements,
+    alerts,
     salesTargets,
     concessionPriceList,
     attendance,
@@ -287,6 +372,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const visibleMeetings = meetings.items.slice(0, VISIBLE_MEETING_COUNT);
   const visibleMovies = movieSchedules.items.slice(0, VISIBLE_MOVIE_COUNT);
   const visibleAds = advertisements.items.slice(0, VISIBLE_AD_COUNT);
+  const visibleAlerts = alerts.items.slice(0, VISIBLE_ALERT_COUNT);
   const visibleTargets = salesTargets.items.slice(0, VISIBLE_TARGET_COUNT);
   const visibleConcessions = concessionPriceList.items.slice(0, VISIBLE_CONCESSION_COUNT);
   const presentStaff = attendance.staff.items.filter((item) => item.status === 'PRESENT');
@@ -391,6 +477,37 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             </div>
           </div>
         </header>
+
+        {visibleAlerts.length > 0 ? (
+          <section className='shrink-0 rounded-[30px] border border-rose-400/20 bg-white/6 px-5 py-4 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl'>
+            <div className='flex flex-wrap items-center justify-between gap-3'>
+              <div>
+                <div className='text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400'>
+                  Alerts
+                </div>
+                <div className='mt-1 text-xl font-semibold text-zinc-50 xl:text-[22px]'>
+                  Live notices
+                </div>
+              </div>
+              <Badge className='border-rose-400/30 bg-rose-400/15 text-rose-100'>
+                <Icons.alertCircle className='mr-1.5 size-3.5' />
+                {alerts.total.toLocaleString()}
+              </Badge>
+            </div>
+
+            <div className='mt-4 grid gap-3 xl:grid-cols-3'>
+              {visibleAlerts.map((alert) => (
+                <AlertBannerCard key={alert.id} alert={alert} />
+              ))}
+            </div>
+
+            {alerts.total > visibleAlerts.length ? (
+              <div className='mt-3 flex justify-end'>
+                <CompactMorePill label={`+${alerts.total - visibleAlerts.length} more alerts`} />
+              </div>
+            ) : null}
+          </section>
+        ) : null}
 
         <section className='grid flex-1 min-h-0 gap-4 xl:grid-cols-[minmax(0,1.72fr)_minmax(360px,0.9fr)]'>
           <div className='grid min-h-0 gap-4 xl:grid-rows-[minmax(0,1.08fr)_minmax(0,0.97fr)_minmax(0,0.95fr)]'>

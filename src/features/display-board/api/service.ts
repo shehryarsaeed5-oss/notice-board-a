@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { prisma } from '@/lib/prisma';
+import { getActiveAlerts } from '@/features/alerts/api/service';
 
 import {
   getCachedDisplayBoardData,
@@ -10,6 +11,7 @@ import {
 import { endOfDay, startOfDay } from '../lib/date';
 import type {
   DisplayBoardAdvertisementItem,
+  DisplayBoardAlertItem,
   DisplayBoardAttendanceSummary,
   DisplayBoardConcessionPriceItem,
   DisplayBoardAttendanceManagerItem,
@@ -107,6 +109,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     movieSchedules,
     movieSchedulesTotal,
     advertisements,
+    alerts,
     salesTargets,
     salesTargetsTotal,
     concessionPriceList,
@@ -183,6 +186,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
       },
       orderBy: [{ startAt: 'asc' }, { title: 'asc' }]
     }),
+    getActiveAlerts(now, 3),
     prisma.itemSalesTarget.findMany({
       where: {
         status: 'ACTIVE'
@@ -252,6 +256,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
   );
   const visibleAdvertisements =
     activeAdvertisements.length > 0 ? activeAdvertisements : advertisements;
+  const visibleAlerts = alerts.alerts;
 
   const staffAttendance = staffAttendanceRecords
     .map((record) => ({
@@ -305,6 +310,10 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     advertisements: {
       items: visibleAdvertisements.slice(0, 5) as DisplayBoardAdvertisementItem[],
       total: visibleAdvertisements.length
+    },
+    alerts: {
+      items: visibleAlerts.slice(0, 3) as DisplayBoardAlertItem[],
+      total: alerts.total
     },
     salesTargets: {
       items: salesTargets as DisplayBoardSalesTargetItem[],
