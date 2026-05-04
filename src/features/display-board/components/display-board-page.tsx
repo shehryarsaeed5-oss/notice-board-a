@@ -8,6 +8,11 @@ import { cn } from '@/lib/utils';
 
 import { getDisplayBoardBySlug } from '../api/service';
 import type { DisplayBoardAlertItem } from '../api/types';
+import {
+  getEnabledSortedDisplayBlocks,
+  type DisplayBlockKey,
+  type DisplayLayoutBlockConfig
+} from '@/features/display-pages/lib/display-layout-config';
 import { DisplayBoardAutoRefresh } from './display-board-auto-refresh';
 import { DisplayBoardClock } from './display-board-clock';
 
@@ -24,6 +29,10 @@ const VISIBLE_TARGET_COUNT = 4;
 const VISIBLE_CONCESSION_COUNT = 4;
 const VISIBLE_STAFF_ATTENDANCE_COUNT = 6;
 const VISIBLE_MANAGER_ATTENDANCE_COUNT = 3;
+
+function getVisibleCount(block: DisplayLayoutBlockConfig, fallback: number) {
+  return Math.max(1, block.rowLimit || fallback);
+}
 
 function formatTime(value: Date) {
   return format(value, 'h:mm a');
@@ -383,13 +392,9 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   } = data;
 
   const renderedAt = new Date();
-  const visibleEvents = events.items.slice(0, VISIBLE_EVENT_COUNT);
-  const visibleMeetings = meetings.items.slice(0, VISIBLE_MEETING_COUNT);
-  const visibleMovies = movieSchedules.items.slice(0, VISIBLE_MOVIE_COUNT);
-  const visibleAds = advertisements.items.slice(0, VISIBLE_AD_COUNT);
-  const visibleAlerts = alerts.items.slice(0, VISIBLE_ALERT_COUNT);
-  const visibleTargets = salesTargets.items.slice(0, VISIBLE_TARGET_COUNT);
-  const visibleConcessions = concessionPriceList.items.slice(0, VISIBLE_CONCESSION_COUNT);
+  const layoutBlocks = getEnabledSortedDisplayBlocks(displayPage.layoutConfig);
+  const layoutBlockMap = new Map(layoutBlocks.map((block) => [block.key, block] as const));
+  const getBlock = (key: DisplayBlockKey) => layoutBlockMap.get(key);
   const presentStaff = attendance.staff.items.filter((item) => item.status === 'PRESENT');
   const presentManagers = attendance.managers.items.filter((item) => item.status === 'PRESENT');
   const currentDate = formatDate(renderedAt);
@@ -397,611 +402,645 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const totalAttendance = attendanceSummary.staffMarked + attendanceSummary.managerMarked;
   const expectedAttendance = attendanceSummary.staffExpected + attendanceSummary.managerExpected;
 
+  const renderBlockCard = (key: DisplayBlockKey) => {
+    const block = getBlock(key);
+
+    if (!block) {
+      return null;
+    }
+
+    switch (key) {
+      case 'alerts': {
+        const visibleAlerts = alerts.items.slice(0, getVisibleCount(block, VISIBLE_ALERT_COUNT));
+
+        return (
+          <SectionCard
+            title='Alerts'
+            description='Live notices'
+            icon={Icons.alertCircle}
+            count={alerts.total}
+            footer={
+              alerts.total > visibleAlerts.length ? (
+                <div className='flex justify-end'>
+                  <CompactMorePill label={`+${alerts.total - visibleAlerts.length} more alerts`} />
+                </div>
+              ) : null
+            }
+          >
+            {visibleAlerts.length === 0 ? (
+              <EmptySection message='No active alerts are currently available.' />
+            ) : (
+              <div className='space-y-3'>
+                {visibleAlerts.map((alert) => (
+                  <AlertBannerCard key={alert.id} alert={alert} />
+                ))}
+              </div>
+            )}
+          </SectionCard>
+        );
+      }
+
+      case 'events': {
+        const visibleEvents = events.items.slice(0, getVisibleCount(block, VISIBLE_EVENT_COUNT));
+
+        return (
+          <SectionCard
+            title='Today Events'
+            description='Scheduled today'
+            icon={Icons.calendar}
+            count={events.total}
+            footer={
+              events.total > visibleEvents.length ? (
+                <div className='flex justify-end'>
+                  <CompactMorePill
+                    label={`Showing ${visibleEvents.length} of ${events.total} events`}
+                  />
+                </div>
+              ) : null
+            }
+          >
+            {visibleEvents.length === 0 ? (
+              <EmptySection message='No active events scheduled for today.' />
+            ) : (
+              <div className='space-y-2'>
+                {visibleEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
+                  >
+                    <div className='flex items-start justify-between gap-3'>
+                      <div className='min-w-0'>
+                        <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                          {event.title}
+                        </div>
+                        <div className='mt-1 text-sm text-zinc-300'>
+                          {event.clientName ?? event.companyName ?? 'General event'}
+                        </div>
+                      </div>
+                      <Badge className='border-white/10 bg-white/5 text-zinc-100'>
+                        {formatTime(event.startAt)}
+                      </Badge>
+                    </div>
+                    <div className='mt-3 flex flex-wrap gap-2 text-xs text-zinc-400'>
+                      <RecordChip>{event.screenName ?? '—'}</RecordChip>
+                      {event.endAt ? (
+                        <RecordChip>Ends {formatTime(event.endAt)}</RecordChip>
+                      ) : (
+                        <RecordChip>Ends —</RecordChip>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
+        );
+      }
+
+      case 'movieSchedule': {
+        const visibleMovies = movieSchedules.items.slice(
+          0,
+          getVisibleCount(block, VISIBLE_MOVIE_COUNT)
+        );
+
+        return (
+          <SectionCard
+            title='Movie Schedule'
+            description="Today's showtimes"
+            icon={Icons.video}
+            count={movieSchedules.total}
+            footer={
+              movieSchedules.total > visibleMovies.length ? (
+                <div className='flex justify-end'>
+                  <CompactMorePill
+                    label={`Showing ${visibleMovies.length} of ${movieSchedules.total} shows`}
+                  />
+                </div>
+              ) : null
+            }
+          >
+            {visibleMovies.length === 0 ? (
+              <EmptySection message='No active movie shows scheduled for today.' />
+            ) : (
+              <div className='space-y-2'>
+                {visibleMovies.map((movie) => (
+                  <div
+                    key={movie.id}
+                    className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
+                  >
+                    <div className='flex items-start justify-between gap-3'>
+                      <div className='min-w-0'>
+                        <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                          {movie.movieName}
+                        </div>
+                        <div className='mt-1 text-sm text-zinc-300'>{movie.screenName}</div>
+                      </div>
+                      <Badge className='border-white/10 bg-white/5 text-zinc-100'>
+                        {formatTime(movie.showTime)}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
+        );
+      }
+
+      case 'meetingSchedule': {
+        const visibleMeetings = meetings.items.slice(
+          0,
+          getVisibleCount(block, VISIBLE_MEETING_COUNT)
+        );
+
+        return (
+          <SectionCard
+            title='Meeting Schedule'
+            description="Today's meetings"
+            icon={Icons.clock}
+            count={meetings.total}
+            footer={
+              meetings.total > visibleMeetings.length ? (
+                <div className='flex justify-end'>
+                  <CompactMorePill
+                    label={`Showing ${visibleMeetings.length} of ${meetings.total} meetings`}
+                  />
+                </div>
+              ) : null
+            }
+          >
+            {visibleMeetings.length === 0 ? (
+              <EmptySection message='No active meetings scheduled for today.' />
+            ) : (
+              <div className='space-y-2'>
+                {visibleMeetings.map((meeting) => (
+                  <div
+                    key={meeting.id}
+                    className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
+                  >
+                    <div className='flex items-start justify-between gap-3'>
+                      <div className='min-w-0'>
+                        <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                          {meeting.title}
+                        </div>
+                        <div className='mt-1 text-sm text-zinc-300'>
+                          {meeting.organizer ?? 'No organizer listed'}
+                        </div>
+                      </div>
+                      <Badge className='border-white/10 bg-white/5 text-zinc-100'>
+                        {formatTime(meeting.startAt)}
+                      </Badge>
+                    </div>
+                    <div className='mt-3 flex flex-wrap gap-2 text-xs text-zinc-400'>
+                      {meeting.location && <RecordChip>{meeting.location}</RecordChip>}
+                      {meeting.endAt && <RecordChip>Ends {formatTime(meeting.endAt)}</RecordChip>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
+        );
+      }
+
+      case 'weather': {
+        return (
+          <SectionCard
+            title='Weather'
+            description='Live configuration'
+            icon={Icons.sun}
+            count={weatherSetting ? 1 : 0}
+          >
+            {weatherSetting ? (
+              <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-4'>
+                <div className='flex items-center justify-between gap-3'>
+                  <div>
+                    <div className='text-lg font-medium text-zinc-50 xl:text-[20px]'>
+                      {weatherSetting.city}
+                    </div>
+                    <div className='mt-1 text-sm text-zinc-300'>
+                      Provider: {weatherSetting.provider}
+                    </div>
+                  </div>
+                  <Badge className='border-emerald-400/30 bg-emerald-400/15 text-emerald-200'>
+                    Enabled
+                  </Badge>
+                </div>
+              </div>
+            ) : (
+              <EmptySection message='No enabled weather setting is configured.' />
+            )}
+          </SectionCard>
+        );
+      }
+
+      case 'attendance': {
+        const attendanceLimit = getVisibleCount(block, VISIBLE_STAFF_ATTENDANCE_COUNT);
+        const staffLimit = Math.max(1, Math.ceil(attendanceLimit / 2));
+        const managerLimit = Math.max(0, attendanceLimit - staffLimit);
+        const visibleStaff = presentStaff.slice(0, staffLimit);
+        const visibleManagers = presentManagers.slice(0, managerLimit);
+
+        return (
+          <SectionCard
+            title='Attendance'
+            description="Today's roster and status"
+            icon={Icons.teams}
+            count={totalAttendance}
+          >
+            {attendanceSummary.staffMarked + attendanceSummary.managerMarked === 0 ? (
+              <EmptySection message='Attendance not marked yet.' />
+            ) : (
+              <div className='space-y-4'>
+                <div className='grid grid-cols-2 gap-2 xl:grid-cols-5'>
+                  <SummaryStatPill
+                    label='Staff Present'
+                    value={attendanceSummary.staffCounts.PRESENT}
+                    tone='emerald'
+                  />
+                  <SummaryStatPill
+                    label='Absent'
+                    value={attendanceSummary.staffCounts.ABSENT}
+                    tone='rose'
+                  />
+                  <SummaryStatPill
+                    label='Leave'
+                    value={attendanceSummary.staffCounts.LEAVE}
+                    tone='amber'
+                  />
+                  <SummaryStatPill
+                    label='Late'
+                    value={attendanceSummary.staffCounts.LATE}
+                    tone='orange'
+                  />
+                  <SummaryStatPill
+                    label='Manager Present'
+                    value={attendanceSummary.managerCounts.PRESENT}
+                    tone='emerald'
+                  />
+                </div>
+
+                <div className='grid gap-4 xl:grid-cols-2'>
+                  <div className='space-y-3 rounded-[26px] border border-white/10 bg-black/18 p-4'>
+                    <div className='flex items-center justify-between gap-3'>
+                      <div>
+                        <div className='text-sm uppercase tracking-[0.24em] text-zinc-400'>
+                          Staff Present
+                        </div>
+                        <div className='mt-1 text-lg font-semibold text-zinc-50'>
+                          {attendanceSummary.staffCounts.PRESENT.toLocaleString()} present
+                        </div>
+                      </div>
+                      <Badge variant='outline' className='border-white/10 bg-white/5 text-zinc-100'>
+                        {visibleStaff.length} shown
+                      </Badge>
+                    </div>
+                    {visibleStaff.length === 0 ? (
+                      <EmptySection message='No present staff entries yet.' />
+                    ) : (
+                      <div className='space-y-2'>
+                        {visibleStaff.map((item) => (
+                          <AttendanceRosterItem
+                            key={item.id}
+                            name={item.name}
+                            designation={item.designation}
+                            department={item.department}
+                            shift={item.shift}
+                            remarks={item.remarks}
+                          />
+                        ))}
+                        {presentStaff.length > visibleStaff.length && (
+                          <CompactMorePill
+                            label={`+${presentStaff.length - visibleStaff.length} more staff`}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className='space-y-3 rounded-[26px] border border-white/10 bg-black/18 p-4'>
+                    <div className='flex items-center justify-between gap-3'>
+                      <div>
+                        <div className='text-sm uppercase tracking-[0.24em] text-zinc-400'>
+                          Manager Present
+                        </div>
+                        <div className='mt-1 text-lg font-semibold text-zinc-50'>
+                          {attendanceSummary.managerCounts.PRESENT.toLocaleString()} present
+                        </div>
+                      </div>
+                      <Badge variant='outline' className='border-white/10 bg-white/5 text-zinc-100'>
+                        {visibleManagers.length} shown
+                      </Badge>
+                    </div>
+                    {visibleManagers.length === 0 ? (
+                      <EmptySection message='No present manager entries yet.' />
+                    ) : (
+                      <div className='space-y-2'>
+                        {visibleManagers.map((item) => (
+                          <AttendanceRosterItem
+                            key={item.id}
+                            name={item.name}
+                            designation={item.designation}
+                            shift={item.shift}
+                            remarks={item.remarks}
+                          />
+                        ))}
+                        {presentManagers.length > visibleManagers.length && (
+                          <CompactMorePill
+                            label={`+${presentManagers.length - visibleManagers.length} more managers`}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </SectionCard>
+        );
+      }
+
+      case 'advertisements': {
+        const visibleAds = advertisements.items.slice(0, getVisibleCount(block, VISIBLE_AD_COUNT));
+
+        return (
+          <SectionCard
+            title='Advertisement Contracts'
+            description='Active company contracts'
+            icon={Icons.media}
+            count={advertisements.total}
+            footer={
+              advertisements.total > visibleAds.length ? (
+                <div className='flex justify-end'>
+                  <CompactMorePill
+                    label={`Showing ${visibleAds.length} of ${advertisements.total} contracts`}
+                  />
+                </div>
+              ) : null
+            }
+          >
+            {visibleAds.length === 0 ? (
+              <EmptySection message='No active advertisement contracts are currently available.' />
+            ) : (
+              <div className='space-y-2'>
+                {visibleAds.map((ad) => (
+                  <div
+                    key={ad.id}
+                    className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
+                  >
+                    <div className='flex items-start justify-between gap-3'>
+                      <div className='min-w-0'>
+                        <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                          {ad.title}
+                        </div>
+                        <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
+                          <RecordChip>Active contract</RecordChip>
+                          <RecordChip>
+                            {formatShortDate(ad.startAt)} - {formatShortDate(ad.endAt)}
+                          </RecordChip>
+                          {ad.adLocation && <RecordChip>{ad.adLocation}</RecordChip>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
+        );
+      }
+
+      case 'itemSalesTarget': {
+        const visibleTargets = salesTargets.items.slice(
+          0,
+          getVisibleCount(block, VISIBLE_TARGET_COUNT)
+        );
+
+        return (
+          <SectionCard
+            title='Sales Targets'
+            description='Active targets'
+            icon={Icons.adjustments}
+            count={salesTargets.total}
+            footer={
+              salesTargets.total > visibleTargets.length ? (
+                <div className='flex justify-end'>
+                  <CompactMorePill
+                    label={`Showing ${visibleTargets.length} of ${salesTargets.total} targets`}
+                  />
+                </div>
+              ) : null
+            }
+          >
+            {visibleTargets.length === 0 ? (
+              <EmptySection message='No active sales targets are currently available.' />
+            ) : (
+              <div className='space-y-2'>
+                {visibleTargets.map((target) => (
+                  <div
+                    key={target.id}
+                    className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
+                  >
+                    <div className='flex items-start justify-between gap-3'>
+                      <div className='min-w-0'>
+                        <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                          {target.itemName}
+                        </div>
+                        <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
+                          {target.itemCodes.length > 0 ? (
+                            <RecordChip>
+                              {target.itemCodes.length} code
+                              {target.itemCodes.length === 1 ? '' : 's'}
+                            </RecordChip>
+                          ) : target.itemCode ? (
+                            <RecordChip>{target.itemCode}</RecordChip>
+                          ) : null}
+                          <RecordChip>{target.status}</RecordChip>
+                          {target.startDate && (
+                            <RecordChip>Start {formatShortDate(target.startDate)}</RecordChip>
+                          )}
+                        </div>
+                      </div>
+                      <div className='flex flex-col items-end gap-1 text-right'>
+                        <Badge className='border-white/10 bg-white/5 text-zinc-100'>
+                          Order {target.displayOrder}
+                        </Badge>
+                        <div className='text-[11px] uppercase tracking-[0.2em] text-zinc-400'>
+                          Last import
+                        </div>
+                        <div className='text-xs text-zinc-200'>
+                          {formatDateTime(target.lastImportAt)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {!target.daily.dataAvailable &&
+                    !target.weekly.dataAvailable &&
+                    !target.monthly.dataAvailable ? (
+                      <div className='mt-3'>
+                        <EmptySection message='Sales data not imported for the selected period.' />
+                      </div>
+                    ) : null}
+
+                    <div className='mt-3 grid grid-cols-1 gap-2 text-xs text-zinc-300 xl:grid-cols-3'>
+                      <StatBlock
+                        label='Daily'
+                        value={formatProgress(target.daily)}
+                        tone={target.daily.dataAvailable ? 'emerald' : 'zinc'}
+                      />
+                      <StatBlock
+                        label='Weekly'
+                        value={formatProgress(target.weekly)}
+                        tone={target.weekly.dataAvailable ? 'amber' : 'zinc'}
+                      />
+                      <StatBlock
+                        label='Monthly'
+                        value={formatProgress(target.monthly)}
+                        tone={target.monthly.dataAvailable ? 'emerald' : 'zinc'}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
+        );
+      }
+
+      case 'concessionPriceList': {
+        const visibleConcessions = concessionPriceList.items.slice(
+          0,
+          getVisibleCount(block, VISIBLE_CONCESSION_COUNT)
+        );
+
+        return (
+          <SectionCard
+            title='Concession Price List'
+            description='Live counter prices'
+            icon={Icons.billing}
+            count={concessionPriceList.total}
+            footer={
+              concessionPriceList.total > visibleConcessions.length ? (
+                <div className='flex justify-end'>
+                  <CompactMorePill
+                    label={`Showing ${visibleConcessions.length} of ${concessionPriceList.total} items`}
+                  />
+                </div>
+              ) : null
+            }
+          >
+            {visibleConcessions.length === 0 ? (
+              <EmptySection message='No active concession price items are currently available.' />
+            ) : (
+              <div className='space-y-2'>
+                {visibleConcessions.map((item) => (
+                  <div
+                    key={item.id}
+                    className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
+                  >
+                    <div className='flex items-start justify-between gap-3'>
+                      <div className='min-w-0'>
+                        <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                          {item.itemName}
+                        </div>
+                        <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
+                          {item.category && <RecordChip>{item.category}</RecordChip>}
+                          <RecordChip>{item.status}</RecordChip>
+                        </div>
+                      </div>
+                      <Badge className='border-amber-400/30 bg-amber-400/15 text-amber-100'>
+                        {formatPrice(item.price)}
+                      </Badge>
+                    </div>
+                    <div className='mt-2 flex flex-wrap gap-2 text-xs text-zinc-400'>
+                      <RecordChip>Sort {item.sortOrder}</RecordChip>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
+        );
+      }
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <main className='relative min-h-[100dvh] overflow-hidden bg-zinc-950 text-zinc-50'>
       <DisplayBoardAutoRefresh />
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.2),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.07),transparent_24%),radial-gradient(circle_at_50%_120%,rgba(180,83,9,0.12),transparent_30%),linear-gradient(180deg,#09090b_0%,#020202_100%)]' />
       <div className='absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500' />
 
-      <div className='relative flex min-h-[100dvh] flex-col gap-4 p-4 md:p-6 xl:h-[100dvh] xl:min-h-0 xl:overflow-hidden xl:p-6 2xl:p-8'>
-        <header className='shrink-0 grid gap-4 xl:grid-cols-[minmax(0,1.72fr)_minmax(340px,0.9fr)]'>
-          <div className='rounded-[30px] border border-white/10 bg-white/6 px-5 py-4 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl xl:px-6 xl:py-5'>
-            <div className='flex flex-wrap items-center gap-2'>
-              <Badge className='border-amber-400/30 bg-amber-400/15 px-3 py-1 text-amber-200'>
-                Live Display
-              </Badge>
-              <Badge
-                variant='outline'
-                className='border-white/10 bg-white/5 px-3 py-1 text-zinc-100'
-              >
-                {displayPage.slug}
-              </Badge>
-              <Badge
-                variant='outline'
-                className='border-white/10 bg-white/5 px-3 py-1 text-zinc-100'
-              >
-                Premium cinema board
-              </Badge>
-            </div>
-
-            <div className='mt-4 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between'>
-              <div className='space-y-2'>
-                <h1 className='text-3xl font-semibold tracking-tight text-balance text-zinc-50 md:text-5xl xl:text-6xl'>
-                  {displayPage.name}
-                </h1>
-                <p className='max-w-4xl text-sm leading-6 text-zinc-300 md:text-[15px] xl:max-w-5xl'>
-                  Today&apos;s cinema notice board for events, meetings, movie shows,
-                  advertisements, sales targets, weather, and attendance.
-                </p>
-              </div>
-
-              <div className='rounded-3xl border border-white/10 bg-black/20 px-4 py-3 shadow-inner shadow-black/20 xl:min-w-[320px] xl:px-5'>
-                <div className='text-[11px] font-medium uppercase tracking-[0.28em] text-amber-200/80'>
-                  Current date / time
-                </div>
-                <div className='mt-2 flex items-end gap-3'>
-                  <div className='text-3xl font-semibold leading-none tracking-tight text-zinc-50 md:text-4xl xl:text-5xl'>
-                    <DisplayBoardClock initialIso={renderedAt.toISOString()} />
-                  </div>
-                  <div className='pb-1 text-sm text-zinc-300 md:text-[15px]'>{currentDate}</div>
-                </div>
-                <div className='mt-3 text-[11px] uppercase tracking-[0.22em] text-zinc-400'>
-                  Last updated
-                </div>
-                <div className='mt-1 text-sm text-zinc-100 md:text-[15px]'>{updatedAt}</div>
-              </div>
-            </div>
+      <div
+        className='relative mx-auto flex min-h-[100dvh] w-full max-w-full flex-col gap-4 overflow-hidden p-4 md:p-6 xl:h-[100dvh] xl:min-h-0 xl:p-6 2xl:p-8'
+        style={{
+          maxWidth: `${displayPage.resolutionWidth}px`,
+          minHeight: `${displayPage.resolutionHeight}px`
+        }}
+      >
+        <header className='shrink-0 rounded-[30px] border border-white/10 bg-white/6 px-5 py-4 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl xl:px-6 xl:py-5'>
+          <div className='flex flex-wrap items-center gap-2'>
+            <Badge className='border-amber-400/30 bg-amber-400/15 px-3 py-1 text-amber-200'>
+              Live Display
+            </Badge>
+            <Badge variant='outline' className='border-white/10 bg-white/5 px-3 py-1 text-zinc-100'>
+              {displayPage.slug}
+            </Badge>
+            <Badge variant='outline' className='border-white/10 bg-white/5 px-3 py-1 text-zinc-100'>
+              {displayPage.resolutionWidth}x{displayPage.resolutionHeight}
+            </Badge>
           </div>
 
-          <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-1'>
-            <div className='rounded-[30px] border border-white/10 bg-white/6 px-5 py-4 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl'>
-              <div className='flex items-start justify-between gap-3'>
-                <div>
-                  <div className='text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400'>
-                    Weather
-                  </div>
-                  <div className='mt-2 text-xl font-semibold text-zinc-50 xl:text-[22px]'>
-                    {weatherSetting ? weatherSetting.city : 'No weather setting'}
-                  </div>
-                  <div className='mt-1 text-sm text-zinc-300'>
-                    {weatherSetting
-                      ? `Provider: ${weatherSetting.provider}`
-                      : 'No enabled provider'}
-                  </div>
-                </div>
-                <Badge
-                  className={
-                    weatherSetting
-                      ? 'border-emerald-400/30 bg-emerald-400/15 text-emerald-200'
-                      : 'border-white/10 bg-white/5 text-zinc-200'
-                  }
-                >
-                  {weatherSetting ? 'Enabled' : 'Inactive'}
-                </Badge>
-              </div>
+          <div className='mt-4 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between'>
+            <div className='space-y-2'>
+              <h1 className='text-3xl font-semibold tracking-tight text-balance text-zinc-50 md:text-5xl xl:text-6xl'>
+                {displayPage.name}
+              </h1>
+              <p className='max-w-4xl text-sm leading-6 text-zinc-300 md:text-[15px] xl:max-w-5xl'>
+                Public cinema notice board optimized for TV/LCD output.
+              </p>
             </div>
 
-            <div className='rounded-[30px] border border-white/10 bg-white/6 px-5 py-4 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl'>
-              <div className='text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400'>
-                Attendance
+            <div className='rounded-3xl border border-white/10 bg-black/20 px-4 py-3 shadow-inner shadow-black/20 xl:min-w-[320px] xl:px-5'>
+              <div className='text-[11px] font-medium uppercase tracking-[0.28em] text-amber-200/80'>
+                Current date / time
               </div>
-              <div className='mt-2 text-xl font-semibold text-zinc-50 xl:text-[22px]'>
-                {totalAttendance} marked today
+              <div className='mt-2 flex items-end gap-3'>
+                <div className='text-3xl font-semibold leading-none tracking-tight text-zinc-50 md:text-4xl xl:text-5xl'>
+                  <DisplayBoardClock initialIso={renderedAt.toISOString()} />
+                </div>
+                <div className='pb-1 text-sm text-zinc-300 md:text-[15px]'>{currentDate}</div>
               </div>
-              <div className='mt-1 text-sm text-zinc-300'>{expectedAttendance} expected</div>
+              <div className='mt-3 text-[11px] uppercase tracking-[0.22em] text-zinc-400'>
+                Last updated
+              </div>
+              <div className='mt-1 text-sm text-zinc-100 md:text-[15px]'>{updatedAt}</div>
             </div>
           </div>
         </header>
 
-        {visibleAlerts.length > 0 ? (
-          <section className='shrink-0 rounded-[30px] border border-rose-400/20 bg-white/6 px-5 py-4 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl'>
-            <div className='flex flex-wrap items-center justify-between gap-3'>
-              <div>
-                <div className='text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400'>
-                  Alerts
-                </div>
-                <div className='mt-1 text-xl font-semibold text-zinc-50 xl:text-[22px]'>
-                  Live notices
-                </div>
+        {layoutBlocks.length === 0 ? (
+          <section className='flex flex-1 items-center justify-center rounded-[30px] border border-white/10 bg-white/6 px-6 py-10 text-center shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl'>
+            <div className='max-w-xl space-y-3'>
+              <div className='text-2xl font-semibold text-zinc-50'>No display sections enabled</div>
+              <div className='text-sm text-zinc-300'>
+                Open the display page settings and enable the widgets you want to show on this
+                screen.
               </div>
-              <Badge className='border-rose-400/30 bg-rose-400/15 text-rose-100'>
-                <Icons.alertCircle className='mr-1.5 size-3.5' />
-                {alerts.total.toLocaleString()}
-              </Badge>
             </div>
-
-            <div className='mt-4 grid gap-3 xl:grid-cols-3'>
-              {visibleAlerts.map((alert) => (
-                <AlertBannerCard key={alert.id} alert={alert} />
-              ))}
-            </div>
-
-            {alerts.total > visibleAlerts.length ? (
-              <div className='mt-3 flex justify-end'>
-                <CompactMorePill label={`+${alerts.total - visibleAlerts.length} more alerts`} />
-              </div>
-            ) : null}
           </section>
-        ) : null}
-
-        <section className='grid flex-1 min-h-0 gap-4 xl:grid-cols-[minmax(0,1.72fr)_minmax(360px,0.9fr)]'>
-          <div className='grid min-h-0 gap-4 xl:grid-rows-[minmax(0,1.08fr)_minmax(0,0.97fr)_minmax(0,0.95fr)]'>
-            <SectionCard
-              title='Today Events'
-              description='Scheduled today'
-              icon={Icons.calendar}
-              count={events.total}
-              footer={
-                events.total > visibleEvents.length ? (
-                  <div className='flex justify-end'>
-                    <CompactMorePill
-                      label={`Showing ${visibleEvents.length} of ${events.total} events`}
-                    />
-                  </div>
-                ) : null
-              }
-            >
-              {visibleEvents.length === 0 ? (
-                <EmptySection message='No active events scheduled for today.' />
-              ) : (
-                <div className='space-y-2'>
-                  {visibleEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
-                    >
-                      <div className='flex items-start justify-between gap-3'>
-                        <div className='min-w-0'>
-                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
-                            {event.title}
-                          </div>
-                          <div className='mt-1 text-sm text-zinc-300'>
-                            {event.clientName ?? event.companyName ?? 'General event'}
-                          </div>
-                        </div>
-                        <Badge className='border-white/10 bg-white/5 text-zinc-100'>
-                          {formatTime(event.startAt)}
-                        </Badge>
-                      </div>
-                      <div className='mt-3 flex flex-wrap gap-2 text-xs text-zinc-400'>
-                        <RecordChip>{event.screenName ?? '—'}</RecordChip>
-                        {event.endAt ? (
-                          <RecordChip>Ends {formatTime(event.endAt)}</RecordChip>
-                        ) : (
-                          <RecordChip>Ends —</RecordChip>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </SectionCard>
-
-            <SectionCard
-              title='Movie Schedule'
-              description="Today's showtimes"
-              icon={Icons.video}
-              count={movieSchedules.total}
-              footer={
-                movieSchedules.total > visibleMovies.length ? (
-                  <div className='flex justify-end'>
-                    <CompactMorePill
-                      label={`Showing ${visibleMovies.length} of ${movieSchedules.total} shows`}
-                    />
-                  </div>
-                ) : null
-              }
-            >
-              {visibleMovies.length === 0 ? (
-                <EmptySection message='No active movie shows scheduled for today.' />
-              ) : (
-                <div className='space-y-2'>
-                  {visibleMovies.map((movie) => (
-                    <div
-                      key={movie.id}
-                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
-                    >
-                      <div className='flex items-start justify-between gap-3'>
-                        <div className='min-w-0'>
-                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
-                            {movie.movieName}
-                          </div>
-                          <div className='mt-1 text-sm text-zinc-300'>{movie.screenName}</div>
-                        </div>
-                        <Badge className='border-white/10 bg-white/5 text-zinc-100'>
-                          {formatTime(movie.showTime)}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </SectionCard>
-
-            <SectionCard
-              title='Meeting Schedule'
-              description="Today's meetings"
-              icon={Icons.clock}
-              count={meetings.total}
-              footer={
-                meetings.total > visibleMeetings.length ? (
-                  <div className='flex justify-end'>
-                    <CompactMorePill
-                      label={`Showing ${visibleMeetings.length} of ${meetings.total} meetings`}
-                    />
-                  </div>
-                ) : null
-              }
-            >
-              {visibleMeetings.length === 0 ? (
-                <EmptySection message='No active meetings scheduled for today.' />
-              ) : (
-                <div className='space-y-2'>
-                  {visibleMeetings.map((meeting) => (
-                    <div
-                      key={meeting.id}
-                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
-                    >
-                      <div className='flex items-start justify-between gap-3'>
-                        <div className='min-w-0'>
-                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
-                            {meeting.title}
-                          </div>
-                          <div className='mt-1 text-sm text-zinc-300'>
-                            {meeting.organizer ?? 'No organizer listed'}
-                          </div>
-                        </div>
-                        <Badge className='border-white/10 bg-white/5 text-zinc-100'>
-                          {formatTime(meeting.startAt)}
-                        </Badge>
-                      </div>
-                      <div className='mt-3 flex flex-wrap gap-2 text-xs text-zinc-400'>
-                        {meeting.location && <RecordChip>{meeting.location}</RecordChip>}
-                        {meeting.endAt && <RecordChip>Ends {formatTime(meeting.endAt)}</RecordChip>}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </SectionCard>
-          </div>
-
-          <div className='grid min-h-0 gap-4 xl:grid-rows-[minmax(0,0.62fr)_minmax(0,1.18fr)_minmax(0,0.92fr)_minmax(0,0.82fr)_minmax(0,0.76fr)]'>
-            <SectionCard
-              title='Weather'
-              description='Live configuration'
-              icon={Icons.sun}
-              count={weatherSetting ? 1 : 0}
-            >
-              {weatherSetting ? (
-                <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-4'>
-                  <div className='flex items-center justify-between gap-3'>
-                    <div>
-                      <div className='text-lg font-medium text-zinc-50 xl:text-[20px]'>
-                        {weatherSetting.city}
-                      </div>
-                      <div className='mt-1 text-sm text-zinc-300'>
-                        Provider: {weatherSetting.provider}
-                      </div>
-                    </div>
-                    <Badge className='border-emerald-400/30 bg-emerald-400/15 text-emerald-200'>
-                      Enabled
-                    </Badge>
-                  </div>
-                </div>
-              ) : (
-                <EmptySection message='No enabled weather setting is configured.' />
-              )}
-            </SectionCard>
-
-            <SectionCard
-              title='Attendance Summary'
-              description="Today's roster and status"
-              icon={Icons.teams}
-              count={totalAttendance}
-            >
-              {attendanceSummary.staffMarked + attendanceSummary.managerMarked === 0 ? (
-                <EmptySection message='Attendance not marked yet.' />
-              ) : (
-                <div className='space-y-4'>
-                  <div className='grid grid-cols-2 gap-2 xl:grid-cols-5'>
-                    <SummaryStatPill
-                      label='Staff Present'
-                      value={attendanceSummary.staffCounts.PRESENT}
-                      tone='emerald'
-                    />
-                    <SummaryStatPill
-                      label='Absent'
-                      value={attendanceSummary.staffCounts.ABSENT}
-                      tone='rose'
-                    />
-                    <SummaryStatPill
-                      label='Leave'
-                      value={attendanceSummary.staffCounts.LEAVE}
-                      tone='amber'
-                    />
-                    <SummaryStatPill
-                      label='Late'
-                      value={attendanceSummary.staffCounts.LATE}
-                      tone='orange'
-                    />
-                    <SummaryStatPill
-                      label='Manager Present'
-                      value={attendanceSummary.managerCounts.PRESENT}
-                      tone='emerald'
-                    />
-                  </div>
-
-                  <div className='grid gap-4 xl:grid-cols-2'>
-                    <div className='space-y-3 rounded-[26px] border border-white/10 bg-black/18 p-4'>
-                      <div className='flex items-center justify-between gap-3'>
-                        <div>
-                          <div className='text-sm uppercase tracking-[0.24em] text-zinc-400'>
-                            Staff Present
-                          </div>
-                          <div className='mt-1 text-lg font-semibold text-zinc-50'>
-                            {attendanceSummary.staffCounts.PRESENT.toLocaleString()} present
-                          </div>
-                        </div>
-                        <Badge
-                          variant='outline'
-                          className='border-white/10 bg-white/5 text-zinc-100'
-                        >
-                          {presentStaff.length} shown
-                        </Badge>
-                      </div>
-                      {presentStaff.length === 0 ? (
-                        <EmptySection message='No present staff entries yet.' />
-                      ) : (
-                        <div className='space-y-2'>
-                          {presentStaff.slice(0, VISIBLE_STAFF_ATTENDANCE_COUNT).map((item) => (
-                            <AttendanceRosterItem
-                              key={item.id}
-                              name={item.name}
-                              designation={item.designation}
-                              department={item.department}
-                              shift={item.shift}
-                              remarks={item.remarks}
-                            />
-                          ))}
-                          {presentStaff.length > VISIBLE_STAFF_ATTENDANCE_COUNT && (
-                            <CompactMorePill
-                              label={`+${
-                                presentStaff.length - VISIBLE_STAFF_ATTENDANCE_COUNT
-                              } more staff`}
-                            />
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className='space-y-3 rounded-[26px] border border-white/10 bg-black/18 p-4'>
-                      <div className='flex items-center justify-between gap-3'>
-                        <div>
-                          <div className='text-sm uppercase tracking-[0.24em] text-zinc-400'>
-                            Manager Present
-                          </div>
-                          <div className='mt-1 text-lg font-semibold text-zinc-50'>
-                            {attendanceSummary.managerCounts.PRESENT.toLocaleString()} present
-                          </div>
-                        </div>
-                        <Badge
-                          variant='outline'
-                          className='border-white/10 bg-white/5 text-zinc-100'
-                        >
-                          {presentManagers.length} shown
-                        </Badge>
-                      </div>
-                      {presentManagers.length === 0 ? (
-                        <EmptySection message='No present manager entries yet.' />
-                      ) : (
-                        <div className='space-y-2'>
-                          {presentManagers
-                            .slice(0, VISIBLE_MANAGER_ATTENDANCE_COUNT)
-                            .map((item) => (
-                              <AttendanceRosterItem
-                                key={item.id}
-                                name={item.name}
-                                designation={item.designation}
-                                shift={item.shift}
-                                remarks={item.remarks}
-                              />
-                            ))}
-                          {presentManagers.length > VISIBLE_MANAGER_ATTENDANCE_COUNT && (
-                            <CompactMorePill
-                              label={`+${
-                                presentManagers.length - VISIBLE_MANAGER_ATTENDANCE_COUNT
-                              } more managers`}
-                            />
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </SectionCard>
-
-            <SectionCard
-              title='Advertisement Contracts'
-              description='Active company contracts'
-              icon={Icons.media}
-              count={advertisements.total}
-              footer={
-                advertisements.total > visibleAds.length ? (
-                  <div className='flex justify-end'>
-                    <CompactMorePill
-                      label={`Showing ${visibleAds.length} of ${advertisements.total} contracts`}
-                    />
-                  </div>
-                ) : null
-              }
-            >
-              {visibleAds.length === 0 ? (
-                <EmptySection message='No active advertisement contracts are currently available.' />
-              ) : (
-                <div className='space-y-2'>
-                  {visibleAds.map((ad) => (
-                    <div
-                      key={ad.id}
-                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
-                    >
-                      <div className='flex items-start justify-between gap-3'>
-                        <div className='min-w-0'>
-                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
-                            {ad.title}
-                          </div>
-                          <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
-                            <RecordChip>Active contract</RecordChip>
-                            <RecordChip>
-                              {formatShortDate(ad.startAt)} - {formatShortDate(ad.endAt)}
-                            </RecordChip>
-                            {ad.adLocation && <RecordChip>{ad.adLocation}</RecordChip>}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </SectionCard>
-
-            <SectionCard
-              title='Sales Targets'
-              description='Active targets'
-              icon={Icons.adjustments}
-              count={salesTargets.total}
-              footer={
-                salesTargets.total > visibleTargets.length ? (
-                  <div className='flex justify-end'>
-                    <CompactMorePill
-                      label={`Showing ${visibleTargets.length} of ${salesTargets.total} targets`}
-                    />
-                  </div>
-                ) : null
-              }
-            >
-              {visibleTargets.length === 0 ? (
-                <EmptySection message='No active sales targets are currently available.' />
-              ) : (
-                <div className='space-y-2'>
-                  {visibleTargets.map((target) => (
-                    <div
-                      key={target.id}
-                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
-                    >
-                      <div className='flex items-start justify-between gap-3'>
-                        <div className='min-w-0'>
-                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
-                            {target.itemName}
-                          </div>
-                          <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
-                            {target.itemCodes.length > 0 ? (
-                              <RecordChip>
-                                {target.itemCodes.length} code
-                                {target.itemCodes.length === 1 ? '' : 's'}
-                              </RecordChip>
-                            ) : target.itemCode ? (
-                              <RecordChip>{target.itemCode}</RecordChip>
-                            ) : null}
-                            <RecordChip>{target.status}</RecordChip>
-                            {target.startDate && (
-                              <RecordChip>Start {formatShortDate(target.startDate)}</RecordChip>
-                            )}
-                          </div>
-                        </div>
-                        <div className='flex flex-col items-end gap-1 text-right'>
-                          <Badge className='border-white/10 bg-white/5 text-zinc-100'>
-                            Order {target.displayOrder}
-                          </Badge>
-                          <div className='text-[11px] uppercase tracking-[0.2em] text-zinc-400'>
-                            Last import
-                          </div>
-                          <div className='text-xs text-zinc-200'>
-                            {formatDateTime(target.lastImportAt)}
-                          </div>
-                        </div>
-                      </div>
-
-                      {!target.daily.dataAvailable &&
-                      !target.weekly.dataAvailable &&
-                      !target.monthly.dataAvailable ? (
-                        <div className='mt-3'>
-                          <EmptySection message='Sales data not imported for the selected period.' />
-                        </div>
-                      ) : null}
-
-                      <div className='mt-3 grid grid-cols-1 gap-2 text-xs text-zinc-300 xl:grid-cols-3'>
-                        <StatBlock
-                          label='Daily'
-                          value={formatProgress(target.daily)}
-                          tone={target.daily.dataAvailable ? 'emerald' : 'zinc'}
-                        />
-                        <StatBlock
-                          label='Weekly'
-                          value={formatProgress(target.weekly)}
-                          tone={target.weekly.dataAvailable ? 'amber' : 'zinc'}
-                        />
-                        <StatBlock
-                          label='Monthly'
-                          value={formatProgress(target.monthly)}
-                          tone={target.monthly.dataAvailable ? 'emerald' : 'zinc'}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </SectionCard>
-
-            <SectionCard
-              title='Concession Price List'
-              description='Live counter prices'
-              icon={Icons.billing}
-              count={concessionPriceList.total}
-              footer={
-                concessionPriceList.total > visibleConcessions.length ? (
-                  <div className='flex justify-end'>
-                    <CompactMorePill
-                      label={`Showing ${visibleConcessions.length} of ${concessionPriceList.total} items`}
-                    />
-                  </div>
-                ) : null
-              }
-            >
-              {visibleConcessions.length === 0 ? (
-                <EmptySection message='No active concession price items are currently available.' />
-              ) : (
-                <div className='space-y-2'>
-                  {visibleConcessions.map((item) => (
-                    <div
-                      key={item.id}
-                      className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
-                    >
-                      <div className='flex items-start justify-between gap-3'>
-                        <div className='min-w-0'>
-                          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
-                            {item.itemName}
-                          </div>
-                          <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
-                            {item.category && <RecordChip>{item.category}</RecordChip>}
-                            <RecordChip>{item.status}</RecordChip>
-                          </div>
-                        </div>
-                        <Badge className='border-amber-400/30 bg-amber-400/15 text-amber-100'>
-                          {formatPrice(item.price)}
-                        </Badge>
-                      </div>
-                      <div className='mt-2 flex flex-wrap gap-2 text-xs text-zinc-400'>
-                        <RecordChip>Sort {item.sortOrder}</RecordChip>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </SectionCard>
-          </div>
-        </section>
+        ) : (
+          <section className='grid flex-1 min-h-0 gap-4 overflow-hidden xl:grid-cols-3 xl:auto-rows-[minmax(0,1fr)]'>
+            {layoutBlocks.map((block) => (
+              <div key={block.key} className='min-h-0'>
+                {renderBlockCard(block.key)}
+              </div>
+            ))}
+          </section>
+        )}
       </div>
     </main>
   );
