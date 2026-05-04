@@ -1,4 +1,8 @@
+import Link from 'next/link';
+
+import { Icons } from '@/components/icons';
 import PageContainer from '@/components/layout/page-container';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import type { ItemSalesTargetStatus } from '../api/types';
 import { getItemSalesTargets } from '../api/service';
@@ -19,7 +23,17 @@ export async function ItemSalesTargetPage({ search, status }: ItemSalesTargetPag
     <PageContainer
       pageTitle='Item Sales Target'
       pageDescription='Create, update, and manage cinema item sales targets.'
-      pageHeaderAction={<ItemSalesTargetFormSheetTrigger />}
+      pageHeaderAction={
+        <div className='flex flex-wrap gap-2'>
+          <Button asChild variant='outline'>
+            <Link href='/dashboard/item-sales-target/imports'>
+              <Icons.refresh className='mr-2 h-4 w-4' />
+              Import Settings
+            </Link>
+          </Button>
+          <ItemSalesTargetFormSheetTrigger />
+        </div>
+      }
     >
       <div className='flex flex-col gap-4'>
         <Card className='border-border/60 bg-card/90 shadow-sm'>

@@ -83,6 +83,7 @@ export const API_PERMISSION_MAP: PermissionApiRule[] = [
   { pattern: '/api/advertisements', permission: 'advertisements' },
   { pattern: '/api/weather-settings', permission: 'weather' },
   { pattern: '/api/item-sales-target', permission: 'itemSalesTarget' },
+  { pattern: '/api/item-sales', permission: 'itemSalesTarget' },
   { pattern: '/api/movie-schedule-sync', permission: 'movieScheduleSync' },
   { pattern: '/api/concession-price-list', permission: 'concessionPriceList' },
   { pattern: '/api/system-settings', permission: 'systemSettings' }

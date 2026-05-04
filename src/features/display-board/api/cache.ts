@@ -67,6 +67,60 @@ function reviveAlert(value: Record<string, unknown>) {
   };
 }
 
+function reviveSalesTargetProgress(value: unknown) {
+  if (!value || typeof value !== 'object') {
+    return {
+      targetQty: null,
+      soldQty: 0,
+      remainingQty: null,
+      percent: null,
+      dataAvailable: false,
+      lastImportAt: null
+    };
+  }
+
+  const entry = value as Record<string, unknown>;
+
+  return {
+    ...entry,
+    lastImportAt: entry.lastImportAt ? toDate(entry.lastImportAt) : null
+  };
+}
+
+function reviveSalesTarget(value: unknown) {
+  if (!value || typeof value !== 'object') {
+    return {
+      id: '',
+      itemName: '',
+      itemCode: null,
+      itemCodes: [],
+      startDate: null,
+      endDate: null,
+      displayOrder: 0,
+      calculationMode: null,
+      status: 'ACTIVE',
+      daily: reviveSalesTargetProgress(null),
+      weekly: reviveSalesTargetProgress(null),
+      monthly: reviveSalesTargetProgress(null),
+      lastImportAt: null,
+      lastImportStatus: null
+    };
+  }
+
+  const entry = value as Record<string, unknown>;
+  const toProgress = (progress: unknown) => reviveSalesTargetProgress(progress);
+
+  return {
+    ...entry,
+    startDate: entry.startDate ? toDate(entry.startDate) : null,
+    endDate: entry.endDate ? toDate(entry.endDate) : null,
+    lastImportAt: entry.lastImportAt ? toDate(entry.lastImportAt) : null,
+    daily: toProgress(entry.daily),
+    weekly: toProgress(entry.weekly),
+    monthly: toProgress(entry.monthly)
+  };
+}
+
 function reviveDisplayBoardData(data: unknown): DisplayBoardData {
   const board = data as {
     displayPage: Record<string, unknown>;
@@ -76,13 +130,17 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
     movieSchedules: { items: Array<Record<string, unknown>>; total: number };
     advertisements: { items: Array<Record<string, unknown>>; total: number };
     alerts?: { items: Array<Record<string, unknown>>; total: number };
-    salesTargets: DisplayBoardData['salesTargets'];
+    salesTargets?: DisplayBoardData['salesTargets'];
     concessionPriceList?: DisplayBoardData['concessionPriceList'];
     attendance?: DisplayBoardData['attendance'];
     weatherSetting: DisplayBoardData['weatherSetting'];
     attendanceSummary: DisplayBoardData['attendanceSummary'];
   };
   const alerts = board.alerts ?? {
+    items: [],
+    total: 0
+  };
+  const salesTargets = board.salesTargets ?? {
     items: [],
     total: 0
   };
@@ -126,7 +184,12 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
       items: alerts.items.map((item) => reviveAlert(item)) as DisplayBoardData['alerts']['items'],
       total: alerts.total
     },
-    salesTargets: board.salesTargets,
+    salesTargets: {
+      items: salesTargets.items.map((item) =>
+        reviveSalesTarget(item)
+      ) as DisplayBoardData['salesTargets']['items'],
+      total: salesTargets.total
+    },
     concessionPriceList,
     attendance,
     weatherSetting: board.weatherSetting,

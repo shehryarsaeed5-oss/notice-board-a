@@ -246,16 +246,82 @@ model MovieScheduleSyncLog {
 }
 
 model ItemSalesTarget {
-  id            String       @id @default(cuid())
-  itemName      String
-  itemCode      String?
-  dailyTarget   Int?
-  weeklyTarget  Int?
-  monthlyTarget Int?
-  status        RecordStatus @default(ACTIVE)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-}
+    id            String       @id @default(cuid())
+    itemName      String
+    itemCode      String?
+    itemCodes     String[]     @default([])
+    dailyTarget   Int?
+    weeklyTarget  Int?
+    monthlyTarget Int?
+    startDate     DateTime?
+    endDate       DateTime?
+    displayOrder  Int          @default(0)
+    calculationMode String?
+    status        RecordStatus @default(ACTIVE)
+    createdAt     DateTime     @default(now())
+    updatedAt     DateTime     @updatedAt
+
+    @@index([displayOrder])
+    @@index([itemName])
+    @@index([itemCode])
+    @@index([status])
+  }
+
+  model ItemSalesImportSetting {
+    id                 String   @id @default(cuid())
+    sharedFolderPath   String?
+    autoImportEnabled  Boolean  @default(false)
+    lastScanAt         DateTime?
+    lastImportAt       DateTime?
+    lastImportStatus   String?
+    lastImportMessage  String?
+    lastImportCount    Int      @default(0)
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
+  }
+
+  model ItemSalesImportBatch {
+    id             String   @id @default(cuid())
+    sourceFilename String
+    sourcePath     String
+    reportDate     DateTime
+    businessDateKey String
+    fileHash       String   @unique
+    status         String   @default("COMPLETED")
+    rowCount       Int      @default(0)
+    rawMetadata    Json?
+    importedAt     DateTime @default(now())
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+
+    rows ItemSalesImportRow[]
+
+    @@index([businessDateKey])
+    @@index([reportDate])
+    @@index([status])
+    @@index([rowCount])
+  }
+
+  model ItemSalesImportRow {
+    id              String   @id @default(cuid())
+    importBatchId   String
+    businessDateKey String
+    itemCode        String?
+    itemName        String
+    categoryName    String?
+    uom             String?
+    quantitySold    Float    @default(0)
+    amountPaid      Float?
+    rawData         Json?
+    createdAt       DateTime @default(now())
+
+    importBatch ItemSalesImportBatch @relation(fields: [importBatchId], references: [id], onDelete: Cascade)
+
+    @@index([businessDateKey])
+    @@index([itemCode])
+    @@index([itemName])
+    @@index([importBatchId])
+  }
 
 model ConcessionPriceItem {
   id        String       @id @default(cuid())

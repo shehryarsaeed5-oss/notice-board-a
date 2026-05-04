@@ -293,12 +293,59 @@ exports.Prisma.ItemSalesTargetScalarFieldEnum = {
   id: 'id',
   itemName: 'itemName',
   itemCode: 'itemCode',
+  itemCodes: 'itemCodes',
   dailyTarget: 'dailyTarget',
   weeklyTarget: 'weeklyTarget',
   monthlyTarget: 'monthlyTarget',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  displayOrder: 'displayOrder',
+  calculationMode: 'calculationMode',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ItemSalesImportSettingScalarFieldEnum = {
+  id: 'id',
+  sharedFolderPath: 'sharedFolderPath',
+  autoImportEnabled: 'autoImportEnabled',
+  lastScanAt: 'lastScanAt',
+  lastImportAt: 'lastImportAt',
+  lastImportStatus: 'lastImportStatus',
+  lastImportMessage: 'lastImportMessage',
+  lastImportCount: 'lastImportCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ItemSalesImportBatchScalarFieldEnum = {
+  id: 'id',
+  sourceFilename: 'sourceFilename',
+  sourcePath: 'sourcePath',
+  reportDate: 'reportDate',
+  businessDateKey: 'businessDateKey',
+  fileHash: 'fileHash',
+  status: 'status',
+  rowCount: 'rowCount',
+  rawMetadata: 'rawMetadata',
+  importedAt: 'importedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ItemSalesImportRowScalarFieldEnum = {
+  id: 'id',
+  importBatchId: 'importBatchId',
+  businessDateKey: 'businessDateKey',
+  itemCode: 'itemCode',
+  itemName: 'itemName',
+  categoryName: 'categoryName',
+  uom: 'uom',
+  quantitySold: 'quantitySold',
+  amountPaid: 'amountPaid',
+  rawData: 'rawData',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.ConcessionPriceItemScalarFieldEnum = {
@@ -335,6 +382,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -343,6 +395,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.RecordStatus = exports.$Enums.RecordStatus = {
   ACTIVE: 'ACTIVE',
@@ -378,6 +436,9 @@ exports.Prisma.ModelName = {
   MovieScheduleSyncedRow: 'MovieScheduleSyncedRow',
   MovieScheduleSyncLog: 'MovieScheduleSyncLog',
   ItemSalesTarget: 'ItemSalesTarget',
+  ItemSalesImportSetting: 'ItemSalesImportSetting',
+  ItemSalesImportBatch: 'ItemSalesImportBatch',
+  ItemSalesImportRow: 'ItemSalesImportRow',
   ConcessionPriceItem: 'ConcessionPriceItem',
   DisplayPage: 'DisplayPage',
   SystemSetting: 'SystemSetting'

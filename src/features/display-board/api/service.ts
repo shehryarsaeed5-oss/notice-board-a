@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { prisma } from '@/lib/prisma';
 import { getActiveAlerts } from '@/features/alerts/api/service';
 import { getEnabledSyncedMovieScheduleRowsForDate } from '@/features/movie-schedule-sync/api/service';
+import { getItemSalesTargetDisplaySummaryForDisplay } from '@/features/item-sales-target/import/api/service';
 
 import {
   getCachedDisplayBoardData,
@@ -132,8 +133,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     meetingsTotal,
     advertisements,
     alerts,
-    salesTargets,
-    salesTargetsTotal,
+    salesTargetSummary,
     concessionPriceList,
     concessionPriceListTotal,
     weatherSetting,
@@ -189,18 +189,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
       orderBy: [{ startAt: 'asc' }, { title: 'asc' }]
     }),
     getActiveAlerts(now, 3),
-    prisma.itemSalesTarget.findMany({
-      where: {
-        status: 'ACTIVE'
-      },
-      orderBy: [{ itemName: 'asc' }],
-      take: 5
-    }),
-    prisma.itemSalesTarget.count({
-      where: {
-        status: 'ACTIVE'
-      }
-    }),
+    getItemSalesTargetDisplaySummaryForDisplay(now),
     prisma.concessionPriceItem.findMany({
       where: {
         status: 'ACTIVE'
@@ -354,8 +343,8 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
       total: alerts.total
     },
     salesTargets: {
-      items: salesTargets as DisplayBoardSalesTargetItem[],
-      total: salesTargetsTotal
+      items: salesTargetSummary.items as DisplayBoardSalesTargetItem[],
+      total: salesTargetSummary.total
     },
     concessionPriceList: {
       items: concessionPriceList as DisplayBoardConcessionPriceItem[],

@@ -90,6 +90,22 @@ export type MovieScheduleSyncLog = $Result.DefaultSelection<Prisma.$MovieSchedul
  */
 export type ItemSalesTarget = $Result.DefaultSelection<Prisma.$ItemSalesTargetPayload>;
 /**
+ * Model ItemSalesImportSetting
+ *
+ */
+export type ItemSalesImportSetting =
+  $Result.DefaultSelection<Prisma.$ItemSalesImportSettingPayload>;
+/**
+ * Model ItemSalesImportBatch
+ *
+ */
+export type ItemSalesImportBatch = $Result.DefaultSelection<Prisma.$ItemSalesImportBatchPayload>;
+/**
+ * Model ItemSalesImportRow
+ *
+ */
+export type ItemSalesImportRow = $Result.DefaultSelection<Prisma.$ItemSalesImportRowPayload>;
+/**
  * Model ConcessionPriceItem
  *
  */
@@ -450,6 +466,36 @@ export class PrismaClient<
    * ```
    */
   get itemSalesTarget(): Prisma.ItemSalesTargetDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.itemSalesImportSetting`: Exposes CRUD operations for the **ItemSalesImportSetting** model.
+   * Example usage:
+   * ```ts
+   * // Fetch zero or more ItemSalesImportSettings
+   * const itemSalesImportSettings = await prisma.itemSalesImportSetting.findMany()
+   * ```
+   */
+  get itemSalesImportSetting(): Prisma.ItemSalesImportSettingDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.itemSalesImportBatch`: Exposes CRUD operations for the **ItemSalesImportBatch** model.
+   * Example usage:
+   * ```ts
+   * // Fetch zero or more ItemSalesImportBatches
+   * const itemSalesImportBatches = await prisma.itemSalesImportBatch.findMany()
+   * ```
+   */
+  get itemSalesImportBatch(): Prisma.ItemSalesImportBatchDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.itemSalesImportRow`: Exposes CRUD operations for the **ItemSalesImportRow** model.
+   * Example usage:
+   * ```ts
+   * // Fetch zero or more ItemSalesImportRows
+   * const itemSalesImportRows = await prisma.itemSalesImportRow.findMany()
+   * ```
+   */
+  get itemSalesImportRow(): Prisma.ItemSalesImportRowDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.concessionPriceItem`: Exposes CRUD operations for the **ConcessionPriceItem** model.
@@ -923,6 +969,9 @@ export namespace Prisma {
     MovieScheduleSyncedRow: 'MovieScheduleSyncedRow';
     MovieScheduleSyncLog: 'MovieScheduleSyncLog';
     ItemSalesTarget: 'ItemSalesTarget';
+    ItemSalesImportSetting: 'ItemSalesImportSetting';
+    ItemSalesImportBatch: 'ItemSalesImportBatch';
+    ItemSalesImportRow: 'ItemSalesImportRow';
     ConcessionPriceItem: 'ConcessionPriceItem';
     DisplayPage: 'DisplayPage';
     SystemSetting: 'SystemSetting';
@@ -964,6 +1013,9 @@ export namespace Prisma {
         | 'movieScheduleSyncedRow'
         | 'movieScheduleSyncLog'
         | 'itemSalesTarget'
+        | 'itemSalesImportSetting'
+        | 'itemSalesImportBatch'
+        | 'itemSalesImportRow'
         | 'concessionPriceItem'
         | 'displayPage'
         | 'systemSetting';
@@ -2080,6 +2132,228 @@ export namespace Prisma {
           };
         };
       };
+      ItemSalesImportSetting: {
+        payload: Prisma.$ItemSalesImportSettingPayload<ExtArgs>;
+        fields: Prisma.ItemSalesImportSettingFieldRefs;
+        operations: {
+          findUnique: {
+            args: Prisma.ItemSalesImportSettingFindUniqueArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportSettingPayload> | null;
+          };
+          findUniqueOrThrow: {
+            args: Prisma.ItemSalesImportSettingFindUniqueOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportSettingPayload>;
+          };
+          findFirst: {
+            args: Prisma.ItemSalesImportSettingFindFirstArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportSettingPayload> | null;
+          };
+          findFirstOrThrow: {
+            args: Prisma.ItemSalesImportSettingFindFirstOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportSettingPayload>;
+          };
+          findMany: {
+            args: Prisma.ItemSalesImportSettingFindManyArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportSettingPayload>[];
+          };
+          create: {
+            args: Prisma.ItemSalesImportSettingCreateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportSettingPayload>;
+          };
+          createMany: {
+            args: Prisma.ItemSalesImportSettingCreateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          createManyAndReturn: {
+            args: Prisma.ItemSalesImportSettingCreateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportSettingPayload>[];
+          };
+          delete: {
+            args: Prisma.ItemSalesImportSettingDeleteArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportSettingPayload>;
+          };
+          update: {
+            args: Prisma.ItemSalesImportSettingUpdateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportSettingPayload>;
+          };
+          deleteMany: {
+            args: Prisma.ItemSalesImportSettingDeleteManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateMany: {
+            args: Prisma.ItemSalesImportSettingUpdateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.ItemSalesImportSettingUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportSettingPayload>[];
+          };
+          upsert: {
+            args: Prisma.ItemSalesImportSettingUpsertArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportSettingPayload>;
+          };
+          aggregate: {
+            args: Prisma.ItemSalesImportSettingAggregateArgs<ExtArgs>;
+            result: $Utils.Optional<AggregateItemSalesImportSetting>;
+          };
+          groupBy: {
+            args: Prisma.ItemSalesImportSettingGroupByArgs<ExtArgs>;
+            result: $Utils.Optional<ItemSalesImportSettingGroupByOutputType>[];
+          };
+          count: {
+            args: Prisma.ItemSalesImportSettingCountArgs<ExtArgs>;
+            result: $Utils.Optional<ItemSalesImportSettingCountAggregateOutputType> | number;
+          };
+        };
+      };
+      ItemSalesImportBatch: {
+        payload: Prisma.$ItemSalesImportBatchPayload<ExtArgs>;
+        fields: Prisma.ItemSalesImportBatchFieldRefs;
+        operations: {
+          findUnique: {
+            args: Prisma.ItemSalesImportBatchFindUniqueArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportBatchPayload> | null;
+          };
+          findUniqueOrThrow: {
+            args: Prisma.ItemSalesImportBatchFindUniqueOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportBatchPayload>;
+          };
+          findFirst: {
+            args: Prisma.ItemSalesImportBatchFindFirstArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportBatchPayload> | null;
+          };
+          findFirstOrThrow: {
+            args: Prisma.ItemSalesImportBatchFindFirstOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportBatchPayload>;
+          };
+          findMany: {
+            args: Prisma.ItemSalesImportBatchFindManyArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportBatchPayload>[];
+          };
+          create: {
+            args: Prisma.ItemSalesImportBatchCreateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportBatchPayload>;
+          };
+          createMany: {
+            args: Prisma.ItemSalesImportBatchCreateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          createManyAndReturn: {
+            args: Prisma.ItemSalesImportBatchCreateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportBatchPayload>[];
+          };
+          delete: {
+            args: Prisma.ItemSalesImportBatchDeleteArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportBatchPayload>;
+          };
+          update: {
+            args: Prisma.ItemSalesImportBatchUpdateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportBatchPayload>;
+          };
+          deleteMany: {
+            args: Prisma.ItemSalesImportBatchDeleteManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateMany: {
+            args: Prisma.ItemSalesImportBatchUpdateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.ItemSalesImportBatchUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportBatchPayload>[];
+          };
+          upsert: {
+            args: Prisma.ItemSalesImportBatchUpsertArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportBatchPayload>;
+          };
+          aggregate: {
+            args: Prisma.ItemSalesImportBatchAggregateArgs<ExtArgs>;
+            result: $Utils.Optional<AggregateItemSalesImportBatch>;
+          };
+          groupBy: {
+            args: Prisma.ItemSalesImportBatchGroupByArgs<ExtArgs>;
+            result: $Utils.Optional<ItemSalesImportBatchGroupByOutputType>[];
+          };
+          count: {
+            args: Prisma.ItemSalesImportBatchCountArgs<ExtArgs>;
+            result: $Utils.Optional<ItemSalesImportBatchCountAggregateOutputType> | number;
+          };
+        };
+      };
+      ItemSalesImportRow: {
+        payload: Prisma.$ItemSalesImportRowPayload<ExtArgs>;
+        fields: Prisma.ItemSalesImportRowFieldRefs;
+        operations: {
+          findUnique: {
+            args: Prisma.ItemSalesImportRowFindUniqueArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportRowPayload> | null;
+          };
+          findUniqueOrThrow: {
+            args: Prisma.ItemSalesImportRowFindUniqueOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportRowPayload>;
+          };
+          findFirst: {
+            args: Prisma.ItemSalesImportRowFindFirstArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportRowPayload> | null;
+          };
+          findFirstOrThrow: {
+            args: Prisma.ItemSalesImportRowFindFirstOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportRowPayload>;
+          };
+          findMany: {
+            args: Prisma.ItemSalesImportRowFindManyArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportRowPayload>[];
+          };
+          create: {
+            args: Prisma.ItemSalesImportRowCreateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportRowPayload>;
+          };
+          createMany: {
+            args: Prisma.ItemSalesImportRowCreateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          createManyAndReturn: {
+            args: Prisma.ItemSalesImportRowCreateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportRowPayload>[];
+          };
+          delete: {
+            args: Prisma.ItemSalesImportRowDeleteArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportRowPayload>;
+          };
+          update: {
+            args: Prisma.ItemSalesImportRowUpdateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportRowPayload>;
+          };
+          deleteMany: {
+            args: Prisma.ItemSalesImportRowDeleteManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateMany: {
+            args: Prisma.ItemSalesImportRowUpdateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.ItemSalesImportRowUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportRowPayload>[];
+          };
+          upsert: {
+            args: Prisma.ItemSalesImportRowUpsertArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ItemSalesImportRowPayload>;
+          };
+          aggregate: {
+            args: Prisma.ItemSalesImportRowAggregateArgs<ExtArgs>;
+            result: $Utils.Optional<AggregateItemSalesImportRow>;
+          };
+          groupBy: {
+            args: Prisma.ItemSalesImportRowGroupByArgs<ExtArgs>;
+            result: $Utils.Optional<ItemSalesImportRowGroupByOutputType>[];
+          };
+          count: {
+            args: Prisma.ItemSalesImportRowCountArgs<ExtArgs>;
+            result: $Utils.Optional<ItemSalesImportRowCountAggregateOutputType> | number;
+          };
+        };
+      };
       ConcessionPriceItem: {
         payload: Prisma.$ConcessionPriceItemPayload<ExtArgs>;
         fields: Prisma.ConcessionPriceItemFieldRefs;
@@ -2429,6 +2703,9 @@ export namespace Prisma {
     movieScheduleSyncedRow?: MovieScheduleSyncedRowOmit;
     movieScheduleSyncLog?: MovieScheduleSyncLogOmit;
     itemSalesTarget?: ItemSalesTargetOmit;
+    itemSalesImportSetting?: ItemSalesImportSettingOmit;
+    itemSalesImportBatch?: ItemSalesImportBatchOmit;
+    itemSalesImportRow?: ItemSalesImportRowOmit;
     concessionPriceItem?: ConcessionPriceItemOmit;
     displayPage?: DisplayPageOmit;
     systemSetting?: SystemSettingOmit;
@@ -2572,6 +2849,42 @@ export namespace Prisma {
     ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
   > = {
     where?: ManagerAttendanceRecordWhereInput;
+  };
+
+  /**
+   * Count Type ItemSalesImportBatchCountOutputType
+   */
+
+  export type ItemSalesImportBatchCountOutputType = {
+    rows: number;
+  };
+
+  export type ItemSalesImportBatchCountOutputTypeSelect<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    rows?: boolean | ItemSalesImportBatchCountOutputTypeCountRowsArgs;
+  };
+
+  // Custom InputTypes
+  /**
+   * ItemSalesImportBatchCountOutputType without action
+   */
+  export type ItemSalesImportBatchCountOutputTypeDefaultArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatchCountOutputType
+     */
+    select?: ItemSalesImportBatchCountOutputTypeSelect<ExtArgs> | null;
+  };
+
+  /**
+   * ItemSalesImportBatchCountOutputType without action
+   */
+  export type ItemSalesImportBatchCountOutputTypeCountRowsArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    where?: ItemSalesImportRowWhereInput;
   };
 
   /**
@@ -20422,12 +20735,14 @@ export namespace Prisma {
     dailyTarget: number | null;
     weeklyTarget: number | null;
     monthlyTarget: number | null;
+    displayOrder: number | null;
   };
 
   export type ItemSalesTargetSumAggregateOutputType = {
     dailyTarget: number | null;
     weeklyTarget: number | null;
     monthlyTarget: number | null;
+    displayOrder: number | null;
   };
 
   export type ItemSalesTargetMinAggregateOutputType = {
@@ -20437,6 +20752,10 @@ export namespace Prisma {
     dailyTarget: number | null;
     weeklyTarget: number | null;
     monthlyTarget: number | null;
+    startDate: Date | null;
+    endDate: Date | null;
+    displayOrder: number | null;
+    calculationMode: string | null;
     status: $Enums.RecordStatus | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -20449,6 +20768,10 @@ export namespace Prisma {
     dailyTarget: number | null;
     weeklyTarget: number | null;
     monthlyTarget: number | null;
+    startDate: Date | null;
+    endDate: Date | null;
+    displayOrder: number | null;
+    calculationMode: string | null;
     status: $Enums.RecordStatus | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -20458,9 +20781,14 @@ export namespace Prisma {
     id: number;
     itemName: number;
     itemCode: number;
+    itemCodes: number;
     dailyTarget: number;
     weeklyTarget: number;
     monthlyTarget: number;
+    startDate: number;
+    endDate: number;
+    displayOrder: number;
+    calculationMode: number;
     status: number;
     createdAt: number;
     updatedAt: number;
@@ -20471,12 +20799,14 @@ export namespace Prisma {
     dailyTarget?: true;
     weeklyTarget?: true;
     monthlyTarget?: true;
+    displayOrder?: true;
   };
 
   export type ItemSalesTargetSumAggregateInputType = {
     dailyTarget?: true;
     weeklyTarget?: true;
     monthlyTarget?: true;
+    displayOrder?: true;
   };
 
   export type ItemSalesTargetMinAggregateInputType = {
@@ -20486,6 +20816,10 @@ export namespace Prisma {
     dailyTarget?: true;
     weeklyTarget?: true;
     monthlyTarget?: true;
+    startDate?: true;
+    endDate?: true;
+    displayOrder?: true;
+    calculationMode?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -20498,6 +20832,10 @@ export namespace Prisma {
     dailyTarget?: true;
     weeklyTarget?: true;
     monthlyTarget?: true;
+    startDate?: true;
+    endDate?: true;
+    displayOrder?: true;
+    calculationMode?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -20507,9 +20845,14 @@ export namespace Prisma {
     id?: true;
     itemName?: true;
     itemCode?: true;
+    itemCodes?: true;
     dailyTarget?: true;
     weeklyTarget?: true;
     monthlyTarget?: true;
+    startDate?: true;
+    endDate?: true;
+    displayOrder?: true;
+    calculationMode?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -20609,9 +20952,14 @@ export namespace Prisma {
     id: string;
     itemName: string;
     itemCode: string | null;
+    itemCodes: string[];
     dailyTarget: number | null;
     weeklyTarget: number | null;
     monthlyTarget: number | null;
+    startDate: Date | null;
+    endDate: Date | null;
+    displayOrder: number;
+    calculationMode: string | null;
     status: $Enums.RecordStatus;
     createdAt: Date;
     updatedAt: Date;
@@ -20642,9 +20990,14 @@ export namespace Prisma {
       id?: boolean;
       itemName?: boolean;
       itemCode?: boolean;
+      itemCodes?: boolean;
       dailyTarget?: boolean;
       weeklyTarget?: boolean;
       monthlyTarget?: boolean;
+      startDate?: boolean;
+      endDate?: boolean;
+      displayOrder?: boolean;
+      calculationMode?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -20659,9 +21012,14 @@ export namespace Prisma {
       id?: boolean;
       itemName?: boolean;
       itemCode?: boolean;
+      itemCodes?: boolean;
       dailyTarget?: boolean;
       weeklyTarget?: boolean;
       monthlyTarget?: boolean;
+      startDate?: boolean;
+      endDate?: boolean;
+      displayOrder?: boolean;
+      calculationMode?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -20676,9 +21034,14 @@ export namespace Prisma {
       id?: boolean;
       itemName?: boolean;
       itemCode?: boolean;
+      itemCodes?: boolean;
       dailyTarget?: boolean;
       weeklyTarget?: boolean;
       monthlyTarget?: boolean;
+      startDate?: boolean;
+      endDate?: boolean;
+      displayOrder?: boolean;
+      calculationMode?: boolean;
       status?: boolean;
       createdAt?: boolean;
       updatedAt?: boolean;
@@ -20690,9 +21053,14 @@ export namespace Prisma {
     id?: boolean;
     itemName?: boolean;
     itemCode?: boolean;
+    itemCodes?: boolean;
     dailyTarget?: boolean;
     weeklyTarget?: boolean;
     monthlyTarget?: boolean;
+    startDate?: boolean;
+    endDate?: boolean;
+    displayOrder?: boolean;
+    calculationMode?: boolean;
     status?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -20704,9 +21072,14 @@ export namespace Prisma {
     | 'id'
     | 'itemName'
     | 'itemCode'
+    | 'itemCodes'
     | 'dailyTarget'
     | 'weeklyTarget'
     | 'monthlyTarget'
+    | 'startDate'
+    | 'endDate'
+    | 'displayOrder'
+    | 'calculationMode'
     | 'status'
     | 'createdAt'
     | 'updatedAt',
@@ -20723,9 +21096,14 @@ export namespace Prisma {
         id: string;
         itemName: string;
         itemCode: string | null;
+        itemCodes: string[];
         dailyTarget: number | null;
         weeklyTarget: number | null;
         monthlyTarget: number | null;
+        startDate: Date | null;
+        endDate: Date | null;
+        displayOrder: number;
+        calculationMode: string | null;
         status: $Enums.RecordStatus;
         createdAt: Date;
         updatedAt: Date;
@@ -21274,9 +21652,14 @@ export namespace Prisma {
     readonly id: FieldRef<'ItemSalesTarget', 'String'>;
     readonly itemName: FieldRef<'ItemSalesTarget', 'String'>;
     readonly itemCode: FieldRef<'ItemSalesTarget', 'String'>;
+    readonly itemCodes: FieldRef<'ItemSalesTarget', 'String[]'>;
     readonly dailyTarget: FieldRef<'ItemSalesTarget', 'Int'>;
     readonly weeklyTarget: FieldRef<'ItemSalesTarget', 'Int'>;
     readonly monthlyTarget: FieldRef<'ItemSalesTarget', 'Int'>;
+    readonly startDate: FieldRef<'ItemSalesTarget', 'DateTime'>;
+    readonly endDate: FieldRef<'ItemSalesTarget', 'DateTime'>;
+    readonly displayOrder: FieldRef<'ItemSalesTarget', 'Int'>;
+    readonly calculationMode: FieldRef<'ItemSalesTarget', 'String'>;
     readonly status: FieldRef<'ItemSalesTarget', 'RecordStatus'>;
     readonly createdAt: FieldRef<'ItemSalesTarget', 'DateTime'>;
     readonly updatedAt: FieldRef<'ItemSalesTarget', 'DateTime'>;
@@ -21677,6 +22060,4157 @@ export namespace Prisma {
      * Omit specific fields from the ItemSalesTarget
      */
     omit?: ItemSalesTargetOmit<ExtArgs> | null;
+  };
+
+  /**
+   * Model ItemSalesImportSetting
+   */
+
+  export type AggregateItemSalesImportSetting = {
+    _count: ItemSalesImportSettingCountAggregateOutputType | null;
+    _avg: ItemSalesImportSettingAvgAggregateOutputType | null;
+    _sum: ItemSalesImportSettingSumAggregateOutputType | null;
+    _min: ItemSalesImportSettingMinAggregateOutputType | null;
+    _max: ItemSalesImportSettingMaxAggregateOutputType | null;
+  };
+
+  export type ItemSalesImportSettingAvgAggregateOutputType = {
+    lastImportCount: number | null;
+  };
+
+  export type ItemSalesImportSettingSumAggregateOutputType = {
+    lastImportCount: number | null;
+  };
+
+  export type ItemSalesImportSettingMinAggregateOutputType = {
+    id: string | null;
+    sharedFolderPath: string | null;
+    autoImportEnabled: boolean | null;
+    lastScanAt: Date | null;
+    lastImportAt: Date | null;
+    lastImportStatus: string | null;
+    lastImportMessage: string | null;
+    lastImportCount: number | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type ItemSalesImportSettingMaxAggregateOutputType = {
+    id: string | null;
+    sharedFolderPath: string | null;
+    autoImportEnabled: boolean | null;
+    lastScanAt: Date | null;
+    lastImportAt: Date | null;
+    lastImportStatus: string | null;
+    lastImportMessage: string | null;
+    lastImportCount: number | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type ItemSalesImportSettingCountAggregateOutputType = {
+    id: number;
+    sharedFolderPath: number;
+    autoImportEnabled: number;
+    lastScanAt: number;
+    lastImportAt: number;
+    lastImportStatus: number;
+    lastImportMessage: number;
+    lastImportCount: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+  };
+
+  export type ItemSalesImportSettingAvgAggregateInputType = {
+    lastImportCount?: true;
+  };
+
+  export type ItemSalesImportSettingSumAggregateInputType = {
+    lastImportCount?: true;
+  };
+
+  export type ItemSalesImportSettingMinAggregateInputType = {
+    id?: true;
+    sharedFolderPath?: true;
+    autoImportEnabled?: true;
+    lastScanAt?: true;
+    lastImportAt?: true;
+    lastImportStatus?: true;
+    lastImportMessage?: true;
+    lastImportCount?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type ItemSalesImportSettingMaxAggregateInputType = {
+    id?: true;
+    sharedFolderPath?: true;
+    autoImportEnabled?: true;
+    lastScanAt?: true;
+    lastImportAt?: true;
+    lastImportStatus?: true;
+    lastImportMessage?: true;
+    lastImportCount?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type ItemSalesImportSettingCountAggregateInputType = {
+    id?: true;
+    sharedFolderPath?: true;
+    autoImportEnabled?: true;
+    lastScanAt?: true;
+    lastImportAt?: true;
+    lastImportStatus?: true;
+    lastImportMessage?: true;
+    lastImportCount?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+  };
+
+  export type ItemSalesImportSettingAggregateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which ItemSalesImportSetting to aggregate.
+     */
+    where?: ItemSalesImportSettingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportSettings to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportSettingOrderByWithRelationInput
+      | ItemSalesImportSettingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: ItemSalesImportSettingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportSettings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportSettings.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned ItemSalesImportSettings
+     **/
+    _count?: true | ItemSalesImportSettingCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+     **/
+    _avg?: ItemSalesImportSettingAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: ItemSalesImportSettingSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+     **/
+    _min?: ItemSalesImportSettingMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+     **/
+    _max?: ItemSalesImportSettingMaxAggregateInputType;
+  };
+
+  export type GetItemSalesImportSettingAggregateType<
+    T extends ItemSalesImportSettingAggregateArgs
+  > = {
+    [P in keyof T & keyof AggregateItemSalesImportSetting]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateItemSalesImportSetting[P]>
+      : GetScalarType<T[P], AggregateItemSalesImportSetting[P]>;
+  };
+
+  export type ItemSalesImportSettingGroupByArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    where?: ItemSalesImportSettingWhereInput;
+    orderBy?:
+      | ItemSalesImportSettingOrderByWithAggregationInput
+      | ItemSalesImportSettingOrderByWithAggregationInput[];
+    by: ItemSalesImportSettingScalarFieldEnum[] | ItemSalesImportSettingScalarFieldEnum;
+    having?: ItemSalesImportSettingScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: ItemSalesImportSettingCountAggregateInputType | true;
+    _avg?: ItemSalesImportSettingAvgAggregateInputType;
+    _sum?: ItemSalesImportSettingSumAggregateInputType;
+    _min?: ItemSalesImportSettingMinAggregateInputType;
+    _max?: ItemSalesImportSettingMaxAggregateInputType;
+  };
+
+  export type ItemSalesImportSettingGroupByOutputType = {
+    id: string;
+    sharedFolderPath: string | null;
+    autoImportEnabled: boolean;
+    lastScanAt: Date | null;
+    lastImportAt: Date | null;
+    lastImportStatus: string | null;
+    lastImportMessage: string | null;
+    lastImportCount: number;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: ItemSalesImportSettingCountAggregateOutputType | null;
+    _avg: ItemSalesImportSettingAvgAggregateOutputType | null;
+    _sum: ItemSalesImportSettingSumAggregateOutputType | null;
+    _min: ItemSalesImportSettingMinAggregateOutputType | null;
+    _max: ItemSalesImportSettingMaxAggregateOutputType | null;
+  };
+
+  type GetItemSalesImportSettingGroupByPayload<T extends ItemSalesImportSettingGroupByArgs> =
+    Prisma.PrismaPromise<
+      Array<
+        PickEnumerable<ItemSalesImportSettingGroupByOutputType, T['by']> & {
+          [P in keyof T & keyof ItemSalesImportSettingGroupByOutputType]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ItemSalesImportSettingGroupByOutputType[P]>
+            : GetScalarType<T[P], ItemSalesImportSettingGroupByOutputType[P]>;
+        }
+      >
+    >;
+
+  export type ItemSalesImportSettingSelect<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      sharedFolderPath?: boolean;
+      autoImportEnabled?: boolean;
+      lastScanAt?: boolean;
+      lastImportAt?: boolean;
+      lastImportStatus?: boolean;
+      lastImportMessage?: boolean;
+      lastImportCount?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['itemSalesImportSetting']
+  >;
+
+  export type ItemSalesImportSettingSelectCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      sharedFolderPath?: boolean;
+      autoImportEnabled?: boolean;
+      lastScanAt?: boolean;
+      lastImportAt?: boolean;
+      lastImportStatus?: boolean;
+      lastImportMessage?: boolean;
+      lastImportCount?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['itemSalesImportSetting']
+  >;
+
+  export type ItemSalesImportSettingSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      sharedFolderPath?: boolean;
+      autoImportEnabled?: boolean;
+      lastScanAt?: boolean;
+      lastImportAt?: boolean;
+      lastImportStatus?: boolean;
+      lastImportMessage?: boolean;
+      lastImportCount?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['itemSalesImportSetting']
+  >;
+
+  export type ItemSalesImportSettingSelectScalar = {
+    id?: boolean;
+    sharedFolderPath?: boolean;
+    autoImportEnabled?: boolean;
+    lastScanAt?: boolean;
+    lastImportAt?: boolean;
+    lastImportStatus?: boolean;
+    lastImportMessage?: boolean;
+    lastImportCount?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+  };
+
+  export type ItemSalesImportSettingOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetOmit<
+    | 'id'
+    | 'sharedFolderPath'
+    | 'autoImportEnabled'
+    | 'lastScanAt'
+    | 'lastImportAt'
+    | 'lastImportStatus'
+    | 'lastImportMessage'
+    | 'lastImportCount'
+    | 'createdAt'
+    | 'updatedAt',
+    ExtArgs['result']['itemSalesImportSetting']
+  >;
+
+  export type $ItemSalesImportSettingPayload<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    name: 'ItemSalesImportSetting';
+    objects: {};
+    scalars: $Extensions.GetPayloadResult<
+      {
+        id: string;
+        sharedFolderPath: string | null;
+        autoImportEnabled: boolean;
+        lastScanAt: Date | null;
+        lastImportAt: Date | null;
+        lastImportStatus: string | null;
+        lastImportMessage: string | null;
+        lastImportCount: number;
+        createdAt: Date;
+        updatedAt: Date;
+      },
+      ExtArgs['result']['itemSalesImportSetting']
+    >;
+    composites: {};
+  };
+
+  type ItemSalesImportSettingGetPayload<
+    S extends boolean | null | undefined | ItemSalesImportSettingDefaultArgs
+  > = $Result.GetResult<Prisma.$ItemSalesImportSettingPayload, S>;
+
+  type ItemSalesImportSettingCountArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = Omit<ItemSalesImportSettingFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: ItemSalesImportSettingCountAggregateInputType | true;
+  };
+
+  export interface ItemSalesImportSettingDelegate<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > {
+    [K: symbol]: {
+      types: Prisma.TypeMap<ExtArgs>['model']['ItemSalesImportSetting'];
+      meta: { name: 'ItemSalesImportSetting' };
+    };
+    /**
+     * Find zero or one ItemSalesImportSetting that matches the filter.
+     * @param {ItemSalesImportSettingFindUniqueArgs} args - Arguments to find a ItemSalesImportSetting
+     * @example
+     * // Get one ItemSalesImportSetting
+     * const itemSalesImportSetting = await prisma.itemSalesImportSetting.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ItemSalesImportSettingFindUniqueArgs>(
+      args: SelectSubset<T, ItemSalesImportSettingFindUniqueArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportSettingClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportSettingPayload<ExtArgs>,
+        T,
+        'findUnique',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find one ItemSalesImportSetting that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ItemSalesImportSettingFindUniqueOrThrowArgs} args - Arguments to find a ItemSalesImportSetting
+     * @example
+     * // Get one ItemSalesImportSetting
+     * const itemSalesImportSetting = await prisma.itemSalesImportSetting.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ItemSalesImportSettingFindUniqueOrThrowArgs>(
+      args: SelectSubset<T, ItemSalesImportSettingFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportSettingClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportSettingPayload<ExtArgs>,
+        T,
+        'findUniqueOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first ItemSalesImportSetting that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportSettingFindFirstArgs} args - Arguments to find a ItemSalesImportSetting
+     * @example
+     * // Get one ItemSalesImportSetting
+     * const itemSalesImportSetting = await prisma.itemSalesImportSetting.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ItemSalesImportSettingFindFirstArgs>(
+      args?: SelectSubset<T, ItemSalesImportSettingFindFirstArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportSettingClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportSettingPayload<ExtArgs>,
+        T,
+        'findFirst',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first ItemSalesImportSetting that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportSettingFindFirstOrThrowArgs} args - Arguments to find a ItemSalesImportSetting
+     * @example
+     * // Get one ItemSalesImportSetting
+     * const itemSalesImportSetting = await prisma.itemSalesImportSetting.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ItemSalesImportSettingFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, ItemSalesImportSettingFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportSettingClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportSettingPayload<ExtArgs>,
+        T,
+        'findFirstOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find zero or more ItemSalesImportSettings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportSettingFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ItemSalesImportSettings
+     * const itemSalesImportSettings = await prisma.itemSalesImportSetting.findMany()
+     *
+     * // Get first 10 ItemSalesImportSettings
+     * const itemSalesImportSettings = await prisma.itemSalesImportSetting.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const itemSalesImportSettingWithIdOnly = await prisma.itemSalesImportSetting.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends ItemSalesImportSettingFindManyArgs>(
+      args?: SelectSubset<T, ItemSalesImportSettingFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportSettingPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create a ItemSalesImportSetting.
+     * @param {ItemSalesImportSettingCreateArgs} args - Arguments to create a ItemSalesImportSetting.
+     * @example
+     * // Create one ItemSalesImportSetting
+     * const ItemSalesImportSetting = await prisma.itemSalesImportSetting.create({
+     *   data: {
+     *     // ... data to create a ItemSalesImportSetting
+     *   }
+     * })
+     *
+     */
+    create<T extends ItemSalesImportSettingCreateArgs>(
+      args: SelectSubset<T, ItemSalesImportSettingCreateArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportSettingClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportSettingPayload<ExtArgs>,
+        T,
+        'create',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Create many ItemSalesImportSettings.
+     * @param {ItemSalesImportSettingCreateManyArgs} args - Arguments to create many ItemSalesImportSettings.
+     * @example
+     * // Create many ItemSalesImportSettings
+     * const itemSalesImportSetting = await prisma.itemSalesImportSetting.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends ItemSalesImportSettingCreateManyArgs>(
+      args?: SelectSubset<T, ItemSalesImportSettingCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Create many ItemSalesImportSettings and returns the data saved in the database.
+     * @param {ItemSalesImportSettingCreateManyAndReturnArgs} args - Arguments to create many ItemSalesImportSettings.
+     * @example
+     * // Create many ItemSalesImportSettings
+     * const itemSalesImportSetting = await prisma.itemSalesImportSetting.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many ItemSalesImportSettings and only return the `id`
+     * const itemSalesImportSettingWithIdOnly = await prisma.itemSalesImportSetting.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends ItemSalesImportSettingCreateManyAndReturnArgs>(
+      args?: SelectSubset<T, ItemSalesImportSettingCreateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportSettingPayload<ExtArgs>,
+        T,
+        'createManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Delete a ItemSalesImportSetting.
+     * @param {ItemSalesImportSettingDeleteArgs} args - Arguments to delete one ItemSalesImportSetting.
+     * @example
+     * // Delete one ItemSalesImportSetting
+     * const ItemSalesImportSetting = await prisma.itemSalesImportSetting.delete({
+     *   where: {
+     *     // ... filter to delete one ItemSalesImportSetting
+     *   }
+     * })
+     *
+     */
+    delete<T extends ItemSalesImportSettingDeleteArgs>(
+      args: SelectSubset<T, ItemSalesImportSettingDeleteArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportSettingClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportSettingPayload<ExtArgs>,
+        T,
+        'delete',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Update one ItemSalesImportSetting.
+     * @param {ItemSalesImportSettingUpdateArgs} args - Arguments to update one ItemSalesImportSetting.
+     * @example
+     * // Update one ItemSalesImportSetting
+     * const itemSalesImportSetting = await prisma.itemSalesImportSetting.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends ItemSalesImportSettingUpdateArgs>(
+      args: SelectSubset<T, ItemSalesImportSettingUpdateArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportSettingClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportSettingPayload<ExtArgs>,
+        T,
+        'update',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Delete zero or more ItemSalesImportSettings.
+     * @param {ItemSalesImportSettingDeleteManyArgs} args - Arguments to filter ItemSalesImportSettings to delete.
+     * @example
+     * // Delete a few ItemSalesImportSettings
+     * const { count } = await prisma.itemSalesImportSetting.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends ItemSalesImportSettingDeleteManyArgs>(
+      args?: SelectSubset<T, ItemSalesImportSettingDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more ItemSalesImportSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportSettingUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ItemSalesImportSettings
+     * const itemSalesImportSetting = await prisma.itemSalesImportSetting.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends ItemSalesImportSettingUpdateManyArgs>(
+      args: SelectSubset<T, ItemSalesImportSettingUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more ItemSalesImportSettings and returns the data updated in the database.
+     * @param {ItemSalesImportSettingUpdateManyAndReturnArgs} args - Arguments to update many ItemSalesImportSettings.
+     * @example
+     * // Update many ItemSalesImportSettings
+     * const itemSalesImportSetting = await prisma.itemSalesImportSetting.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more ItemSalesImportSettings and only return the `id`
+     * const itemSalesImportSettingWithIdOnly = await prisma.itemSalesImportSetting.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends ItemSalesImportSettingUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, ItemSalesImportSettingUpdateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportSettingPayload<ExtArgs>,
+        T,
+        'updateManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create or update one ItemSalesImportSetting.
+     * @param {ItemSalesImportSettingUpsertArgs} args - Arguments to update or create a ItemSalesImportSetting.
+     * @example
+     * // Update or create a ItemSalesImportSetting
+     * const itemSalesImportSetting = await prisma.itemSalesImportSetting.upsert({
+     *   create: {
+     *     // ... data to create a ItemSalesImportSetting
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ItemSalesImportSetting we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ItemSalesImportSettingUpsertArgs>(
+      args: SelectSubset<T, ItemSalesImportSettingUpsertArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportSettingClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportSettingPayload<ExtArgs>,
+        T,
+        'upsert',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Count the number of ItemSalesImportSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportSettingCountArgs} args - Arguments to filter ItemSalesImportSettings to count.
+     * @example
+     * // Count the number of ItemSalesImportSettings
+     * const count = await prisma.itemSalesImportSetting.count({
+     *   where: {
+     *     // ... the filter for the ItemSalesImportSettings we want to count
+     *   }
+     * })
+     **/
+    count<T extends ItemSalesImportSettingCountArgs>(
+      args?: Subset<T, ItemSalesImportSettingCountArgs>
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ItemSalesImportSettingCountAggregateOutputType>
+        : number
+    >;
+
+    /**
+     * Allows you to perform aggregations operations on a ItemSalesImportSetting.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportSettingAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+     **/
+    aggregate<T extends ItemSalesImportSettingAggregateArgs>(
+      args: Subset<T, ItemSalesImportSettingAggregateArgs>
+    ): Prisma.PrismaPromise<GetItemSalesImportSettingAggregateType<T>>;
+
+    /**
+     * Group by ItemSalesImportSetting.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportSettingGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+     **/
+    groupBy<
+      T extends ItemSalesImportSettingGroupByArgs,
+      HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ItemSalesImportSettingGroupByArgs['orderBy'] }
+        : { orderBy?: ItemSalesImportSettingGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+        ? `Error: "by" must not be empty.`
+        : HavingValid extends False
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [Error, 'Field ', P, ` in "having" needs to be provided in "by"`];
+            }[HavingFields]
+          : 'take' extends Keys<T>
+            ? 'orderBy' extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : 'skip' extends Keys<T>
+              ? 'orderBy' extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+    >(
+      args: SubsetIntersection<T, ItemSalesImportSettingGroupByArgs, OrderByArg> & InputErrors
+    ): {} extends InputErrors
+      ? GetItemSalesImportSettingGroupByPayload<T>
+      : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the ItemSalesImportSetting model
+     */
+    readonly fields: ItemSalesImportSettingFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ItemSalesImportSetting.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ItemSalesImportSettingClient<
+    T,
+    Null = never,
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+      onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
+    ): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(
+      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null
+    ): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+  /**
+   * Fields of the ItemSalesImportSetting model
+   */
+  interface ItemSalesImportSettingFieldRefs {
+    readonly id: FieldRef<'ItemSalesImportSetting', 'String'>;
+    readonly sharedFolderPath: FieldRef<'ItemSalesImportSetting', 'String'>;
+    readonly autoImportEnabled: FieldRef<'ItemSalesImportSetting', 'Boolean'>;
+    readonly lastScanAt: FieldRef<'ItemSalesImportSetting', 'DateTime'>;
+    readonly lastImportAt: FieldRef<'ItemSalesImportSetting', 'DateTime'>;
+    readonly lastImportStatus: FieldRef<'ItemSalesImportSetting', 'String'>;
+    readonly lastImportMessage: FieldRef<'ItemSalesImportSetting', 'String'>;
+    readonly lastImportCount: FieldRef<'ItemSalesImportSetting', 'Int'>;
+    readonly createdAt: FieldRef<'ItemSalesImportSetting', 'DateTime'>;
+    readonly updatedAt: FieldRef<'ItemSalesImportSetting', 'DateTime'>;
+  }
+
+  // Custom InputTypes
+  /**
+   * ItemSalesImportSetting findUnique
+   */
+  export type ItemSalesImportSettingFindUniqueArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportSetting to fetch.
+     */
+    where: ItemSalesImportSettingWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportSetting findUniqueOrThrow
+   */
+  export type ItemSalesImportSettingFindUniqueOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportSetting to fetch.
+     */
+    where: ItemSalesImportSettingWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportSetting findFirst
+   */
+  export type ItemSalesImportSettingFindFirstArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportSetting to fetch.
+     */
+    where?: ItemSalesImportSettingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportSettings to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportSettingOrderByWithRelationInput
+      | ItemSalesImportSettingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ItemSalesImportSettings.
+     */
+    cursor?: ItemSalesImportSettingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportSettings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportSettings.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ItemSalesImportSettings.
+     */
+    distinct?: ItemSalesImportSettingScalarFieldEnum | ItemSalesImportSettingScalarFieldEnum[];
+  };
+
+  /**
+   * ItemSalesImportSetting findFirstOrThrow
+   */
+  export type ItemSalesImportSettingFindFirstOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportSetting to fetch.
+     */
+    where?: ItemSalesImportSettingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportSettings to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportSettingOrderByWithRelationInput
+      | ItemSalesImportSettingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ItemSalesImportSettings.
+     */
+    cursor?: ItemSalesImportSettingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportSettings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportSettings.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ItemSalesImportSettings.
+     */
+    distinct?: ItemSalesImportSettingScalarFieldEnum | ItemSalesImportSettingScalarFieldEnum[];
+  };
+
+  /**
+   * ItemSalesImportSetting findMany
+   */
+  export type ItemSalesImportSettingFindManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportSettings to fetch.
+     */
+    where?: ItemSalesImportSettingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportSettings to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportSettingOrderByWithRelationInput
+      | ItemSalesImportSettingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing ItemSalesImportSettings.
+     */
+    cursor?: ItemSalesImportSettingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportSettings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportSettings.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ItemSalesImportSettings.
+     */
+    distinct?: ItemSalesImportSettingScalarFieldEnum | ItemSalesImportSettingScalarFieldEnum[];
+  };
+
+  /**
+   * ItemSalesImportSetting create
+   */
+  export type ItemSalesImportSettingCreateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+    /**
+     * The data needed to create a ItemSalesImportSetting.
+     */
+    data: XOR<ItemSalesImportSettingCreateInput, ItemSalesImportSettingUncheckedCreateInput>;
+  };
+
+  /**
+   * ItemSalesImportSetting createMany
+   */
+  export type ItemSalesImportSettingCreateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to create many ItemSalesImportSettings.
+     */
+    data: ItemSalesImportSettingCreateManyInput | ItemSalesImportSettingCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * ItemSalesImportSetting createManyAndReturn
+   */
+  export type ItemSalesImportSettingCreateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+    /**
+     * The data used to create many ItemSalesImportSettings.
+     */
+    data: ItemSalesImportSettingCreateManyInput | ItemSalesImportSettingCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * ItemSalesImportSetting update
+   */
+  export type ItemSalesImportSettingUpdateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+    /**
+     * The data needed to update a ItemSalesImportSetting.
+     */
+    data: XOR<ItemSalesImportSettingUpdateInput, ItemSalesImportSettingUncheckedUpdateInput>;
+    /**
+     * Choose, which ItemSalesImportSetting to update.
+     */
+    where: ItemSalesImportSettingWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportSetting updateMany
+   */
+  export type ItemSalesImportSettingUpdateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to update ItemSalesImportSettings.
+     */
+    data: XOR<
+      ItemSalesImportSettingUpdateManyMutationInput,
+      ItemSalesImportSettingUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which ItemSalesImportSettings to update
+     */
+    where?: ItemSalesImportSettingWhereInput;
+    /**
+     * Limit how many ItemSalesImportSettings to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * ItemSalesImportSetting updateManyAndReturn
+   */
+  export type ItemSalesImportSettingUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+    /**
+     * The data used to update ItemSalesImportSettings.
+     */
+    data: XOR<
+      ItemSalesImportSettingUpdateManyMutationInput,
+      ItemSalesImportSettingUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which ItemSalesImportSettings to update
+     */
+    where?: ItemSalesImportSettingWhereInput;
+    /**
+     * Limit how many ItemSalesImportSettings to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * ItemSalesImportSetting upsert
+   */
+  export type ItemSalesImportSettingUpsertArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+    /**
+     * The filter to search for the ItemSalesImportSetting to update in case it exists.
+     */
+    where: ItemSalesImportSettingWhereUniqueInput;
+    /**
+     * In case the ItemSalesImportSetting found by the `where` argument doesn't exist, create a new ItemSalesImportSetting with this data.
+     */
+    create: XOR<ItemSalesImportSettingCreateInput, ItemSalesImportSettingUncheckedCreateInput>;
+    /**
+     * In case the ItemSalesImportSetting was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ItemSalesImportSettingUpdateInput, ItemSalesImportSettingUncheckedUpdateInput>;
+  };
+
+  /**
+   * ItemSalesImportSetting delete
+   */
+  export type ItemSalesImportSettingDeleteArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+    /**
+     * Filter which ItemSalesImportSetting to delete.
+     */
+    where: ItemSalesImportSettingWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportSetting deleteMany
+   */
+  export type ItemSalesImportSettingDeleteManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which ItemSalesImportSettings to delete
+     */
+    where?: ItemSalesImportSettingWhereInput;
+    /**
+     * Limit how many ItemSalesImportSettings to delete.
+     */
+    limit?: number;
+  };
+
+  /**
+   * ItemSalesImportSetting without action
+   */
+  export type ItemSalesImportSettingDefaultArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportSetting
+     */
+    select?: ItemSalesImportSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportSetting
+     */
+    omit?: ItemSalesImportSettingOmit<ExtArgs> | null;
+  };
+
+  /**
+   * Model ItemSalesImportBatch
+   */
+
+  export type AggregateItemSalesImportBatch = {
+    _count: ItemSalesImportBatchCountAggregateOutputType | null;
+    _avg: ItemSalesImportBatchAvgAggregateOutputType | null;
+    _sum: ItemSalesImportBatchSumAggregateOutputType | null;
+    _min: ItemSalesImportBatchMinAggregateOutputType | null;
+    _max: ItemSalesImportBatchMaxAggregateOutputType | null;
+  };
+
+  export type ItemSalesImportBatchAvgAggregateOutputType = {
+    rowCount: number | null;
+  };
+
+  export type ItemSalesImportBatchSumAggregateOutputType = {
+    rowCount: number | null;
+  };
+
+  export type ItemSalesImportBatchMinAggregateOutputType = {
+    id: string | null;
+    sourceFilename: string | null;
+    sourcePath: string | null;
+    reportDate: Date | null;
+    businessDateKey: string | null;
+    fileHash: string | null;
+    status: string | null;
+    rowCount: number | null;
+    importedAt: Date | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type ItemSalesImportBatchMaxAggregateOutputType = {
+    id: string | null;
+    sourceFilename: string | null;
+    sourcePath: string | null;
+    reportDate: Date | null;
+    businessDateKey: string | null;
+    fileHash: string | null;
+    status: string | null;
+    rowCount: number | null;
+    importedAt: Date | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type ItemSalesImportBatchCountAggregateOutputType = {
+    id: number;
+    sourceFilename: number;
+    sourcePath: number;
+    reportDate: number;
+    businessDateKey: number;
+    fileHash: number;
+    status: number;
+    rowCount: number;
+    rawMetadata: number;
+    importedAt: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+  };
+
+  export type ItemSalesImportBatchAvgAggregateInputType = {
+    rowCount?: true;
+  };
+
+  export type ItemSalesImportBatchSumAggregateInputType = {
+    rowCount?: true;
+  };
+
+  export type ItemSalesImportBatchMinAggregateInputType = {
+    id?: true;
+    sourceFilename?: true;
+    sourcePath?: true;
+    reportDate?: true;
+    businessDateKey?: true;
+    fileHash?: true;
+    status?: true;
+    rowCount?: true;
+    importedAt?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type ItemSalesImportBatchMaxAggregateInputType = {
+    id?: true;
+    sourceFilename?: true;
+    sourcePath?: true;
+    reportDate?: true;
+    businessDateKey?: true;
+    fileHash?: true;
+    status?: true;
+    rowCount?: true;
+    importedAt?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type ItemSalesImportBatchCountAggregateInputType = {
+    id?: true;
+    sourceFilename?: true;
+    sourcePath?: true;
+    reportDate?: true;
+    businessDateKey?: true;
+    fileHash?: true;
+    status?: true;
+    rowCount?: true;
+    rawMetadata?: true;
+    importedAt?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+  };
+
+  export type ItemSalesImportBatchAggregateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which ItemSalesImportBatch to aggregate.
+     */
+    where?: ItemSalesImportBatchWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportBatches to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportBatchOrderByWithRelationInput
+      | ItemSalesImportBatchOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: ItemSalesImportBatchWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportBatches from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportBatches.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned ItemSalesImportBatches
+     **/
+    _count?: true | ItemSalesImportBatchCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+     **/
+    _avg?: ItemSalesImportBatchAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: ItemSalesImportBatchSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+     **/
+    _min?: ItemSalesImportBatchMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+     **/
+    _max?: ItemSalesImportBatchMaxAggregateInputType;
+  };
+
+  export type GetItemSalesImportBatchAggregateType<T extends ItemSalesImportBatchAggregateArgs> = {
+    [P in keyof T & keyof AggregateItemSalesImportBatch]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateItemSalesImportBatch[P]>
+      : GetScalarType<T[P], AggregateItemSalesImportBatch[P]>;
+  };
+
+  export type ItemSalesImportBatchGroupByArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    where?: ItemSalesImportBatchWhereInput;
+    orderBy?:
+      | ItemSalesImportBatchOrderByWithAggregationInput
+      | ItemSalesImportBatchOrderByWithAggregationInput[];
+    by: ItemSalesImportBatchScalarFieldEnum[] | ItemSalesImportBatchScalarFieldEnum;
+    having?: ItemSalesImportBatchScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: ItemSalesImportBatchCountAggregateInputType | true;
+    _avg?: ItemSalesImportBatchAvgAggregateInputType;
+    _sum?: ItemSalesImportBatchSumAggregateInputType;
+    _min?: ItemSalesImportBatchMinAggregateInputType;
+    _max?: ItemSalesImportBatchMaxAggregateInputType;
+  };
+
+  export type ItemSalesImportBatchGroupByOutputType = {
+    id: string;
+    sourceFilename: string;
+    sourcePath: string;
+    reportDate: Date;
+    businessDateKey: string;
+    fileHash: string;
+    status: string;
+    rowCount: number;
+    rawMetadata: JsonValue | null;
+    importedAt: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: ItemSalesImportBatchCountAggregateOutputType | null;
+    _avg: ItemSalesImportBatchAvgAggregateOutputType | null;
+    _sum: ItemSalesImportBatchSumAggregateOutputType | null;
+    _min: ItemSalesImportBatchMinAggregateOutputType | null;
+    _max: ItemSalesImportBatchMaxAggregateOutputType | null;
+  };
+
+  type GetItemSalesImportBatchGroupByPayload<T extends ItemSalesImportBatchGroupByArgs> =
+    Prisma.PrismaPromise<
+      Array<
+        PickEnumerable<ItemSalesImportBatchGroupByOutputType, T['by']> & {
+          [P in keyof T & keyof ItemSalesImportBatchGroupByOutputType]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ItemSalesImportBatchGroupByOutputType[P]>
+            : GetScalarType<T[P], ItemSalesImportBatchGroupByOutputType[P]>;
+        }
+      >
+    >;
+
+  export type ItemSalesImportBatchSelect<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      sourceFilename?: boolean;
+      sourcePath?: boolean;
+      reportDate?: boolean;
+      businessDateKey?: boolean;
+      fileHash?: boolean;
+      status?: boolean;
+      rowCount?: boolean;
+      rawMetadata?: boolean;
+      importedAt?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+      rows?: boolean | ItemSalesImportBatch$rowsArgs<ExtArgs>;
+      _count?: boolean | ItemSalesImportBatchCountOutputTypeDefaultArgs<ExtArgs>;
+    },
+    ExtArgs['result']['itemSalesImportBatch']
+  >;
+
+  export type ItemSalesImportBatchSelectCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      sourceFilename?: boolean;
+      sourcePath?: boolean;
+      reportDate?: boolean;
+      businessDateKey?: boolean;
+      fileHash?: boolean;
+      status?: boolean;
+      rowCount?: boolean;
+      rawMetadata?: boolean;
+      importedAt?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['itemSalesImportBatch']
+  >;
+
+  export type ItemSalesImportBatchSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      sourceFilename?: boolean;
+      sourcePath?: boolean;
+      reportDate?: boolean;
+      businessDateKey?: boolean;
+      fileHash?: boolean;
+      status?: boolean;
+      rowCount?: boolean;
+      rawMetadata?: boolean;
+      importedAt?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['itemSalesImportBatch']
+  >;
+
+  export type ItemSalesImportBatchSelectScalar = {
+    id?: boolean;
+    sourceFilename?: boolean;
+    sourcePath?: boolean;
+    reportDate?: boolean;
+    businessDateKey?: boolean;
+    fileHash?: boolean;
+    status?: boolean;
+    rowCount?: boolean;
+    rawMetadata?: boolean;
+    importedAt?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+  };
+
+  export type ItemSalesImportBatchOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetOmit<
+    | 'id'
+    | 'sourceFilename'
+    | 'sourcePath'
+    | 'reportDate'
+    | 'businessDateKey'
+    | 'fileHash'
+    | 'status'
+    | 'rowCount'
+    | 'rawMetadata'
+    | 'importedAt'
+    | 'createdAt'
+    | 'updatedAt',
+    ExtArgs['result']['itemSalesImportBatch']
+  >;
+  export type ItemSalesImportBatchInclude<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    rows?: boolean | ItemSalesImportBatch$rowsArgs<ExtArgs>;
+    _count?: boolean | ItemSalesImportBatchCountOutputTypeDefaultArgs<ExtArgs>;
+  };
+  export type ItemSalesImportBatchIncludeCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {};
+  export type ItemSalesImportBatchIncludeUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {};
+
+  export type $ItemSalesImportBatchPayload<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    name: 'ItemSalesImportBatch';
+    objects: {
+      rows: Prisma.$ItemSalesImportRowPayload<ExtArgs>[];
+    };
+    scalars: $Extensions.GetPayloadResult<
+      {
+        id: string;
+        sourceFilename: string;
+        sourcePath: string;
+        reportDate: Date;
+        businessDateKey: string;
+        fileHash: string;
+        status: string;
+        rowCount: number;
+        rawMetadata: Prisma.JsonValue | null;
+        importedAt: Date;
+        createdAt: Date;
+        updatedAt: Date;
+      },
+      ExtArgs['result']['itemSalesImportBatch']
+    >;
+    composites: {};
+  };
+
+  type ItemSalesImportBatchGetPayload<
+    S extends boolean | null | undefined | ItemSalesImportBatchDefaultArgs
+  > = $Result.GetResult<Prisma.$ItemSalesImportBatchPayload, S>;
+
+  type ItemSalesImportBatchCountArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = Omit<ItemSalesImportBatchFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: ItemSalesImportBatchCountAggregateInputType | true;
+  };
+
+  export interface ItemSalesImportBatchDelegate<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > {
+    [K: symbol]: {
+      types: Prisma.TypeMap<ExtArgs>['model']['ItemSalesImportBatch'];
+      meta: { name: 'ItemSalesImportBatch' };
+    };
+    /**
+     * Find zero or one ItemSalesImportBatch that matches the filter.
+     * @param {ItemSalesImportBatchFindUniqueArgs} args - Arguments to find a ItemSalesImportBatch
+     * @example
+     * // Get one ItemSalesImportBatch
+     * const itemSalesImportBatch = await prisma.itemSalesImportBatch.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ItemSalesImportBatchFindUniqueArgs>(
+      args: SelectSubset<T, ItemSalesImportBatchFindUniqueArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportBatchClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+        T,
+        'findUnique',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find one ItemSalesImportBatch that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ItemSalesImportBatchFindUniqueOrThrowArgs} args - Arguments to find a ItemSalesImportBatch
+     * @example
+     * // Get one ItemSalesImportBatch
+     * const itemSalesImportBatch = await prisma.itemSalesImportBatch.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ItemSalesImportBatchFindUniqueOrThrowArgs>(
+      args: SelectSubset<T, ItemSalesImportBatchFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportBatchClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+        T,
+        'findUniqueOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first ItemSalesImportBatch that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportBatchFindFirstArgs} args - Arguments to find a ItemSalesImportBatch
+     * @example
+     * // Get one ItemSalesImportBatch
+     * const itemSalesImportBatch = await prisma.itemSalesImportBatch.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ItemSalesImportBatchFindFirstArgs>(
+      args?: SelectSubset<T, ItemSalesImportBatchFindFirstArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportBatchClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+        T,
+        'findFirst',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first ItemSalesImportBatch that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportBatchFindFirstOrThrowArgs} args - Arguments to find a ItemSalesImportBatch
+     * @example
+     * // Get one ItemSalesImportBatch
+     * const itemSalesImportBatch = await prisma.itemSalesImportBatch.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ItemSalesImportBatchFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, ItemSalesImportBatchFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportBatchClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+        T,
+        'findFirstOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find zero or more ItemSalesImportBatches that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportBatchFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ItemSalesImportBatches
+     * const itemSalesImportBatches = await prisma.itemSalesImportBatch.findMany()
+     *
+     * // Get first 10 ItemSalesImportBatches
+     * const itemSalesImportBatches = await prisma.itemSalesImportBatch.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const itemSalesImportBatchWithIdOnly = await prisma.itemSalesImportBatch.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends ItemSalesImportBatchFindManyArgs>(
+      args?: SelectSubset<T, ItemSalesImportBatchFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create a ItemSalesImportBatch.
+     * @param {ItemSalesImportBatchCreateArgs} args - Arguments to create a ItemSalesImportBatch.
+     * @example
+     * // Create one ItemSalesImportBatch
+     * const ItemSalesImportBatch = await prisma.itemSalesImportBatch.create({
+     *   data: {
+     *     // ... data to create a ItemSalesImportBatch
+     *   }
+     * })
+     *
+     */
+    create<T extends ItemSalesImportBatchCreateArgs>(
+      args: SelectSubset<T, ItemSalesImportBatchCreateArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportBatchClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+        T,
+        'create',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Create many ItemSalesImportBatches.
+     * @param {ItemSalesImportBatchCreateManyArgs} args - Arguments to create many ItemSalesImportBatches.
+     * @example
+     * // Create many ItemSalesImportBatches
+     * const itemSalesImportBatch = await prisma.itemSalesImportBatch.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends ItemSalesImportBatchCreateManyArgs>(
+      args?: SelectSubset<T, ItemSalesImportBatchCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Create many ItemSalesImportBatches and returns the data saved in the database.
+     * @param {ItemSalesImportBatchCreateManyAndReturnArgs} args - Arguments to create many ItemSalesImportBatches.
+     * @example
+     * // Create many ItemSalesImportBatches
+     * const itemSalesImportBatch = await prisma.itemSalesImportBatch.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many ItemSalesImportBatches and only return the `id`
+     * const itemSalesImportBatchWithIdOnly = await prisma.itemSalesImportBatch.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends ItemSalesImportBatchCreateManyAndReturnArgs>(
+      args?: SelectSubset<T, ItemSalesImportBatchCreateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+        T,
+        'createManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Delete a ItemSalesImportBatch.
+     * @param {ItemSalesImportBatchDeleteArgs} args - Arguments to delete one ItemSalesImportBatch.
+     * @example
+     * // Delete one ItemSalesImportBatch
+     * const ItemSalesImportBatch = await prisma.itemSalesImportBatch.delete({
+     *   where: {
+     *     // ... filter to delete one ItemSalesImportBatch
+     *   }
+     * })
+     *
+     */
+    delete<T extends ItemSalesImportBatchDeleteArgs>(
+      args: SelectSubset<T, ItemSalesImportBatchDeleteArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportBatchClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+        T,
+        'delete',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Update one ItemSalesImportBatch.
+     * @param {ItemSalesImportBatchUpdateArgs} args - Arguments to update one ItemSalesImportBatch.
+     * @example
+     * // Update one ItemSalesImportBatch
+     * const itemSalesImportBatch = await prisma.itemSalesImportBatch.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends ItemSalesImportBatchUpdateArgs>(
+      args: SelectSubset<T, ItemSalesImportBatchUpdateArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportBatchClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+        T,
+        'update',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Delete zero or more ItemSalesImportBatches.
+     * @param {ItemSalesImportBatchDeleteManyArgs} args - Arguments to filter ItemSalesImportBatches to delete.
+     * @example
+     * // Delete a few ItemSalesImportBatches
+     * const { count } = await prisma.itemSalesImportBatch.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends ItemSalesImportBatchDeleteManyArgs>(
+      args?: SelectSubset<T, ItemSalesImportBatchDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more ItemSalesImportBatches.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportBatchUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ItemSalesImportBatches
+     * const itemSalesImportBatch = await prisma.itemSalesImportBatch.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends ItemSalesImportBatchUpdateManyArgs>(
+      args: SelectSubset<T, ItemSalesImportBatchUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more ItemSalesImportBatches and returns the data updated in the database.
+     * @param {ItemSalesImportBatchUpdateManyAndReturnArgs} args - Arguments to update many ItemSalesImportBatches.
+     * @example
+     * // Update many ItemSalesImportBatches
+     * const itemSalesImportBatch = await prisma.itemSalesImportBatch.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more ItemSalesImportBatches and only return the `id`
+     * const itemSalesImportBatchWithIdOnly = await prisma.itemSalesImportBatch.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends ItemSalesImportBatchUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, ItemSalesImportBatchUpdateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+        T,
+        'updateManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create or update one ItemSalesImportBatch.
+     * @param {ItemSalesImportBatchUpsertArgs} args - Arguments to update or create a ItemSalesImportBatch.
+     * @example
+     * // Update or create a ItemSalesImportBatch
+     * const itemSalesImportBatch = await prisma.itemSalesImportBatch.upsert({
+     *   create: {
+     *     // ... data to create a ItemSalesImportBatch
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ItemSalesImportBatch we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ItemSalesImportBatchUpsertArgs>(
+      args: SelectSubset<T, ItemSalesImportBatchUpsertArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportBatchClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+        T,
+        'upsert',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Count the number of ItemSalesImportBatches.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportBatchCountArgs} args - Arguments to filter ItemSalesImportBatches to count.
+     * @example
+     * // Count the number of ItemSalesImportBatches
+     * const count = await prisma.itemSalesImportBatch.count({
+     *   where: {
+     *     // ... the filter for the ItemSalesImportBatches we want to count
+     *   }
+     * })
+     **/
+    count<T extends ItemSalesImportBatchCountArgs>(
+      args?: Subset<T, ItemSalesImportBatchCountArgs>
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ItemSalesImportBatchCountAggregateOutputType>
+        : number
+    >;
+
+    /**
+     * Allows you to perform aggregations operations on a ItemSalesImportBatch.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportBatchAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+     **/
+    aggregate<T extends ItemSalesImportBatchAggregateArgs>(
+      args: Subset<T, ItemSalesImportBatchAggregateArgs>
+    ): Prisma.PrismaPromise<GetItemSalesImportBatchAggregateType<T>>;
+
+    /**
+     * Group by ItemSalesImportBatch.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportBatchGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+     **/
+    groupBy<
+      T extends ItemSalesImportBatchGroupByArgs,
+      HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ItemSalesImportBatchGroupByArgs['orderBy'] }
+        : { orderBy?: ItemSalesImportBatchGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+        ? `Error: "by" must not be empty.`
+        : HavingValid extends False
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [Error, 'Field ', P, ` in "having" needs to be provided in "by"`];
+            }[HavingFields]
+          : 'take' extends Keys<T>
+            ? 'orderBy' extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : 'skip' extends Keys<T>
+              ? 'orderBy' extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+    >(
+      args: SubsetIntersection<T, ItemSalesImportBatchGroupByArgs, OrderByArg> & InputErrors
+    ): {} extends InputErrors
+      ? GetItemSalesImportBatchGroupByPayload<T>
+      : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the ItemSalesImportBatch model
+     */
+    readonly fields: ItemSalesImportBatchFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ItemSalesImportBatch.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ItemSalesImportBatchClient<
+    T,
+    Null = never,
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    rows<T extends ItemSalesImportBatch$rowsArgs<ExtArgs> = {}>(
+      args?: Subset<T, ItemSalesImportBatch$rowsArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      | $Result.GetResult<
+          Prisma.$ItemSalesImportRowPayload<ExtArgs>,
+          T,
+          'findMany',
+          GlobalOmitOptions
+        >
+      | Null
+    >;
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+      onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
+    ): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(
+      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null
+    ): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+  /**
+   * Fields of the ItemSalesImportBatch model
+   */
+  interface ItemSalesImportBatchFieldRefs {
+    readonly id: FieldRef<'ItemSalesImportBatch', 'String'>;
+    readonly sourceFilename: FieldRef<'ItemSalesImportBatch', 'String'>;
+    readonly sourcePath: FieldRef<'ItemSalesImportBatch', 'String'>;
+    readonly reportDate: FieldRef<'ItemSalesImportBatch', 'DateTime'>;
+    readonly businessDateKey: FieldRef<'ItemSalesImportBatch', 'String'>;
+    readonly fileHash: FieldRef<'ItemSalesImportBatch', 'String'>;
+    readonly status: FieldRef<'ItemSalesImportBatch', 'String'>;
+    readonly rowCount: FieldRef<'ItemSalesImportBatch', 'Int'>;
+    readonly rawMetadata: FieldRef<'ItemSalesImportBatch', 'Json'>;
+    readonly importedAt: FieldRef<'ItemSalesImportBatch', 'DateTime'>;
+    readonly createdAt: FieldRef<'ItemSalesImportBatch', 'DateTime'>;
+    readonly updatedAt: FieldRef<'ItemSalesImportBatch', 'DateTime'>;
+  }
+
+  // Custom InputTypes
+  /**
+   * ItemSalesImportBatch findUnique
+   */
+  export type ItemSalesImportBatchFindUniqueArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportBatchInclude<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportBatch to fetch.
+     */
+    where: ItemSalesImportBatchWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportBatch findUniqueOrThrow
+   */
+  export type ItemSalesImportBatchFindUniqueOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportBatchInclude<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportBatch to fetch.
+     */
+    where: ItemSalesImportBatchWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportBatch findFirst
+   */
+  export type ItemSalesImportBatchFindFirstArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportBatchInclude<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportBatch to fetch.
+     */
+    where?: ItemSalesImportBatchWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportBatches to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportBatchOrderByWithRelationInput
+      | ItemSalesImportBatchOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ItemSalesImportBatches.
+     */
+    cursor?: ItemSalesImportBatchWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportBatches from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportBatches.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ItemSalesImportBatches.
+     */
+    distinct?: ItemSalesImportBatchScalarFieldEnum | ItemSalesImportBatchScalarFieldEnum[];
+  };
+
+  /**
+   * ItemSalesImportBatch findFirstOrThrow
+   */
+  export type ItemSalesImportBatchFindFirstOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportBatchInclude<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportBatch to fetch.
+     */
+    where?: ItemSalesImportBatchWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportBatches to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportBatchOrderByWithRelationInput
+      | ItemSalesImportBatchOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ItemSalesImportBatches.
+     */
+    cursor?: ItemSalesImportBatchWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportBatches from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportBatches.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ItemSalesImportBatches.
+     */
+    distinct?: ItemSalesImportBatchScalarFieldEnum | ItemSalesImportBatchScalarFieldEnum[];
+  };
+
+  /**
+   * ItemSalesImportBatch findMany
+   */
+  export type ItemSalesImportBatchFindManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportBatchInclude<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportBatches to fetch.
+     */
+    where?: ItemSalesImportBatchWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportBatches to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportBatchOrderByWithRelationInput
+      | ItemSalesImportBatchOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing ItemSalesImportBatches.
+     */
+    cursor?: ItemSalesImportBatchWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportBatches from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportBatches.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ItemSalesImportBatches.
+     */
+    distinct?: ItemSalesImportBatchScalarFieldEnum | ItemSalesImportBatchScalarFieldEnum[];
+  };
+
+  /**
+   * ItemSalesImportBatch create
+   */
+  export type ItemSalesImportBatchCreateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportBatchInclude<ExtArgs> | null;
+    /**
+     * The data needed to create a ItemSalesImportBatch.
+     */
+    data: XOR<ItemSalesImportBatchCreateInput, ItemSalesImportBatchUncheckedCreateInput>;
+  };
+
+  /**
+   * ItemSalesImportBatch createMany
+   */
+  export type ItemSalesImportBatchCreateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to create many ItemSalesImportBatches.
+     */
+    data: ItemSalesImportBatchCreateManyInput | ItemSalesImportBatchCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * ItemSalesImportBatch createManyAndReturn
+   */
+  export type ItemSalesImportBatchCreateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * The data used to create many ItemSalesImportBatches.
+     */
+    data: ItemSalesImportBatchCreateManyInput | ItemSalesImportBatchCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * ItemSalesImportBatch update
+   */
+  export type ItemSalesImportBatchUpdateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportBatchInclude<ExtArgs> | null;
+    /**
+     * The data needed to update a ItemSalesImportBatch.
+     */
+    data: XOR<ItemSalesImportBatchUpdateInput, ItemSalesImportBatchUncheckedUpdateInput>;
+    /**
+     * Choose, which ItemSalesImportBatch to update.
+     */
+    where: ItemSalesImportBatchWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportBatch updateMany
+   */
+  export type ItemSalesImportBatchUpdateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to update ItemSalesImportBatches.
+     */
+    data: XOR<
+      ItemSalesImportBatchUpdateManyMutationInput,
+      ItemSalesImportBatchUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which ItemSalesImportBatches to update
+     */
+    where?: ItemSalesImportBatchWhereInput;
+    /**
+     * Limit how many ItemSalesImportBatches to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * ItemSalesImportBatch updateManyAndReturn
+   */
+  export type ItemSalesImportBatchUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * The data used to update ItemSalesImportBatches.
+     */
+    data: XOR<
+      ItemSalesImportBatchUpdateManyMutationInput,
+      ItemSalesImportBatchUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which ItemSalesImportBatches to update
+     */
+    where?: ItemSalesImportBatchWhereInput;
+    /**
+     * Limit how many ItemSalesImportBatches to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * ItemSalesImportBatch upsert
+   */
+  export type ItemSalesImportBatchUpsertArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportBatchInclude<ExtArgs> | null;
+    /**
+     * The filter to search for the ItemSalesImportBatch to update in case it exists.
+     */
+    where: ItemSalesImportBatchWhereUniqueInput;
+    /**
+     * In case the ItemSalesImportBatch found by the `where` argument doesn't exist, create a new ItemSalesImportBatch with this data.
+     */
+    create: XOR<ItemSalesImportBatchCreateInput, ItemSalesImportBatchUncheckedCreateInput>;
+    /**
+     * In case the ItemSalesImportBatch was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ItemSalesImportBatchUpdateInput, ItemSalesImportBatchUncheckedUpdateInput>;
+  };
+
+  /**
+   * ItemSalesImportBatch delete
+   */
+  export type ItemSalesImportBatchDeleteArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportBatchInclude<ExtArgs> | null;
+    /**
+     * Filter which ItemSalesImportBatch to delete.
+     */
+    where: ItemSalesImportBatchWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportBatch deleteMany
+   */
+  export type ItemSalesImportBatchDeleteManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which ItemSalesImportBatches to delete
+     */
+    where?: ItemSalesImportBatchWhereInput;
+    /**
+     * Limit how many ItemSalesImportBatches to delete.
+     */
+    limit?: number;
+  };
+
+  /**
+   * ItemSalesImportBatch.rows
+   */
+  export type ItemSalesImportBatch$rowsArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowInclude<ExtArgs> | null;
+    where?: ItemSalesImportRowWhereInput;
+    orderBy?:
+      | ItemSalesImportRowOrderByWithRelationInput
+      | ItemSalesImportRowOrderByWithRelationInput[];
+    cursor?: ItemSalesImportRowWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: ItemSalesImportRowScalarFieldEnum | ItemSalesImportRowScalarFieldEnum[];
+  };
+
+  /**
+   * ItemSalesImportBatch without action
+   */
+  export type ItemSalesImportBatchDefaultArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportBatch
+     */
+    select?: ItemSalesImportBatchSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportBatch
+     */
+    omit?: ItemSalesImportBatchOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportBatchInclude<ExtArgs> | null;
+  };
+
+  /**
+   * Model ItemSalesImportRow
+   */
+
+  export type AggregateItemSalesImportRow = {
+    _count: ItemSalesImportRowCountAggregateOutputType | null;
+    _avg: ItemSalesImportRowAvgAggregateOutputType | null;
+    _sum: ItemSalesImportRowSumAggregateOutputType | null;
+    _min: ItemSalesImportRowMinAggregateOutputType | null;
+    _max: ItemSalesImportRowMaxAggregateOutputType | null;
+  };
+
+  export type ItemSalesImportRowAvgAggregateOutputType = {
+    quantitySold: number | null;
+    amountPaid: number | null;
+  };
+
+  export type ItemSalesImportRowSumAggregateOutputType = {
+    quantitySold: number | null;
+    amountPaid: number | null;
+  };
+
+  export type ItemSalesImportRowMinAggregateOutputType = {
+    id: string | null;
+    importBatchId: string | null;
+    businessDateKey: string | null;
+    itemCode: string | null;
+    itemName: string | null;
+    categoryName: string | null;
+    uom: string | null;
+    quantitySold: number | null;
+    amountPaid: number | null;
+    createdAt: Date | null;
+  };
+
+  export type ItemSalesImportRowMaxAggregateOutputType = {
+    id: string | null;
+    importBatchId: string | null;
+    businessDateKey: string | null;
+    itemCode: string | null;
+    itemName: string | null;
+    categoryName: string | null;
+    uom: string | null;
+    quantitySold: number | null;
+    amountPaid: number | null;
+    createdAt: Date | null;
+  };
+
+  export type ItemSalesImportRowCountAggregateOutputType = {
+    id: number;
+    importBatchId: number;
+    businessDateKey: number;
+    itemCode: number;
+    itemName: number;
+    categoryName: number;
+    uom: number;
+    quantitySold: number;
+    amountPaid: number;
+    rawData: number;
+    createdAt: number;
+    _all: number;
+  };
+
+  export type ItemSalesImportRowAvgAggregateInputType = {
+    quantitySold?: true;
+    amountPaid?: true;
+  };
+
+  export type ItemSalesImportRowSumAggregateInputType = {
+    quantitySold?: true;
+    amountPaid?: true;
+  };
+
+  export type ItemSalesImportRowMinAggregateInputType = {
+    id?: true;
+    importBatchId?: true;
+    businessDateKey?: true;
+    itemCode?: true;
+    itemName?: true;
+    categoryName?: true;
+    uom?: true;
+    quantitySold?: true;
+    amountPaid?: true;
+    createdAt?: true;
+  };
+
+  export type ItemSalesImportRowMaxAggregateInputType = {
+    id?: true;
+    importBatchId?: true;
+    businessDateKey?: true;
+    itemCode?: true;
+    itemName?: true;
+    categoryName?: true;
+    uom?: true;
+    quantitySold?: true;
+    amountPaid?: true;
+    createdAt?: true;
+  };
+
+  export type ItemSalesImportRowCountAggregateInputType = {
+    id?: true;
+    importBatchId?: true;
+    businessDateKey?: true;
+    itemCode?: true;
+    itemName?: true;
+    categoryName?: true;
+    uom?: true;
+    quantitySold?: true;
+    amountPaid?: true;
+    rawData?: true;
+    createdAt?: true;
+    _all?: true;
+  };
+
+  export type ItemSalesImportRowAggregateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which ItemSalesImportRow to aggregate.
+     */
+    where?: ItemSalesImportRowWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportRows to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportRowOrderByWithRelationInput
+      | ItemSalesImportRowOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: ItemSalesImportRowWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportRows from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportRows.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned ItemSalesImportRows
+     **/
+    _count?: true | ItemSalesImportRowCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+     **/
+    _avg?: ItemSalesImportRowAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: ItemSalesImportRowSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+     **/
+    _min?: ItemSalesImportRowMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+     **/
+    _max?: ItemSalesImportRowMaxAggregateInputType;
+  };
+
+  export type GetItemSalesImportRowAggregateType<T extends ItemSalesImportRowAggregateArgs> = {
+    [P in keyof T & keyof AggregateItemSalesImportRow]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateItemSalesImportRow[P]>
+      : GetScalarType<T[P], AggregateItemSalesImportRow[P]>;
+  };
+
+  export type ItemSalesImportRowGroupByArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    where?: ItemSalesImportRowWhereInput;
+    orderBy?:
+      | ItemSalesImportRowOrderByWithAggregationInput
+      | ItemSalesImportRowOrderByWithAggregationInput[];
+    by: ItemSalesImportRowScalarFieldEnum[] | ItemSalesImportRowScalarFieldEnum;
+    having?: ItemSalesImportRowScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: ItemSalesImportRowCountAggregateInputType | true;
+    _avg?: ItemSalesImportRowAvgAggregateInputType;
+    _sum?: ItemSalesImportRowSumAggregateInputType;
+    _min?: ItemSalesImportRowMinAggregateInputType;
+    _max?: ItemSalesImportRowMaxAggregateInputType;
+  };
+
+  export type ItemSalesImportRowGroupByOutputType = {
+    id: string;
+    importBatchId: string;
+    businessDateKey: string;
+    itemCode: string | null;
+    itemName: string;
+    categoryName: string | null;
+    uom: string | null;
+    quantitySold: number;
+    amountPaid: number | null;
+    rawData: JsonValue | null;
+    createdAt: Date;
+    _count: ItemSalesImportRowCountAggregateOutputType | null;
+    _avg: ItemSalesImportRowAvgAggregateOutputType | null;
+    _sum: ItemSalesImportRowSumAggregateOutputType | null;
+    _min: ItemSalesImportRowMinAggregateOutputType | null;
+    _max: ItemSalesImportRowMaxAggregateOutputType | null;
+  };
+
+  type GetItemSalesImportRowGroupByPayload<T extends ItemSalesImportRowGroupByArgs> =
+    Prisma.PrismaPromise<
+      Array<
+        PickEnumerable<ItemSalesImportRowGroupByOutputType, T['by']> & {
+          [P in keyof T & keyof ItemSalesImportRowGroupByOutputType]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ItemSalesImportRowGroupByOutputType[P]>
+            : GetScalarType<T[P], ItemSalesImportRowGroupByOutputType[P]>;
+        }
+      >
+    >;
+
+  export type ItemSalesImportRowSelect<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      importBatchId?: boolean;
+      businessDateKey?: boolean;
+      itemCode?: boolean;
+      itemName?: boolean;
+      categoryName?: boolean;
+      uom?: boolean;
+      quantitySold?: boolean;
+      amountPaid?: boolean;
+      rawData?: boolean;
+      createdAt?: boolean;
+      importBatch?: boolean | ItemSalesImportBatchDefaultArgs<ExtArgs>;
+    },
+    ExtArgs['result']['itemSalesImportRow']
+  >;
+
+  export type ItemSalesImportRowSelectCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      importBatchId?: boolean;
+      businessDateKey?: boolean;
+      itemCode?: boolean;
+      itemName?: boolean;
+      categoryName?: boolean;
+      uom?: boolean;
+      quantitySold?: boolean;
+      amountPaid?: boolean;
+      rawData?: boolean;
+      createdAt?: boolean;
+      importBatch?: boolean | ItemSalesImportBatchDefaultArgs<ExtArgs>;
+    },
+    ExtArgs['result']['itemSalesImportRow']
+  >;
+
+  export type ItemSalesImportRowSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      importBatchId?: boolean;
+      businessDateKey?: boolean;
+      itemCode?: boolean;
+      itemName?: boolean;
+      categoryName?: boolean;
+      uom?: boolean;
+      quantitySold?: boolean;
+      amountPaid?: boolean;
+      rawData?: boolean;
+      createdAt?: boolean;
+      importBatch?: boolean | ItemSalesImportBatchDefaultArgs<ExtArgs>;
+    },
+    ExtArgs['result']['itemSalesImportRow']
+  >;
+
+  export type ItemSalesImportRowSelectScalar = {
+    id?: boolean;
+    importBatchId?: boolean;
+    businessDateKey?: boolean;
+    itemCode?: boolean;
+    itemName?: boolean;
+    categoryName?: boolean;
+    uom?: boolean;
+    quantitySold?: boolean;
+    amountPaid?: boolean;
+    rawData?: boolean;
+    createdAt?: boolean;
+  };
+
+  export type ItemSalesImportRowOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetOmit<
+    | 'id'
+    | 'importBatchId'
+    | 'businessDateKey'
+    | 'itemCode'
+    | 'itemName'
+    | 'categoryName'
+    | 'uom'
+    | 'quantitySold'
+    | 'amountPaid'
+    | 'rawData'
+    | 'createdAt',
+    ExtArgs['result']['itemSalesImportRow']
+  >;
+  export type ItemSalesImportRowInclude<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    importBatch?: boolean | ItemSalesImportBatchDefaultArgs<ExtArgs>;
+  };
+  export type ItemSalesImportRowIncludeCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    importBatch?: boolean | ItemSalesImportBatchDefaultArgs<ExtArgs>;
+  };
+  export type ItemSalesImportRowIncludeUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    importBatch?: boolean | ItemSalesImportBatchDefaultArgs<ExtArgs>;
+  };
+
+  export type $ItemSalesImportRowPayload<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    name: 'ItemSalesImportRow';
+    objects: {
+      importBatch: Prisma.$ItemSalesImportBatchPayload<ExtArgs>;
+    };
+    scalars: $Extensions.GetPayloadResult<
+      {
+        id: string;
+        importBatchId: string;
+        businessDateKey: string;
+        itemCode: string | null;
+        itemName: string;
+        categoryName: string | null;
+        uom: string | null;
+        quantitySold: number;
+        amountPaid: number | null;
+        rawData: Prisma.JsonValue | null;
+        createdAt: Date;
+      },
+      ExtArgs['result']['itemSalesImportRow']
+    >;
+    composites: {};
+  };
+
+  type ItemSalesImportRowGetPayload<
+    S extends boolean | null | undefined | ItemSalesImportRowDefaultArgs
+  > = $Result.GetResult<Prisma.$ItemSalesImportRowPayload, S>;
+
+  type ItemSalesImportRowCountArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = Omit<ItemSalesImportRowFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: ItemSalesImportRowCountAggregateInputType | true;
+  };
+
+  export interface ItemSalesImportRowDelegate<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > {
+    [K: symbol]: {
+      types: Prisma.TypeMap<ExtArgs>['model']['ItemSalesImportRow'];
+      meta: { name: 'ItemSalesImportRow' };
+    };
+    /**
+     * Find zero or one ItemSalesImportRow that matches the filter.
+     * @param {ItemSalesImportRowFindUniqueArgs} args - Arguments to find a ItemSalesImportRow
+     * @example
+     * // Get one ItemSalesImportRow
+     * const itemSalesImportRow = await prisma.itemSalesImportRow.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ItemSalesImportRowFindUniqueArgs>(
+      args: SelectSubset<T, ItemSalesImportRowFindUniqueArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportRowClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportRowPayload<ExtArgs>,
+        T,
+        'findUnique',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find one ItemSalesImportRow that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ItemSalesImportRowFindUniqueOrThrowArgs} args - Arguments to find a ItemSalesImportRow
+     * @example
+     * // Get one ItemSalesImportRow
+     * const itemSalesImportRow = await prisma.itemSalesImportRow.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ItemSalesImportRowFindUniqueOrThrowArgs>(
+      args: SelectSubset<T, ItemSalesImportRowFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportRowClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportRowPayload<ExtArgs>,
+        T,
+        'findUniqueOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first ItemSalesImportRow that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportRowFindFirstArgs} args - Arguments to find a ItemSalesImportRow
+     * @example
+     * // Get one ItemSalesImportRow
+     * const itemSalesImportRow = await prisma.itemSalesImportRow.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ItemSalesImportRowFindFirstArgs>(
+      args?: SelectSubset<T, ItemSalesImportRowFindFirstArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportRowClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportRowPayload<ExtArgs>,
+        T,
+        'findFirst',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first ItemSalesImportRow that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportRowFindFirstOrThrowArgs} args - Arguments to find a ItemSalesImportRow
+     * @example
+     * // Get one ItemSalesImportRow
+     * const itemSalesImportRow = await prisma.itemSalesImportRow.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ItemSalesImportRowFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, ItemSalesImportRowFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportRowClient<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportRowPayload<ExtArgs>,
+        T,
+        'findFirstOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find zero or more ItemSalesImportRows that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportRowFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ItemSalesImportRows
+     * const itemSalesImportRows = await prisma.itemSalesImportRow.findMany()
+     *
+     * // Get first 10 ItemSalesImportRows
+     * const itemSalesImportRows = await prisma.itemSalesImportRow.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const itemSalesImportRowWithIdOnly = await prisma.itemSalesImportRow.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends ItemSalesImportRowFindManyArgs>(
+      args?: SelectSubset<T, ItemSalesImportRowFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportRowPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create a ItemSalesImportRow.
+     * @param {ItemSalesImportRowCreateArgs} args - Arguments to create a ItemSalesImportRow.
+     * @example
+     * // Create one ItemSalesImportRow
+     * const ItemSalesImportRow = await prisma.itemSalesImportRow.create({
+     *   data: {
+     *     // ... data to create a ItemSalesImportRow
+     *   }
+     * })
+     *
+     */
+    create<T extends ItemSalesImportRowCreateArgs>(
+      args: SelectSubset<T, ItemSalesImportRowCreateArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportRowClient<
+      $Result.GetResult<Prisma.$ItemSalesImportRowPayload<ExtArgs>, T, 'create', GlobalOmitOptions>,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Create many ItemSalesImportRows.
+     * @param {ItemSalesImportRowCreateManyArgs} args - Arguments to create many ItemSalesImportRows.
+     * @example
+     * // Create many ItemSalesImportRows
+     * const itemSalesImportRow = await prisma.itemSalesImportRow.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends ItemSalesImportRowCreateManyArgs>(
+      args?: SelectSubset<T, ItemSalesImportRowCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Create many ItemSalesImportRows and returns the data saved in the database.
+     * @param {ItemSalesImportRowCreateManyAndReturnArgs} args - Arguments to create many ItemSalesImportRows.
+     * @example
+     * // Create many ItemSalesImportRows
+     * const itemSalesImportRow = await prisma.itemSalesImportRow.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many ItemSalesImportRows and only return the `id`
+     * const itemSalesImportRowWithIdOnly = await prisma.itemSalesImportRow.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends ItemSalesImportRowCreateManyAndReturnArgs>(
+      args?: SelectSubset<T, ItemSalesImportRowCreateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportRowPayload<ExtArgs>,
+        T,
+        'createManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Delete a ItemSalesImportRow.
+     * @param {ItemSalesImportRowDeleteArgs} args - Arguments to delete one ItemSalesImportRow.
+     * @example
+     * // Delete one ItemSalesImportRow
+     * const ItemSalesImportRow = await prisma.itemSalesImportRow.delete({
+     *   where: {
+     *     // ... filter to delete one ItemSalesImportRow
+     *   }
+     * })
+     *
+     */
+    delete<T extends ItemSalesImportRowDeleteArgs>(
+      args: SelectSubset<T, ItemSalesImportRowDeleteArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportRowClient<
+      $Result.GetResult<Prisma.$ItemSalesImportRowPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Update one ItemSalesImportRow.
+     * @param {ItemSalesImportRowUpdateArgs} args - Arguments to update one ItemSalesImportRow.
+     * @example
+     * // Update one ItemSalesImportRow
+     * const itemSalesImportRow = await prisma.itemSalesImportRow.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends ItemSalesImportRowUpdateArgs>(
+      args: SelectSubset<T, ItemSalesImportRowUpdateArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportRowClient<
+      $Result.GetResult<Prisma.$ItemSalesImportRowPayload<ExtArgs>, T, 'update', GlobalOmitOptions>,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Delete zero or more ItemSalesImportRows.
+     * @param {ItemSalesImportRowDeleteManyArgs} args - Arguments to filter ItemSalesImportRows to delete.
+     * @example
+     * // Delete a few ItemSalesImportRows
+     * const { count } = await prisma.itemSalesImportRow.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends ItemSalesImportRowDeleteManyArgs>(
+      args?: SelectSubset<T, ItemSalesImportRowDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more ItemSalesImportRows.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportRowUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ItemSalesImportRows
+     * const itemSalesImportRow = await prisma.itemSalesImportRow.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends ItemSalesImportRowUpdateManyArgs>(
+      args: SelectSubset<T, ItemSalesImportRowUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more ItemSalesImportRows and returns the data updated in the database.
+     * @param {ItemSalesImportRowUpdateManyAndReturnArgs} args - Arguments to update many ItemSalesImportRows.
+     * @example
+     * // Update many ItemSalesImportRows
+     * const itemSalesImportRow = await prisma.itemSalesImportRow.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more ItemSalesImportRows and only return the `id`
+     * const itemSalesImportRowWithIdOnly = await prisma.itemSalesImportRow.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends ItemSalesImportRowUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, ItemSalesImportRowUpdateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ItemSalesImportRowPayload<ExtArgs>,
+        T,
+        'updateManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create or update one ItemSalesImportRow.
+     * @param {ItemSalesImportRowUpsertArgs} args - Arguments to update or create a ItemSalesImportRow.
+     * @example
+     * // Update or create a ItemSalesImportRow
+     * const itemSalesImportRow = await prisma.itemSalesImportRow.upsert({
+     *   create: {
+     *     // ... data to create a ItemSalesImportRow
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ItemSalesImportRow we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ItemSalesImportRowUpsertArgs>(
+      args: SelectSubset<T, ItemSalesImportRowUpsertArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportRowClient<
+      $Result.GetResult<Prisma.$ItemSalesImportRowPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Count the number of ItemSalesImportRows.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportRowCountArgs} args - Arguments to filter ItemSalesImportRows to count.
+     * @example
+     * // Count the number of ItemSalesImportRows
+     * const count = await prisma.itemSalesImportRow.count({
+     *   where: {
+     *     // ... the filter for the ItemSalesImportRows we want to count
+     *   }
+     * })
+     **/
+    count<T extends ItemSalesImportRowCountArgs>(
+      args?: Subset<T, ItemSalesImportRowCountArgs>
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ItemSalesImportRowCountAggregateOutputType>
+        : number
+    >;
+
+    /**
+     * Allows you to perform aggregations operations on a ItemSalesImportRow.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportRowAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+     **/
+    aggregate<T extends ItemSalesImportRowAggregateArgs>(
+      args: Subset<T, ItemSalesImportRowAggregateArgs>
+    ): Prisma.PrismaPromise<GetItemSalesImportRowAggregateType<T>>;
+
+    /**
+     * Group by ItemSalesImportRow.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ItemSalesImportRowGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+     **/
+    groupBy<
+      T extends ItemSalesImportRowGroupByArgs,
+      HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ItemSalesImportRowGroupByArgs['orderBy'] }
+        : { orderBy?: ItemSalesImportRowGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+        ? `Error: "by" must not be empty.`
+        : HavingValid extends False
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [Error, 'Field ', P, ` in "having" needs to be provided in "by"`];
+            }[HavingFields]
+          : 'take' extends Keys<T>
+            ? 'orderBy' extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : 'skip' extends Keys<T>
+              ? 'orderBy' extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+    >(
+      args: SubsetIntersection<T, ItemSalesImportRowGroupByArgs, OrderByArg> & InputErrors
+    ): {} extends InputErrors
+      ? GetItemSalesImportRowGroupByPayload<T>
+      : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the ItemSalesImportRow model
+     */
+    readonly fields: ItemSalesImportRowFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ItemSalesImportRow.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ItemSalesImportRowClient<
+    T,
+    Null = never,
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    importBatch<T extends ItemSalesImportBatchDefaultArgs<ExtArgs> = {}>(
+      args?: Subset<T, ItemSalesImportBatchDefaultArgs<ExtArgs>>
+    ): Prisma__ItemSalesImportBatchClient<
+      | $Result.GetResult<
+          Prisma.$ItemSalesImportBatchPayload<ExtArgs>,
+          T,
+          'findUniqueOrThrow',
+          GlobalOmitOptions
+        >
+      | Null,
+      Null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+      onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
+    ): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(
+      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null
+    ): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+  /**
+   * Fields of the ItemSalesImportRow model
+   */
+  interface ItemSalesImportRowFieldRefs {
+    readonly id: FieldRef<'ItemSalesImportRow', 'String'>;
+    readonly importBatchId: FieldRef<'ItemSalesImportRow', 'String'>;
+    readonly businessDateKey: FieldRef<'ItemSalesImportRow', 'String'>;
+    readonly itemCode: FieldRef<'ItemSalesImportRow', 'String'>;
+    readonly itemName: FieldRef<'ItemSalesImportRow', 'String'>;
+    readonly categoryName: FieldRef<'ItemSalesImportRow', 'String'>;
+    readonly uom: FieldRef<'ItemSalesImportRow', 'String'>;
+    readonly quantitySold: FieldRef<'ItemSalesImportRow', 'Float'>;
+    readonly amountPaid: FieldRef<'ItemSalesImportRow', 'Float'>;
+    readonly rawData: FieldRef<'ItemSalesImportRow', 'Json'>;
+    readonly createdAt: FieldRef<'ItemSalesImportRow', 'DateTime'>;
+  }
+
+  // Custom InputTypes
+  /**
+   * ItemSalesImportRow findUnique
+   */
+  export type ItemSalesImportRowFindUniqueArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowInclude<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportRow to fetch.
+     */
+    where: ItemSalesImportRowWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportRow findUniqueOrThrow
+   */
+  export type ItemSalesImportRowFindUniqueOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowInclude<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportRow to fetch.
+     */
+    where: ItemSalesImportRowWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportRow findFirst
+   */
+  export type ItemSalesImportRowFindFirstArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowInclude<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportRow to fetch.
+     */
+    where?: ItemSalesImportRowWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportRows to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportRowOrderByWithRelationInput
+      | ItemSalesImportRowOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ItemSalesImportRows.
+     */
+    cursor?: ItemSalesImportRowWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportRows from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportRows.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ItemSalesImportRows.
+     */
+    distinct?: ItemSalesImportRowScalarFieldEnum | ItemSalesImportRowScalarFieldEnum[];
+  };
+
+  /**
+   * ItemSalesImportRow findFirstOrThrow
+   */
+  export type ItemSalesImportRowFindFirstOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowInclude<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportRow to fetch.
+     */
+    where?: ItemSalesImportRowWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportRows to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportRowOrderByWithRelationInput
+      | ItemSalesImportRowOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ItemSalesImportRows.
+     */
+    cursor?: ItemSalesImportRowWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportRows from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportRows.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ItemSalesImportRows.
+     */
+    distinct?: ItemSalesImportRowScalarFieldEnum | ItemSalesImportRowScalarFieldEnum[];
+  };
+
+  /**
+   * ItemSalesImportRow findMany
+   */
+  export type ItemSalesImportRowFindManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowInclude<ExtArgs> | null;
+    /**
+     * Filter, which ItemSalesImportRows to fetch.
+     */
+    where?: ItemSalesImportRowWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ItemSalesImportRows to fetch.
+     */
+    orderBy?:
+      | ItemSalesImportRowOrderByWithRelationInput
+      | ItemSalesImportRowOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing ItemSalesImportRows.
+     */
+    cursor?: ItemSalesImportRowWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ItemSalesImportRows from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ItemSalesImportRows.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ItemSalesImportRows.
+     */
+    distinct?: ItemSalesImportRowScalarFieldEnum | ItemSalesImportRowScalarFieldEnum[];
+  };
+
+  /**
+   * ItemSalesImportRow create
+   */
+  export type ItemSalesImportRowCreateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowInclude<ExtArgs> | null;
+    /**
+     * The data needed to create a ItemSalesImportRow.
+     */
+    data: XOR<ItemSalesImportRowCreateInput, ItemSalesImportRowUncheckedCreateInput>;
+  };
+
+  /**
+   * ItemSalesImportRow createMany
+   */
+  export type ItemSalesImportRowCreateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to create many ItemSalesImportRows.
+     */
+    data: ItemSalesImportRowCreateManyInput | ItemSalesImportRowCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * ItemSalesImportRow createManyAndReturn
+   */
+  export type ItemSalesImportRowCreateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * The data used to create many ItemSalesImportRows.
+     */
+    data: ItemSalesImportRowCreateManyInput | ItemSalesImportRowCreateManyInput[];
+    skipDuplicates?: boolean;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowIncludeCreateManyAndReturn<ExtArgs> | null;
+  };
+
+  /**
+   * ItemSalesImportRow update
+   */
+  export type ItemSalesImportRowUpdateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowInclude<ExtArgs> | null;
+    /**
+     * The data needed to update a ItemSalesImportRow.
+     */
+    data: XOR<ItemSalesImportRowUpdateInput, ItemSalesImportRowUncheckedUpdateInput>;
+    /**
+     * Choose, which ItemSalesImportRow to update.
+     */
+    where: ItemSalesImportRowWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportRow updateMany
+   */
+  export type ItemSalesImportRowUpdateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to update ItemSalesImportRows.
+     */
+    data: XOR<
+      ItemSalesImportRowUpdateManyMutationInput,
+      ItemSalesImportRowUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which ItemSalesImportRows to update
+     */
+    where?: ItemSalesImportRowWhereInput;
+    /**
+     * Limit how many ItemSalesImportRows to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * ItemSalesImportRow updateManyAndReturn
+   */
+  export type ItemSalesImportRowUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * The data used to update ItemSalesImportRows.
+     */
+    data: XOR<
+      ItemSalesImportRowUpdateManyMutationInput,
+      ItemSalesImportRowUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which ItemSalesImportRows to update
+     */
+    where?: ItemSalesImportRowWhereInput;
+    /**
+     * Limit how many ItemSalesImportRows to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowIncludeUpdateManyAndReturn<ExtArgs> | null;
+  };
+
+  /**
+   * ItemSalesImportRow upsert
+   */
+  export type ItemSalesImportRowUpsertArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowInclude<ExtArgs> | null;
+    /**
+     * The filter to search for the ItemSalesImportRow to update in case it exists.
+     */
+    where: ItemSalesImportRowWhereUniqueInput;
+    /**
+     * In case the ItemSalesImportRow found by the `where` argument doesn't exist, create a new ItemSalesImportRow with this data.
+     */
+    create: XOR<ItemSalesImportRowCreateInput, ItemSalesImportRowUncheckedCreateInput>;
+    /**
+     * In case the ItemSalesImportRow was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ItemSalesImportRowUpdateInput, ItemSalesImportRowUncheckedUpdateInput>;
+  };
+
+  /**
+   * ItemSalesImportRow delete
+   */
+  export type ItemSalesImportRowDeleteArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowInclude<ExtArgs> | null;
+    /**
+     * Filter which ItemSalesImportRow to delete.
+     */
+    where: ItemSalesImportRowWhereUniqueInput;
+  };
+
+  /**
+   * ItemSalesImportRow deleteMany
+   */
+  export type ItemSalesImportRowDeleteManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which ItemSalesImportRows to delete
+     */
+    where?: ItemSalesImportRowWhereInput;
+    /**
+     * Limit how many ItemSalesImportRows to delete.
+     */
+    limit?: number;
+  };
+
+  /**
+   * ItemSalesImportRow without action
+   */
+  export type ItemSalesImportRowDefaultArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the ItemSalesImportRow
+     */
+    select?: ItemSalesImportRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ItemSalesImportRow
+     */
+    omit?: ItemSalesImportRowOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ItemSalesImportRowInclude<ExtArgs> | null;
   };
 
   /**
@@ -25553,9 +30087,14 @@ export namespace Prisma {
     id: 'id';
     itemName: 'itemName';
     itemCode: 'itemCode';
+    itemCodes: 'itemCodes';
     dailyTarget: 'dailyTarget';
     weeklyTarget: 'weeklyTarget';
     monthlyTarget: 'monthlyTarget';
+    startDate: 'startDate';
+    endDate: 'endDate';
+    displayOrder: 'displayOrder';
+    calculationMode: 'calculationMode';
     status: 'status';
     createdAt: 'createdAt';
     updatedAt: 'updatedAt';
@@ -25563,6 +30102,57 @@ export namespace Prisma {
 
   export type ItemSalesTargetScalarFieldEnum =
     (typeof ItemSalesTargetScalarFieldEnum)[keyof typeof ItemSalesTargetScalarFieldEnum];
+
+  export const ItemSalesImportSettingScalarFieldEnum: {
+    id: 'id';
+    sharedFolderPath: 'sharedFolderPath';
+    autoImportEnabled: 'autoImportEnabled';
+    lastScanAt: 'lastScanAt';
+    lastImportAt: 'lastImportAt';
+    lastImportStatus: 'lastImportStatus';
+    lastImportMessage: 'lastImportMessage';
+    lastImportCount: 'lastImportCount';
+    createdAt: 'createdAt';
+    updatedAt: 'updatedAt';
+  };
+
+  export type ItemSalesImportSettingScalarFieldEnum =
+    (typeof ItemSalesImportSettingScalarFieldEnum)[keyof typeof ItemSalesImportSettingScalarFieldEnum];
+
+  export const ItemSalesImportBatchScalarFieldEnum: {
+    id: 'id';
+    sourceFilename: 'sourceFilename';
+    sourcePath: 'sourcePath';
+    reportDate: 'reportDate';
+    businessDateKey: 'businessDateKey';
+    fileHash: 'fileHash';
+    status: 'status';
+    rowCount: 'rowCount';
+    rawMetadata: 'rawMetadata';
+    importedAt: 'importedAt';
+    createdAt: 'createdAt';
+    updatedAt: 'updatedAt';
+  };
+
+  export type ItemSalesImportBatchScalarFieldEnum =
+    (typeof ItemSalesImportBatchScalarFieldEnum)[keyof typeof ItemSalesImportBatchScalarFieldEnum];
+
+  export const ItemSalesImportRowScalarFieldEnum: {
+    id: 'id';
+    importBatchId: 'importBatchId';
+    businessDateKey: 'businessDateKey';
+    itemCode: 'itemCode';
+    itemName: 'itemName';
+    categoryName: 'categoryName';
+    uom: 'uom';
+    quantitySold: 'quantitySold';
+    amountPaid: 'amountPaid';
+    rawData: 'rawData';
+    createdAt: 'createdAt';
+  };
+
+  export type ItemSalesImportRowScalarFieldEnum =
+    (typeof ItemSalesImportRowScalarFieldEnum)[keyof typeof ItemSalesImportRowScalarFieldEnum];
 
   export const ConcessionPriceItemScalarFieldEnum: {
     id: 'id';
@@ -25609,6 +30199,14 @@ export namespace Prisma {
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull;
+    JsonNull: typeof JsonNull;
+  };
+
+  export type NullableJsonNullValueInput =
+    (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput];
+
   export const QueryMode: {
     default: 'default';
     insensitive: 'insensitive';
@@ -25622,6 +30220,14 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder];
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull;
+    JsonNull: typeof JsonNull;
+    AnyNull: typeof AnyNull;
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter];
 
   /**
    * Field references
@@ -25722,6 +30328,19 @@ export namespace Prisma {
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>;
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>;
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<
+    $PrismaModel,
+    'QueryMode'
+  >;
 
   /**
    * Deep Input Types
@@ -26892,9 +31511,14 @@ export namespace Prisma {
     id?: StringFilter<'ItemSalesTarget'> | string;
     itemName?: StringFilter<'ItemSalesTarget'> | string;
     itemCode?: StringNullableFilter<'ItemSalesTarget'> | string | null;
+    itemCodes?: StringNullableListFilter<'ItemSalesTarget'>;
     dailyTarget?: IntNullableFilter<'ItemSalesTarget'> | number | null;
     weeklyTarget?: IntNullableFilter<'ItemSalesTarget'> | number | null;
     monthlyTarget?: IntNullableFilter<'ItemSalesTarget'> | number | null;
+    startDate?: DateTimeNullableFilter<'ItemSalesTarget'> | Date | string | null;
+    endDate?: DateTimeNullableFilter<'ItemSalesTarget'> | Date | string | null;
+    displayOrder?: IntFilter<'ItemSalesTarget'> | number;
+    calculationMode?: StringNullableFilter<'ItemSalesTarget'> | string | null;
     status?: EnumRecordStatusFilter<'ItemSalesTarget'> | $Enums.RecordStatus;
     createdAt?: DateTimeFilter<'ItemSalesTarget'> | Date | string;
     updatedAt?: DateTimeFilter<'ItemSalesTarget'> | Date | string;
@@ -26904,9 +31528,14 @@ export namespace Prisma {
     id?: SortOrder;
     itemName?: SortOrder;
     itemCode?: SortOrderInput | SortOrder;
+    itemCodes?: SortOrder;
     dailyTarget?: SortOrderInput | SortOrder;
     weeklyTarget?: SortOrderInput | SortOrder;
     monthlyTarget?: SortOrderInput | SortOrder;
+    startDate?: SortOrderInput | SortOrder;
+    endDate?: SortOrderInput | SortOrder;
+    displayOrder?: SortOrder;
+    calculationMode?: SortOrderInput | SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -26920,9 +31549,14 @@ export namespace Prisma {
       NOT?: ItemSalesTargetWhereInput | ItemSalesTargetWhereInput[];
       itemName?: StringFilter<'ItemSalesTarget'> | string;
       itemCode?: StringNullableFilter<'ItemSalesTarget'> | string | null;
+      itemCodes?: StringNullableListFilter<'ItemSalesTarget'>;
       dailyTarget?: IntNullableFilter<'ItemSalesTarget'> | number | null;
       weeklyTarget?: IntNullableFilter<'ItemSalesTarget'> | number | null;
       monthlyTarget?: IntNullableFilter<'ItemSalesTarget'> | number | null;
+      startDate?: DateTimeNullableFilter<'ItemSalesTarget'> | Date | string | null;
+      endDate?: DateTimeNullableFilter<'ItemSalesTarget'> | Date | string | null;
+      displayOrder?: IntFilter<'ItemSalesTarget'> | number;
+      calculationMode?: StringNullableFilter<'ItemSalesTarget'> | string | null;
       status?: EnumRecordStatusFilter<'ItemSalesTarget'> | $Enums.RecordStatus;
       createdAt?: DateTimeFilter<'ItemSalesTarget'> | Date | string;
       updatedAt?: DateTimeFilter<'ItemSalesTarget'> | Date | string;
@@ -26934,9 +31568,14 @@ export namespace Prisma {
     id?: SortOrder;
     itemName?: SortOrder;
     itemCode?: SortOrderInput | SortOrder;
+    itemCodes?: SortOrder;
     dailyTarget?: SortOrderInput | SortOrder;
     weeklyTarget?: SortOrderInput | SortOrder;
     monthlyTarget?: SortOrderInput | SortOrder;
+    startDate?: SortOrderInput | SortOrder;
+    endDate?: SortOrderInput | SortOrder;
+    displayOrder?: SortOrder;
+    calculationMode?: SortOrderInput | SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -26958,12 +31597,307 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<'ItemSalesTarget'> | string;
     itemName?: StringWithAggregatesFilter<'ItemSalesTarget'> | string;
     itemCode?: StringNullableWithAggregatesFilter<'ItemSalesTarget'> | string | null;
+    itemCodes?: StringNullableListFilter<'ItemSalesTarget'>;
     dailyTarget?: IntNullableWithAggregatesFilter<'ItemSalesTarget'> | number | null;
     weeklyTarget?: IntNullableWithAggregatesFilter<'ItemSalesTarget'> | number | null;
     monthlyTarget?: IntNullableWithAggregatesFilter<'ItemSalesTarget'> | number | null;
+    startDate?: DateTimeNullableWithAggregatesFilter<'ItemSalesTarget'> | Date | string | null;
+    endDate?: DateTimeNullableWithAggregatesFilter<'ItemSalesTarget'> | Date | string | null;
+    displayOrder?: IntWithAggregatesFilter<'ItemSalesTarget'> | number;
+    calculationMode?: StringNullableWithAggregatesFilter<'ItemSalesTarget'> | string | null;
     status?: EnumRecordStatusWithAggregatesFilter<'ItemSalesTarget'> | $Enums.RecordStatus;
     createdAt?: DateTimeWithAggregatesFilter<'ItemSalesTarget'> | Date | string;
     updatedAt?: DateTimeWithAggregatesFilter<'ItemSalesTarget'> | Date | string;
+  };
+
+  export type ItemSalesImportSettingWhereInput = {
+    AND?: ItemSalesImportSettingWhereInput | ItemSalesImportSettingWhereInput[];
+    OR?: ItemSalesImportSettingWhereInput[];
+    NOT?: ItemSalesImportSettingWhereInput | ItemSalesImportSettingWhereInput[];
+    id?: StringFilter<'ItemSalesImportSetting'> | string;
+    sharedFolderPath?: StringNullableFilter<'ItemSalesImportSetting'> | string | null;
+    autoImportEnabled?: BoolFilter<'ItemSalesImportSetting'> | boolean;
+    lastScanAt?: DateTimeNullableFilter<'ItemSalesImportSetting'> | Date | string | null;
+    lastImportAt?: DateTimeNullableFilter<'ItemSalesImportSetting'> | Date | string | null;
+    lastImportStatus?: StringNullableFilter<'ItemSalesImportSetting'> | string | null;
+    lastImportMessage?: StringNullableFilter<'ItemSalesImportSetting'> | string | null;
+    lastImportCount?: IntFilter<'ItemSalesImportSetting'> | number;
+    createdAt?: DateTimeFilter<'ItemSalesImportSetting'> | Date | string;
+    updatedAt?: DateTimeFilter<'ItemSalesImportSetting'> | Date | string;
+  };
+
+  export type ItemSalesImportSettingOrderByWithRelationInput = {
+    id?: SortOrder;
+    sharedFolderPath?: SortOrderInput | SortOrder;
+    autoImportEnabled?: SortOrder;
+    lastScanAt?: SortOrderInput | SortOrder;
+    lastImportAt?: SortOrderInput | SortOrder;
+    lastImportStatus?: SortOrderInput | SortOrder;
+    lastImportMessage?: SortOrderInput | SortOrder;
+    lastImportCount?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type ItemSalesImportSettingWhereUniqueInput = Prisma.AtLeast<
+    {
+      id?: string;
+      AND?: ItemSalesImportSettingWhereInput | ItemSalesImportSettingWhereInput[];
+      OR?: ItemSalesImportSettingWhereInput[];
+      NOT?: ItemSalesImportSettingWhereInput | ItemSalesImportSettingWhereInput[];
+      sharedFolderPath?: StringNullableFilter<'ItemSalesImportSetting'> | string | null;
+      autoImportEnabled?: BoolFilter<'ItemSalesImportSetting'> | boolean;
+      lastScanAt?: DateTimeNullableFilter<'ItemSalesImportSetting'> | Date | string | null;
+      lastImportAt?: DateTimeNullableFilter<'ItemSalesImportSetting'> | Date | string | null;
+      lastImportStatus?: StringNullableFilter<'ItemSalesImportSetting'> | string | null;
+      lastImportMessage?: StringNullableFilter<'ItemSalesImportSetting'> | string | null;
+      lastImportCount?: IntFilter<'ItemSalesImportSetting'> | number;
+      createdAt?: DateTimeFilter<'ItemSalesImportSetting'> | Date | string;
+      updatedAt?: DateTimeFilter<'ItemSalesImportSetting'> | Date | string;
+    },
+    'id'
+  >;
+
+  export type ItemSalesImportSettingOrderByWithAggregationInput = {
+    id?: SortOrder;
+    sharedFolderPath?: SortOrderInput | SortOrder;
+    autoImportEnabled?: SortOrder;
+    lastScanAt?: SortOrderInput | SortOrder;
+    lastImportAt?: SortOrderInput | SortOrder;
+    lastImportStatus?: SortOrderInput | SortOrder;
+    lastImportMessage?: SortOrderInput | SortOrder;
+    lastImportCount?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+    _count?: ItemSalesImportSettingCountOrderByAggregateInput;
+    _avg?: ItemSalesImportSettingAvgOrderByAggregateInput;
+    _max?: ItemSalesImportSettingMaxOrderByAggregateInput;
+    _min?: ItemSalesImportSettingMinOrderByAggregateInput;
+    _sum?: ItemSalesImportSettingSumOrderByAggregateInput;
+  };
+
+  export type ItemSalesImportSettingScalarWhereWithAggregatesInput = {
+    AND?:
+      | ItemSalesImportSettingScalarWhereWithAggregatesInput
+      | ItemSalesImportSettingScalarWhereWithAggregatesInput[];
+    OR?: ItemSalesImportSettingScalarWhereWithAggregatesInput[];
+    NOT?:
+      | ItemSalesImportSettingScalarWhereWithAggregatesInput
+      | ItemSalesImportSettingScalarWhereWithAggregatesInput[];
+    id?: StringWithAggregatesFilter<'ItemSalesImportSetting'> | string;
+    sharedFolderPath?: StringNullableWithAggregatesFilter<'ItemSalesImportSetting'> | string | null;
+    autoImportEnabled?: BoolWithAggregatesFilter<'ItemSalesImportSetting'> | boolean;
+    lastScanAt?:
+      | DateTimeNullableWithAggregatesFilter<'ItemSalesImportSetting'>
+      | Date
+      | string
+      | null;
+    lastImportAt?:
+      | DateTimeNullableWithAggregatesFilter<'ItemSalesImportSetting'>
+      | Date
+      | string
+      | null;
+    lastImportStatus?: StringNullableWithAggregatesFilter<'ItemSalesImportSetting'> | string | null;
+    lastImportMessage?:
+      | StringNullableWithAggregatesFilter<'ItemSalesImportSetting'>
+      | string
+      | null;
+    lastImportCount?: IntWithAggregatesFilter<'ItemSalesImportSetting'> | number;
+    createdAt?: DateTimeWithAggregatesFilter<'ItemSalesImportSetting'> | Date | string;
+    updatedAt?: DateTimeWithAggregatesFilter<'ItemSalesImportSetting'> | Date | string;
+  };
+
+  export type ItemSalesImportBatchWhereInput = {
+    AND?: ItemSalesImportBatchWhereInput | ItemSalesImportBatchWhereInput[];
+    OR?: ItemSalesImportBatchWhereInput[];
+    NOT?: ItemSalesImportBatchWhereInput | ItemSalesImportBatchWhereInput[];
+    id?: StringFilter<'ItemSalesImportBatch'> | string;
+    sourceFilename?: StringFilter<'ItemSalesImportBatch'> | string;
+    sourcePath?: StringFilter<'ItemSalesImportBatch'> | string;
+    reportDate?: DateTimeFilter<'ItemSalesImportBatch'> | Date | string;
+    businessDateKey?: StringFilter<'ItemSalesImportBatch'> | string;
+    fileHash?: StringFilter<'ItemSalesImportBatch'> | string;
+    status?: StringFilter<'ItemSalesImportBatch'> | string;
+    rowCount?: IntFilter<'ItemSalesImportBatch'> | number;
+    rawMetadata?: JsonNullableFilter<'ItemSalesImportBatch'>;
+    importedAt?: DateTimeFilter<'ItemSalesImportBatch'> | Date | string;
+    createdAt?: DateTimeFilter<'ItemSalesImportBatch'> | Date | string;
+    updatedAt?: DateTimeFilter<'ItemSalesImportBatch'> | Date | string;
+    rows?: ItemSalesImportRowListRelationFilter;
+  };
+
+  export type ItemSalesImportBatchOrderByWithRelationInput = {
+    id?: SortOrder;
+    sourceFilename?: SortOrder;
+    sourcePath?: SortOrder;
+    reportDate?: SortOrder;
+    businessDateKey?: SortOrder;
+    fileHash?: SortOrder;
+    status?: SortOrder;
+    rowCount?: SortOrder;
+    rawMetadata?: SortOrderInput | SortOrder;
+    importedAt?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+    rows?: ItemSalesImportRowOrderByRelationAggregateInput;
+  };
+
+  export type ItemSalesImportBatchWhereUniqueInput = Prisma.AtLeast<
+    {
+      id?: string;
+      fileHash?: string;
+      AND?: ItemSalesImportBatchWhereInput | ItemSalesImportBatchWhereInput[];
+      OR?: ItemSalesImportBatchWhereInput[];
+      NOT?: ItemSalesImportBatchWhereInput | ItemSalesImportBatchWhereInput[];
+      sourceFilename?: StringFilter<'ItemSalesImportBatch'> | string;
+      sourcePath?: StringFilter<'ItemSalesImportBatch'> | string;
+      reportDate?: DateTimeFilter<'ItemSalesImportBatch'> | Date | string;
+      businessDateKey?: StringFilter<'ItemSalesImportBatch'> | string;
+      status?: StringFilter<'ItemSalesImportBatch'> | string;
+      rowCount?: IntFilter<'ItemSalesImportBatch'> | number;
+      rawMetadata?: JsonNullableFilter<'ItemSalesImportBatch'>;
+      importedAt?: DateTimeFilter<'ItemSalesImportBatch'> | Date | string;
+      createdAt?: DateTimeFilter<'ItemSalesImportBatch'> | Date | string;
+      updatedAt?: DateTimeFilter<'ItemSalesImportBatch'> | Date | string;
+      rows?: ItemSalesImportRowListRelationFilter;
+    },
+    'id' | 'fileHash'
+  >;
+
+  export type ItemSalesImportBatchOrderByWithAggregationInput = {
+    id?: SortOrder;
+    sourceFilename?: SortOrder;
+    sourcePath?: SortOrder;
+    reportDate?: SortOrder;
+    businessDateKey?: SortOrder;
+    fileHash?: SortOrder;
+    status?: SortOrder;
+    rowCount?: SortOrder;
+    rawMetadata?: SortOrderInput | SortOrder;
+    importedAt?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+    _count?: ItemSalesImportBatchCountOrderByAggregateInput;
+    _avg?: ItemSalesImportBatchAvgOrderByAggregateInput;
+    _max?: ItemSalesImportBatchMaxOrderByAggregateInput;
+    _min?: ItemSalesImportBatchMinOrderByAggregateInput;
+    _sum?: ItemSalesImportBatchSumOrderByAggregateInput;
+  };
+
+  export type ItemSalesImportBatchScalarWhereWithAggregatesInput = {
+    AND?:
+      | ItemSalesImportBatchScalarWhereWithAggregatesInput
+      | ItemSalesImportBatchScalarWhereWithAggregatesInput[];
+    OR?: ItemSalesImportBatchScalarWhereWithAggregatesInput[];
+    NOT?:
+      | ItemSalesImportBatchScalarWhereWithAggregatesInput
+      | ItemSalesImportBatchScalarWhereWithAggregatesInput[];
+    id?: StringWithAggregatesFilter<'ItemSalesImportBatch'> | string;
+    sourceFilename?: StringWithAggregatesFilter<'ItemSalesImportBatch'> | string;
+    sourcePath?: StringWithAggregatesFilter<'ItemSalesImportBatch'> | string;
+    reportDate?: DateTimeWithAggregatesFilter<'ItemSalesImportBatch'> | Date | string;
+    businessDateKey?: StringWithAggregatesFilter<'ItemSalesImportBatch'> | string;
+    fileHash?: StringWithAggregatesFilter<'ItemSalesImportBatch'> | string;
+    status?: StringWithAggregatesFilter<'ItemSalesImportBatch'> | string;
+    rowCount?: IntWithAggregatesFilter<'ItemSalesImportBatch'> | number;
+    rawMetadata?: JsonNullableWithAggregatesFilter<'ItemSalesImportBatch'>;
+    importedAt?: DateTimeWithAggregatesFilter<'ItemSalesImportBatch'> | Date | string;
+    createdAt?: DateTimeWithAggregatesFilter<'ItemSalesImportBatch'> | Date | string;
+    updatedAt?: DateTimeWithAggregatesFilter<'ItemSalesImportBatch'> | Date | string;
+  };
+
+  export type ItemSalesImportRowWhereInput = {
+    AND?: ItemSalesImportRowWhereInput | ItemSalesImportRowWhereInput[];
+    OR?: ItemSalesImportRowWhereInput[];
+    NOT?: ItemSalesImportRowWhereInput | ItemSalesImportRowWhereInput[];
+    id?: StringFilter<'ItemSalesImportRow'> | string;
+    importBatchId?: StringFilter<'ItemSalesImportRow'> | string;
+    businessDateKey?: StringFilter<'ItemSalesImportRow'> | string;
+    itemCode?: StringNullableFilter<'ItemSalesImportRow'> | string | null;
+    itemName?: StringFilter<'ItemSalesImportRow'> | string;
+    categoryName?: StringNullableFilter<'ItemSalesImportRow'> | string | null;
+    uom?: StringNullableFilter<'ItemSalesImportRow'> | string | null;
+    quantitySold?: FloatFilter<'ItemSalesImportRow'> | number;
+    amountPaid?: FloatNullableFilter<'ItemSalesImportRow'> | number | null;
+    rawData?: JsonNullableFilter<'ItemSalesImportRow'>;
+    createdAt?: DateTimeFilter<'ItemSalesImportRow'> | Date | string;
+    importBatch?: XOR<ItemSalesImportBatchScalarRelationFilter, ItemSalesImportBatchWhereInput>;
+  };
+
+  export type ItemSalesImportRowOrderByWithRelationInput = {
+    id?: SortOrder;
+    importBatchId?: SortOrder;
+    businessDateKey?: SortOrder;
+    itemCode?: SortOrderInput | SortOrder;
+    itemName?: SortOrder;
+    categoryName?: SortOrderInput | SortOrder;
+    uom?: SortOrderInput | SortOrder;
+    quantitySold?: SortOrder;
+    amountPaid?: SortOrderInput | SortOrder;
+    rawData?: SortOrderInput | SortOrder;
+    createdAt?: SortOrder;
+    importBatch?: ItemSalesImportBatchOrderByWithRelationInput;
+  };
+
+  export type ItemSalesImportRowWhereUniqueInput = Prisma.AtLeast<
+    {
+      id?: string;
+      AND?: ItemSalesImportRowWhereInput | ItemSalesImportRowWhereInput[];
+      OR?: ItemSalesImportRowWhereInput[];
+      NOT?: ItemSalesImportRowWhereInput | ItemSalesImportRowWhereInput[];
+      importBatchId?: StringFilter<'ItemSalesImportRow'> | string;
+      businessDateKey?: StringFilter<'ItemSalesImportRow'> | string;
+      itemCode?: StringNullableFilter<'ItemSalesImportRow'> | string | null;
+      itemName?: StringFilter<'ItemSalesImportRow'> | string;
+      categoryName?: StringNullableFilter<'ItemSalesImportRow'> | string | null;
+      uom?: StringNullableFilter<'ItemSalesImportRow'> | string | null;
+      quantitySold?: FloatFilter<'ItemSalesImportRow'> | number;
+      amountPaid?: FloatNullableFilter<'ItemSalesImportRow'> | number | null;
+      rawData?: JsonNullableFilter<'ItemSalesImportRow'>;
+      createdAt?: DateTimeFilter<'ItemSalesImportRow'> | Date | string;
+      importBatch?: XOR<ItemSalesImportBatchScalarRelationFilter, ItemSalesImportBatchWhereInput>;
+    },
+    'id'
+  >;
+
+  export type ItemSalesImportRowOrderByWithAggregationInput = {
+    id?: SortOrder;
+    importBatchId?: SortOrder;
+    businessDateKey?: SortOrder;
+    itemCode?: SortOrderInput | SortOrder;
+    itemName?: SortOrder;
+    categoryName?: SortOrderInput | SortOrder;
+    uom?: SortOrderInput | SortOrder;
+    quantitySold?: SortOrder;
+    amountPaid?: SortOrderInput | SortOrder;
+    rawData?: SortOrderInput | SortOrder;
+    createdAt?: SortOrder;
+    _count?: ItemSalesImportRowCountOrderByAggregateInput;
+    _avg?: ItemSalesImportRowAvgOrderByAggregateInput;
+    _max?: ItemSalesImportRowMaxOrderByAggregateInput;
+    _min?: ItemSalesImportRowMinOrderByAggregateInput;
+    _sum?: ItemSalesImportRowSumOrderByAggregateInput;
+  };
+
+  export type ItemSalesImportRowScalarWhereWithAggregatesInput = {
+    AND?:
+      | ItemSalesImportRowScalarWhereWithAggregatesInput
+      | ItemSalesImportRowScalarWhereWithAggregatesInput[];
+    OR?: ItemSalesImportRowScalarWhereWithAggregatesInput[];
+    NOT?:
+      | ItemSalesImportRowScalarWhereWithAggregatesInput
+      | ItemSalesImportRowScalarWhereWithAggregatesInput[];
+    id?: StringWithAggregatesFilter<'ItemSalesImportRow'> | string;
+    importBatchId?: StringWithAggregatesFilter<'ItemSalesImportRow'> | string;
+    businessDateKey?: StringWithAggregatesFilter<'ItemSalesImportRow'> | string;
+    itemCode?: StringNullableWithAggregatesFilter<'ItemSalesImportRow'> | string | null;
+    itemName?: StringWithAggregatesFilter<'ItemSalesImportRow'> | string;
+    categoryName?: StringNullableWithAggregatesFilter<'ItemSalesImportRow'> | string | null;
+    uom?: StringNullableWithAggregatesFilter<'ItemSalesImportRow'> | string | null;
+    quantitySold?: FloatWithAggregatesFilter<'ItemSalesImportRow'> | number;
+    amountPaid?: FloatNullableWithAggregatesFilter<'ItemSalesImportRow'> | number | null;
+    rawData?: JsonNullableWithAggregatesFilter<'ItemSalesImportRow'>;
+    createdAt?: DateTimeWithAggregatesFilter<'ItemSalesImportRow'> | Date | string;
   };
 
   export type ConcessionPriceItemWhereInput = {
@@ -28387,9 +33321,14 @@ export namespace Prisma {
     id?: string;
     itemName: string;
     itemCode?: string | null;
+    itemCodes?: ItemSalesTargetCreateitemCodesInput | string[];
     dailyTarget?: number | null;
     weeklyTarget?: number | null;
     monthlyTarget?: number | null;
+    startDate?: Date | string | null;
+    endDate?: Date | string | null;
+    displayOrder?: number;
+    calculationMode?: string | null;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -28399,9 +33338,14 @@ export namespace Prisma {
     id?: string;
     itemName: string;
     itemCode?: string | null;
+    itemCodes?: ItemSalesTargetCreateitemCodesInput | string[];
     dailyTarget?: number | null;
     weeklyTarget?: number | null;
     monthlyTarget?: number | null;
+    startDate?: Date | string | null;
+    endDate?: Date | string | null;
+    displayOrder?: number;
+    calculationMode?: string | null;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -28411,9 +33355,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string;
     itemName?: StringFieldUpdateOperationsInput | string;
     itemCode?: NullableStringFieldUpdateOperationsInput | string | null;
+    itemCodes?: ItemSalesTargetUpdateitemCodesInput | string[];
     dailyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
     weeklyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
     monthlyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    displayOrder?: IntFieldUpdateOperationsInput | number;
+    calculationMode?: NullableStringFieldUpdateOperationsInput | string | null;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -28423,9 +33372,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string;
     itemName?: StringFieldUpdateOperationsInput | string;
     itemCode?: NullableStringFieldUpdateOperationsInput | string | null;
+    itemCodes?: ItemSalesTargetUpdateitemCodesInput | string[];
     dailyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
     weeklyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
     monthlyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    displayOrder?: IntFieldUpdateOperationsInput | number;
+    calculationMode?: NullableStringFieldUpdateOperationsInput | string | null;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -28435,9 +33389,14 @@ export namespace Prisma {
     id?: string;
     itemName: string;
     itemCode?: string | null;
+    itemCodes?: ItemSalesTargetCreateitemCodesInput | string[];
     dailyTarget?: number | null;
     weeklyTarget?: number | null;
     monthlyTarget?: number | null;
+    startDate?: Date | string | null;
+    endDate?: Date | string | null;
+    displayOrder?: number;
+    calculationMode?: string | null;
     status?: $Enums.RecordStatus;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -28447,9 +33406,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string;
     itemName?: StringFieldUpdateOperationsInput | string;
     itemCode?: NullableStringFieldUpdateOperationsInput | string | null;
+    itemCodes?: ItemSalesTargetUpdateitemCodesInput | string[];
     dailyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
     weeklyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
     monthlyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    displayOrder?: IntFieldUpdateOperationsInput | number;
+    calculationMode?: NullableStringFieldUpdateOperationsInput | string | null;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
@@ -28459,12 +33423,314 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string;
     itemName?: StringFieldUpdateOperationsInput | string;
     itemCode?: NullableStringFieldUpdateOperationsInput | string | null;
+    itemCodes?: ItemSalesTargetUpdateitemCodesInput | string[];
     dailyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
     weeklyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
     monthlyTarget?: NullableIntFieldUpdateOperationsInput | number | null;
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    displayOrder?: IntFieldUpdateOperationsInput | number;
+    calculationMode?: NullableStringFieldUpdateOperationsInput | string | null;
     status?: EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportSettingCreateInput = {
+    id?: string;
+    sharedFolderPath?: string | null;
+    autoImportEnabled?: boolean;
+    lastScanAt?: Date | string | null;
+    lastImportAt?: Date | string | null;
+    lastImportStatus?: string | null;
+    lastImportMessage?: string | null;
+    lastImportCount?: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type ItemSalesImportSettingUncheckedCreateInput = {
+    id?: string;
+    sharedFolderPath?: string | null;
+    autoImportEnabled?: boolean;
+    lastScanAt?: Date | string | null;
+    lastImportAt?: Date | string | null;
+    lastImportStatus?: string | null;
+    lastImportMessage?: string | null;
+    lastImportCount?: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type ItemSalesImportSettingUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sharedFolderPath?: NullableStringFieldUpdateOperationsInput | string | null;
+    autoImportEnabled?: BoolFieldUpdateOperationsInput | boolean;
+    lastScanAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastImportAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastImportStatus?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastImportMessage?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastImportCount?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportSettingUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sharedFolderPath?: NullableStringFieldUpdateOperationsInput | string | null;
+    autoImportEnabled?: BoolFieldUpdateOperationsInput | boolean;
+    lastScanAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastImportAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastImportStatus?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastImportMessage?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastImportCount?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportSettingCreateManyInput = {
+    id?: string;
+    sharedFolderPath?: string | null;
+    autoImportEnabled?: boolean;
+    lastScanAt?: Date | string | null;
+    lastImportAt?: Date | string | null;
+    lastImportStatus?: string | null;
+    lastImportMessage?: string | null;
+    lastImportCount?: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type ItemSalesImportSettingUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sharedFolderPath?: NullableStringFieldUpdateOperationsInput | string | null;
+    autoImportEnabled?: BoolFieldUpdateOperationsInput | boolean;
+    lastScanAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastImportAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastImportStatus?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastImportMessage?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastImportCount?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportSettingUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sharedFolderPath?: NullableStringFieldUpdateOperationsInput | string | null;
+    autoImportEnabled?: BoolFieldUpdateOperationsInput | boolean;
+    lastScanAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastImportAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastImportStatus?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastImportMessage?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastImportCount?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportBatchCreateInput = {
+    id?: string;
+    sourceFilename: string;
+    sourcePath: string;
+    reportDate: Date | string;
+    businessDateKey: string;
+    fileHash: string;
+    status?: string;
+    rowCount?: number;
+    rawMetadata?: NullableJsonNullValueInput | InputJsonValue;
+    importedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    rows?: ItemSalesImportRowCreateNestedManyWithoutImportBatchInput;
+  };
+
+  export type ItemSalesImportBatchUncheckedCreateInput = {
+    id?: string;
+    sourceFilename: string;
+    sourcePath: string;
+    reportDate: Date | string;
+    businessDateKey: string;
+    fileHash: string;
+    status?: string;
+    rowCount?: number;
+    rawMetadata?: NullableJsonNullValueInput | InputJsonValue;
+    importedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    rows?: ItemSalesImportRowUncheckedCreateNestedManyWithoutImportBatchInput;
+  };
+
+  export type ItemSalesImportBatchUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sourceFilename?: StringFieldUpdateOperationsInput | string;
+    sourcePath?: StringFieldUpdateOperationsInput | string;
+    reportDate?: DateTimeFieldUpdateOperationsInput | Date | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    fileHash?: StringFieldUpdateOperationsInput | string;
+    status?: StringFieldUpdateOperationsInput | string;
+    rowCount?: IntFieldUpdateOperationsInput | number;
+    rawMetadata?: NullableJsonNullValueInput | InputJsonValue;
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    rows?: ItemSalesImportRowUpdateManyWithoutImportBatchNestedInput;
+  };
+
+  export type ItemSalesImportBatchUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sourceFilename?: StringFieldUpdateOperationsInput | string;
+    sourcePath?: StringFieldUpdateOperationsInput | string;
+    reportDate?: DateTimeFieldUpdateOperationsInput | Date | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    fileHash?: StringFieldUpdateOperationsInput | string;
+    status?: StringFieldUpdateOperationsInput | string;
+    rowCount?: IntFieldUpdateOperationsInput | number;
+    rawMetadata?: NullableJsonNullValueInput | InputJsonValue;
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    rows?: ItemSalesImportRowUncheckedUpdateManyWithoutImportBatchNestedInput;
+  };
+
+  export type ItemSalesImportBatchCreateManyInput = {
+    id?: string;
+    sourceFilename: string;
+    sourcePath: string;
+    reportDate: Date | string;
+    businessDateKey: string;
+    fileHash: string;
+    status?: string;
+    rowCount?: number;
+    rawMetadata?: NullableJsonNullValueInput | InputJsonValue;
+    importedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type ItemSalesImportBatchUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sourceFilename?: StringFieldUpdateOperationsInput | string;
+    sourcePath?: StringFieldUpdateOperationsInput | string;
+    reportDate?: DateTimeFieldUpdateOperationsInput | Date | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    fileHash?: StringFieldUpdateOperationsInput | string;
+    status?: StringFieldUpdateOperationsInput | string;
+    rowCount?: IntFieldUpdateOperationsInput | number;
+    rawMetadata?: NullableJsonNullValueInput | InputJsonValue;
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportBatchUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sourceFilename?: StringFieldUpdateOperationsInput | string;
+    sourcePath?: StringFieldUpdateOperationsInput | string;
+    reportDate?: DateTimeFieldUpdateOperationsInput | Date | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    fileHash?: StringFieldUpdateOperationsInput | string;
+    status?: StringFieldUpdateOperationsInput | string;
+    rowCount?: IntFieldUpdateOperationsInput | number;
+    rawMetadata?: NullableJsonNullValueInput | InputJsonValue;
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportRowCreateInput = {
+    id?: string;
+    businessDateKey: string;
+    itemCode?: string | null;
+    itemName: string;
+    categoryName?: string | null;
+    uom?: string | null;
+    quantitySold?: number;
+    amountPaid?: number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: Date | string;
+    importBatch: ItemSalesImportBatchCreateNestedOneWithoutRowsInput;
+  };
+
+  export type ItemSalesImportRowUncheckedCreateInput = {
+    id?: string;
+    importBatchId: string;
+    businessDateKey: string;
+    itemCode?: string | null;
+    itemName: string;
+    categoryName?: string | null;
+    uom?: string | null;
+    quantitySold?: number;
+    amountPaid?: number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: Date | string;
+  };
+
+  export type ItemSalesImportRowUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    itemCode?: NullableStringFieldUpdateOperationsInput | string | null;
+    itemName?: StringFieldUpdateOperationsInput | string;
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null;
+    uom?: NullableStringFieldUpdateOperationsInput | string | null;
+    quantitySold?: FloatFieldUpdateOperationsInput | number;
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    importBatch?: ItemSalesImportBatchUpdateOneRequiredWithoutRowsNestedInput;
+  };
+
+  export type ItemSalesImportRowUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    importBatchId?: StringFieldUpdateOperationsInput | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    itemCode?: NullableStringFieldUpdateOperationsInput | string | null;
+    itemName?: StringFieldUpdateOperationsInput | string;
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null;
+    uom?: NullableStringFieldUpdateOperationsInput | string | null;
+    quantitySold?: FloatFieldUpdateOperationsInput | number;
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportRowCreateManyInput = {
+    id?: string;
+    importBatchId: string;
+    businessDateKey: string;
+    itemCode?: string | null;
+    itemName: string;
+    categoryName?: string | null;
+    uom?: string | null;
+    quantitySold?: number;
+    amountPaid?: number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: Date | string;
+  };
+
+  export type ItemSalesImportRowUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    itemCode?: NullableStringFieldUpdateOperationsInput | string | null;
+    itemName?: StringFieldUpdateOperationsInput | string;
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null;
+    uom?: NullableStringFieldUpdateOperationsInput | string | null;
+    quantitySold?: FloatFieldUpdateOperationsInput | number;
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportRowUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    importBatchId?: StringFieldUpdateOperationsInput | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    itemCode?: NullableStringFieldUpdateOperationsInput | string | null;
+    itemName?: StringFieldUpdateOperationsInput | string;
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null;
+    uom?: NullableStringFieldUpdateOperationsInput | string | null;
+    quantitySold?: FloatFieldUpdateOperationsInput | number;
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
   };
 
   export type ConcessionPriceItemCreateInput = {
@@ -29550,9 +34816,14 @@ export namespace Prisma {
     id?: SortOrder;
     itemName?: SortOrder;
     itemCode?: SortOrder;
+    itemCodes?: SortOrder;
     dailyTarget?: SortOrder;
     weeklyTarget?: SortOrder;
     monthlyTarget?: SortOrder;
+    startDate?: SortOrder;
+    endDate?: SortOrder;
+    displayOrder?: SortOrder;
+    calculationMode?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -29562,6 +34833,7 @@ export namespace Prisma {
     dailyTarget?: SortOrder;
     weeklyTarget?: SortOrder;
     monthlyTarget?: SortOrder;
+    displayOrder?: SortOrder;
   };
 
   export type ItemSalesTargetMaxOrderByAggregateInput = {
@@ -29571,6 +34843,10 @@ export namespace Prisma {
     dailyTarget?: SortOrder;
     weeklyTarget?: SortOrder;
     monthlyTarget?: SortOrder;
+    startDate?: SortOrder;
+    endDate?: SortOrder;
+    displayOrder?: SortOrder;
+    calculationMode?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -29583,6 +34859,10 @@ export namespace Prisma {
     dailyTarget?: SortOrder;
     weeklyTarget?: SortOrder;
     monthlyTarget?: SortOrder;
+    startDate?: SortOrder;
+    endDate?: SortOrder;
+    displayOrder?: SortOrder;
+    calculationMode?: SortOrder;
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
@@ -29592,6 +34872,170 @@ export namespace Prisma {
     dailyTarget?: SortOrder;
     weeklyTarget?: SortOrder;
     monthlyTarget?: SortOrder;
+    displayOrder?: SortOrder;
+  };
+
+  export type ItemSalesImportSettingCountOrderByAggregateInput = {
+    id?: SortOrder;
+    sharedFolderPath?: SortOrder;
+    autoImportEnabled?: SortOrder;
+    lastScanAt?: SortOrder;
+    lastImportAt?: SortOrder;
+    lastImportStatus?: SortOrder;
+    lastImportMessage?: SortOrder;
+    lastImportCount?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type ItemSalesImportSettingAvgOrderByAggregateInput = {
+    lastImportCount?: SortOrder;
+  };
+
+  export type ItemSalesImportSettingMaxOrderByAggregateInput = {
+    id?: SortOrder;
+    sharedFolderPath?: SortOrder;
+    autoImportEnabled?: SortOrder;
+    lastScanAt?: SortOrder;
+    lastImportAt?: SortOrder;
+    lastImportStatus?: SortOrder;
+    lastImportMessage?: SortOrder;
+    lastImportCount?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type ItemSalesImportSettingMinOrderByAggregateInput = {
+    id?: SortOrder;
+    sharedFolderPath?: SortOrder;
+    autoImportEnabled?: SortOrder;
+    lastScanAt?: SortOrder;
+    lastImportAt?: SortOrder;
+    lastImportStatus?: SortOrder;
+    lastImportMessage?: SortOrder;
+    lastImportCount?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type ItemSalesImportSettingSumOrderByAggregateInput = {
+    lastImportCount?: SortOrder;
+  };
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<
+          Required<JsonNullableFilterBase<$PrismaModel>>,
+          Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>
+        >,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>;
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter;
+    path?: string[];
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>;
+    string_contains?: string | StringFieldRefInput<$PrismaModel>;
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>;
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>;
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null;
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null;
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null;
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter;
+  };
+
+  export type ItemSalesImportRowListRelationFilter = {
+    every?: ItemSalesImportRowWhereInput;
+    some?: ItemSalesImportRowWhereInput;
+    none?: ItemSalesImportRowWhereInput;
+  };
+
+  export type ItemSalesImportRowOrderByRelationAggregateInput = {
+    _count?: SortOrder;
+  };
+
+  export type ItemSalesImportBatchCountOrderByAggregateInput = {
+    id?: SortOrder;
+    sourceFilename?: SortOrder;
+    sourcePath?: SortOrder;
+    reportDate?: SortOrder;
+    businessDateKey?: SortOrder;
+    fileHash?: SortOrder;
+    status?: SortOrder;
+    rowCount?: SortOrder;
+    rawMetadata?: SortOrder;
+    importedAt?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type ItemSalesImportBatchAvgOrderByAggregateInput = {
+    rowCount?: SortOrder;
+  };
+
+  export type ItemSalesImportBatchMaxOrderByAggregateInput = {
+    id?: SortOrder;
+    sourceFilename?: SortOrder;
+    sourcePath?: SortOrder;
+    reportDate?: SortOrder;
+    businessDateKey?: SortOrder;
+    fileHash?: SortOrder;
+    status?: SortOrder;
+    rowCount?: SortOrder;
+    importedAt?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type ItemSalesImportBatchMinOrderByAggregateInput = {
+    id?: SortOrder;
+    sourceFilename?: SortOrder;
+    sourcePath?: SortOrder;
+    reportDate?: SortOrder;
+    businessDateKey?: SortOrder;
+    fileHash?: SortOrder;
+    status?: SortOrder;
+    rowCount?: SortOrder;
+    importedAt?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type ItemSalesImportBatchSumOrderByAggregateInput = {
+    rowCount?: SortOrder;
+  };
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<
+          Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>,
+          Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>
+        >,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>;
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter;
+    path?: string[];
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>;
+    string_contains?: string | StringFieldRefInput<$PrismaModel>;
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>;
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>;
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null;
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null;
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null;
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter;
+    _count?: NestedIntNullableFilter<$PrismaModel>;
+    _min?: NestedJsonNullableFilter<$PrismaModel>;
+    _max?: NestedJsonNullableFilter<$PrismaModel>;
   };
 
   export type FloatFilter<$PrismaModel = never> = {
@@ -29603,6 +35047,77 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>;
     gte?: number | FloatFieldRefInput<$PrismaModel>;
     not?: NestedFloatFilter<$PrismaModel> | number;
+  };
+
+  export type ItemSalesImportBatchScalarRelationFilter = {
+    is?: ItemSalesImportBatchWhereInput;
+    isNot?: ItemSalesImportBatchWhereInput;
+  };
+
+  export type ItemSalesImportRowCountOrderByAggregateInput = {
+    id?: SortOrder;
+    importBatchId?: SortOrder;
+    businessDateKey?: SortOrder;
+    itemCode?: SortOrder;
+    itemName?: SortOrder;
+    categoryName?: SortOrder;
+    uom?: SortOrder;
+    quantitySold?: SortOrder;
+    amountPaid?: SortOrder;
+    rawData?: SortOrder;
+    createdAt?: SortOrder;
+  };
+
+  export type ItemSalesImportRowAvgOrderByAggregateInput = {
+    quantitySold?: SortOrder;
+    amountPaid?: SortOrder;
+  };
+
+  export type ItemSalesImportRowMaxOrderByAggregateInput = {
+    id?: SortOrder;
+    importBatchId?: SortOrder;
+    businessDateKey?: SortOrder;
+    itemCode?: SortOrder;
+    itemName?: SortOrder;
+    categoryName?: SortOrder;
+    uom?: SortOrder;
+    quantitySold?: SortOrder;
+    amountPaid?: SortOrder;
+    createdAt?: SortOrder;
+  };
+
+  export type ItemSalesImportRowMinOrderByAggregateInput = {
+    id?: SortOrder;
+    importBatchId?: SortOrder;
+    businessDateKey?: SortOrder;
+    itemCode?: SortOrder;
+    itemName?: SortOrder;
+    categoryName?: SortOrder;
+    uom?: SortOrder;
+    quantitySold?: SortOrder;
+    amountPaid?: SortOrder;
+    createdAt?: SortOrder;
+  };
+
+  export type ItemSalesImportRowSumOrderByAggregateInput = {
+    quantitySold?: SortOrder;
+    amountPaid?: SortOrder;
+  };
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>;
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>;
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>;
+    lt?: number | FloatFieldRefInput<$PrismaModel>;
+    lte?: number | FloatFieldRefInput<$PrismaModel>;
+    gt?: number | FloatFieldRefInput<$PrismaModel>;
+    gte?: number | FloatFieldRefInput<$PrismaModel>;
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number;
+    _count?: NestedIntFilter<$PrismaModel>;
+    _avg?: NestedFloatFilter<$PrismaModel>;
+    _sum?: NestedFloatFilter<$PrismaModel>;
+    _min?: NestedFloatFilter<$PrismaModel>;
+    _max?: NestedFloatFilter<$PrismaModel>;
   };
 
   export type ConcessionPriceItemCountOrderByAggregateInput = {
@@ -29646,22 +35161,6 @@ export namespace Prisma {
   export type ConcessionPriceItemSumOrderByAggregateInput = {
     price?: SortOrder;
     sortOrder?: SortOrder;
-  };
-
-  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>;
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>;
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>;
-    lt?: number | FloatFieldRefInput<$PrismaModel>;
-    lte?: number | FloatFieldRefInput<$PrismaModel>;
-    gt?: number | FloatFieldRefInput<$PrismaModel>;
-    gte?: number | FloatFieldRefInput<$PrismaModel>;
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number;
-    _count?: NestedIntFilter<$PrismaModel>;
-    _avg?: NestedFloatFilter<$PrismaModel>;
-    _sum?: NestedFloatFilter<$PrismaModel>;
-    _min?: NestedFloatFilter<$PrismaModel>;
-    _max?: NestedFloatFilter<$PrismaModel>;
   };
 
   export type DisplayPageCountOrderByAggregateInput = {
@@ -30015,12 +35514,133 @@ export namespace Prisma {
     set?: boolean;
   };
 
+  export type ItemSalesTargetCreateitemCodesInput = {
+    set: string[];
+  };
+
+  export type ItemSalesTargetUpdateitemCodesInput = {
+    set?: string[];
+    push?: string | string[];
+  };
+
+  export type ItemSalesImportRowCreateNestedManyWithoutImportBatchInput = {
+    create?:
+      | XOR<
+          ItemSalesImportRowCreateWithoutImportBatchInput,
+          ItemSalesImportRowUncheckedCreateWithoutImportBatchInput
+        >
+      | ItemSalesImportRowCreateWithoutImportBatchInput[]
+      | ItemSalesImportRowUncheckedCreateWithoutImportBatchInput[];
+    connectOrCreate?:
+      | ItemSalesImportRowCreateOrConnectWithoutImportBatchInput
+      | ItemSalesImportRowCreateOrConnectWithoutImportBatchInput[];
+    createMany?: ItemSalesImportRowCreateManyImportBatchInputEnvelope;
+    connect?: ItemSalesImportRowWhereUniqueInput | ItemSalesImportRowWhereUniqueInput[];
+  };
+
+  export type ItemSalesImportRowUncheckedCreateNestedManyWithoutImportBatchInput = {
+    create?:
+      | XOR<
+          ItemSalesImportRowCreateWithoutImportBatchInput,
+          ItemSalesImportRowUncheckedCreateWithoutImportBatchInput
+        >
+      | ItemSalesImportRowCreateWithoutImportBatchInput[]
+      | ItemSalesImportRowUncheckedCreateWithoutImportBatchInput[];
+    connectOrCreate?:
+      | ItemSalesImportRowCreateOrConnectWithoutImportBatchInput
+      | ItemSalesImportRowCreateOrConnectWithoutImportBatchInput[];
+    createMany?: ItemSalesImportRowCreateManyImportBatchInputEnvelope;
+    connect?: ItemSalesImportRowWhereUniqueInput | ItemSalesImportRowWhereUniqueInput[];
+  };
+
+  export type ItemSalesImportRowUpdateManyWithoutImportBatchNestedInput = {
+    create?:
+      | XOR<
+          ItemSalesImportRowCreateWithoutImportBatchInput,
+          ItemSalesImportRowUncheckedCreateWithoutImportBatchInput
+        >
+      | ItemSalesImportRowCreateWithoutImportBatchInput[]
+      | ItemSalesImportRowUncheckedCreateWithoutImportBatchInput[];
+    connectOrCreate?:
+      | ItemSalesImportRowCreateOrConnectWithoutImportBatchInput
+      | ItemSalesImportRowCreateOrConnectWithoutImportBatchInput[];
+    upsert?:
+      | ItemSalesImportRowUpsertWithWhereUniqueWithoutImportBatchInput
+      | ItemSalesImportRowUpsertWithWhereUniqueWithoutImportBatchInput[];
+    createMany?: ItemSalesImportRowCreateManyImportBatchInputEnvelope;
+    set?: ItemSalesImportRowWhereUniqueInput | ItemSalesImportRowWhereUniqueInput[];
+    disconnect?: ItemSalesImportRowWhereUniqueInput | ItemSalesImportRowWhereUniqueInput[];
+    delete?: ItemSalesImportRowWhereUniqueInput | ItemSalesImportRowWhereUniqueInput[];
+    connect?: ItemSalesImportRowWhereUniqueInput | ItemSalesImportRowWhereUniqueInput[];
+    update?:
+      | ItemSalesImportRowUpdateWithWhereUniqueWithoutImportBatchInput
+      | ItemSalesImportRowUpdateWithWhereUniqueWithoutImportBatchInput[];
+    updateMany?:
+      | ItemSalesImportRowUpdateManyWithWhereWithoutImportBatchInput
+      | ItemSalesImportRowUpdateManyWithWhereWithoutImportBatchInput[];
+    deleteMany?: ItemSalesImportRowScalarWhereInput | ItemSalesImportRowScalarWhereInput[];
+  };
+
+  export type ItemSalesImportRowUncheckedUpdateManyWithoutImportBatchNestedInput = {
+    create?:
+      | XOR<
+          ItemSalesImportRowCreateWithoutImportBatchInput,
+          ItemSalesImportRowUncheckedCreateWithoutImportBatchInput
+        >
+      | ItemSalesImportRowCreateWithoutImportBatchInput[]
+      | ItemSalesImportRowUncheckedCreateWithoutImportBatchInput[];
+    connectOrCreate?:
+      | ItemSalesImportRowCreateOrConnectWithoutImportBatchInput
+      | ItemSalesImportRowCreateOrConnectWithoutImportBatchInput[];
+    upsert?:
+      | ItemSalesImportRowUpsertWithWhereUniqueWithoutImportBatchInput
+      | ItemSalesImportRowUpsertWithWhereUniqueWithoutImportBatchInput[];
+    createMany?: ItemSalesImportRowCreateManyImportBatchInputEnvelope;
+    set?: ItemSalesImportRowWhereUniqueInput | ItemSalesImportRowWhereUniqueInput[];
+    disconnect?: ItemSalesImportRowWhereUniqueInput | ItemSalesImportRowWhereUniqueInput[];
+    delete?: ItemSalesImportRowWhereUniqueInput | ItemSalesImportRowWhereUniqueInput[];
+    connect?: ItemSalesImportRowWhereUniqueInput | ItemSalesImportRowWhereUniqueInput[];
+    update?:
+      | ItemSalesImportRowUpdateWithWhereUniqueWithoutImportBatchInput
+      | ItemSalesImportRowUpdateWithWhereUniqueWithoutImportBatchInput[];
+    updateMany?:
+      | ItemSalesImportRowUpdateManyWithWhereWithoutImportBatchInput
+      | ItemSalesImportRowUpdateManyWithWhereWithoutImportBatchInput[];
+    deleteMany?: ItemSalesImportRowScalarWhereInput | ItemSalesImportRowScalarWhereInput[];
+  };
+
+  export type ItemSalesImportBatchCreateNestedOneWithoutRowsInput = {
+    create?: XOR<
+      ItemSalesImportBatchCreateWithoutRowsInput,
+      ItemSalesImportBatchUncheckedCreateWithoutRowsInput
+    >;
+    connectOrCreate?: ItemSalesImportBatchCreateOrConnectWithoutRowsInput;
+    connect?: ItemSalesImportBatchWhereUniqueInput;
+  };
+
   export type FloatFieldUpdateOperationsInput = {
     set?: number;
     increment?: number;
     decrement?: number;
     multiply?: number;
     divide?: number;
+  };
+
+  export type ItemSalesImportBatchUpdateOneRequiredWithoutRowsNestedInput = {
+    create?: XOR<
+      ItemSalesImportBatchCreateWithoutRowsInput,
+      ItemSalesImportBatchUncheckedCreateWithoutRowsInput
+    >;
+    connectOrCreate?: ItemSalesImportBatchCreateOrConnectWithoutRowsInput;
+    upsert?: ItemSalesImportBatchUpsertWithoutRowsInput;
+    connect?: ItemSalesImportBatchWhereUniqueInput;
+    update?: XOR<
+      XOR<
+        ItemSalesImportBatchUpdateToOneWithWhereWithoutRowsInput,
+        ItemSalesImportBatchUpdateWithoutRowsInput
+      >,
+      ItemSalesImportBatchUncheckedUpdateWithoutRowsInput
+    >;
   };
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -30292,6 +35912,32 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>;
     _min?: NestedBoolFilter<$PrismaModel>;
     _max?: NestedBoolFilter<$PrismaModel>;
+  };
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<
+          Required<NestedJsonNullableFilterBase<$PrismaModel>>,
+          Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>
+        >,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>;
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter;
+    path?: string[];
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>;
+    string_contains?: string | StringFieldRefInput<$PrismaModel>;
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>;
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>;
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null;
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null;
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null;
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>;
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter;
   };
 
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -30610,6 +36256,180 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
   };
 
+  export type ItemSalesImportRowCreateWithoutImportBatchInput = {
+    id?: string;
+    businessDateKey: string;
+    itemCode?: string | null;
+    itemName: string;
+    categoryName?: string | null;
+    uom?: string | null;
+    quantitySold?: number;
+    amountPaid?: number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: Date | string;
+  };
+
+  export type ItemSalesImportRowUncheckedCreateWithoutImportBatchInput = {
+    id?: string;
+    businessDateKey: string;
+    itemCode?: string | null;
+    itemName: string;
+    categoryName?: string | null;
+    uom?: string | null;
+    quantitySold?: number;
+    amountPaid?: number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: Date | string;
+  };
+
+  export type ItemSalesImportRowCreateOrConnectWithoutImportBatchInput = {
+    where: ItemSalesImportRowWhereUniqueInput;
+    create: XOR<
+      ItemSalesImportRowCreateWithoutImportBatchInput,
+      ItemSalesImportRowUncheckedCreateWithoutImportBatchInput
+    >;
+  };
+
+  export type ItemSalesImportRowCreateManyImportBatchInputEnvelope = {
+    data:
+      | ItemSalesImportRowCreateManyImportBatchInput
+      | ItemSalesImportRowCreateManyImportBatchInput[];
+    skipDuplicates?: boolean;
+  };
+
+  export type ItemSalesImportRowUpsertWithWhereUniqueWithoutImportBatchInput = {
+    where: ItemSalesImportRowWhereUniqueInput;
+    update: XOR<
+      ItemSalesImportRowUpdateWithoutImportBatchInput,
+      ItemSalesImportRowUncheckedUpdateWithoutImportBatchInput
+    >;
+    create: XOR<
+      ItemSalesImportRowCreateWithoutImportBatchInput,
+      ItemSalesImportRowUncheckedCreateWithoutImportBatchInput
+    >;
+  };
+
+  export type ItemSalesImportRowUpdateWithWhereUniqueWithoutImportBatchInput = {
+    where: ItemSalesImportRowWhereUniqueInput;
+    data: XOR<
+      ItemSalesImportRowUpdateWithoutImportBatchInput,
+      ItemSalesImportRowUncheckedUpdateWithoutImportBatchInput
+    >;
+  };
+
+  export type ItemSalesImportRowUpdateManyWithWhereWithoutImportBatchInput = {
+    where: ItemSalesImportRowScalarWhereInput;
+    data: XOR<
+      ItemSalesImportRowUpdateManyMutationInput,
+      ItemSalesImportRowUncheckedUpdateManyWithoutImportBatchInput
+    >;
+  };
+
+  export type ItemSalesImportRowScalarWhereInput = {
+    AND?: ItemSalesImportRowScalarWhereInput | ItemSalesImportRowScalarWhereInput[];
+    OR?: ItemSalesImportRowScalarWhereInput[];
+    NOT?: ItemSalesImportRowScalarWhereInput | ItemSalesImportRowScalarWhereInput[];
+    id?: StringFilter<'ItemSalesImportRow'> | string;
+    importBatchId?: StringFilter<'ItemSalesImportRow'> | string;
+    businessDateKey?: StringFilter<'ItemSalesImportRow'> | string;
+    itemCode?: StringNullableFilter<'ItemSalesImportRow'> | string | null;
+    itemName?: StringFilter<'ItemSalesImportRow'> | string;
+    categoryName?: StringNullableFilter<'ItemSalesImportRow'> | string | null;
+    uom?: StringNullableFilter<'ItemSalesImportRow'> | string | null;
+    quantitySold?: FloatFilter<'ItemSalesImportRow'> | number;
+    amountPaid?: FloatNullableFilter<'ItemSalesImportRow'> | number | null;
+    rawData?: JsonNullableFilter<'ItemSalesImportRow'>;
+    createdAt?: DateTimeFilter<'ItemSalesImportRow'> | Date | string;
+  };
+
+  export type ItemSalesImportBatchCreateWithoutRowsInput = {
+    id?: string;
+    sourceFilename: string;
+    sourcePath: string;
+    reportDate: Date | string;
+    businessDateKey: string;
+    fileHash: string;
+    status?: string;
+    rowCount?: number;
+    rawMetadata?: NullableJsonNullValueInput | InputJsonValue;
+    importedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type ItemSalesImportBatchUncheckedCreateWithoutRowsInput = {
+    id?: string;
+    sourceFilename: string;
+    sourcePath: string;
+    reportDate: Date | string;
+    businessDateKey: string;
+    fileHash: string;
+    status?: string;
+    rowCount?: number;
+    rawMetadata?: NullableJsonNullValueInput | InputJsonValue;
+    importedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type ItemSalesImportBatchCreateOrConnectWithoutRowsInput = {
+    where: ItemSalesImportBatchWhereUniqueInput;
+    create: XOR<
+      ItemSalesImportBatchCreateWithoutRowsInput,
+      ItemSalesImportBatchUncheckedCreateWithoutRowsInput
+    >;
+  };
+
+  export type ItemSalesImportBatchUpsertWithoutRowsInput = {
+    update: XOR<
+      ItemSalesImportBatchUpdateWithoutRowsInput,
+      ItemSalesImportBatchUncheckedUpdateWithoutRowsInput
+    >;
+    create: XOR<
+      ItemSalesImportBatchCreateWithoutRowsInput,
+      ItemSalesImportBatchUncheckedCreateWithoutRowsInput
+    >;
+    where?: ItemSalesImportBatchWhereInput;
+  };
+
+  export type ItemSalesImportBatchUpdateToOneWithWhereWithoutRowsInput = {
+    where?: ItemSalesImportBatchWhereInput;
+    data: XOR<
+      ItemSalesImportBatchUpdateWithoutRowsInput,
+      ItemSalesImportBatchUncheckedUpdateWithoutRowsInput
+    >;
+  };
+
+  export type ItemSalesImportBatchUpdateWithoutRowsInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sourceFilename?: StringFieldUpdateOperationsInput | string;
+    sourcePath?: StringFieldUpdateOperationsInput | string;
+    reportDate?: DateTimeFieldUpdateOperationsInput | Date | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    fileHash?: StringFieldUpdateOperationsInput | string;
+    status?: StringFieldUpdateOperationsInput | string;
+    rowCount?: IntFieldUpdateOperationsInput | number;
+    rawMetadata?: NullableJsonNullValueInput | InputJsonValue;
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportBatchUncheckedUpdateWithoutRowsInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sourceFilename?: StringFieldUpdateOperationsInput | string;
+    sourcePath?: StringFieldUpdateOperationsInput | string;
+    reportDate?: DateTimeFieldUpdateOperationsInput | Date | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    fileHash?: StringFieldUpdateOperationsInput | string;
+    status?: StringFieldUpdateOperationsInput | string;
+    rowCount?: IntFieldUpdateOperationsInput | number;
+    rawMetadata?: NullableJsonNullValueInput | InputJsonValue;
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
   export type AttendanceRecordCreateManyStaffInput = {
     id?: string;
     date: Date | string;
@@ -30688,6 +36508,58 @@ export namespace Prisma {
     remarks?: NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportRowCreateManyImportBatchInput = {
+    id?: string;
+    businessDateKey: string;
+    itemCode?: string | null;
+    itemName: string;
+    categoryName?: string | null;
+    uom?: string | null;
+    quantitySold?: number;
+    amountPaid?: number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: Date | string;
+  };
+
+  export type ItemSalesImportRowUpdateWithoutImportBatchInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    itemCode?: NullableStringFieldUpdateOperationsInput | string | null;
+    itemName?: StringFieldUpdateOperationsInput | string;
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null;
+    uom?: NullableStringFieldUpdateOperationsInput | string | null;
+    quantitySold?: FloatFieldUpdateOperationsInput | number;
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportRowUncheckedUpdateWithoutImportBatchInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    itemCode?: NullableStringFieldUpdateOperationsInput | string | null;
+    itemName?: StringFieldUpdateOperationsInput | string;
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null;
+    uom?: NullableStringFieldUpdateOperationsInput | string | null;
+    quantitySold?: FloatFieldUpdateOperationsInput | number;
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type ItemSalesImportRowUncheckedUpdateManyWithoutImportBatchInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    businessDateKey?: StringFieldUpdateOperationsInput | string;
+    itemCode?: NullableStringFieldUpdateOperationsInput | string | null;
+    itemName?: StringFieldUpdateOperationsInput | string;
+    categoryName?: NullableStringFieldUpdateOperationsInput | string | null;
+    uom?: NullableStringFieldUpdateOperationsInput | string | null;
+    quantitySold?: FloatFieldUpdateOperationsInput | number;
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null;
+    rawData?: NullableJsonNullValueInput | InputJsonValue;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
   };
 
   /**

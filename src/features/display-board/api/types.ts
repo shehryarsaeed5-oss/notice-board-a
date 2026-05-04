@@ -67,10 +67,38 @@ export interface DisplayBoardSalesTargetItem {
   id: string;
   itemName: string;
   itemCode: string | null;
-  dailyTarget: number | null;
-  weeklyTarget: number | null;
-  monthlyTarget: number | null;
+  itemCodes: string[];
+  startDate: Date | null;
+  endDate: Date | null;
+  displayOrder: number;
+  calculationMode: string | null;
   status: RecordStatus;
+  daily: {
+    targetQty: number | null;
+    soldQty: number;
+    remainingQty: number | null;
+    percent: number | null;
+    dataAvailable: boolean;
+    lastImportAt: Date | null;
+  };
+  weekly: {
+    targetQty: number | null;
+    soldQty: number;
+    remainingQty: number | null;
+    percent: number | null;
+    dataAvailable: boolean;
+    lastImportAt: Date | null;
+  };
+  monthly: {
+    targetQty: number | null;
+    soldQty: number;
+    remainingQty: number | null;
+    percent: number | null;
+    dataAvailable: boolean;
+    lastImportAt: Date | null;
+  };
+  lastImportAt: Date | null;
+  lastImportStatus: string | null;
 }
 
 export interface DisplayBoardConcessionPriceItem {

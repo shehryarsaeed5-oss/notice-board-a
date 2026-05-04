@@ -1,14 +1,16 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
+import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import * as z from 'zod';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { FieldDescription } from '@/components/ui/field';
 import {
   Sheet,
   SheetContent,
@@ -23,6 +25,7 @@ import type { ItemSalesTargetRecord, ItemSalesTargetStatus } from '../api/types'
 import {
   itemSalesTargetSchema,
   optionalPositiveInteger,
+  optionalNonNegativeInteger,
   type ItemSalesTargetFormSchemaValues
 } from '../schemas/item-sales-target';
 
@@ -75,10 +78,16 @@ export function ItemSalesTargetFormSheet({
   const form = useAppForm({
     defaultValues: {
       itemName: itemSalesTarget?.itemName ?? '',
-      itemCode: itemSalesTarget?.itemCode ?? '',
+      itemCode: itemSalesTarget?.itemCode ?? itemSalesTarget?.itemCodes?.[0] ?? '',
+      itemCodesText: itemSalesTarget?.itemCodes.length
+        ? itemSalesTarget.itemCodes.join(', ')
+        : (itemSalesTarget?.itemCode ?? ''),
       dailyTarget: itemSalesTarget?.dailyTarget ?? '',
       weeklyTarget: itemSalesTarget?.weeklyTarget ?? '',
       monthlyTarget: itemSalesTarget?.monthlyTarget ?? '',
+      startDate: itemSalesTarget?.startDate ? format(itemSalesTarget.startDate, 'yyyy-MM-dd') : '',
+      endDate: itemSalesTarget?.endDate ? format(itemSalesTarget.endDate, 'yyyy-MM-dd') : '',
+      displayOrder: itemSalesTarget?.displayOrder ?? 0,
       status: itemSalesTarget?.status ?? 'ACTIVE'
     } as ItemSalesTargetFormSchemaValues,
     onSubmit: async ({ value }) => {
@@ -98,7 +107,14 @@ export function ItemSalesTargetFormSheet({
     }
   });
 
-  const { FormTextField, FormSelectField } = useFormFields<ItemSalesTargetFormSchemaValues>();
+  useEffect(() => {
+    if (!open) {
+      form.reset();
+    }
+  }, [form, open]);
+
+  const { FormTextField, FormSelectField, FormTextareaField } =
+    useFormFields<ItemSalesTargetFormSchemaValues>();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -125,9 +141,22 @@ export function ItemSalesTargetFormSheet({
                 }}
               />
 
-              <FormTextField name='itemCode' label='Item Code' placeholder='Optional code' />
+              <FormTextareaField
+                name='itemCodesText'
+                label='Item Codes'
+                placeholder='1001, 1002, 1003'
+                description='Comma or newline separated item codes. Leave blank to match by item name.'
+                rows={3}
+              />
 
-              <div className='grid gap-4 md:grid-cols-3'>
+              <FormTextField
+                name='itemCode'
+                label='Legacy Item Code'
+                placeholder='Optional single code'
+                description='Used as a fallback for older integrations.'
+              />
+
+              <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-4'>
                 <FormTextField
                   name='dailyTarget'
                   label='Daily Target'
@@ -161,6 +190,77 @@ export function ItemSalesTargetFormSheet({
                   placeholder='Optional'
                   validators={{
                     onBlur: optionalPositiveInteger
+                  }}
+                />
+
+                <FormTextField
+                  name='displayOrder'
+                  label='Display Order'
+                  type='number'
+                  min={0}
+                  step={1}
+                  placeholder='0'
+                  description='Lower numbers appear first.'
+                  validators={{
+                    onBlur: optionalNonNegativeInteger
+                  }}
+                />
+              </div>
+
+              <div className='grid gap-4 md:grid-cols-2'>
+                <form.AppField
+                  name='startDate'
+                  children={(field) => {
+                    const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+
+                    return (
+                      <field.FieldSet>
+                        <field.Field>
+                          <field.FieldLabel htmlFor={field.name}>Start Date</field.FieldLabel>
+                          <Input
+                            id={field.name}
+                            name={field.name}
+                            type='date'
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(event) => field.handleChange(event.target.value)}
+                            aria-invalid={isInvalid}
+                          />
+                          <FieldDescription>
+                            Optional start date for reporting and display calculations.
+                          </FieldDescription>
+                          <field.FieldError />
+                        </field.Field>
+                      </field.FieldSet>
+                    );
+                  }}
+                />
+
+                <form.AppField
+                  name='endDate'
+                  children={(field) => {
+                    const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+
+                    return (
+                      <field.FieldSet>
+                        <field.Field>
+                          <field.FieldLabel htmlFor={field.name}>End Date</field.FieldLabel>
+                          <Input
+                            id={field.name}
+                            name={field.name}
+                            type='date'
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(event) => field.handleChange(event.target.value)}
+                            aria-invalid={isInvalid}
+                          />
+                          <FieldDescription>
+                            Optional end date for reporting and display calculations.
+                          </FieldDescription>
+                          <field.FieldError />
+                        </field.Field>
+                      </field.FieldSet>
+                    );
                   }}
                 />
               </div>

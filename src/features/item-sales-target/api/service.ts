@@ -2,6 +2,14 @@ import 'server-only';
 
 import { prisma } from '@/lib/prisma';
 import { bumpDisplayBoardRefreshToken } from '@/features/display-board/api/cache';
+import {
+  normalizeNonNegativeInteger,
+  normalizeOptionalNumber,
+  normalizeOptionalText,
+  normalizeText,
+  parseOptionalDateInput,
+  parseItemCodeList
+} from '../lib/item-codes';
 import type {
   ItemSalesTargetFormValues,
   ItemSalesTargetListFilters,
@@ -9,7 +17,7 @@ import type {
 } from './types';
 
 function normalizeSearchTerm(value?: string): string | undefined {
-  const trimmed = value?.trim();
+  const trimmed = normalizeText(value);
   return trimmed ? trimmed : undefined;
 }
 
@@ -22,22 +30,13 @@ function normalizeStatus(value?: string): 'ACTIVE' | 'INACTIVE' | 'ARCHIVED' | u
 }
 
 function normalizeRequiredText(value: string): string {
-  return value.trim();
+  return normalizeText(value);
 }
 
-function normalizeOptionalText(value?: string): string | null {
-  const trimmed = value?.trim();
-  return trimmed ? trimmed : null;
-}
+function normalizeDateInput(value?: string): Date | null {
+  const parsed = parseOptionalDateInput(value);
 
-function normalizeOptionalNumber(value?: number | string | null): number | null {
-  if (value === null || value === undefined || value === '') {
-    return null;
-  }
-
-  const parsed = typeof value === 'string' ? Number(value) : value;
-
-  return Number.isFinite(parsed) ? parsed : null;
+  return parsed ? parsed : null;
 }
 
 function buildWhere(filters: ItemSalesTargetListFilters) {
@@ -60,6 +59,11 @@ function buildWhere(filters: ItemSalesTargetListFilters) {
                 contains: search,
                 mode: 'insensitive' as const
               }
+            },
+            {
+              itemCodes: {
+                has: search
+              }
             }
           ]
         }
@@ -74,7 +78,7 @@ export async function getItemSalesTargets(
 
   const itemSalesTargets = await prisma.itemSalesTarget.findMany({
     where,
-    orderBy: [{ createdAt: 'desc' }, { itemName: 'asc' }]
+    orderBy: [{ displayOrder: 'asc' }, { itemName: 'asc' }]
   });
 
   return {
@@ -84,13 +88,19 @@ export async function getItemSalesTargets(
 }
 
 export async function createItemSalesTarget(values: ItemSalesTargetFormValues) {
+  const itemCodes = parseItemCodeList(values.itemCodesText ?? values.itemCode);
   const itemSalesTarget = await prisma.itemSalesTarget.create({
     data: {
       itemName: normalizeRequiredText(values.itemName),
-      itemCode: normalizeOptionalText(values.itemCode),
+      itemCode: normalizeOptionalText(values.itemCode) ?? itemCodes[0] ?? null,
+      itemCodes,
       dailyTarget: normalizeOptionalNumber(values.dailyTarget),
       weeklyTarget: normalizeOptionalNumber(values.weeklyTarget),
       monthlyTarget: normalizeOptionalNumber(values.monthlyTarget),
+      startDate: normalizeDateInput(values.startDate),
+      endDate: normalizeDateInput(values.endDate),
+      displayOrder: normalizeNonNegativeInteger(values.displayOrder),
+      calculationMode: null,
       status: values.status
     }
   });
@@ -101,14 +111,19 @@ export async function createItemSalesTarget(values: ItemSalesTargetFormValues) {
 }
 
 export async function updateItemSalesTarget(id: string, values: ItemSalesTargetFormValues) {
+  const itemCodes = parseItemCodeList(values.itemCodesText ?? values.itemCode);
   const itemSalesTarget = await prisma.itemSalesTarget.update({
     where: { id },
     data: {
       itemName: normalizeRequiredText(values.itemName),
-      itemCode: normalizeOptionalText(values.itemCode),
+      itemCode: normalizeOptionalText(values.itemCode) ?? itemCodes[0] ?? null,
+      itemCodes,
       dailyTarget: normalizeOptionalNumber(values.dailyTarget),
       weeklyTarget: normalizeOptionalNumber(values.weeklyTarget),
       monthlyTarget: normalizeOptionalNumber(values.monthlyTarget),
+      startDate: normalizeDateInput(values.startDate),
+      endDate: normalizeDateInput(values.endDate),
+      displayOrder: normalizeNonNegativeInteger(values.displayOrder),
       status: values.status
     }
   });

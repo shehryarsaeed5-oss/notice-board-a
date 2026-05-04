@@ -33,12 +33,27 @@ function formatDate(value: Date) {
   return format(value, 'EEEE, MMM d, yyyy');
 }
 
-function formatDateTime(value: Date) {
-  return format(value, 'EEEE, MMM d, yyyy • h:mm a');
+function formatDateTime(value: Date | null | undefined) {
+  return value ? format(value, 'EEEE, MMM d, yyyy • h:mm a') : '—';
 }
 
-function formatTarget(value: number | null) {
-  return value === null ? '—' : value.toLocaleString();
+function formatProgress(progress: {
+  soldQty: number;
+  targetQty: number | null;
+  remainingQty: number | null;
+  percent: number | null;
+  dataAvailable: boolean;
+}) {
+  if (!progress.dataAvailable) {
+    return 'Sales data not imported';
+  }
+
+  const sold = progress.soldQty.toLocaleString();
+  const target = progress.targetQty === null ? '—' : progress.targetQty.toLocaleString();
+  const remaining = progress.remainingQty === null ? '—' : progress.remainingQty.toLocaleString();
+  const percent = progress.percent === null ? '—' : `${progress.percent}%`;
+
+  return `${sold} / ${target} • Rem ${remaining} • ${percent}`;
 }
 
 function formatShortDate(value: Date | null) {
@@ -881,15 +896,57 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                             {target.itemName}
                           </div>
                           <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
-                            {target.itemCode && <RecordChip>{target.itemCode}</RecordChip>}
+                            {target.itemCodes.length > 0 ? (
+                              <RecordChip>
+                                {target.itemCodes.length} code
+                                {target.itemCodes.length === 1 ? '' : 's'}
+                              </RecordChip>
+                            ) : target.itemCode ? (
+                              <RecordChip>{target.itemCode}</RecordChip>
+                            ) : null}
                             <RecordChip>{target.status}</RecordChip>
+                            {target.startDate && (
+                              <RecordChip>Start {formatShortDate(target.startDate)}</RecordChip>
+                            )}
+                          </div>
+                        </div>
+                        <div className='flex flex-col items-end gap-1 text-right'>
+                          <Badge className='border-white/10 bg-white/5 text-zinc-100'>
+                            Order {target.displayOrder}
+                          </Badge>
+                          <div className='text-[11px] uppercase tracking-[0.2em] text-zinc-400'>
+                            Last import
+                          </div>
+                          <div className='text-xs text-zinc-200'>
+                            {formatDateTime(target.lastImportAt)}
                           </div>
                         </div>
                       </div>
-                      <div className='mt-3 grid grid-cols-3 gap-2 text-xs text-zinc-300'>
-                        <StatBlock label='Daily' value={formatTarget(target.dailyTarget)} />
-                        <StatBlock label='Weekly' value={formatTarget(target.weeklyTarget)} />
-                        <StatBlock label='Monthly' value={formatTarget(target.monthlyTarget)} />
+
+                      {!target.daily.dataAvailable &&
+                      !target.weekly.dataAvailable &&
+                      !target.monthly.dataAvailable ? (
+                        <div className='mt-3'>
+                          <EmptySection message='Sales data not imported for the selected period.' />
+                        </div>
+                      ) : null}
+
+                      <div className='mt-3 grid grid-cols-1 gap-2 text-xs text-zinc-300 xl:grid-cols-3'>
+                        <StatBlock
+                          label='Daily'
+                          value={formatProgress(target.daily)}
+                          tone={target.daily.dataAvailable ? 'emerald' : 'zinc'}
+                        />
+                        <StatBlock
+                          label='Weekly'
+                          value={formatProgress(target.weekly)}
+                          tone={target.weekly.dataAvailable ? 'amber' : 'zinc'}
+                        />
+                        <StatBlock
+                          label='Monthly'
+                          value={formatProgress(target.monthly)}
+                          tone={target.monthly.dataAvailable ? 'emerald' : 'zinc'}
+                        />
                       </div>
                     </div>
                   ))}

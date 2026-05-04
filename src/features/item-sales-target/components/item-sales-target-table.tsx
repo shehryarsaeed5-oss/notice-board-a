@@ -26,6 +26,9 @@ interface ItemSalesTargetTableProps {
 type ItemSalesTargetSortKey =
   | 'itemName'
   | 'itemCode'
+  | 'displayOrder'
+  | 'startDate'
+  | 'endDate'
   | 'dailyTarget'
   | 'weeklyTarget'
   | 'monthlyTarget'
@@ -57,6 +60,13 @@ function formatDate(value: Date) {
   return format(value, 'MMM d, yyyy');
 }
 
+function formatDateRange(startDate: Date | null, endDate: Date | null) {
+  const start = startDate ? formatDate(startDate) : '—';
+  const end = endDate ? formatDate(endDate) : '—';
+
+  return `${start} → ${end}`;
+}
+
 export function ItemSalesTargetTable({ itemSalesTargets }: ItemSalesTargetTableProps) {
   const [sort, setSort] = useState<SortState<ItemSalesTargetSortKey> | null>(null);
 
@@ -68,6 +78,12 @@ export function ItemSalesTargetTable({ itemSalesTargets }: ItemSalesTargetTableP
             return target.itemName;
           case 'itemCode':
             return target.itemCode;
+          case 'displayOrder':
+            return target.displayOrder;
+          case 'startDate':
+            return target.startDate;
+          case 'endDate':
+            return target.endDate;
           case 'dailyTarget':
             return target.dailyTarget;
           case 'weeklyTarget':
@@ -105,11 +121,24 @@ export function ItemSalesTargetTable({ itemSalesTargets }: ItemSalesTargetTableP
                   onSort={handleSort}
                 />
                 <SortableTableHead
-                  label='Item Code'
+                  label='Item Codes'
                   sortKey='itemCode'
                   sort={sort}
                   onSort={handleSort}
                 />
+                <SortableTableHead
+                  label='Order'
+                  sortKey='displayOrder'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Start'
+                  sortKey='startDate'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead label='End' sortKey='endDate' sort={sort} onSort={handleSort} />
                 <SortableTableHead
                   label='Daily Target'
                   sortKey='dailyTarget'
@@ -146,7 +175,7 @@ export function ItemSalesTargetTable({ itemSalesTargets }: ItemSalesTargetTableP
             <TableBody>
               {sortedItemSalesTargets.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className='text-muted-foreground h-24 text-center'>
+                  <TableCell colSpan={11} className='text-muted-foreground h-24 text-center'>
                     No item sales targets found.
                   </TableCell>
                 </TableRow>
@@ -154,7 +183,14 @@ export function ItemSalesTargetTable({ itemSalesTargets }: ItemSalesTargetTableP
                 sortedItemSalesTargets.map((target) => (
                   <TableRow key={target.id}>
                     <TableCell className='font-medium'>{target.itemName}</TableCell>
-                    <TableCell>{target.itemCode ?? '—'}</TableCell>
+                    <TableCell className='max-w-[18rem] truncate'>
+                      {target.itemCodes.length > 0
+                        ? target.itemCodes.join(', ')
+                        : (target.itemCode ?? '—')}
+                    </TableCell>
+                    <TableCell>{target.displayOrder}</TableCell>
+                    <TableCell>{target.startDate ? formatDate(target.startDate) : '—'}</TableCell>
+                    <TableCell>{target.endDate ? formatDate(target.endDate) : '—'}</TableCell>
                     <TableCell>{formatTarget(target.dailyTarget)}</TableCell>
                     <TableCell>{formatTarget(target.weeklyTarget)}</TableCell>
                     <TableCell>{formatTarget(target.monthlyTarget)}</TableCell>
