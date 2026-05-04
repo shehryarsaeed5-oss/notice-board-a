@@ -6,6 +6,7 @@ import type {
   ItemSalesTargetDisplaySummaryResult,
   ItemSalesTargetProgress
 } from '../api/types';
+import { resolveStoredSalesRowBreakdown } from './row-metrics';
 import {
   enumerateBusinessDateKeys,
   getBusinessMonthStartKey,
@@ -125,7 +126,10 @@ function sumRowsForTarget(
       : entry.batch.importedAt;
 
     const matchingRows = entry.rows.filter((row) => matchesTargetRow(target, row));
-    soldQty += matchingRows.reduce((total, row) => total + (Number(row.quantitySold) || 0), 0);
+    soldQty += matchingRows.reduce(
+      (total, row) => total + resolveStoredSalesRowBreakdown(row).paidQty,
+      0
+    );
   }
 
   return {

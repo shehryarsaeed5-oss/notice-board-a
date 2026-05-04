@@ -12,12 +12,18 @@ export const itemSalesImportDateSchema = z.object({
 export const itemSalesImportRangeSchema = z
   .object({
     fromDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a valid start date'),
-    toDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a valid end date')
+    toDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a valid end date'),
+    forceReplace: z.boolean().default(false)
   })
   .refine((value) => value.fromDate <= value.toDate, {
     message: 'End date cannot be before start date',
     path: ['toDate']
   });
 
+export const itemSalesImportRunOptionsSchema = z.object({
+  forceReplace: z.boolean().default(false)
+});
+
 export type ItemSalesImportSettingsFormValues = z.infer<typeof itemSalesImportSettingsSchema>;
 export type ItemSalesImportRangeFormValues = z.infer<typeof itemSalesImportRangeSchema>;
+export type ItemSalesImportRunOptionsFormValues = z.infer<typeof itemSalesImportRunOptionsSchema>;

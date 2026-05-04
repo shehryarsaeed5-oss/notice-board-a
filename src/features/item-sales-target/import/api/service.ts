@@ -19,6 +19,7 @@ import {
   readItemSalesImportFileBuffer
 } from '../lib/file-scan';
 import { parseSalesImportWorkbook } from '../lib/parser';
+import { resolveStoredSalesRowBreakdown } from '../lib/row-metrics';
 import { buildItemSalesTargetDisplaySummary } from '../lib/calculations';
 import type {
   ItemSalesImportBatchRecord,
@@ -135,11 +136,38 @@ function toRowRecord(row: {
   itemName: string;
   categoryName: string | null;
   uom: string | null;
+  totalQty: number;
+  paidQty: number;
+  focQty: number;
+  discountAmount: number | null;
+  paidAmount: number | null;
+  netValue: number | null;
+  taxValue: number | null;
+  salesValue: number | null;
+  costValue: number | null;
+  marginValue: number | null;
+  percentTotalSales: number | null;
   quantitySold: number;
   amountPaid: number | null;
   rawData: unknown;
   createdAt: Date;
 }): ItemSalesImportRowRecord {
+  const breakdown = resolveStoredSalesRowBreakdown({
+    totalQty: row.totalQty,
+    paidQty: row.paidQty,
+    focQty: row.focQty,
+    quantitySold: row.quantitySold,
+    amountPaid: row.amountPaid,
+    discountAmount: row.discountAmount,
+    paidAmount: row.paidAmount,
+    netValue: row.netValue,
+    taxValue: row.taxValue,
+    salesValue: row.salesValue,
+    costValue: row.costValue,
+    marginValue: row.marginValue,
+    percentTotalSales: row.percentTotalSales
+  });
+
   return {
     id: row.id,
     importBatchId: row.importBatchId,
@@ -148,8 +176,19 @@ function toRowRecord(row: {
     itemName: row.itemName,
     categoryName: row.categoryName,
     uom: row.uom,
-    quantitySold: Number(row.quantitySold) || 0,
-    amountPaid: row.amountPaid,
+    totalQty: breakdown.totalQty,
+    paidQty: breakdown.paidQty,
+    focQty: breakdown.focQty,
+    discountAmount: breakdown.discountAmount,
+    paidAmount: breakdown.paidAmount,
+    netValue: breakdown.netValue,
+    taxValue: breakdown.taxValue,
+    salesValue: breakdown.salesValue,
+    costValue: breakdown.costValue,
+    marginValue: breakdown.marginValue,
+    percentTotalSales: breakdown.percentTotalSales,
+    quantitySold: breakdown.quantitySold,
+    amountPaid: breakdown.amountPaid,
     rawData:
       row.rawData && typeof row.rawData === 'object' && !Array.isArray(row.rawData)
         ? (row.rawData as Record<string, unknown>)
@@ -269,6 +308,17 @@ async function getRowsForBatch(batchId: string) {
   return rows.map(toRowRecord);
 }
 
+async function removeImportBatchesForBusinessDate(
+  tx: Prisma.TransactionClient,
+  businessDateKey: string
+) {
+  await tx.itemSalesImportBatch.deleteMany({
+    where: {
+      businessDateKey
+    }
+  });
+}
+
 async function listRecentImports(limit = 10) {
   const batches = await prisma.itemSalesImportBatch.findMany({
     orderBy: [{ importedAt: 'desc' }, { createdAt: 'desc' }],
@@ -328,8 +378,10 @@ async function getActiveTargets() {
 }
 
 async function importFileForBusinessDate(
-  businessDateKey: string
+  businessDateKey: string,
+  options: { forceReplace?: boolean } = {}
 ): Promise<ItemSalesImportRunSummary> {
+  const forceReplace = options.forceReplace === true;
   const setting = await getImportMonitor();
 
   if (!setting.sharedFolderPath) {
@@ -413,7 +465,7 @@ async function importFileForBusinessDate(
     where: { fileHash }
   });
 
-  if (existing) {
+  if (existing && !forceReplace) {
     const message = `Already imported ${candidate.fileName}.`;
 
     await persistImportOutcome({
@@ -447,43 +499,51 @@ async function importFileForBusinessDate(
     rowsSkipped: parsed.rowsSkipped
   };
 
-  if (parsed.rowsImported <= 0) {
-    const batch = await prisma.itemSalesImportBatch.create({
-      data: {
-        sourceFilename: candidate.fileName,
-        sourcePath: candidate.filePath,
-        reportDate,
-        businessDateKey,
-        fileHash,
-        status: 'EMPTY',
-        rowCount: 0,
-        rawMetadata: metadata
-      }
-    });
+  if (parsed.rowsImported <= 0 && forceReplace) {
+    const message = `Force re-import of ${candidate.fileName} found no valid rows. Existing data was kept.`;
 
     await persistImportOutcome({
-      lastImportAt: batch.importedAt,
+      lastImportAt: new Date(),
       lastImportStatus: 'EMPTY',
-      lastImportMessage: `Imported ${candidate.fileName} but no valid rows were found.`,
+      lastImportMessage: message,
       lastImportCount: 0
     });
 
-    await invalidateDisplayBoardCache();
-
     return {
       status: 'EMPTY',
-      message: `Imported ${candidate.fileName} but no valid rows were found.`,
+      message,
       businessDateKey,
       sourceFilename: candidate.fileName,
       sourcePath: candidate.filePath,
       rowsRead: parsed.rowsRead,
       rowsImported: 0,
       rowsSkipped: parsed.rowsSkipped,
-      batchId: batch.id
+      batchId: null
     };
   }
 
   const result = await prisma.$transaction(async (tx) => {
+    if (forceReplace) {
+      await removeImportBatchesForBusinessDate(tx, businessDateKey);
+    }
+
+    if (parsed.rowsImported <= 0) {
+      const batch = await tx.itemSalesImportBatch.create({
+        data: {
+          sourceFilename: candidate.fileName,
+          sourcePath: candidate.filePath,
+          reportDate,
+          businessDateKey,
+          fileHash,
+          status: 'EMPTY',
+          rowCount: 0,
+          rawMetadata: metadata
+        }
+      });
+
+      return batch;
+    }
+
     const batch = await tx.itemSalesImportBatch.create({
       data: {
         sourceFilename: candidate.fileName,
@@ -505,6 +565,17 @@ async function importFileForBusinessDate(
         itemName: row.itemName,
         categoryName: row.categoryName,
         uom: row.uom,
+        totalQty: row.totalQty,
+        paidQty: row.paidQty,
+        focQty: row.focQty,
+        discountAmount: row.discountAmount,
+        paidAmount: row.paidAmount,
+        netValue: row.netValue,
+        taxValue: row.taxValue,
+        salesValue: row.salesValue,
+        costValue: row.costValue,
+        marginValue: row.marginValue,
+        percentTotalSales: row.percentTotalSales,
         quantitySold: row.quantitySold,
         amountPaid: row.amountPaid,
         rawData: row.rawData as Prisma.InputJsonValue
@@ -513,6 +584,29 @@ async function importFileForBusinessDate(
 
     return batch;
   });
+
+  if (parsed.rowsImported <= 0) {
+    await persistImportOutcome({
+      lastImportAt: result.importedAt,
+      lastImportStatus: 'EMPTY',
+      lastImportMessage: `Imported ${candidate.fileName} but no valid rows were found.`,
+      lastImportCount: 0
+    });
+
+    await invalidateDisplayBoardCache();
+
+    return {
+      status: 'EMPTY',
+      message: `Imported ${candidate.fileName} but no valid rows were found.`,
+      businessDateKey,
+      sourceFilename: candidate.fileName,
+      sourcePath: candidate.filePath,
+      rowsRead: parsed.rowsRead,
+      rowsImported: 0,
+      rowsSkipped: parsed.rowsSkipped,
+      batchId: result.id
+    };
+  }
 
   await persistImportOutcome({
     lastImportAt: result.importedAt,
@@ -537,6 +631,12 @@ async function importFileForBusinessDate(
 }
 
 export async function runItemSalesImportToday(): Promise<ItemSalesImportRunSummary> {
+  return runItemSalesImportTodayWithOptions();
+}
+
+export async function runItemSalesImportTodayWithOptions(
+  options: { forceReplace?: boolean } = {}
+): Promise<ItemSalesImportRunSummary> {
   const systemSettings = await getSystemSettings();
   const context = createBusinessDateContext(
     new Date(),
@@ -544,14 +644,19 @@ export async function runItemSalesImportToday(): Promise<ItemSalesImportRunSumma
     systemSettings.values.businessDayCutoffHour
   );
 
-  return importFileForBusinessDate(context.businessDateKey);
+  return importFileForBusinessDate(context.businessDateKey, options);
 }
 
-export async function runItemSalesImportRange(fromDate: string, toDate: string) {
+export async function runItemSalesImportRange(
+  fromDate: string,
+  toDate: string,
+  options: { forceReplace?: boolean } = {}
+) {
   const start = normalizeText(fromDate);
   const end = normalizeText(toDate);
   const errors: Array<{ businessDateKey: string; message: string }> = [];
   const results: ItemSalesImportRunSummary[] = [];
+  const forceReplace = options.forceReplace === true;
 
   if (!start || !end) {
     throw new Error('Start date and end date are required.');
@@ -568,7 +673,7 @@ export async function runItemSalesImportRange(fromDate: string, toDate: string) 
     const businessDateKey = formatBusinessDateKey(current);
 
     try {
-      results.push(await importFileForBusinessDate(businessDateKey));
+      results.push(await importFileForBusinessDate(businessDateKey, { forceReplace }));
     } catch (error) {
       errors.push({
         businessDateKey,

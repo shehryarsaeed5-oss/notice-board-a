@@ -24,6 +24,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const result = await runItemSalesImportRange(parsed.data.fromDate, parsed.data.toDate);
+  const result = await runItemSalesImportRange(parsed.data.fromDate, parsed.data.toDate, {
+    forceReplace: parsed.data.forceReplace
+  });
   return NextResponse.json({ result });
 }

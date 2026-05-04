@@ -1,10 +1,23 @@
 import * as XLSX from 'xlsx';
 
+import { deriveSalesRowBreakdown } from './row-metrics';
+
 export interface SalesImportParsedRow {
   itemCode: string | null;
   itemName: string;
   categoryName: string | null;
   uom: string | null;
+  totalQty: number;
+  paidQty: number;
+  focQty: number;
+  discountAmount: number | null;
+  paidAmount: number | null;
+  netValue: number | null;
+  taxValue: number | null;
+  salesValue: number | null;
+  costValue: number | null;
+  marginValue: number | null;
+  percentTotalSales: number | null;
   quantitySold: number;
   amountPaid: number | null;
   rawData: Record<string, unknown>;
@@ -34,6 +47,35 @@ function normalizeOptionalNumber(value: unknown): number | null {
 
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function normalizeOptionalDecimal(value: unknown): number | null {
+  const normalized = normalizeCell(value).replace(/,/g, '').replace(/%$/g, '');
+
+  if (!normalized) {
+    return null;
+  }
+
+  const parsed = Number(normalized);
+
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+type PositionLayout = 'compact' | 'spread';
+
+function detectPositionLayout(row: string[]): PositionLayout {
+  const hasSpreadColumns =
+    row.length >= 14 &&
+    (normalizeCell(row[11]) !== '' ||
+      normalizeCell(row[12]) !== '' ||
+      normalizeCell(row[13]) !== '' ||
+      normalizeCell(row[14]) !== '');
+
+  if (hasSpreadColumns) {
+    return 'spread';
+  }
+
+  return 'compact';
 }
 
 function isEmptyRow(values: string[]) {
@@ -102,30 +144,47 @@ function parseRowByHeader(row: string[], headers: string[]): SalesImportParsedRo
     /\bdescription\b/,
     /\bproduct\b/
   ]);
-  const categoryIndex = findColumnIndex(headers, [/category/]);
+  const categoryIndex = findColumnIndex(headers, [/item\s*class/, /category/]);
   const uomIndex = findColumnIndex(headers, [/\buom\b/, /unit\s*of\s*measure/, /^unit$/]);
-  const quantityIndex = findColumnIndex(headers, [
+  const totalQtyIndex = findColumnIndex(headers, [
+    /total\s*qty/,
+    /total\s*quantity/,
     /quantity\s*sold/,
-    /\bquantity\b/,
     /\bqty\b/,
     /sold/
   ]);
-  const amountPaidIndex = findColumnIndex(headers, [
-    /amount\s*paid/,
-    /paid\s*amount/,
-    /\bamount\b/,
-    /sales/,
-    /net/
-  ]);
+  const discountAmountIndex = findColumnIndex(headers, [/discount/]);
+  const paidAmountIndex = findColumnIndex(headers, [/paid\s*amount/, /net\s*value/, /\bpaid\b/]);
+  const taxValueIndex = findColumnIndex(headers, [/tax/]);
+  const salesValueIndex = findColumnIndex(headers, [/sales\s*value/, /\bsales\b/]);
+  const costValueIndex = findColumnIndex(headers, [/cost/]);
+  const marginValueIndex = findColumnIndex(headers, [/margin/]);
+  const percentTotalSalesIndex = findColumnIndex(headers, [/%.*total\s*sales/, /percent.*sales/]);
 
   const itemCode = normalizeCell(row[itemCodeIndex]);
   const itemName = normalizeCell(row[itemNameIndex]);
   const categoryName = normalizeCell(row[categoryIndex]);
   const uom = normalizeCell(row[uomIndex]);
-  const quantitySold = normalizeOptionalNumber(row[quantityIndex]);
-  const amountPaid = normalizeOptionalNumber(row[amountPaidIndex]);
+  const totalQty = normalizeOptionalNumber(row[totalQtyIndex]);
+  const discountAmount = normalizeOptionalDecimal(row[discountAmountIndex]);
+  const paidAmount = normalizeOptionalDecimal(row[paidAmountIndex]);
+  const taxValue = normalizeOptionalDecimal(row[taxValueIndex]);
+  const salesValue = normalizeOptionalDecimal(row[salesValueIndex]);
+  const costValue = normalizeOptionalDecimal(row[costValueIndex]);
+  const marginValue = normalizeOptionalDecimal(row[marginValueIndex]);
+  const percentTotalSales = normalizeOptionalDecimal(row[percentTotalSalesIndex]);
+  const breakdown = deriveSalesRowBreakdown({
+    totalQty,
+    discountAmount,
+    paidAmount,
+    taxValue,
+    salesValue,
+    costValue,
+    marginValue,
+    percentTotalSales
+  });
 
-  if (!itemName || quantitySold === null) {
+  if (!itemName || totalQty === null) {
     return null;
   }
 
@@ -134,15 +193,35 @@ function parseRowByHeader(row: string[], headers: string[]): SalesImportParsedRo
     itemName,
     categoryName: categoryName || null,
     uom: uom || null,
-    quantitySold,
-    amountPaid,
+    totalQty: breakdown.totalQty,
+    paidQty: breakdown.paidQty,
+    focQty: breakdown.focQty,
+    discountAmount: breakdown.discountAmount,
+    paidAmount: breakdown.paidAmount,
+    netValue: breakdown.netValue,
+    taxValue: breakdown.taxValue,
+    salesValue: breakdown.salesValue,
+    costValue: breakdown.costValue,
+    marginValue: breakdown.marginValue,
+    percentTotalSales: breakdown.percentTotalSales,
+    quantitySold: breakdown.quantitySold,
+    amountPaid: breakdown.amountPaid,
     rawData: {
       itemCode,
       itemName,
       categoryName,
       uom,
-      quantitySold,
-      amountPaid
+      totalQty: breakdown.totalQty,
+      paidQty: breakdown.paidQty,
+      focQty: breakdown.focQty,
+      discountAmount: breakdown.discountAmount,
+      paidAmount: breakdown.paidAmount,
+      netValue: breakdown.netValue,
+      taxValue: breakdown.taxValue,
+      salesValue: breakdown.salesValue,
+      costValue: breakdown.costValue,
+      marginValue: breakdown.marginValue,
+      percentTotalSales: breakdown.percentTotalSales
     }
   };
 }
@@ -150,29 +229,71 @@ function parseRowByHeader(row: string[], headers: string[]): SalesImportParsedRo
 function parseRowByPosition(row: string[]): SalesImportParsedRow | null {
   const itemCode = normalizeCell(row[0]);
   const itemName = normalizeCell(row[1]);
-  const categoryName = normalizeCell(row[2]);
-  const uom = normalizeCell(row[3]);
-  const quantitySold = normalizeOptionalNumber(row[4]);
-  const amountPaid = normalizeOptionalNumber(row[5]);
+  const layout = detectPositionLayout(row);
+  const uom = normalizeCell(row[2]);
+  const totalQty = normalizeOptionalNumber(row[3]);
+  const discountAmount = normalizeOptionalDecimal(row[4]);
+  const paidAmount = normalizeOptionalDecimal(row[5]);
+  const taxValue = normalizeOptionalDecimal(row[6]);
+  const salesValue =
+    layout === 'spread' ? normalizeOptionalDecimal(row[8]) : normalizeOptionalDecimal(row[7]);
+  const costValue =
+    layout === 'spread' ? normalizeOptionalDecimal(row[11]) : normalizeOptionalDecimal(row[8]);
+  const marginValue =
+    layout === 'spread' ? normalizeOptionalDecimal(row[12]) : normalizeOptionalDecimal(row[9]);
+  const percentTotalSales =
+    layout === 'spread'
+      ? normalizeOptionalDecimal(row[13] || row[14])
+      : normalizeOptionalDecimal(row[10]);
+  const breakdown = deriveSalesRowBreakdown({
+    totalQty,
+    discountAmount,
+    paidAmount,
+    taxValue,
+    salesValue,
+    costValue,
+    marginValue,
+    percentTotalSales
+  });
 
-  if (!itemName || quantitySold === null) {
+  if (!itemName || totalQty === null) {
     return null;
   }
 
   return {
     itemCode: itemCode || null,
     itemName,
-    categoryName: categoryName || null,
+    categoryName: null,
     uom: uom || null,
-    quantitySold,
-    amountPaid,
+    totalQty: breakdown.totalQty,
+    paidQty: breakdown.paidQty,
+    focQty: breakdown.focQty,
+    discountAmount: breakdown.discountAmount,
+    paidAmount: breakdown.paidAmount,
+    netValue: breakdown.netValue,
+    taxValue: breakdown.taxValue,
+    salesValue: breakdown.salesValue,
+    costValue: breakdown.costValue,
+    marginValue: breakdown.marginValue,
+    percentTotalSales: breakdown.percentTotalSales,
+    quantitySold: breakdown.quantitySold,
+    amountPaid: breakdown.amountPaid,
     rawData: {
       itemCode,
       itemName,
-      categoryName,
+      categoryName: null,
       uom,
-      quantitySold,
-      amountPaid
+      totalQty: breakdown.totalQty,
+      paidQty: breakdown.paidQty,
+      focQty: breakdown.focQty,
+      discountAmount: breakdown.discountAmount,
+      paidAmount: breakdown.paidAmount,
+      netValue: breakdown.netValue,
+      taxValue: breakdown.taxValue,
+      salesValue: breakdown.salesValue,
+      costValue: breakdown.costValue,
+      marginValue: breakdown.marginValue,
+      percentTotalSales: breakdown.percentTotalSales
     }
   };
 }

@@ -31,6 +31,12 @@ export async function ItemSalesTargetPage({ search, status }: ItemSalesTargetPag
               Import Settings
             </Link>
           </Button>
+          <Button asChild variant='outline'>
+            <Link href='/dashboard/item-sales-target/history'>
+              <Icons.clock className='mr-2 h-4 w-4' />
+              Daily History
+            </Link>
+          </Button>
           <ItemSalesTargetFormSheetTrigger />
         </div>
       }

@@ -49,6 +49,18 @@ function formatDate(value: Date | null | undefined) {
   return value ? format(value, 'MMM d, yyyy') : '—';
 }
 
+function formatMoney(value: number | null | undefined) {
+  return value === null || value === undefined
+    ? '—'
+    : value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+}
+
+function formatPercent(value: number | null | undefined) {
+  return value === null || value === undefined
+    ? '—'
+    : `${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}%`;
+}
+
 function statusTone(status: string | null) {
   switch (status) {
     case 'COMPLETED':
@@ -96,36 +108,50 @@ function SectionCard({
 
 function PreviewTable({ rows }: { rows: ItemSalesImportRowRecord[] }) {
   return (
-    <div className='overflow-hidden rounded-2xl border border-border bg-card'>
-      <Table>
+    <div className='overflow-x-auto rounded-2xl border border-border bg-card'>
+      <Table className='min-w-[1400px]'>
         <TableHeader className='bg-muted/50'>
           <TableRow>
-            <TableHead>Item Code</TableHead>
-            <TableHead>Item Name</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>UOM</TableHead>
-            <TableHead className='text-right'>Qty</TableHead>
-            <TableHead className='text-right'>Amount</TableHead>
+            <TableHead className='min-w-44'>Item Class / Category</TableHead>
+            <TableHead className='min-w-36'>Item Code</TableHead>
+            <TableHead className='min-w-56'>Item Name</TableHead>
+            <TableHead className='min-w-24'>UOM</TableHead>
+            <TableHead className='min-w-28 text-right'>Total Qty</TableHead>
+            <TableHead className='min-w-28 text-right'>Paid Qty</TableHead>
+            <TableHead className='min-w-28 text-right'>FOC Qty</TableHead>
+            <TableHead className='min-w-36 text-right'>Discount Amount</TableHead>
+            <TableHead className='min-w-32 text-right'>Paid Amount</TableHead>
+            <TableHead className='min-w-28 text-right'>Tax</TableHead>
+            <TableHead className='min-w-32 text-right'>Sales Value</TableHead>
+            <TableHead className='min-w-28 text-right'>Cost</TableHead>
+            <TableHead className='min-w-28 text-right'>Margin</TableHead>
+            <TableHead className='min-w-36 text-right'>% Of Total Sales</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rows.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className='h-24 text-center text-muted-foreground'>
+              <TableCell colSpan={14} className='h-24 text-center text-muted-foreground'>
                 No preview rows available for the selected date.
               </TableCell>
             </TableRow>
           ) : (
             rows.map((row) => (
               <TableRow key={row.id}>
+                <TableCell>{row.categoryName ?? '—'}</TableCell>
                 <TableCell className='font-medium'>{row.itemCode ?? '—'}</TableCell>
                 <TableCell>{row.itemName}</TableCell>
-                <TableCell>{row.categoryName ?? '—'}</TableCell>
                 <TableCell>{row.uom ?? '—'}</TableCell>
-                <TableCell className='text-right'>{row.quantitySold.toLocaleString()}</TableCell>
-                <TableCell className='text-right'>
-                  {row.amountPaid === null ? '—' : row.amountPaid.toLocaleString()}
-                </TableCell>
+                <TableCell className='text-right'>{row.totalQty.toLocaleString()}</TableCell>
+                <TableCell className='text-right'>{row.paidQty.toLocaleString()}</TableCell>
+                <TableCell className='text-right'>{row.focQty.toLocaleString()}</TableCell>
+                <TableCell className='text-right'>{formatMoney(row.discountAmount)}</TableCell>
+                <TableCell className='text-right'>{formatMoney(row.paidAmount)}</TableCell>
+                <TableCell className='text-right'>{formatMoney(row.taxValue)}</TableCell>
+                <TableCell className='text-right'>{formatMoney(row.salesValue)}</TableCell>
+                <TableCell className='text-right'>{formatMoney(row.costValue)}</TableCell>
+                <TableCell className='text-right'>{formatMoney(row.marginValue)}</TableCell>
+                <TableCell className='text-right'>{formatPercent(row.percentTotalSales)}</TableCell>
               </TableRow>
             ))
           )}
@@ -190,6 +216,7 @@ export function ItemSalesImportPage({
   const [selectedDate, setSelectedDate] = useState(initialOverview.selectedDate);
   const [fromDate, setFromDate] = useState(initialOverview.selectedDate);
   const [toDate, setToDate] = useState(initialOverview.selectedDate);
+  const [forceReplace, setForceReplace] = useState(false);
 
   useEffect(() => {
     setSelectedDate(initialOverview.selectedDate);
@@ -271,7 +298,7 @@ export function ItemSalesImportPage({
   };
 
   const runRangeImport = async () => {
-    const parsed = itemSalesImportRangeSchema.safeParse({ fromDate, toDate });
+    const parsed = itemSalesImportRangeSchema.safeParse({ fromDate, toDate, forceReplace });
 
     if (!parsed.success) {
       toast.error('Please fix the range dates');
@@ -346,11 +373,31 @@ export function ItemSalesImportPage({
             </div>
 
             <div className='flex flex-wrap gap-2'>
-              <Button type='button' onClick={() => void todayMutation.mutateAsync()}>
+              <Button
+                type='button'
+                onClick={() => void todayMutation.mutateAsync({ forceReplace })}
+              >
                 <Icons.refresh className='mr-2 h-4 w-4' />
                 Import Today
               </Button>
             </div>
+
+            <label className='flex items-start gap-3 rounded-2xl border border-border bg-muted/30 px-4 py-3 text-sm text-foreground'>
+              <input
+                type='checkbox'
+                checked={forceReplace}
+                onChange={(event) => setForceReplace(event.target.checked)}
+                className='mt-1 h-4 w-4 rounded border-border text-primary focus:ring-primary'
+              />
+              <span className='space-y-1'>
+                <span className='block font-medium'>
+                  Re-import existing files / Replace existing imported data
+                </span>
+                <span className='block text-xs text-muted-foreground'>
+                  Use this after parser fixes or when imported rows need to be rebuilt.
+                </span>
+              </span>
+            </label>
 
             <div className='grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end'>
               <div className='space-y-2'>

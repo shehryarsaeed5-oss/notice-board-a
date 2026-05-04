@@ -1,4 +1,5 @@
 import type { RecordStatus } from '@/features/display-board/api/types';
+import type { ItemSalesTargetRecord } from '../../api/types';
 
 export const ITEM_SALES_IMPORT_STATUSES = ['COMPLETED', 'EMPTY', 'FAILED', 'SKIPPED'] as const;
 
@@ -51,6 +52,17 @@ export interface ItemSalesImportRowRecord {
   itemName: string;
   categoryName: string | null;
   uom: string | null;
+  totalQty: number;
+  paidQty: number;
+  focQty: number;
+  discountAmount: number | null;
+  paidAmount: number | null;
+  netValue: number | null;
+  taxValue: number | null;
+  salesValue: number | null;
+  costValue: number | null;
+  marginValue: number | null;
+  percentTotalSales: number | null;
   quantitySold: number;
   amountPaid: number | null;
   rawData: Record<string, unknown> | null;
@@ -108,4 +120,49 @@ export interface ItemSalesTargetDisplaySummaryResult {
   latestImportAt: Date | null;
   items: ItemSalesTargetDisplaySummaryItem[];
   total: number;
+}
+
+export type ItemSalesTargetDailyHistoryStatus = 'IMPORTED' | 'MISSING' | 'NO_TARGET';
+
+export interface ItemSalesTargetDailyHistoryRow {
+  date: Date;
+  businessDateKey: string;
+  targetName: string;
+  itemCodes: string[];
+  dailyTarget: number | null;
+  totalQty: number;
+  paidQty: number;
+  focQty: number;
+  soldQty: number;
+  remainingQty: number | null;
+  percent: number | null;
+  paidAmount: number | null;
+  discountAmount: number | null;
+  importStatus: ItemSalesTargetDailyHistoryStatus;
+  batchStatus: string | null;
+  sourceFilename: string | null;
+  lastImportedAt: Date | null;
+}
+
+export interface ItemSalesTargetDailyHistorySummary {
+  totalSold: number;
+  totalDailyTarget: number;
+  averagePercent: number | null;
+  bestDay: {
+    businessDateKey: string;
+    date: Date;
+    soldQty: number;
+    percent: number | null;
+  } | null;
+  missingImportDays: number;
+}
+
+export interface ItemSalesTargetDailyHistoryOverview {
+  targets: ItemSalesTargetRecord[];
+  selectedTargetId: string | null;
+  selectedTarget: ItemSalesTargetRecord | null;
+  fromDate: string;
+  toDate: string;
+  rows: ItemSalesTargetDailyHistoryRow[];
+  summary: ItemSalesTargetDailyHistorySummary;
 }

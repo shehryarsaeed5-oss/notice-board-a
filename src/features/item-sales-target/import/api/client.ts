@@ -42,13 +42,16 @@ export function saveItemSalesImportSettings(values: ItemSalesImportSettingsFormV
   });
 }
 
-export function runItemSalesImportToday() {
+export function runItemSalesImportToday(values?: { forceReplace?: boolean }) {
   return requestJson<{ result: ItemSalesImportRunSummary }>('/api/item-sales/import/today', {
-    method: 'POST'
+    method: 'POST',
+    body: JSON.stringify(values)
   });
 }
 
-export function runItemSalesImportRange(values: ItemSalesImportRangeFormValues) {
+export function runItemSalesImportRange(
+  values: ItemSalesImportRangeFormValues & { forceReplace?: boolean }
+) {
   return requestJson<{
     result: {
       results: ItemSalesImportRunSummary[];

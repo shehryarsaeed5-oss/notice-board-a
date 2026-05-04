@@ -302,18 +302,29 @@ model ItemSalesTarget {
     @@index([rowCount])
   }
 
-  model ItemSalesImportRow {
-    id              String   @id @default(cuid())
-    importBatchId   String
-    businessDateKey String
-    itemCode        String?
-    itemName        String
-    categoryName    String?
-    uom             String?
-    quantitySold    Float    @default(0)
-    amountPaid      Float?
-    rawData         Json?
-    createdAt       DateTime @default(now())
+model ItemSalesImportRow {
+    id                String   @id @default(cuid())
+    importBatchId     String
+    businessDateKey   String
+    itemCode          String?
+    itemName          String
+    categoryName      String?
+    uom               String?
+    totalQty          Float    @default(0)
+    paidQty           Float    @default(0)
+    focQty            Float    @default(0)
+    discountAmount    Float?
+    paidAmount        Float?
+    netValue          Float?
+    taxValue          Float?
+    salesValue        Float?
+    costValue         Float?
+    marginValue       Float?
+    percentTotalSales  Float?
+    quantitySold      Float    @default(0)
+    amountPaid        Float?
+    rawData           Json?
+    createdAt         DateTime @default(now())
 
     importBatch ItemSalesImportBatch @relation(fields: [importBatchId], references: [id], onDelete: Cascade)
 
