@@ -16,18 +16,13 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
 import { Textarea } from '@/components/ui/textarea';
 import { Icons } from '@/components/icons';
 import { saveAttendance } from '../api/client';
 import type { AttendanceStatus, AttendanceType } from '../api/types';
+import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 
 const STATUS_OPTIONS: AttendanceStatus[] = ['PRESENT', 'ABSENT', 'LEAVE', 'LATE'];
 
@@ -40,6 +35,8 @@ type AttendanceRow = {
   status: AttendanceStatus;
   remarks: string;
 };
+
+type AttendanceSortKey = 'name' | 'designation' | 'department' | 'shift' | 'status' | 'remarks';
 
 interface AttendancePanelProps {
   type: AttendanceType;
@@ -70,10 +67,31 @@ function statusBadgeClass(status: AttendanceStatus) {
 export function AttendancePanel({ type, title, description, rows, date }: AttendancePanelProps) {
   const router = useRouter();
   const [draftRows, setDraftRows] = useState(rows);
+  const [sort, setSort] = useState<SortState<AttendanceSortKey> | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
 
   const empty = draftRows.length === 0;
+  const sortedRows = useMemo(
+    () =>
+      sortRows(draftRows, sort, (row, key) => {
+        switch (key) {
+          case 'name':
+            return row.name;
+          case 'designation':
+            return row.designation;
+          case 'department':
+            return row.department;
+          case 'shift':
+            return row.shift;
+          case 'status':
+            return row.status;
+          case 'remarks':
+            return row.remarks;
+        }
+      }),
+    [draftRows, sort]
+  );
 
   const heading = useMemo(
     () => (type === 'staff' ? 'Staff attendance records' : 'Manager attendance records'),
@@ -94,6 +112,10 @@ export function AttendancePanel({ type, title, description, rows, date }: Attend
         return { ...row, [field]: value };
       })
     );
+  };
+
+  const handleSort = (key: AttendanceSortKey) => {
+    setSort((current) => toggleSort(current, key));
   };
 
   const handleSave = async () => {
@@ -168,16 +190,48 @@ export function AttendancePanel({ type, title, description, rows, date }: Attend
               <Table>
                 <TableHeader className='bg-muted/50'>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Designation</TableHead>
-                    {type === 'staff' && <TableHead>Department</TableHead>}
-                    <TableHead>Shift</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Remarks</TableHead>
+                    <SortableTableHead
+                      label='Name'
+                      sortKey='name'
+                      sort={sort}
+                      onSort={handleSort}
+                    />
+                    <SortableTableHead
+                      label='Designation'
+                      sortKey='designation'
+                      sort={sort}
+                      onSort={handleSort}
+                    />
+                    {type === 'staff' && (
+                      <SortableTableHead
+                        label='Department'
+                        sortKey='department'
+                        sort={sort}
+                        onSort={handleSort}
+                      />
+                    )}
+                    <SortableTableHead
+                      label='Shift'
+                      sortKey='shift'
+                      sort={sort}
+                      onSort={handleSort}
+                    />
+                    <SortableTableHead
+                      label='Status'
+                      sortKey='status'
+                      sort={sort}
+                      onSort={handleSort}
+                    />
+                    <SortableTableHead
+                      label='Remarks'
+                      sortKey='remarks'
+                      sort={sort}
+                      onSort={handleSort}
+                    />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {draftRows.map((row) => (
+                  {sortedRows.map((row) => (
                     <TableRow key={row.id}>
                       <TableCell className='font-medium'>{row.name}</TableCell>
                       <TableCell>{row.designation ?? '—'}</TableCell>

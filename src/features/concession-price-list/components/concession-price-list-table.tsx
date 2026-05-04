@@ -1,4 +1,7 @@
+'use client';
+
 import { format } from 'date-fns';
+import { useMemo, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +13,9 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
 import { cn } from '@/lib/utils';
+import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 
 import type { ConcessionPriceItemRecord } from '../api/types';
 import { ConcessionPriceItemActions } from './concession-price-list-actions';
@@ -19,6 +24,8 @@ interface ConcessionPriceListTableProps {
   concessionPriceItems: ConcessionPriceItemRecord[];
   categories: string[];
 }
+
+type ConcessionSortKey = 'itemName' | 'category' | 'price' | 'sortOrder' | 'status' | 'createdAt';
 
 function getStatusClass(status: ConcessionPriceItemRecord['status']) {
   switch (status) {
@@ -47,6 +54,33 @@ export function ConcessionPriceListTable({
   concessionPriceItems,
   categories
 }: ConcessionPriceListTableProps) {
+  const [sort, setSort] = useState<SortState<ConcessionSortKey> | null>(null);
+
+  const sortedItems = useMemo(
+    () =>
+      sortRows(concessionPriceItems, sort, (item, key) => {
+        switch (key) {
+          case 'itemName':
+            return item.itemName;
+          case 'category':
+            return item.category;
+          case 'price':
+            return item.price;
+          case 'sortOrder':
+            return item.sortOrder;
+          case 'status':
+            return item.status;
+          case 'createdAt':
+            return item.createdAt;
+        }
+      }),
+    [concessionPriceItems, sort]
+  );
+
+  const handleSort = (key: ConcessionSortKey) => {
+    setSort((current) => toggleSort(current, key));
+  };
+
   return (
     <Card className='border-border/60 bg-card/90 shadow-sm'>
       <CardHeader>
@@ -69,24 +103,49 @@ export function ConcessionPriceListTable({
           <Table>
             <TableHeader className='bg-muted/50'>
               <TableRow>
-                <TableHead>Item Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Sort Order</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
+                <SortableTableHead
+                  label='Item Name'
+                  sortKey='itemName'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Category'
+                  sortKey='category'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead label='Price' sortKey='price' sort={sort} onSort={handleSort} />
+                <SortableTableHead
+                  label='Sort Order'
+                  sortKey='sortOrder'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Status'
+                  sortKey='status'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Created'
+                  sortKey='createdAt'
+                  sort={sort}
+                  onSort={handleSort}
+                />
                 <TableHead className='text-right'>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {concessionPriceItems.length === 0 ? (
+              {sortedItems.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className='text-muted-foreground h-24 text-center'>
                     No concession price items found.
                   </TableCell>
                 </TableRow>
               ) : (
-                concessionPriceItems.map((item) => (
+                sortedItems.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className='font-medium'>{item.itemName}</TableCell>
                     <TableCell className='whitespace-nowrap'>{item.category ?? '—'}</TableCell>

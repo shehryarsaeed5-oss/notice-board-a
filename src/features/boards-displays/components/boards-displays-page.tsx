@@ -1,33 +1,17 @@
 import Link from 'next/link';
-import { format } from 'date-fns';
 
 import { Icons } from '@/components/icons';
 import PageContainer from '@/components/layout/page-container';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { getCurrentAdminSession } from '@/lib/auth';
-import { hasPermission } from '@/lib/permissions';
 
 import { getDisplayPages } from '@/features/display-pages/api/service';
 import type { DisplayPageRecord } from '@/features/display-pages/api/types';
-import { createDisplayPageUrl } from '@/features/display-pages/lib/slug';
-import { DisplayPageUrlActions } from '@/features/display-pages/components/display-page-url-actions';
+import { DisplayPagesTable } from '@/features/display-pages/components/display-pages-table';
 
 import { BoardsDisplaysRefreshButton } from './boards-displays-refresh-button';
-
-function formatDate(value: Date) {
-  return format(value, 'MMM d, yyyy');
-}
 
 function getStatusClass(status: DisplayPageRecord['status']) {
   switch (status) {
@@ -110,8 +94,6 @@ function EmptyDisplaysState() {
 }
 
 export async function BoardsDisplaysPage() {
-  const session = await getCurrentAdminSession();
-  const canManageDisplayPages = session ? hasPermission(session.user, 'displayPages') : false;
   const { displayPages } = await getDisplayPages();
 
   const activeDisplays = countStatus(displayPages, 'ACTIVE');
@@ -152,84 +134,18 @@ export async function BoardsDisplaysPage() {
           />
         </div>
 
-        <Card className='border-border/60 bg-card/90 shadow-sm'>
-          <CardHeader className='flex flex-row items-start justify-between gap-4'>
-            <div>
-              <CardDescription>Display board overview</CardDescription>
-              <CardTitle className='text-base'>
-                {displayPages.length.toLocaleString()} display page
-                {displayPages.length === 1 ? '' : 's'}
-              </CardTitle>
-            </div>
+        <div className='flex flex-col gap-4'>
+          <div className='flex items-center justify-end'>
             <Badge variant='outline' className='border-primary/30 bg-primary/10 text-primary'>
               Public screens reload within ~5 seconds
             </Badge>
-          </CardHeader>
-          <CardContent>
-            {displayPages.length === 0 ? (
-              <EmptyDisplaysState />
-            ) : (
-              <div className='overflow-hidden rounded-lg border'>
-                <Table>
-                  <TableHeader className='bg-muted/50'>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Slug</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Public URL</TableHead>
-                      <TableHead>Created</TableHead>
-                      <TableHead className='text-right'>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {displayPages.map((displayPage) => {
-                      const displayUrl = createDisplayPageUrl(displayPage.slug);
-                      const manageHref = `/dashboard/display-pages?search=${encodeURIComponent(displayPage.slug)}`;
-
-                      return (
-                        <TableRow key={displayPage.id}>
-                          <TableCell className='font-medium'>{displayPage.name}</TableCell>
-                          <TableCell className='font-mono text-xs'>{displayPage.slug}</TableCell>
-                          <TableCell>
-                            <Badge
-                              variant='outline'
-                              className={cn('gap-1.5', getStatusClass(displayPage.status))}
-                            >
-                              {displayPage.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className='flex min-w-0 items-center gap-2'>
-                              <code className='text-muted-foreground max-w-[12rem] truncate rounded-md bg-muted/50 px-2 py-1 font-mono text-xs'>
-                                {displayUrl}
-                              </code>
-                              <DisplayPageUrlActions slug={displayPage.slug} />
-                            </div>
-                          </TableCell>
-                          <TableCell className='whitespace-nowrap'>
-                            {formatDate(displayPage.createdAt)}
-                          </TableCell>
-                          <TableCell className='text-right'>
-                            {canManageDisplayPages ? (
-                              <Button asChild variant='outline' size='sm'>
-                                <Link href={manageHref}>
-                                  <Icons.settings className='mr-2 h-4 w-4' />
-                                  Manage
-                                </Link>
-                              </Button>
-                            ) : (
-                              <span className='text-muted-foreground text-xs'>No access</span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+          </div>
+          {displayPages.length === 0 ? (
+            <EmptyDisplaysState />
+          ) : (
+            <DisplayPagesTable displayPages={displayPages} />
+          )}
+        </div>
       </div>
     </PageContainer>
   );

@@ -1,4 +1,7 @@
+'use client';
+
 import { format } from 'date-fns';
+import { useMemo, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,13 +13,25 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
 import { cn } from '@/lib/utils';
+import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 import type { AdvertisementRecord } from '../api/types';
 import { AdvertisementActions } from './advertisement-actions';
 
 interface AdvertisementTableProps {
   advertisements: AdvertisementRecord[];
 }
+
+type AdvertisementSortKey =
+  | 'title'
+  | 'contactPerson'
+  | 'phone'
+  | 'startAt'
+  | 'endAt'
+  | 'contractAmount'
+  | 'adLocation'
+  | 'status';
 
 function getStatusClass(status: AdvertisementRecord['status']) {
   switch (status) {
@@ -54,6 +69,37 @@ function formatAmount(value: number | null) {
 }
 
 export function AdvertisementTable({ advertisements }: AdvertisementTableProps) {
+  const [sort, setSort] = useState<SortState<AdvertisementSortKey> | null>(null);
+
+  const sortedAdvertisements = useMemo(
+    () =>
+      sortRows(advertisements, sort, (advertisement, key) => {
+        switch (key) {
+          case 'title':
+            return advertisement.title;
+          case 'contactPerson':
+            return advertisement.contactPerson;
+          case 'phone':
+            return advertisement.phone;
+          case 'startAt':
+            return advertisement.startAt;
+          case 'endAt':
+            return advertisement.endAt;
+          case 'contractAmount':
+            return advertisement.contractAmount;
+          case 'adLocation':
+            return advertisement.adLocation;
+          case 'status':
+            return advertisement.status;
+        }
+      }),
+    [advertisements, sort]
+  );
+
+  const handleSort = (key: AdvertisementSortKey) => {
+    setSort((current) => toggleSort(current, key));
+  };
+
   return (
     <Card className='border-border/60 bg-card/90 shadow-sm'>
       <CardHeader>
@@ -65,26 +111,61 @@ export function AdvertisementTable({ advertisements }: AdvertisementTableProps) 
           <Table>
             <TableHeader className='bg-muted/50'>
               <TableRow>
-                <TableHead>Company Name</TableHead>
-                <TableHead>Contact Person</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Contract Start</TableHead>
-                <TableHead>Contract End</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Location/Screen</TableHead>
-                <TableHead>Status</TableHead>
+                <SortableTableHead
+                  label='Company Name'
+                  sortKey='title'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Contact Person'
+                  sortKey='contactPerson'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead label='Phone' sortKey='phone' sort={sort} onSort={handleSort} />
+                <SortableTableHead
+                  label='Contract Start'
+                  sortKey='startAt'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Contract End'
+                  sortKey='endAt'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Amount'
+                  sortKey='contractAmount'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Location/Screen'
+                  sortKey='adLocation'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Status'
+                  sortKey='status'
+                  sort={sort}
+                  onSort={handleSort}
+                />
                 <TableHead className='text-right'>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {advertisements.length === 0 ? (
+              {sortedAdvertisements.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={9} className='text-muted-foreground h-24 text-center'>
                     No advertisement contracts found.
                   </TableCell>
                 </TableRow>
               ) : (
-                advertisements.map((advertisement) => (
+                sortedAdvertisements.map((advertisement) => (
                   <TableRow key={advertisement.id}>
                     <TableCell className='font-medium'>{advertisement.title}</TableCell>
                     <TableCell>{formatField(advertisement.contactPerson)}</TableCell>

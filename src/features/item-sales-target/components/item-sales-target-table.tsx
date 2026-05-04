@@ -1,6 +1,8 @@
-import { format } from 'date-fns';
+'use client';
 
-import { Icons } from '@/components/icons';
+import { format } from 'date-fns';
+import { useMemo, useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -11,13 +13,24 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
 import { cn } from '@/lib/utils';
+import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 import type { ItemSalesTargetRecord } from '../api/types';
 import { ItemSalesTargetActions } from './item-sales-target-actions';
 
 interface ItemSalesTargetTableProps {
   itemSalesTargets: ItemSalesTargetRecord[];
 }
+
+type ItemSalesTargetSortKey =
+  | 'itemName'
+  | 'itemCode'
+  | 'dailyTarget'
+  | 'weeklyTarget'
+  | 'monthlyTarget'
+  | 'status'
+  | 'createdAt';
 
 function getStatusClass(status: ItemSalesTargetRecord['status']) {
   switch (status) {
@@ -45,6 +58,35 @@ function formatDate(value: Date) {
 }
 
 export function ItemSalesTargetTable({ itemSalesTargets }: ItemSalesTargetTableProps) {
+  const [sort, setSort] = useState<SortState<ItemSalesTargetSortKey> | null>(null);
+
+  const sortedItemSalesTargets = useMemo(
+    () =>
+      sortRows(itemSalesTargets, sort, (target, key) => {
+        switch (key) {
+          case 'itemName':
+            return target.itemName;
+          case 'itemCode':
+            return target.itemCode;
+          case 'dailyTarget':
+            return target.dailyTarget;
+          case 'weeklyTarget':
+            return target.weeklyTarget;
+          case 'monthlyTarget':
+            return target.monthlyTarget;
+          case 'status':
+            return target.status;
+          case 'createdAt':
+            return target.createdAt;
+        }
+      }),
+    [itemSalesTargets, sort]
+  );
+
+  const handleSort = (key: ItemSalesTargetSortKey) => {
+    setSort((current) => toggleSort(current, key));
+  };
+
   return (
     <Card className='border-border/60 bg-card/90 shadow-sm'>
       <CardHeader>
@@ -56,25 +98,60 @@ export function ItemSalesTargetTable({ itemSalesTargets }: ItemSalesTargetTableP
           <Table>
             <TableHeader className='bg-muted/50'>
               <TableRow>
-                <TableHead>Item Name</TableHead>
-                <TableHead>Item Code</TableHead>
-                <TableHead>Daily Target</TableHead>
-                <TableHead>Weekly Target</TableHead>
-                <TableHead>Monthly Target</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
+                <SortableTableHead
+                  label='Item Name'
+                  sortKey='itemName'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Item Code'
+                  sortKey='itemCode'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Daily Target'
+                  sortKey='dailyTarget'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Weekly Target'
+                  sortKey='weeklyTarget'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Monthly Target'
+                  sortKey='monthlyTarget'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Status'
+                  sortKey='status'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Created'
+                  sortKey='createdAt'
+                  sort={sort}
+                  onSort={handleSort}
+                />
                 <TableHead className='text-right'>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {itemSalesTargets.length === 0 ? (
+              {sortedItemSalesTargets.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className='text-muted-foreground h-24 text-center'>
                     No item sales targets found.
                   </TableCell>
                 </TableRow>
               ) : (
-                itemSalesTargets.map((target) => (
+                sortedItemSalesTargets.map((target) => (
                   <TableRow key={target.id}>
                     <TableCell className='font-medium'>{target.itemName}</TableCell>
                     <TableCell>{target.itemCode ?? '—'}</TableCell>

@@ -1,4 +1,7 @@
+'use client';
+
 import { format } from 'date-fns';
+import { useMemo, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,13 +13,17 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
 import { cn } from '@/lib/utils';
+import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 import type { ManagerRecord } from '../api/types';
 import { ManagerRecordActions } from './manager-record-actions';
 
 interface ManagerRecordsTableProps {
   managers: ManagerRecord[];
 }
+
+type ManagerSortKey = 'name' | 'sortOrder' | 'designation' | 'phone' | 'status' | 'createdAt';
 
 function getStatusClass(status: ManagerRecord['status']) {
   switch (status) {
@@ -36,6 +43,33 @@ function formatField(value: string | null) {
 }
 
 export function ManagerRecordsTable({ managers }: ManagerRecordsTableProps) {
+  const [sort, setSort] = useState<SortState<ManagerSortKey> | null>(null);
+
+  const sortedManagers = useMemo(
+    () =>
+      sortRows(managers, sort, (manager, key) => {
+        switch (key) {
+          case 'name':
+            return manager.name;
+          case 'sortOrder':
+            return manager.sortOrder;
+          case 'designation':
+            return manager.designation;
+          case 'phone':
+            return manager.phone;
+          case 'status':
+            return manager.status;
+          case 'createdAt':
+            return manager.createdAt;
+        }
+      }),
+    [managers, sort]
+  );
+
+  const handleSort = (key: ManagerSortKey) => {
+    setSort((current) => toggleSort(current, key));
+  };
+
   return (
     <Card className='border-border/60 bg-card/90 shadow-sm'>
       <CardHeader>
@@ -47,24 +81,44 @@ export function ManagerRecordsTable({ managers }: ManagerRecordsTableProps) {
           <Table>
             <TableHeader className='bg-muted/50'>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Sort Order</TableHead>
-                <TableHead>Designation</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
+                <SortableTableHead label='Name' sortKey='name' sort={sort} onSort={handleSort} />
+                <SortableTableHead
+                  label='Sort Order'
+                  sortKey='sortOrder'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Designation'
+                  sortKey='designation'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead label='Phone' sortKey='phone' sort={sort} onSort={handleSort} />
+                <SortableTableHead
+                  label='Status'
+                  sortKey='status'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Created'
+                  sortKey='createdAt'
+                  sort={sort}
+                  onSort={handleSort}
+                />
                 <TableHead className='text-right'>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {managers.length === 0 ? (
+              {sortedManagers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className='text-muted-foreground h-24 text-center'>
                     No manager records found.
                   </TableCell>
                 </TableRow>
               ) : (
-                managers.map((manager) => (
+                sortedManagers.map((manager) => (
                   <TableRow key={manager.id}>
                     <TableCell className='font-medium'>{manager.name}</TableCell>
                     <TableCell className='whitespace-nowrap'>{manager.sortOrder}</TableCell>

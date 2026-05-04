@@ -1,4 +1,7 @@
+'use client';
+
 import { format } from 'date-fns';
+import { useMemo, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +13,9 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
 import { cn } from '@/lib/utils';
+import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 
 import type { DisplayPageRecord } from '../api/types';
 import { createDisplayPageUrl } from '../lib/slug';
@@ -20,6 +25,8 @@ import { DisplayPageUrlActions } from './display-page-url-actions';
 interface DisplayPagesTableProps {
   displayPages: DisplayPageRecord[];
 }
+
+type DisplayPageSortKey = 'name' | 'slug' | 'description' | 'status' | 'displayUrl' | 'createdAt';
 
 function getStatusClass(status: DisplayPageRecord['status']) {
   switch (status) {
@@ -39,6 +46,33 @@ function formatDate(value: Date) {
 }
 
 export function DisplayPagesTable({ displayPages }: DisplayPagesTableProps) {
+  const [sort, setSort] = useState<SortState<DisplayPageSortKey> | null>(null);
+
+  const sortedDisplayPages = useMemo(
+    () =>
+      sortRows(displayPages, sort, (displayPage, key) => {
+        switch (key) {
+          case 'name':
+            return displayPage.name;
+          case 'slug':
+            return displayPage.slug;
+          case 'description':
+            return displayPage.description;
+          case 'status':
+            return displayPage.status;
+          case 'displayUrl':
+            return createDisplayPageUrl(displayPage.slug);
+          case 'createdAt':
+            return displayPage.createdAt;
+        }
+      }),
+    [displayPages, sort]
+  );
+
+  const handleSort = (key: DisplayPageSortKey) => {
+    setSort((current) => toggleSort(current, key));
+  };
+
   return (
     <Card className='border-border/60 bg-card/90 shadow-sm'>
       <CardHeader>
@@ -50,24 +84,44 @@ export function DisplayPagesTable({ displayPages }: DisplayPagesTableProps) {
           <Table>
             <TableHeader className='bg-muted/50'>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Display URL</TableHead>
-                <TableHead>Created</TableHead>
+                <SortableTableHead label='Name' sortKey='name' sort={sort} onSort={handleSort} />
+                <SortableTableHead label='Slug' sortKey='slug' sort={sort} onSort={handleSort} />
+                <SortableTableHead
+                  label='Description'
+                  sortKey='description'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Status'
+                  sortKey='status'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Display URL'
+                  sortKey='displayUrl'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Created'
+                  sortKey='createdAt'
+                  sort={sort}
+                  onSort={handleSort}
+                />
                 <TableHead className='text-right'>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {displayPages.length === 0 ? (
+              {sortedDisplayPages.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className='text-muted-foreground h-24 text-center'>
                     No display pages found.
                   </TableCell>
                 </TableRow>
               ) : (
-                displayPages.map((displayPage) => {
+                sortedDisplayPages.map((displayPage) => {
                   const displayUrl = createDisplayPageUrl(displayPage.slug);
 
                   return (

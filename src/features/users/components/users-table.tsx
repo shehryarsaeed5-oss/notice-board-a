@@ -1,4 +1,7 @@
+'use client';
+
 import { format } from 'date-fns';
+import { useMemo, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,8 +13,10 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
 import { cn } from '@/lib/utils';
 import { getUserPermissions } from '@/lib/permissions';
+import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 
 import type { UserRecord } from '../api/types';
 import { UserActions } from './user-actions';
@@ -20,6 +25,8 @@ interface UsersTableProps {
   users: UserRecord[];
   currentUserId: string;
 }
+
+type UserSortKey = 'name' | 'email' | 'role' | 'permissions' | 'status' | 'createdAt';
 
 function getStatusClass(status: UserRecord['status']) {
   switch (status) {
@@ -107,6 +114,33 @@ function PermissionBadges({ user }: { user: UserRecord }) {
 }
 
 export function UsersTable({ users, currentUserId }: UsersTableProps) {
+  const [sort, setSort] = useState<SortState<UserSortKey> | null>(null);
+
+  const sortedUsers = useMemo(
+    () =>
+      sortRows(users, sort, (user, key) => {
+        switch (key) {
+          case 'name':
+            return user.name;
+          case 'email':
+            return user.email;
+          case 'role':
+            return user.role;
+          case 'permissions':
+            return getUserPermissions(user).length;
+          case 'status':
+            return user.status;
+          case 'createdAt':
+            return user.createdAt;
+        }
+      }),
+    [sort, users]
+  );
+
+  const handleSort = (key: UserSortKey) => {
+    setSort((current) => toggleSort(current, key));
+  };
+
   return (
     <Card className='border-border/60 bg-card/90 shadow-sm'>
       <CardHeader className='flex flex-row items-start justify-between gap-4'>
@@ -120,24 +154,39 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
           <Table>
             <TableHeader className='bg-muted/50'>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Permissions</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
+                <SortableTableHead label='Name' sortKey='name' sort={sort} onSort={handleSort} />
+                <SortableTableHead label='Email' sortKey='email' sort={sort} onSort={handleSort} />
+                <SortableTableHead label='Role' sortKey='role' sort={sort} onSort={handleSort} />
+                <SortableTableHead
+                  label='Permissions'
+                  sortKey='permissions'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Status'
+                  sortKey='status'
+                  sort={sort}
+                  onSort={handleSort}
+                />
+                <SortableTableHead
+                  label='Created'
+                  sortKey='createdAt'
+                  sort={sort}
+                  onSort={handleSort}
+                />
                 <TableHead className='text-right'>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.length === 0 ? (
+              {sortedUsers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className='text-muted-foreground h-24 text-center'>
                     No users found.
                   </TableCell>
                 </TableRow>
               ) : (
-                users.map((user) => (
+                sortedUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className='align-top'>
                       <div className='flex flex-col gap-1'>
