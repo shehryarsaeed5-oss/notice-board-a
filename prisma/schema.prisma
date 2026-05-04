@@ -196,6 +196,55 @@ model MovieSchedule {
   @@index([showTime])
 }
 
+model MovieScheduleSyncSetting {
+  id           String   @id @default(cuid())
+  enabled      Boolean  @default(false)
+  sourceType   String   @default("digital_signage_api")
+  apiUrl       String?
+  apiToken     String?
+  lastSyncAt   DateTime?
+  lastSyncStatus String?
+  lastSyncMessage String?
+  lastSyncCount Int     @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model MovieScheduleSyncedRow {
+  id                 String   @id @default(cuid())
+  sourceKey          String   @unique
+  movieName          String
+  normalizedMovieName String?
+  screenName         String
+  showDate           String
+  showTime           String
+  showDateTime       DateTime?
+  isActive           Boolean  @default(true)
+  syncBatchId        String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([showDate])
+  @@index([showDateTime])
+  @@index([isActive])
+  @@index([movieName])
+  @@index([screenName])
+  @@index([syncBatchId])
+}
+
+model MovieScheduleSyncLog {
+  id          String   @id @default(cuid())
+  status      String
+  message     String?
+  rowCount    Int      @default(0)
+  startedAt   DateTime @default(now())
+  finishedAt  DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([status])
+  @@index([startedAt])
+}
+
 model ItemSalesTarget {
   id            String       @id @default(cuid())
   itemName      String

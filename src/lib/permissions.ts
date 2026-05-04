@@ -13,6 +13,7 @@ export const ALL_PERMISSION_KEYS = [
   'advertisements',
   'weather',
   'movieSchedule',
+  'movieScheduleSync',
   'itemSalesTarget',
   'concessionPriceList',
   'systemSettings',
@@ -63,6 +64,7 @@ export const ROUTE_PERMISSION_MAP: PermissionRouteRule[] = [
   { pattern: '/dashboard/advertisements', permission: 'advertisements' },
   { pattern: '/dashboard/weather', permission: 'weather' },
   { pattern: '/dashboard/movie-schedule', permission: 'movieSchedule' },
+  { pattern: '/dashboard/movie-schedule-sync', permission: 'movieScheduleSync' },
   { pattern: '/dashboard/item-sales-target', permission: 'itemSalesTarget' },
   { pattern: '/dashboard/concession-price-list', permission: 'concessionPriceList' },
   { pattern: '/dashboard/system-settings', permission: 'systemSettings' }
@@ -81,6 +83,7 @@ export const API_PERMISSION_MAP: PermissionApiRule[] = [
   { pattern: '/api/advertisements', permission: 'advertisements' },
   { pattern: '/api/weather-settings', permission: 'weather' },
   { pattern: '/api/item-sales-target', permission: 'itemSalesTarget' },
+  { pattern: '/api/movie-schedule-sync', permission: 'movieScheduleSync' },
   { pattern: '/api/concession-price-list', permission: 'concessionPriceList' },
   { pattern: '/api/system-settings', permission: 'systemSettings' }
 ];

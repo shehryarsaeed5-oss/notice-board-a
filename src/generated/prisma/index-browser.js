@@ -250,6 +250,45 @@ exports.Prisma.MovieScheduleScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.MovieScheduleSyncSettingScalarFieldEnum = {
+  id: 'id',
+  enabled: 'enabled',
+  sourceType: 'sourceType',
+  apiUrl: 'apiUrl',
+  apiToken: 'apiToken',
+  lastSyncAt: 'lastSyncAt',
+  lastSyncStatus: 'lastSyncStatus',
+  lastSyncMessage: 'lastSyncMessage',
+  lastSyncCount: 'lastSyncCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MovieScheduleSyncedRowScalarFieldEnum = {
+  id: 'id',
+  sourceKey: 'sourceKey',
+  movieName: 'movieName',
+  normalizedMovieName: 'normalizedMovieName',
+  screenName: 'screenName',
+  showDate: 'showDate',
+  showTime: 'showTime',
+  showDateTime: 'showDateTime',
+  isActive: 'isActive',
+  syncBatchId: 'syncBatchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MovieScheduleSyncLogScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  message: 'message',
+  rowCount: 'rowCount',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ItemSalesTargetScalarFieldEnum = {
   id: 'id',
   itemName: 'itemName',
@@ -335,6 +374,9 @@ exports.Prisma.ModelName = {
   Advertisement: 'Advertisement',
   WeatherSetting: 'WeatherSetting',
   MovieSchedule: 'MovieSchedule',
+  MovieScheduleSyncSetting: 'MovieScheduleSyncSetting',
+  MovieScheduleSyncedRow: 'MovieScheduleSyncedRow',
+  MovieScheduleSyncLog: 'MovieScheduleSyncLog',
   ItemSalesTarget: 'ItemSalesTarget',
   ConcessionPriceItem: 'ConcessionPriceItem',
   DisplayPage: 'DisplayPage',

@@ -154,6 +154,16 @@ export const navGroups: NavGroup[] = [
         items: []
       },
       {
+        title: 'Movie Schedule Sync',
+        url: '/dashboard/movie-schedule-sync',
+        icon: 'refresh',
+        access: {
+          permission: 'movieScheduleSync'
+        },
+        isActive: false,
+        items: []
+      },
+      {
         title: 'Item Sales Target',
         url: '/dashboard/item-sales-target',
         icon: 'adjustments',

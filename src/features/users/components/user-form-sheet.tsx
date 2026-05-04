@@ -61,6 +61,7 @@ const PERMISSION_LABELS: Record<PermissionKey, string> = {
   advertisements: 'Advertisements',
   weather: 'Weather',
   movieSchedule: 'Movie Schedule',
+  movieScheduleSync: 'Movie Schedule Sync',
   itemSalesTarget: 'Item Sales Target',
   concessionPriceList: 'Concession Price List',
   systemSettings: 'System Settings',

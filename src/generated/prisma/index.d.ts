@@ -68,6 +68,23 @@ export type WeatherSetting = $Result.DefaultSelection<Prisma.$WeatherSettingPayl
  */
 export type MovieSchedule = $Result.DefaultSelection<Prisma.$MovieSchedulePayload>;
 /**
+ * Model MovieScheduleSyncSetting
+ *
+ */
+export type MovieScheduleSyncSetting =
+  $Result.DefaultSelection<Prisma.$MovieScheduleSyncSettingPayload>;
+/**
+ * Model MovieScheduleSyncedRow
+ *
+ */
+export type MovieScheduleSyncedRow =
+  $Result.DefaultSelection<Prisma.$MovieScheduleSyncedRowPayload>;
+/**
+ * Model MovieScheduleSyncLog
+ *
+ */
+export type MovieScheduleSyncLog = $Result.DefaultSelection<Prisma.$MovieScheduleSyncLogPayload>;
+/**
  * Model ItemSalesTarget
  *
  */
@@ -393,6 +410,36 @@ export class PrismaClient<
    * ```
    */
   get movieSchedule(): Prisma.MovieScheduleDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.movieScheduleSyncSetting`: Exposes CRUD operations for the **MovieScheduleSyncSetting** model.
+   * Example usage:
+   * ```ts
+   * // Fetch zero or more MovieScheduleSyncSettings
+   * const movieScheduleSyncSettings = await prisma.movieScheduleSyncSetting.findMany()
+   * ```
+   */
+  get movieScheduleSyncSetting(): Prisma.MovieScheduleSyncSettingDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.movieScheduleSyncedRow`: Exposes CRUD operations for the **MovieScheduleSyncedRow** model.
+   * Example usage:
+   * ```ts
+   * // Fetch zero or more MovieScheduleSyncedRows
+   * const movieScheduleSyncedRows = await prisma.movieScheduleSyncedRow.findMany()
+   * ```
+   */
+  get movieScheduleSyncedRow(): Prisma.MovieScheduleSyncedRowDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.movieScheduleSyncLog`: Exposes CRUD operations for the **MovieScheduleSyncLog** model.
+   * Example usage:
+   * ```ts
+   * // Fetch zero or more MovieScheduleSyncLogs
+   * const movieScheduleSyncLogs = await prisma.movieScheduleSyncLog.findMany()
+   * ```
+   */
+  get movieScheduleSyncLog(): Prisma.MovieScheduleSyncLogDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.itemSalesTarget`: Exposes CRUD operations for the **ItemSalesTarget** model.
@@ -872,6 +919,9 @@ export namespace Prisma {
     Advertisement: 'Advertisement';
     WeatherSetting: 'WeatherSetting';
     MovieSchedule: 'MovieSchedule';
+    MovieScheduleSyncSetting: 'MovieScheduleSyncSetting';
+    MovieScheduleSyncedRow: 'MovieScheduleSyncedRow';
+    MovieScheduleSyncLog: 'MovieScheduleSyncLog';
     ItemSalesTarget: 'ItemSalesTarget';
     ConcessionPriceItem: 'ConcessionPriceItem';
     DisplayPage: 'DisplayPage';
@@ -910,6 +960,9 @@ export namespace Prisma {
         | 'advertisement'
         | 'weatherSetting'
         | 'movieSchedule'
+        | 'movieScheduleSyncSetting'
+        | 'movieScheduleSyncedRow'
+        | 'movieScheduleSyncLog'
         | 'itemSalesTarget'
         | 'concessionPriceItem'
         | 'displayPage'
@@ -1731,6 +1784,228 @@ export namespace Prisma {
           };
         };
       };
+      MovieScheduleSyncSetting: {
+        payload: Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>;
+        fields: Prisma.MovieScheduleSyncSettingFieldRefs;
+        operations: {
+          findUnique: {
+            args: Prisma.MovieScheduleSyncSettingFindUniqueArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncSettingPayload> | null;
+          };
+          findUniqueOrThrow: {
+            args: Prisma.MovieScheduleSyncSettingFindUniqueOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncSettingPayload>;
+          };
+          findFirst: {
+            args: Prisma.MovieScheduleSyncSettingFindFirstArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncSettingPayload> | null;
+          };
+          findFirstOrThrow: {
+            args: Prisma.MovieScheduleSyncSettingFindFirstOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncSettingPayload>;
+          };
+          findMany: {
+            args: Prisma.MovieScheduleSyncSettingFindManyArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncSettingPayload>[];
+          };
+          create: {
+            args: Prisma.MovieScheduleSyncSettingCreateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncSettingPayload>;
+          };
+          createMany: {
+            args: Prisma.MovieScheduleSyncSettingCreateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          createManyAndReturn: {
+            args: Prisma.MovieScheduleSyncSettingCreateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncSettingPayload>[];
+          };
+          delete: {
+            args: Prisma.MovieScheduleSyncSettingDeleteArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncSettingPayload>;
+          };
+          update: {
+            args: Prisma.MovieScheduleSyncSettingUpdateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncSettingPayload>;
+          };
+          deleteMany: {
+            args: Prisma.MovieScheduleSyncSettingDeleteManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateMany: {
+            args: Prisma.MovieScheduleSyncSettingUpdateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.MovieScheduleSyncSettingUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncSettingPayload>[];
+          };
+          upsert: {
+            args: Prisma.MovieScheduleSyncSettingUpsertArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncSettingPayload>;
+          };
+          aggregate: {
+            args: Prisma.MovieScheduleSyncSettingAggregateArgs<ExtArgs>;
+            result: $Utils.Optional<AggregateMovieScheduleSyncSetting>;
+          };
+          groupBy: {
+            args: Prisma.MovieScheduleSyncSettingGroupByArgs<ExtArgs>;
+            result: $Utils.Optional<MovieScheduleSyncSettingGroupByOutputType>[];
+          };
+          count: {
+            args: Prisma.MovieScheduleSyncSettingCountArgs<ExtArgs>;
+            result: $Utils.Optional<MovieScheduleSyncSettingCountAggregateOutputType> | number;
+          };
+        };
+      };
+      MovieScheduleSyncedRow: {
+        payload: Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>;
+        fields: Prisma.MovieScheduleSyncedRowFieldRefs;
+        operations: {
+          findUnique: {
+            args: Prisma.MovieScheduleSyncedRowFindUniqueArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncedRowPayload> | null;
+          };
+          findUniqueOrThrow: {
+            args: Prisma.MovieScheduleSyncedRowFindUniqueOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncedRowPayload>;
+          };
+          findFirst: {
+            args: Prisma.MovieScheduleSyncedRowFindFirstArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncedRowPayload> | null;
+          };
+          findFirstOrThrow: {
+            args: Prisma.MovieScheduleSyncedRowFindFirstOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncedRowPayload>;
+          };
+          findMany: {
+            args: Prisma.MovieScheduleSyncedRowFindManyArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncedRowPayload>[];
+          };
+          create: {
+            args: Prisma.MovieScheduleSyncedRowCreateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncedRowPayload>;
+          };
+          createMany: {
+            args: Prisma.MovieScheduleSyncedRowCreateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          createManyAndReturn: {
+            args: Prisma.MovieScheduleSyncedRowCreateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncedRowPayload>[];
+          };
+          delete: {
+            args: Prisma.MovieScheduleSyncedRowDeleteArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncedRowPayload>;
+          };
+          update: {
+            args: Prisma.MovieScheduleSyncedRowUpdateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncedRowPayload>;
+          };
+          deleteMany: {
+            args: Prisma.MovieScheduleSyncedRowDeleteManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateMany: {
+            args: Prisma.MovieScheduleSyncedRowUpdateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.MovieScheduleSyncedRowUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncedRowPayload>[];
+          };
+          upsert: {
+            args: Prisma.MovieScheduleSyncedRowUpsertArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncedRowPayload>;
+          };
+          aggregate: {
+            args: Prisma.MovieScheduleSyncedRowAggregateArgs<ExtArgs>;
+            result: $Utils.Optional<AggregateMovieScheduleSyncedRow>;
+          };
+          groupBy: {
+            args: Prisma.MovieScheduleSyncedRowGroupByArgs<ExtArgs>;
+            result: $Utils.Optional<MovieScheduleSyncedRowGroupByOutputType>[];
+          };
+          count: {
+            args: Prisma.MovieScheduleSyncedRowCountArgs<ExtArgs>;
+            result: $Utils.Optional<MovieScheduleSyncedRowCountAggregateOutputType> | number;
+          };
+        };
+      };
+      MovieScheduleSyncLog: {
+        payload: Prisma.$MovieScheduleSyncLogPayload<ExtArgs>;
+        fields: Prisma.MovieScheduleSyncLogFieldRefs;
+        operations: {
+          findUnique: {
+            args: Prisma.MovieScheduleSyncLogFindUniqueArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncLogPayload> | null;
+          };
+          findUniqueOrThrow: {
+            args: Prisma.MovieScheduleSyncLogFindUniqueOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncLogPayload>;
+          };
+          findFirst: {
+            args: Prisma.MovieScheduleSyncLogFindFirstArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncLogPayload> | null;
+          };
+          findFirstOrThrow: {
+            args: Prisma.MovieScheduleSyncLogFindFirstOrThrowArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncLogPayload>;
+          };
+          findMany: {
+            args: Prisma.MovieScheduleSyncLogFindManyArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncLogPayload>[];
+          };
+          create: {
+            args: Prisma.MovieScheduleSyncLogCreateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncLogPayload>;
+          };
+          createMany: {
+            args: Prisma.MovieScheduleSyncLogCreateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          createManyAndReturn: {
+            args: Prisma.MovieScheduleSyncLogCreateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncLogPayload>[];
+          };
+          delete: {
+            args: Prisma.MovieScheduleSyncLogDeleteArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncLogPayload>;
+          };
+          update: {
+            args: Prisma.MovieScheduleSyncLogUpdateArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncLogPayload>;
+          };
+          deleteMany: {
+            args: Prisma.MovieScheduleSyncLogDeleteManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateMany: {
+            args: Prisma.MovieScheduleSyncLogUpdateManyArgs<ExtArgs>;
+            result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.MovieScheduleSyncLogUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncLogPayload>[];
+          };
+          upsert: {
+            args: Prisma.MovieScheduleSyncLogUpsertArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$MovieScheduleSyncLogPayload>;
+          };
+          aggregate: {
+            args: Prisma.MovieScheduleSyncLogAggregateArgs<ExtArgs>;
+            result: $Utils.Optional<AggregateMovieScheduleSyncLog>;
+          };
+          groupBy: {
+            args: Prisma.MovieScheduleSyncLogGroupByArgs<ExtArgs>;
+            result: $Utils.Optional<MovieScheduleSyncLogGroupByOutputType>[];
+          };
+          count: {
+            args: Prisma.MovieScheduleSyncLogCountArgs<ExtArgs>;
+            result: $Utils.Optional<MovieScheduleSyncLogCountAggregateOutputType> | number;
+          };
+        };
+      };
       ItemSalesTarget: {
         payload: Prisma.$ItemSalesTargetPayload<ExtArgs>;
         fields: Prisma.ItemSalesTargetFieldRefs;
@@ -2150,6 +2425,9 @@ export namespace Prisma {
     advertisement?: AdvertisementOmit;
     weatherSetting?: WeatherSettingOmit;
     movieSchedule?: MovieScheduleOmit;
+    movieScheduleSyncSetting?: MovieScheduleSyncSettingOmit;
+    movieScheduleSyncedRow?: MovieScheduleSyncedRowOmit;
+    movieScheduleSyncLog?: MovieScheduleSyncLogOmit;
     itemSalesTarget?: ItemSalesTargetOmit;
     concessionPriceItem?: ConcessionPriceItemOmit;
     displayPage?: DisplayPageOmit;
@@ -16211,6 +16489,3924 @@ export namespace Prisma {
   };
 
   /**
+   * Model MovieScheduleSyncSetting
+   */
+
+  export type AggregateMovieScheduleSyncSetting = {
+    _count: MovieScheduleSyncSettingCountAggregateOutputType | null;
+    _avg: MovieScheduleSyncSettingAvgAggregateOutputType | null;
+    _sum: MovieScheduleSyncSettingSumAggregateOutputType | null;
+    _min: MovieScheduleSyncSettingMinAggregateOutputType | null;
+    _max: MovieScheduleSyncSettingMaxAggregateOutputType | null;
+  };
+
+  export type MovieScheduleSyncSettingAvgAggregateOutputType = {
+    lastSyncCount: number | null;
+  };
+
+  export type MovieScheduleSyncSettingSumAggregateOutputType = {
+    lastSyncCount: number | null;
+  };
+
+  export type MovieScheduleSyncSettingMinAggregateOutputType = {
+    id: string | null;
+    enabled: boolean | null;
+    sourceType: string | null;
+    apiUrl: string | null;
+    apiToken: string | null;
+    lastSyncAt: Date | null;
+    lastSyncStatus: string | null;
+    lastSyncMessage: string | null;
+    lastSyncCount: number | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type MovieScheduleSyncSettingMaxAggregateOutputType = {
+    id: string | null;
+    enabled: boolean | null;
+    sourceType: string | null;
+    apiUrl: string | null;
+    apiToken: string | null;
+    lastSyncAt: Date | null;
+    lastSyncStatus: string | null;
+    lastSyncMessage: string | null;
+    lastSyncCount: number | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type MovieScheduleSyncSettingCountAggregateOutputType = {
+    id: number;
+    enabled: number;
+    sourceType: number;
+    apiUrl: number;
+    apiToken: number;
+    lastSyncAt: number;
+    lastSyncStatus: number;
+    lastSyncMessage: number;
+    lastSyncCount: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+  };
+
+  export type MovieScheduleSyncSettingAvgAggregateInputType = {
+    lastSyncCount?: true;
+  };
+
+  export type MovieScheduleSyncSettingSumAggregateInputType = {
+    lastSyncCount?: true;
+  };
+
+  export type MovieScheduleSyncSettingMinAggregateInputType = {
+    id?: true;
+    enabled?: true;
+    sourceType?: true;
+    apiUrl?: true;
+    apiToken?: true;
+    lastSyncAt?: true;
+    lastSyncStatus?: true;
+    lastSyncMessage?: true;
+    lastSyncCount?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type MovieScheduleSyncSettingMaxAggregateInputType = {
+    id?: true;
+    enabled?: true;
+    sourceType?: true;
+    apiUrl?: true;
+    apiToken?: true;
+    lastSyncAt?: true;
+    lastSyncStatus?: true;
+    lastSyncMessage?: true;
+    lastSyncCount?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type MovieScheduleSyncSettingCountAggregateInputType = {
+    id?: true;
+    enabled?: true;
+    sourceType?: true;
+    apiUrl?: true;
+    apiToken?: true;
+    lastSyncAt?: true;
+    lastSyncStatus?: true;
+    lastSyncMessage?: true;
+    lastSyncCount?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+  };
+
+  export type MovieScheduleSyncSettingAggregateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which MovieScheduleSyncSetting to aggregate.
+     */
+    where?: MovieScheduleSyncSettingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncSettings to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncSettingOrderByWithRelationInput
+      | MovieScheduleSyncSettingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: MovieScheduleSyncSettingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncSettings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncSettings.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned MovieScheduleSyncSettings
+     **/
+    _count?: true | MovieScheduleSyncSettingCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+     **/
+    _avg?: MovieScheduleSyncSettingAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: MovieScheduleSyncSettingSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+     **/
+    _min?: MovieScheduleSyncSettingMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+     **/
+    _max?: MovieScheduleSyncSettingMaxAggregateInputType;
+  };
+
+  export type GetMovieScheduleSyncSettingAggregateType<
+    T extends MovieScheduleSyncSettingAggregateArgs
+  > = {
+    [P in keyof T & keyof AggregateMovieScheduleSyncSetting]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMovieScheduleSyncSetting[P]>
+      : GetScalarType<T[P], AggregateMovieScheduleSyncSetting[P]>;
+  };
+
+  export type MovieScheduleSyncSettingGroupByArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    where?: MovieScheduleSyncSettingWhereInput;
+    orderBy?:
+      | MovieScheduleSyncSettingOrderByWithAggregationInput
+      | MovieScheduleSyncSettingOrderByWithAggregationInput[];
+    by: MovieScheduleSyncSettingScalarFieldEnum[] | MovieScheduleSyncSettingScalarFieldEnum;
+    having?: MovieScheduleSyncSettingScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: MovieScheduleSyncSettingCountAggregateInputType | true;
+    _avg?: MovieScheduleSyncSettingAvgAggregateInputType;
+    _sum?: MovieScheduleSyncSettingSumAggregateInputType;
+    _min?: MovieScheduleSyncSettingMinAggregateInputType;
+    _max?: MovieScheduleSyncSettingMaxAggregateInputType;
+  };
+
+  export type MovieScheduleSyncSettingGroupByOutputType = {
+    id: string;
+    enabled: boolean;
+    sourceType: string;
+    apiUrl: string | null;
+    apiToken: string | null;
+    lastSyncAt: Date | null;
+    lastSyncStatus: string | null;
+    lastSyncMessage: string | null;
+    lastSyncCount: number;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: MovieScheduleSyncSettingCountAggregateOutputType | null;
+    _avg: MovieScheduleSyncSettingAvgAggregateOutputType | null;
+    _sum: MovieScheduleSyncSettingSumAggregateOutputType | null;
+    _min: MovieScheduleSyncSettingMinAggregateOutputType | null;
+    _max: MovieScheduleSyncSettingMaxAggregateOutputType | null;
+  };
+
+  type GetMovieScheduleSyncSettingGroupByPayload<T extends MovieScheduleSyncSettingGroupByArgs> =
+    Prisma.PrismaPromise<
+      Array<
+        PickEnumerable<MovieScheduleSyncSettingGroupByOutputType, T['by']> & {
+          [P in keyof T & keyof MovieScheduleSyncSettingGroupByOutputType]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MovieScheduleSyncSettingGroupByOutputType[P]>
+            : GetScalarType<T[P], MovieScheduleSyncSettingGroupByOutputType[P]>;
+        }
+      >
+    >;
+
+  export type MovieScheduleSyncSettingSelect<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      enabled?: boolean;
+      sourceType?: boolean;
+      apiUrl?: boolean;
+      apiToken?: boolean;
+      lastSyncAt?: boolean;
+      lastSyncStatus?: boolean;
+      lastSyncMessage?: boolean;
+      lastSyncCount?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['movieScheduleSyncSetting']
+  >;
+
+  export type MovieScheduleSyncSettingSelectCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      enabled?: boolean;
+      sourceType?: boolean;
+      apiUrl?: boolean;
+      apiToken?: boolean;
+      lastSyncAt?: boolean;
+      lastSyncStatus?: boolean;
+      lastSyncMessage?: boolean;
+      lastSyncCount?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['movieScheduleSyncSetting']
+  >;
+
+  export type MovieScheduleSyncSettingSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      enabled?: boolean;
+      sourceType?: boolean;
+      apiUrl?: boolean;
+      apiToken?: boolean;
+      lastSyncAt?: boolean;
+      lastSyncStatus?: boolean;
+      lastSyncMessage?: boolean;
+      lastSyncCount?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['movieScheduleSyncSetting']
+  >;
+
+  export type MovieScheduleSyncSettingSelectScalar = {
+    id?: boolean;
+    enabled?: boolean;
+    sourceType?: boolean;
+    apiUrl?: boolean;
+    apiToken?: boolean;
+    lastSyncAt?: boolean;
+    lastSyncStatus?: boolean;
+    lastSyncMessage?: boolean;
+    lastSyncCount?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+  };
+
+  export type MovieScheduleSyncSettingOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetOmit<
+    | 'id'
+    | 'enabled'
+    | 'sourceType'
+    | 'apiUrl'
+    | 'apiToken'
+    | 'lastSyncAt'
+    | 'lastSyncStatus'
+    | 'lastSyncMessage'
+    | 'lastSyncCount'
+    | 'createdAt'
+    | 'updatedAt',
+    ExtArgs['result']['movieScheduleSyncSetting']
+  >;
+
+  export type $MovieScheduleSyncSettingPayload<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    name: 'MovieScheduleSyncSetting';
+    objects: {};
+    scalars: $Extensions.GetPayloadResult<
+      {
+        id: string;
+        enabled: boolean;
+        sourceType: string;
+        apiUrl: string | null;
+        apiToken: string | null;
+        lastSyncAt: Date | null;
+        lastSyncStatus: string | null;
+        lastSyncMessage: string | null;
+        lastSyncCount: number;
+        createdAt: Date;
+        updatedAt: Date;
+      },
+      ExtArgs['result']['movieScheduleSyncSetting']
+    >;
+    composites: {};
+  };
+
+  type MovieScheduleSyncSettingGetPayload<
+    S extends boolean | null | undefined | MovieScheduleSyncSettingDefaultArgs
+  > = $Result.GetResult<Prisma.$MovieScheduleSyncSettingPayload, S>;
+
+  type MovieScheduleSyncSettingCountArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = Omit<MovieScheduleSyncSettingFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: MovieScheduleSyncSettingCountAggregateInputType | true;
+  };
+
+  export interface MovieScheduleSyncSettingDelegate<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > {
+    [K: symbol]: {
+      types: Prisma.TypeMap<ExtArgs>['model']['MovieScheduleSyncSetting'];
+      meta: { name: 'MovieScheduleSyncSetting' };
+    };
+    /**
+     * Find zero or one MovieScheduleSyncSetting that matches the filter.
+     * @param {MovieScheduleSyncSettingFindUniqueArgs} args - Arguments to find a MovieScheduleSyncSetting
+     * @example
+     * // Get one MovieScheduleSyncSetting
+     * const movieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MovieScheduleSyncSettingFindUniqueArgs>(
+      args: SelectSubset<T, MovieScheduleSyncSettingFindUniqueArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncSettingClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>,
+        T,
+        'findUnique',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find one MovieScheduleSyncSetting that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MovieScheduleSyncSettingFindUniqueOrThrowArgs} args - Arguments to find a MovieScheduleSyncSetting
+     * @example
+     * // Get one MovieScheduleSyncSetting
+     * const movieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MovieScheduleSyncSettingFindUniqueOrThrowArgs>(
+      args: SelectSubset<T, MovieScheduleSyncSettingFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncSettingClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>,
+        T,
+        'findUniqueOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first MovieScheduleSyncSetting that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncSettingFindFirstArgs} args - Arguments to find a MovieScheduleSyncSetting
+     * @example
+     * // Get one MovieScheduleSyncSetting
+     * const movieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MovieScheduleSyncSettingFindFirstArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncSettingFindFirstArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncSettingClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>,
+        T,
+        'findFirst',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first MovieScheduleSyncSetting that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncSettingFindFirstOrThrowArgs} args - Arguments to find a MovieScheduleSyncSetting
+     * @example
+     * // Get one MovieScheduleSyncSetting
+     * const movieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MovieScheduleSyncSettingFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncSettingFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncSettingClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>,
+        T,
+        'findFirstOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find zero or more MovieScheduleSyncSettings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncSettingFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MovieScheduleSyncSettings
+     * const movieScheduleSyncSettings = await prisma.movieScheduleSyncSetting.findMany()
+     *
+     * // Get first 10 MovieScheduleSyncSettings
+     * const movieScheduleSyncSettings = await prisma.movieScheduleSyncSetting.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const movieScheduleSyncSettingWithIdOnly = await prisma.movieScheduleSyncSetting.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends MovieScheduleSyncSettingFindManyArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncSettingFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create a MovieScheduleSyncSetting.
+     * @param {MovieScheduleSyncSettingCreateArgs} args - Arguments to create a MovieScheduleSyncSetting.
+     * @example
+     * // Create one MovieScheduleSyncSetting
+     * const MovieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.create({
+     *   data: {
+     *     // ... data to create a MovieScheduleSyncSetting
+     *   }
+     * })
+     *
+     */
+    create<T extends MovieScheduleSyncSettingCreateArgs>(
+      args: SelectSubset<T, MovieScheduleSyncSettingCreateArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncSettingClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>,
+        T,
+        'create',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Create many MovieScheduleSyncSettings.
+     * @param {MovieScheduleSyncSettingCreateManyArgs} args - Arguments to create many MovieScheduleSyncSettings.
+     * @example
+     * // Create many MovieScheduleSyncSettings
+     * const movieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends MovieScheduleSyncSettingCreateManyArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncSettingCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Create many MovieScheduleSyncSettings and returns the data saved in the database.
+     * @param {MovieScheduleSyncSettingCreateManyAndReturnArgs} args - Arguments to create many MovieScheduleSyncSettings.
+     * @example
+     * // Create many MovieScheduleSyncSettings
+     * const movieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many MovieScheduleSyncSettings and only return the `id`
+     * const movieScheduleSyncSettingWithIdOnly = await prisma.movieScheduleSyncSetting.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends MovieScheduleSyncSettingCreateManyAndReturnArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncSettingCreateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>,
+        T,
+        'createManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Delete a MovieScheduleSyncSetting.
+     * @param {MovieScheduleSyncSettingDeleteArgs} args - Arguments to delete one MovieScheduleSyncSetting.
+     * @example
+     * // Delete one MovieScheduleSyncSetting
+     * const MovieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.delete({
+     *   where: {
+     *     // ... filter to delete one MovieScheduleSyncSetting
+     *   }
+     * })
+     *
+     */
+    delete<T extends MovieScheduleSyncSettingDeleteArgs>(
+      args: SelectSubset<T, MovieScheduleSyncSettingDeleteArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncSettingClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>,
+        T,
+        'delete',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Update one MovieScheduleSyncSetting.
+     * @param {MovieScheduleSyncSettingUpdateArgs} args - Arguments to update one MovieScheduleSyncSetting.
+     * @example
+     * // Update one MovieScheduleSyncSetting
+     * const movieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends MovieScheduleSyncSettingUpdateArgs>(
+      args: SelectSubset<T, MovieScheduleSyncSettingUpdateArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncSettingClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>,
+        T,
+        'update',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Delete zero or more MovieScheduleSyncSettings.
+     * @param {MovieScheduleSyncSettingDeleteManyArgs} args - Arguments to filter MovieScheduleSyncSettings to delete.
+     * @example
+     * // Delete a few MovieScheduleSyncSettings
+     * const { count } = await prisma.movieScheduleSyncSetting.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends MovieScheduleSyncSettingDeleteManyArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncSettingDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more MovieScheduleSyncSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncSettingUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MovieScheduleSyncSettings
+     * const movieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends MovieScheduleSyncSettingUpdateManyArgs>(
+      args: SelectSubset<T, MovieScheduleSyncSettingUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more MovieScheduleSyncSettings and returns the data updated in the database.
+     * @param {MovieScheduleSyncSettingUpdateManyAndReturnArgs} args - Arguments to update many MovieScheduleSyncSettings.
+     * @example
+     * // Update many MovieScheduleSyncSettings
+     * const movieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more MovieScheduleSyncSettings and only return the `id`
+     * const movieScheduleSyncSettingWithIdOnly = await prisma.movieScheduleSyncSetting.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends MovieScheduleSyncSettingUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, MovieScheduleSyncSettingUpdateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>,
+        T,
+        'updateManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create or update one MovieScheduleSyncSetting.
+     * @param {MovieScheduleSyncSettingUpsertArgs} args - Arguments to update or create a MovieScheduleSyncSetting.
+     * @example
+     * // Update or create a MovieScheduleSyncSetting
+     * const movieScheduleSyncSetting = await prisma.movieScheduleSyncSetting.upsert({
+     *   create: {
+     *     // ... data to create a MovieScheduleSyncSetting
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MovieScheduleSyncSetting we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MovieScheduleSyncSettingUpsertArgs>(
+      args: SelectSubset<T, MovieScheduleSyncSettingUpsertArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncSettingClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncSettingPayload<ExtArgs>,
+        T,
+        'upsert',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Count the number of MovieScheduleSyncSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncSettingCountArgs} args - Arguments to filter MovieScheduleSyncSettings to count.
+     * @example
+     * // Count the number of MovieScheduleSyncSettings
+     * const count = await prisma.movieScheduleSyncSetting.count({
+     *   where: {
+     *     // ... the filter for the MovieScheduleSyncSettings we want to count
+     *   }
+     * })
+     **/
+    count<T extends MovieScheduleSyncSettingCountArgs>(
+      args?: Subset<T, MovieScheduleSyncSettingCountArgs>
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MovieScheduleSyncSettingCountAggregateOutputType>
+        : number
+    >;
+
+    /**
+     * Allows you to perform aggregations operations on a MovieScheduleSyncSetting.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncSettingAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+     **/
+    aggregate<T extends MovieScheduleSyncSettingAggregateArgs>(
+      args: Subset<T, MovieScheduleSyncSettingAggregateArgs>
+    ): Prisma.PrismaPromise<GetMovieScheduleSyncSettingAggregateType<T>>;
+
+    /**
+     * Group by MovieScheduleSyncSetting.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncSettingGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+     **/
+    groupBy<
+      T extends MovieScheduleSyncSettingGroupByArgs,
+      HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MovieScheduleSyncSettingGroupByArgs['orderBy'] }
+        : { orderBy?: MovieScheduleSyncSettingGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+        ? `Error: "by" must not be empty.`
+        : HavingValid extends False
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [Error, 'Field ', P, ` in "having" needs to be provided in "by"`];
+            }[HavingFields]
+          : 'take' extends Keys<T>
+            ? 'orderBy' extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : 'skip' extends Keys<T>
+              ? 'orderBy' extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+    >(
+      args: SubsetIntersection<T, MovieScheduleSyncSettingGroupByArgs, OrderByArg> & InputErrors
+    ): {} extends InputErrors
+      ? GetMovieScheduleSyncSettingGroupByPayload<T>
+      : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the MovieScheduleSyncSetting model
+     */
+    readonly fields: MovieScheduleSyncSettingFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MovieScheduleSyncSetting.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MovieScheduleSyncSettingClient<
+    T,
+    Null = never,
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+      onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
+    ): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(
+      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null
+    ): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+  /**
+   * Fields of the MovieScheduleSyncSetting model
+   */
+  interface MovieScheduleSyncSettingFieldRefs {
+    readonly id: FieldRef<'MovieScheduleSyncSetting', 'String'>;
+    readonly enabled: FieldRef<'MovieScheduleSyncSetting', 'Boolean'>;
+    readonly sourceType: FieldRef<'MovieScheduleSyncSetting', 'String'>;
+    readonly apiUrl: FieldRef<'MovieScheduleSyncSetting', 'String'>;
+    readonly apiToken: FieldRef<'MovieScheduleSyncSetting', 'String'>;
+    readonly lastSyncAt: FieldRef<'MovieScheduleSyncSetting', 'DateTime'>;
+    readonly lastSyncStatus: FieldRef<'MovieScheduleSyncSetting', 'String'>;
+    readonly lastSyncMessage: FieldRef<'MovieScheduleSyncSetting', 'String'>;
+    readonly lastSyncCount: FieldRef<'MovieScheduleSyncSetting', 'Int'>;
+    readonly createdAt: FieldRef<'MovieScheduleSyncSetting', 'DateTime'>;
+    readonly updatedAt: FieldRef<'MovieScheduleSyncSetting', 'DateTime'>;
+  }
+
+  // Custom InputTypes
+  /**
+   * MovieScheduleSyncSetting findUnique
+   */
+  export type MovieScheduleSyncSettingFindUniqueArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncSetting to fetch.
+     */
+    where: MovieScheduleSyncSettingWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncSetting findUniqueOrThrow
+   */
+  export type MovieScheduleSyncSettingFindUniqueOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncSetting to fetch.
+     */
+    where: MovieScheduleSyncSettingWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncSetting findFirst
+   */
+  export type MovieScheduleSyncSettingFindFirstArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncSetting to fetch.
+     */
+    where?: MovieScheduleSyncSettingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncSettings to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncSettingOrderByWithRelationInput
+      | MovieScheduleSyncSettingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for MovieScheduleSyncSettings.
+     */
+    cursor?: MovieScheduleSyncSettingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncSettings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncSettings.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of MovieScheduleSyncSettings.
+     */
+    distinct?: MovieScheduleSyncSettingScalarFieldEnum | MovieScheduleSyncSettingScalarFieldEnum[];
+  };
+
+  /**
+   * MovieScheduleSyncSetting findFirstOrThrow
+   */
+  export type MovieScheduleSyncSettingFindFirstOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncSetting to fetch.
+     */
+    where?: MovieScheduleSyncSettingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncSettings to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncSettingOrderByWithRelationInput
+      | MovieScheduleSyncSettingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for MovieScheduleSyncSettings.
+     */
+    cursor?: MovieScheduleSyncSettingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncSettings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncSettings.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of MovieScheduleSyncSettings.
+     */
+    distinct?: MovieScheduleSyncSettingScalarFieldEnum | MovieScheduleSyncSettingScalarFieldEnum[];
+  };
+
+  /**
+   * MovieScheduleSyncSetting findMany
+   */
+  export type MovieScheduleSyncSettingFindManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncSettings to fetch.
+     */
+    where?: MovieScheduleSyncSettingWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncSettings to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncSettingOrderByWithRelationInput
+      | MovieScheduleSyncSettingOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing MovieScheduleSyncSettings.
+     */
+    cursor?: MovieScheduleSyncSettingWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncSettings from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncSettings.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of MovieScheduleSyncSettings.
+     */
+    distinct?: MovieScheduleSyncSettingScalarFieldEnum | MovieScheduleSyncSettingScalarFieldEnum[];
+  };
+
+  /**
+   * MovieScheduleSyncSetting create
+   */
+  export type MovieScheduleSyncSettingCreateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+    /**
+     * The data needed to create a MovieScheduleSyncSetting.
+     */
+    data: XOR<MovieScheduleSyncSettingCreateInput, MovieScheduleSyncSettingUncheckedCreateInput>;
+  };
+
+  /**
+   * MovieScheduleSyncSetting createMany
+   */
+  export type MovieScheduleSyncSettingCreateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to create many MovieScheduleSyncSettings.
+     */
+    data: MovieScheduleSyncSettingCreateManyInput | MovieScheduleSyncSettingCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * MovieScheduleSyncSetting createManyAndReturn
+   */
+  export type MovieScheduleSyncSettingCreateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+    /**
+     * The data used to create many MovieScheduleSyncSettings.
+     */
+    data: MovieScheduleSyncSettingCreateManyInput | MovieScheduleSyncSettingCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * MovieScheduleSyncSetting update
+   */
+  export type MovieScheduleSyncSettingUpdateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+    /**
+     * The data needed to update a MovieScheduleSyncSetting.
+     */
+    data: XOR<MovieScheduleSyncSettingUpdateInput, MovieScheduleSyncSettingUncheckedUpdateInput>;
+    /**
+     * Choose, which MovieScheduleSyncSetting to update.
+     */
+    where: MovieScheduleSyncSettingWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncSetting updateMany
+   */
+  export type MovieScheduleSyncSettingUpdateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to update MovieScheduleSyncSettings.
+     */
+    data: XOR<
+      MovieScheduleSyncSettingUpdateManyMutationInput,
+      MovieScheduleSyncSettingUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which MovieScheduleSyncSettings to update
+     */
+    where?: MovieScheduleSyncSettingWhereInput;
+    /**
+     * Limit how many MovieScheduleSyncSettings to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * MovieScheduleSyncSetting updateManyAndReturn
+   */
+  export type MovieScheduleSyncSettingUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+    /**
+     * The data used to update MovieScheduleSyncSettings.
+     */
+    data: XOR<
+      MovieScheduleSyncSettingUpdateManyMutationInput,
+      MovieScheduleSyncSettingUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which MovieScheduleSyncSettings to update
+     */
+    where?: MovieScheduleSyncSettingWhereInput;
+    /**
+     * Limit how many MovieScheduleSyncSettings to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * MovieScheduleSyncSetting upsert
+   */
+  export type MovieScheduleSyncSettingUpsertArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+    /**
+     * The filter to search for the MovieScheduleSyncSetting to update in case it exists.
+     */
+    where: MovieScheduleSyncSettingWhereUniqueInput;
+    /**
+     * In case the MovieScheduleSyncSetting found by the `where` argument doesn't exist, create a new MovieScheduleSyncSetting with this data.
+     */
+    create: XOR<MovieScheduleSyncSettingCreateInput, MovieScheduleSyncSettingUncheckedCreateInput>;
+    /**
+     * In case the MovieScheduleSyncSetting was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MovieScheduleSyncSettingUpdateInput, MovieScheduleSyncSettingUncheckedUpdateInput>;
+  };
+
+  /**
+   * MovieScheduleSyncSetting delete
+   */
+  export type MovieScheduleSyncSettingDeleteArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+    /**
+     * Filter which MovieScheduleSyncSetting to delete.
+     */
+    where: MovieScheduleSyncSettingWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncSetting deleteMany
+   */
+  export type MovieScheduleSyncSettingDeleteManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which MovieScheduleSyncSettings to delete
+     */
+    where?: MovieScheduleSyncSettingWhereInput;
+    /**
+     * Limit how many MovieScheduleSyncSettings to delete.
+     */
+    limit?: number;
+  };
+
+  /**
+   * MovieScheduleSyncSetting without action
+   */
+  export type MovieScheduleSyncSettingDefaultArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncSetting
+     */
+    select?: MovieScheduleSyncSettingSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncSetting
+     */
+    omit?: MovieScheduleSyncSettingOmit<ExtArgs> | null;
+  };
+
+  /**
+   * Model MovieScheduleSyncedRow
+   */
+
+  export type AggregateMovieScheduleSyncedRow = {
+    _count: MovieScheduleSyncedRowCountAggregateOutputType | null;
+    _min: MovieScheduleSyncedRowMinAggregateOutputType | null;
+    _max: MovieScheduleSyncedRowMaxAggregateOutputType | null;
+  };
+
+  export type MovieScheduleSyncedRowMinAggregateOutputType = {
+    id: string | null;
+    sourceKey: string | null;
+    movieName: string | null;
+    normalizedMovieName: string | null;
+    screenName: string | null;
+    showDate: string | null;
+    showTime: string | null;
+    showDateTime: Date | null;
+    isActive: boolean | null;
+    syncBatchId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type MovieScheduleSyncedRowMaxAggregateOutputType = {
+    id: string | null;
+    sourceKey: string | null;
+    movieName: string | null;
+    normalizedMovieName: string | null;
+    screenName: string | null;
+    showDate: string | null;
+    showTime: string | null;
+    showDateTime: Date | null;
+    isActive: boolean | null;
+    syncBatchId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+
+  export type MovieScheduleSyncedRowCountAggregateOutputType = {
+    id: number;
+    sourceKey: number;
+    movieName: number;
+    normalizedMovieName: number;
+    screenName: number;
+    showDate: number;
+    showTime: number;
+    showDateTime: number;
+    isActive: number;
+    syncBatchId: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+  };
+
+  export type MovieScheduleSyncedRowMinAggregateInputType = {
+    id?: true;
+    sourceKey?: true;
+    movieName?: true;
+    normalizedMovieName?: true;
+    screenName?: true;
+    showDate?: true;
+    showTime?: true;
+    showDateTime?: true;
+    isActive?: true;
+    syncBatchId?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type MovieScheduleSyncedRowMaxAggregateInputType = {
+    id?: true;
+    sourceKey?: true;
+    movieName?: true;
+    normalizedMovieName?: true;
+    screenName?: true;
+    showDate?: true;
+    showTime?: true;
+    showDateTime?: true;
+    isActive?: true;
+    syncBatchId?: true;
+    createdAt?: true;
+    updatedAt?: true;
+  };
+
+  export type MovieScheduleSyncedRowCountAggregateInputType = {
+    id?: true;
+    sourceKey?: true;
+    movieName?: true;
+    normalizedMovieName?: true;
+    screenName?: true;
+    showDate?: true;
+    showTime?: true;
+    showDateTime?: true;
+    isActive?: true;
+    syncBatchId?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+  };
+
+  export type MovieScheduleSyncedRowAggregateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which MovieScheduleSyncedRow to aggregate.
+     */
+    where?: MovieScheduleSyncedRowWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncedRows to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncedRowOrderByWithRelationInput
+      | MovieScheduleSyncedRowOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: MovieScheduleSyncedRowWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncedRows from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncedRows.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned MovieScheduleSyncedRows
+     **/
+    _count?: true | MovieScheduleSyncedRowCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+     **/
+    _min?: MovieScheduleSyncedRowMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+     **/
+    _max?: MovieScheduleSyncedRowMaxAggregateInputType;
+  };
+
+  export type GetMovieScheduleSyncedRowAggregateType<
+    T extends MovieScheduleSyncedRowAggregateArgs
+  > = {
+    [P in keyof T & keyof AggregateMovieScheduleSyncedRow]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMovieScheduleSyncedRow[P]>
+      : GetScalarType<T[P], AggregateMovieScheduleSyncedRow[P]>;
+  };
+
+  export type MovieScheduleSyncedRowGroupByArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    where?: MovieScheduleSyncedRowWhereInput;
+    orderBy?:
+      | MovieScheduleSyncedRowOrderByWithAggregationInput
+      | MovieScheduleSyncedRowOrderByWithAggregationInput[];
+    by: MovieScheduleSyncedRowScalarFieldEnum[] | MovieScheduleSyncedRowScalarFieldEnum;
+    having?: MovieScheduleSyncedRowScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: MovieScheduleSyncedRowCountAggregateInputType | true;
+    _min?: MovieScheduleSyncedRowMinAggregateInputType;
+    _max?: MovieScheduleSyncedRowMaxAggregateInputType;
+  };
+
+  export type MovieScheduleSyncedRowGroupByOutputType = {
+    id: string;
+    sourceKey: string;
+    movieName: string;
+    normalizedMovieName: string | null;
+    screenName: string;
+    showDate: string;
+    showTime: string;
+    showDateTime: Date | null;
+    isActive: boolean;
+    syncBatchId: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: MovieScheduleSyncedRowCountAggregateOutputType | null;
+    _min: MovieScheduleSyncedRowMinAggregateOutputType | null;
+    _max: MovieScheduleSyncedRowMaxAggregateOutputType | null;
+  };
+
+  type GetMovieScheduleSyncedRowGroupByPayload<T extends MovieScheduleSyncedRowGroupByArgs> =
+    Prisma.PrismaPromise<
+      Array<
+        PickEnumerable<MovieScheduleSyncedRowGroupByOutputType, T['by']> & {
+          [P in keyof T & keyof MovieScheduleSyncedRowGroupByOutputType]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MovieScheduleSyncedRowGroupByOutputType[P]>
+            : GetScalarType<T[P], MovieScheduleSyncedRowGroupByOutputType[P]>;
+        }
+      >
+    >;
+
+  export type MovieScheduleSyncedRowSelect<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      sourceKey?: boolean;
+      movieName?: boolean;
+      normalizedMovieName?: boolean;
+      screenName?: boolean;
+      showDate?: boolean;
+      showTime?: boolean;
+      showDateTime?: boolean;
+      isActive?: boolean;
+      syncBatchId?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['movieScheduleSyncedRow']
+  >;
+
+  export type MovieScheduleSyncedRowSelectCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      sourceKey?: boolean;
+      movieName?: boolean;
+      normalizedMovieName?: boolean;
+      screenName?: boolean;
+      showDate?: boolean;
+      showTime?: boolean;
+      showDateTime?: boolean;
+      isActive?: boolean;
+      syncBatchId?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['movieScheduleSyncedRow']
+  >;
+
+  export type MovieScheduleSyncedRowSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      sourceKey?: boolean;
+      movieName?: boolean;
+      normalizedMovieName?: boolean;
+      screenName?: boolean;
+      showDate?: boolean;
+      showTime?: boolean;
+      showDateTime?: boolean;
+      isActive?: boolean;
+      syncBatchId?: boolean;
+      createdAt?: boolean;
+      updatedAt?: boolean;
+    },
+    ExtArgs['result']['movieScheduleSyncedRow']
+  >;
+
+  export type MovieScheduleSyncedRowSelectScalar = {
+    id?: boolean;
+    sourceKey?: boolean;
+    movieName?: boolean;
+    normalizedMovieName?: boolean;
+    screenName?: boolean;
+    showDate?: boolean;
+    showTime?: boolean;
+    showDateTime?: boolean;
+    isActive?: boolean;
+    syncBatchId?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+  };
+
+  export type MovieScheduleSyncedRowOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetOmit<
+    | 'id'
+    | 'sourceKey'
+    | 'movieName'
+    | 'normalizedMovieName'
+    | 'screenName'
+    | 'showDate'
+    | 'showTime'
+    | 'showDateTime'
+    | 'isActive'
+    | 'syncBatchId'
+    | 'createdAt'
+    | 'updatedAt',
+    ExtArgs['result']['movieScheduleSyncedRow']
+  >;
+
+  export type $MovieScheduleSyncedRowPayload<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    name: 'MovieScheduleSyncedRow';
+    objects: {};
+    scalars: $Extensions.GetPayloadResult<
+      {
+        id: string;
+        sourceKey: string;
+        movieName: string;
+        normalizedMovieName: string | null;
+        screenName: string;
+        showDate: string;
+        showTime: string;
+        showDateTime: Date | null;
+        isActive: boolean;
+        syncBatchId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+      },
+      ExtArgs['result']['movieScheduleSyncedRow']
+    >;
+    composites: {};
+  };
+
+  type MovieScheduleSyncedRowGetPayload<
+    S extends boolean | null | undefined | MovieScheduleSyncedRowDefaultArgs
+  > = $Result.GetResult<Prisma.$MovieScheduleSyncedRowPayload, S>;
+
+  type MovieScheduleSyncedRowCountArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = Omit<MovieScheduleSyncedRowFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: MovieScheduleSyncedRowCountAggregateInputType | true;
+  };
+
+  export interface MovieScheduleSyncedRowDelegate<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > {
+    [K: symbol]: {
+      types: Prisma.TypeMap<ExtArgs>['model']['MovieScheduleSyncedRow'];
+      meta: { name: 'MovieScheduleSyncedRow' };
+    };
+    /**
+     * Find zero or one MovieScheduleSyncedRow that matches the filter.
+     * @param {MovieScheduleSyncedRowFindUniqueArgs} args - Arguments to find a MovieScheduleSyncedRow
+     * @example
+     * // Get one MovieScheduleSyncedRow
+     * const movieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MovieScheduleSyncedRowFindUniqueArgs>(
+      args: SelectSubset<T, MovieScheduleSyncedRowFindUniqueArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncedRowClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>,
+        T,
+        'findUnique',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find one MovieScheduleSyncedRow that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MovieScheduleSyncedRowFindUniqueOrThrowArgs} args - Arguments to find a MovieScheduleSyncedRow
+     * @example
+     * // Get one MovieScheduleSyncedRow
+     * const movieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MovieScheduleSyncedRowFindUniqueOrThrowArgs>(
+      args: SelectSubset<T, MovieScheduleSyncedRowFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncedRowClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>,
+        T,
+        'findUniqueOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first MovieScheduleSyncedRow that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncedRowFindFirstArgs} args - Arguments to find a MovieScheduleSyncedRow
+     * @example
+     * // Get one MovieScheduleSyncedRow
+     * const movieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MovieScheduleSyncedRowFindFirstArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncedRowFindFirstArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncedRowClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>,
+        T,
+        'findFirst',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first MovieScheduleSyncedRow that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncedRowFindFirstOrThrowArgs} args - Arguments to find a MovieScheduleSyncedRow
+     * @example
+     * // Get one MovieScheduleSyncedRow
+     * const movieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MovieScheduleSyncedRowFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncedRowFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncedRowClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>,
+        T,
+        'findFirstOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find zero or more MovieScheduleSyncedRows that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncedRowFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MovieScheduleSyncedRows
+     * const movieScheduleSyncedRows = await prisma.movieScheduleSyncedRow.findMany()
+     *
+     * // Get first 10 MovieScheduleSyncedRows
+     * const movieScheduleSyncedRows = await prisma.movieScheduleSyncedRow.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const movieScheduleSyncedRowWithIdOnly = await prisma.movieScheduleSyncedRow.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends MovieScheduleSyncedRowFindManyArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncedRowFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create a MovieScheduleSyncedRow.
+     * @param {MovieScheduleSyncedRowCreateArgs} args - Arguments to create a MovieScheduleSyncedRow.
+     * @example
+     * // Create one MovieScheduleSyncedRow
+     * const MovieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.create({
+     *   data: {
+     *     // ... data to create a MovieScheduleSyncedRow
+     *   }
+     * })
+     *
+     */
+    create<T extends MovieScheduleSyncedRowCreateArgs>(
+      args: SelectSubset<T, MovieScheduleSyncedRowCreateArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncedRowClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>,
+        T,
+        'create',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Create many MovieScheduleSyncedRows.
+     * @param {MovieScheduleSyncedRowCreateManyArgs} args - Arguments to create many MovieScheduleSyncedRows.
+     * @example
+     * // Create many MovieScheduleSyncedRows
+     * const movieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends MovieScheduleSyncedRowCreateManyArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncedRowCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Create many MovieScheduleSyncedRows and returns the data saved in the database.
+     * @param {MovieScheduleSyncedRowCreateManyAndReturnArgs} args - Arguments to create many MovieScheduleSyncedRows.
+     * @example
+     * // Create many MovieScheduleSyncedRows
+     * const movieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many MovieScheduleSyncedRows and only return the `id`
+     * const movieScheduleSyncedRowWithIdOnly = await prisma.movieScheduleSyncedRow.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends MovieScheduleSyncedRowCreateManyAndReturnArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncedRowCreateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>,
+        T,
+        'createManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Delete a MovieScheduleSyncedRow.
+     * @param {MovieScheduleSyncedRowDeleteArgs} args - Arguments to delete one MovieScheduleSyncedRow.
+     * @example
+     * // Delete one MovieScheduleSyncedRow
+     * const MovieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.delete({
+     *   where: {
+     *     // ... filter to delete one MovieScheduleSyncedRow
+     *   }
+     * })
+     *
+     */
+    delete<T extends MovieScheduleSyncedRowDeleteArgs>(
+      args: SelectSubset<T, MovieScheduleSyncedRowDeleteArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncedRowClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>,
+        T,
+        'delete',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Update one MovieScheduleSyncedRow.
+     * @param {MovieScheduleSyncedRowUpdateArgs} args - Arguments to update one MovieScheduleSyncedRow.
+     * @example
+     * // Update one MovieScheduleSyncedRow
+     * const movieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends MovieScheduleSyncedRowUpdateArgs>(
+      args: SelectSubset<T, MovieScheduleSyncedRowUpdateArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncedRowClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>,
+        T,
+        'update',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Delete zero or more MovieScheduleSyncedRows.
+     * @param {MovieScheduleSyncedRowDeleteManyArgs} args - Arguments to filter MovieScheduleSyncedRows to delete.
+     * @example
+     * // Delete a few MovieScheduleSyncedRows
+     * const { count } = await prisma.movieScheduleSyncedRow.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends MovieScheduleSyncedRowDeleteManyArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncedRowDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more MovieScheduleSyncedRows.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncedRowUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MovieScheduleSyncedRows
+     * const movieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends MovieScheduleSyncedRowUpdateManyArgs>(
+      args: SelectSubset<T, MovieScheduleSyncedRowUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more MovieScheduleSyncedRows and returns the data updated in the database.
+     * @param {MovieScheduleSyncedRowUpdateManyAndReturnArgs} args - Arguments to update many MovieScheduleSyncedRows.
+     * @example
+     * // Update many MovieScheduleSyncedRows
+     * const movieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more MovieScheduleSyncedRows and only return the `id`
+     * const movieScheduleSyncedRowWithIdOnly = await prisma.movieScheduleSyncedRow.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends MovieScheduleSyncedRowUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, MovieScheduleSyncedRowUpdateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>,
+        T,
+        'updateManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create or update one MovieScheduleSyncedRow.
+     * @param {MovieScheduleSyncedRowUpsertArgs} args - Arguments to update or create a MovieScheduleSyncedRow.
+     * @example
+     * // Update or create a MovieScheduleSyncedRow
+     * const movieScheduleSyncedRow = await prisma.movieScheduleSyncedRow.upsert({
+     *   create: {
+     *     // ... data to create a MovieScheduleSyncedRow
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MovieScheduleSyncedRow we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MovieScheduleSyncedRowUpsertArgs>(
+      args: SelectSubset<T, MovieScheduleSyncedRowUpsertArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncedRowClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncedRowPayload<ExtArgs>,
+        T,
+        'upsert',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Count the number of MovieScheduleSyncedRows.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncedRowCountArgs} args - Arguments to filter MovieScheduleSyncedRows to count.
+     * @example
+     * // Count the number of MovieScheduleSyncedRows
+     * const count = await prisma.movieScheduleSyncedRow.count({
+     *   where: {
+     *     // ... the filter for the MovieScheduleSyncedRows we want to count
+     *   }
+     * })
+     **/
+    count<T extends MovieScheduleSyncedRowCountArgs>(
+      args?: Subset<T, MovieScheduleSyncedRowCountArgs>
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MovieScheduleSyncedRowCountAggregateOutputType>
+        : number
+    >;
+
+    /**
+     * Allows you to perform aggregations operations on a MovieScheduleSyncedRow.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncedRowAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+     **/
+    aggregate<T extends MovieScheduleSyncedRowAggregateArgs>(
+      args: Subset<T, MovieScheduleSyncedRowAggregateArgs>
+    ): Prisma.PrismaPromise<GetMovieScheduleSyncedRowAggregateType<T>>;
+
+    /**
+     * Group by MovieScheduleSyncedRow.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncedRowGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+     **/
+    groupBy<
+      T extends MovieScheduleSyncedRowGroupByArgs,
+      HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MovieScheduleSyncedRowGroupByArgs['orderBy'] }
+        : { orderBy?: MovieScheduleSyncedRowGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+        ? `Error: "by" must not be empty.`
+        : HavingValid extends False
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [Error, 'Field ', P, ` in "having" needs to be provided in "by"`];
+            }[HavingFields]
+          : 'take' extends Keys<T>
+            ? 'orderBy' extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : 'skip' extends Keys<T>
+              ? 'orderBy' extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+    >(
+      args: SubsetIntersection<T, MovieScheduleSyncedRowGroupByArgs, OrderByArg> & InputErrors
+    ): {} extends InputErrors
+      ? GetMovieScheduleSyncedRowGroupByPayload<T>
+      : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the MovieScheduleSyncedRow model
+     */
+    readonly fields: MovieScheduleSyncedRowFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MovieScheduleSyncedRow.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MovieScheduleSyncedRowClient<
+    T,
+    Null = never,
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+      onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
+    ): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(
+      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null
+    ): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+  /**
+   * Fields of the MovieScheduleSyncedRow model
+   */
+  interface MovieScheduleSyncedRowFieldRefs {
+    readonly id: FieldRef<'MovieScheduleSyncedRow', 'String'>;
+    readonly sourceKey: FieldRef<'MovieScheduleSyncedRow', 'String'>;
+    readonly movieName: FieldRef<'MovieScheduleSyncedRow', 'String'>;
+    readonly normalizedMovieName: FieldRef<'MovieScheduleSyncedRow', 'String'>;
+    readonly screenName: FieldRef<'MovieScheduleSyncedRow', 'String'>;
+    readonly showDate: FieldRef<'MovieScheduleSyncedRow', 'String'>;
+    readonly showTime: FieldRef<'MovieScheduleSyncedRow', 'String'>;
+    readonly showDateTime: FieldRef<'MovieScheduleSyncedRow', 'DateTime'>;
+    readonly isActive: FieldRef<'MovieScheduleSyncedRow', 'Boolean'>;
+    readonly syncBatchId: FieldRef<'MovieScheduleSyncedRow', 'String'>;
+    readonly createdAt: FieldRef<'MovieScheduleSyncedRow', 'DateTime'>;
+    readonly updatedAt: FieldRef<'MovieScheduleSyncedRow', 'DateTime'>;
+  }
+
+  // Custom InputTypes
+  /**
+   * MovieScheduleSyncedRow findUnique
+   */
+  export type MovieScheduleSyncedRowFindUniqueArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncedRow to fetch.
+     */
+    where: MovieScheduleSyncedRowWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncedRow findUniqueOrThrow
+   */
+  export type MovieScheduleSyncedRowFindUniqueOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncedRow to fetch.
+     */
+    where: MovieScheduleSyncedRowWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncedRow findFirst
+   */
+  export type MovieScheduleSyncedRowFindFirstArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncedRow to fetch.
+     */
+    where?: MovieScheduleSyncedRowWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncedRows to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncedRowOrderByWithRelationInput
+      | MovieScheduleSyncedRowOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for MovieScheduleSyncedRows.
+     */
+    cursor?: MovieScheduleSyncedRowWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncedRows from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncedRows.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of MovieScheduleSyncedRows.
+     */
+    distinct?: MovieScheduleSyncedRowScalarFieldEnum | MovieScheduleSyncedRowScalarFieldEnum[];
+  };
+
+  /**
+   * MovieScheduleSyncedRow findFirstOrThrow
+   */
+  export type MovieScheduleSyncedRowFindFirstOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncedRow to fetch.
+     */
+    where?: MovieScheduleSyncedRowWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncedRows to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncedRowOrderByWithRelationInput
+      | MovieScheduleSyncedRowOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for MovieScheduleSyncedRows.
+     */
+    cursor?: MovieScheduleSyncedRowWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncedRows from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncedRows.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of MovieScheduleSyncedRows.
+     */
+    distinct?: MovieScheduleSyncedRowScalarFieldEnum | MovieScheduleSyncedRowScalarFieldEnum[];
+  };
+
+  /**
+   * MovieScheduleSyncedRow findMany
+   */
+  export type MovieScheduleSyncedRowFindManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncedRows to fetch.
+     */
+    where?: MovieScheduleSyncedRowWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncedRows to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncedRowOrderByWithRelationInput
+      | MovieScheduleSyncedRowOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing MovieScheduleSyncedRows.
+     */
+    cursor?: MovieScheduleSyncedRowWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncedRows from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncedRows.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of MovieScheduleSyncedRows.
+     */
+    distinct?: MovieScheduleSyncedRowScalarFieldEnum | MovieScheduleSyncedRowScalarFieldEnum[];
+  };
+
+  /**
+   * MovieScheduleSyncedRow create
+   */
+  export type MovieScheduleSyncedRowCreateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+    /**
+     * The data needed to create a MovieScheduleSyncedRow.
+     */
+    data: XOR<MovieScheduleSyncedRowCreateInput, MovieScheduleSyncedRowUncheckedCreateInput>;
+  };
+
+  /**
+   * MovieScheduleSyncedRow createMany
+   */
+  export type MovieScheduleSyncedRowCreateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to create many MovieScheduleSyncedRows.
+     */
+    data: MovieScheduleSyncedRowCreateManyInput | MovieScheduleSyncedRowCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * MovieScheduleSyncedRow createManyAndReturn
+   */
+  export type MovieScheduleSyncedRowCreateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+    /**
+     * The data used to create many MovieScheduleSyncedRows.
+     */
+    data: MovieScheduleSyncedRowCreateManyInput | MovieScheduleSyncedRowCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * MovieScheduleSyncedRow update
+   */
+  export type MovieScheduleSyncedRowUpdateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+    /**
+     * The data needed to update a MovieScheduleSyncedRow.
+     */
+    data: XOR<MovieScheduleSyncedRowUpdateInput, MovieScheduleSyncedRowUncheckedUpdateInput>;
+    /**
+     * Choose, which MovieScheduleSyncedRow to update.
+     */
+    where: MovieScheduleSyncedRowWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncedRow updateMany
+   */
+  export type MovieScheduleSyncedRowUpdateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to update MovieScheduleSyncedRows.
+     */
+    data: XOR<
+      MovieScheduleSyncedRowUpdateManyMutationInput,
+      MovieScheduleSyncedRowUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which MovieScheduleSyncedRows to update
+     */
+    where?: MovieScheduleSyncedRowWhereInput;
+    /**
+     * Limit how many MovieScheduleSyncedRows to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * MovieScheduleSyncedRow updateManyAndReturn
+   */
+  export type MovieScheduleSyncedRowUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+    /**
+     * The data used to update MovieScheduleSyncedRows.
+     */
+    data: XOR<
+      MovieScheduleSyncedRowUpdateManyMutationInput,
+      MovieScheduleSyncedRowUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which MovieScheduleSyncedRows to update
+     */
+    where?: MovieScheduleSyncedRowWhereInput;
+    /**
+     * Limit how many MovieScheduleSyncedRows to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * MovieScheduleSyncedRow upsert
+   */
+  export type MovieScheduleSyncedRowUpsertArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+    /**
+     * The filter to search for the MovieScheduleSyncedRow to update in case it exists.
+     */
+    where: MovieScheduleSyncedRowWhereUniqueInput;
+    /**
+     * In case the MovieScheduleSyncedRow found by the `where` argument doesn't exist, create a new MovieScheduleSyncedRow with this data.
+     */
+    create: XOR<MovieScheduleSyncedRowCreateInput, MovieScheduleSyncedRowUncheckedCreateInput>;
+    /**
+     * In case the MovieScheduleSyncedRow was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MovieScheduleSyncedRowUpdateInput, MovieScheduleSyncedRowUncheckedUpdateInput>;
+  };
+
+  /**
+   * MovieScheduleSyncedRow delete
+   */
+  export type MovieScheduleSyncedRowDeleteArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+    /**
+     * Filter which MovieScheduleSyncedRow to delete.
+     */
+    where: MovieScheduleSyncedRowWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncedRow deleteMany
+   */
+  export type MovieScheduleSyncedRowDeleteManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which MovieScheduleSyncedRows to delete
+     */
+    where?: MovieScheduleSyncedRowWhereInput;
+    /**
+     * Limit how many MovieScheduleSyncedRows to delete.
+     */
+    limit?: number;
+  };
+
+  /**
+   * MovieScheduleSyncedRow without action
+   */
+  export type MovieScheduleSyncedRowDefaultArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncedRow
+     */
+    select?: MovieScheduleSyncedRowSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncedRow
+     */
+    omit?: MovieScheduleSyncedRowOmit<ExtArgs> | null;
+  };
+
+  /**
+   * Model MovieScheduleSyncLog
+   */
+
+  export type AggregateMovieScheduleSyncLog = {
+    _count: MovieScheduleSyncLogCountAggregateOutputType | null;
+    _avg: MovieScheduleSyncLogAvgAggregateOutputType | null;
+    _sum: MovieScheduleSyncLogSumAggregateOutputType | null;
+    _min: MovieScheduleSyncLogMinAggregateOutputType | null;
+    _max: MovieScheduleSyncLogMaxAggregateOutputType | null;
+  };
+
+  export type MovieScheduleSyncLogAvgAggregateOutputType = {
+    rowCount: number | null;
+  };
+
+  export type MovieScheduleSyncLogSumAggregateOutputType = {
+    rowCount: number | null;
+  };
+
+  export type MovieScheduleSyncLogMinAggregateOutputType = {
+    id: string | null;
+    status: string | null;
+    message: string | null;
+    rowCount: number | null;
+    startedAt: Date | null;
+    finishedAt: Date | null;
+    createdAt: Date | null;
+  };
+
+  export type MovieScheduleSyncLogMaxAggregateOutputType = {
+    id: string | null;
+    status: string | null;
+    message: string | null;
+    rowCount: number | null;
+    startedAt: Date | null;
+    finishedAt: Date | null;
+    createdAt: Date | null;
+  };
+
+  export type MovieScheduleSyncLogCountAggregateOutputType = {
+    id: number;
+    status: number;
+    message: number;
+    rowCount: number;
+    startedAt: number;
+    finishedAt: number;
+    createdAt: number;
+    _all: number;
+  };
+
+  export type MovieScheduleSyncLogAvgAggregateInputType = {
+    rowCount?: true;
+  };
+
+  export type MovieScheduleSyncLogSumAggregateInputType = {
+    rowCount?: true;
+  };
+
+  export type MovieScheduleSyncLogMinAggregateInputType = {
+    id?: true;
+    status?: true;
+    message?: true;
+    rowCount?: true;
+    startedAt?: true;
+    finishedAt?: true;
+    createdAt?: true;
+  };
+
+  export type MovieScheduleSyncLogMaxAggregateInputType = {
+    id?: true;
+    status?: true;
+    message?: true;
+    rowCount?: true;
+    startedAt?: true;
+    finishedAt?: true;
+    createdAt?: true;
+  };
+
+  export type MovieScheduleSyncLogCountAggregateInputType = {
+    id?: true;
+    status?: true;
+    message?: true;
+    rowCount?: true;
+    startedAt?: true;
+    finishedAt?: true;
+    createdAt?: true;
+    _all?: true;
+  };
+
+  export type MovieScheduleSyncLogAggregateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which MovieScheduleSyncLog to aggregate.
+     */
+    where?: MovieScheduleSyncLogWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncLogs to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncLogOrderByWithRelationInput
+      | MovieScheduleSyncLogOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: MovieScheduleSyncLogWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncLogs from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncLogs.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned MovieScheduleSyncLogs
+     **/
+    _count?: true | MovieScheduleSyncLogCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+     **/
+    _avg?: MovieScheduleSyncLogAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: MovieScheduleSyncLogSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+     **/
+    _min?: MovieScheduleSyncLogMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+     **/
+    _max?: MovieScheduleSyncLogMaxAggregateInputType;
+  };
+
+  export type GetMovieScheduleSyncLogAggregateType<T extends MovieScheduleSyncLogAggregateArgs> = {
+    [P in keyof T & keyof AggregateMovieScheduleSyncLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMovieScheduleSyncLog[P]>
+      : GetScalarType<T[P], AggregateMovieScheduleSyncLog[P]>;
+  };
+
+  export type MovieScheduleSyncLogGroupByArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    where?: MovieScheduleSyncLogWhereInput;
+    orderBy?:
+      | MovieScheduleSyncLogOrderByWithAggregationInput
+      | MovieScheduleSyncLogOrderByWithAggregationInput[];
+    by: MovieScheduleSyncLogScalarFieldEnum[] | MovieScheduleSyncLogScalarFieldEnum;
+    having?: MovieScheduleSyncLogScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: MovieScheduleSyncLogCountAggregateInputType | true;
+    _avg?: MovieScheduleSyncLogAvgAggregateInputType;
+    _sum?: MovieScheduleSyncLogSumAggregateInputType;
+    _min?: MovieScheduleSyncLogMinAggregateInputType;
+    _max?: MovieScheduleSyncLogMaxAggregateInputType;
+  };
+
+  export type MovieScheduleSyncLogGroupByOutputType = {
+    id: string;
+    status: string;
+    message: string | null;
+    rowCount: number;
+    startedAt: Date;
+    finishedAt: Date | null;
+    createdAt: Date;
+    _count: MovieScheduleSyncLogCountAggregateOutputType | null;
+    _avg: MovieScheduleSyncLogAvgAggregateOutputType | null;
+    _sum: MovieScheduleSyncLogSumAggregateOutputType | null;
+    _min: MovieScheduleSyncLogMinAggregateOutputType | null;
+    _max: MovieScheduleSyncLogMaxAggregateOutputType | null;
+  };
+
+  type GetMovieScheduleSyncLogGroupByPayload<T extends MovieScheduleSyncLogGroupByArgs> =
+    Prisma.PrismaPromise<
+      Array<
+        PickEnumerable<MovieScheduleSyncLogGroupByOutputType, T['by']> & {
+          [P in keyof T & keyof MovieScheduleSyncLogGroupByOutputType]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MovieScheduleSyncLogGroupByOutputType[P]>
+            : GetScalarType<T[P], MovieScheduleSyncLogGroupByOutputType[P]>;
+        }
+      >
+    >;
+
+  export type MovieScheduleSyncLogSelect<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      status?: boolean;
+      message?: boolean;
+      rowCount?: boolean;
+      startedAt?: boolean;
+      finishedAt?: boolean;
+      createdAt?: boolean;
+    },
+    ExtArgs['result']['movieScheduleSyncLog']
+  >;
+
+  export type MovieScheduleSyncLogSelectCreateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      status?: boolean;
+      message?: boolean;
+      rowCount?: boolean;
+      startedAt?: boolean;
+      finishedAt?: boolean;
+      createdAt?: boolean;
+    },
+    ExtArgs['result']['movieScheduleSyncLog']
+  >;
+
+  export type MovieScheduleSyncLogSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      status?: boolean;
+      message?: boolean;
+      rowCount?: boolean;
+      startedAt?: boolean;
+      finishedAt?: boolean;
+      createdAt?: boolean;
+    },
+    ExtArgs['result']['movieScheduleSyncLog']
+  >;
+
+  export type MovieScheduleSyncLogSelectScalar = {
+    id?: boolean;
+    status?: boolean;
+    message?: boolean;
+    rowCount?: boolean;
+    startedAt?: boolean;
+    finishedAt?: boolean;
+    createdAt?: boolean;
+  };
+
+  export type MovieScheduleSyncLogOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = $Extensions.GetOmit<
+    'id' | 'status' | 'message' | 'rowCount' | 'startedAt' | 'finishedAt' | 'createdAt',
+    ExtArgs['result']['movieScheduleSyncLog']
+  >;
+
+  export type $MovieScheduleSyncLogPayload<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    name: 'MovieScheduleSyncLog';
+    objects: {};
+    scalars: $Extensions.GetPayloadResult<
+      {
+        id: string;
+        status: string;
+        message: string | null;
+        rowCount: number;
+        startedAt: Date;
+        finishedAt: Date | null;
+        createdAt: Date;
+      },
+      ExtArgs['result']['movieScheduleSyncLog']
+    >;
+    composites: {};
+  };
+
+  type MovieScheduleSyncLogGetPayload<
+    S extends boolean | null | undefined | MovieScheduleSyncLogDefaultArgs
+  > = $Result.GetResult<Prisma.$MovieScheduleSyncLogPayload, S>;
+
+  type MovieScheduleSyncLogCountArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = Omit<MovieScheduleSyncLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: MovieScheduleSyncLogCountAggregateInputType | true;
+  };
+
+  export interface MovieScheduleSyncLogDelegate<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > {
+    [K: symbol]: {
+      types: Prisma.TypeMap<ExtArgs>['model']['MovieScheduleSyncLog'];
+      meta: { name: 'MovieScheduleSyncLog' };
+    };
+    /**
+     * Find zero or one MovieScheduleSyncLog that matches the filter.
+     * @param {MovieScheduleSyncLogFindUniqueArgs} args - Arguments to find a MovieScheduleSyncLog
+     * @example
+     * // Get one MovieScheduleSyncLog
+     * const movieScheduleSyncLog = await prisma.movieScheduleSyncLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MovieScheduleSyncLogFindUniqueArgs>(
+      args: SelectSubset<T, MovieScheduleSyncLogFindUniqueArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncLogClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncLogPayload<ExtArgs>,
+        T,
+        'findUnique',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find one MovieScheduleSyncLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MovieScheduleSyncLogFindUniqueOrThrowArgs} args - Arguments to find a MovieScheduleSyncLog
+     * @example
+     * // Get one MovieScheduleSyncLog
+     * const movieScheduleSyncLog = await prisma.movieScheduleSyncLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MovieScheduleSyncLogFindUniqueOrThrowArgs>(
+      args: SelectSubset<T, MovieScheduleSyncLogFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncLogClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncLogPayload<ExtArgs>,
+        T,
+        'findUniqueOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first MovieScheduleSyncLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncLogFindFirstArgs} args - Arguments to find a MovieScheduleSyncLog
+     * @example
+     * // Get one MovieScheduleSyncLog
+     * const movieScheduleSyncLog = await prisma.movieScheduleSyncLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MovieScheduleSyncLogFindFirstArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncLogFindFirstArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncLogClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncLogPayload<ExtArgs>,
+        T,
+        'findFirst',
+        GlobalOmitOptions
+      > | null,
+      null,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find the first MovieScheduleSyncLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncLogFindFirstOrThrowArgs} args - Arguments to find a MovieScheduleSyncLog
+     * @example
+     * // Get one MovieScheduleSyncLog
+     * const movieScheduleSyncLog = await prisma.movieScheduleSyncLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MovieScheduleSyncLogFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncLogFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncLogClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncLogPayload<ExtArgs>,
+        T,
+        'findFirstOrThrow',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Find zero or more MovieScheduleSyncLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MovieScheduleSyncLogs
+     * const movieScheduleSyncLogs = await prisma.movieScheduleSyncLog.findMany()
+     *
+     * // Get first 10 MovieScheduleSyncLogs
+     * const movieScheduleSyncLogs = await prisma.movieScheduleSyncLog.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const movieScheduleSyncLogWithIdOnly = await prisma.movieScheduleSyncLog.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends MovieScheduleSyncLogFindManyArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncLogFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncLogPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create a MovieScheduleSyncLog.
+     * @param {MovieScheduleSyncLogCreateArgs} args - Arguments to create a MovieScheduleSyncLog.
+     * @example
+     * // Create one MovieScheduleSyncLog
+     * const MovieScheduleSyncLog = await prisma.movieScheduleSyncLog.create({
+     *   data: {
+     *     // ... data to create a MovieScheduleSyncLog
+     *   }
+     * })
+     *
+     */
+    create<T extends MovieScheduleSyncLogCreateArgs>(
+      args: SelectSubset<T, MovieScheduleSyncLogCreateArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncLogClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncLogPayload<ExtArgs>,
+        T,
+        'create',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Create many MovieScheduleSyncLogs.
+     * @param {MovieScheduleSyncLogCreateManyArgs} args - Arguments to create many MovieScheduleSyncLogs.
+     * @example
+     * // Create many MovieScheduleSyncLogs
+     * const movieScheduleSyncLog = await prisma.movieScheduleSyncLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends MovieScheduleSyncLogCreateManyArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncLogCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Create many MovieScheduleSyncLogs and returns the data saved in the database.
+     * @param {MovieScheduleSyncLogCreateManyAndReturnArgs} args - Arguments to create many MovieScheduleSyncLogs.
+     * @example
+     * // Create many MovieScheduleSyncLogs
+     * const movieScheduleSyncLog = await prisma.movieScheduleSyncLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many MovieScheduleSyncLogs and only return the `id`
+     * const movieScheduleSyncLogWithIdOnly = await prisma.movieScheduleSyncLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends MovieScheduleSyncLogCreateManyAndReturnArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncLogCreateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncLogPayload<ExtArgs>,
+        T,
+        'createManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Delete a MovieScheduleSyncLog.
+     * @param {MovieScheduleSyncLogDeleteArgs} args - Arguments to delete one MovieScheduleSyncLog.
+     * @example
+     * // Delete one MovieScheduleSyncLog
+     * const MovieScheduleSyncLog = await prisma.movieScheduleSyncLog.delete({
+     *   where: {
+     *     // ... filter to delete one MovieScheduleSyncLog
+     *   }
+     * })
+     *
+     */
+    delete<T extends MovieScheduleSyncLogDeleteArgs>(
+      args: SelectSubset<T, MovieScheduleSyncLogDeleteArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncLogClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncLogPayload<ExtArgs>,
+        T,
+        'delete',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Update one MovieScheduleSyncLog.
+     * @param {MovieScheduleSyncLogUpdateArgs} args - Arguments to update one MovieScheduleSyncLog.
+     * @example
+     * // Update one MovieScheduleSyncLog
+     * const movieScheduleSyncLog = await prisma.movieScheduleSyncLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends MovieScheduleSyncLogUpdateArgs>(
+      args: SelectSubset<T, MovieScheduleSyncLogUpdateArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncLogClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncLogPayload<ExtArgs>,
+        T,
+        'update',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Delete zero or more MovieScheduleSyncLogs.
+     * @param {MovieScheduleSyncLogDeleteManyArgs} args - Arguments to filter MovieScheduleSyncLogs to delete.
+     * @example
+     * // Delete a few MovieScheduleSyncLogs
+     * const { count } = await prisma.movieScheduleSyncLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends MovieScheduleSyncLogDeleteManyArgs>(
+      args?: SelectSubset<T, MovieScheduleSyncLogDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more MovieScheduleSyncLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MovieScheduleSyncLogs
+     * const movieScheduleSyncLog = await prisma.movieScheduleSyncLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends MovieScheduleSyncLogUpdateManyArgs>(
+      args: SelectSubset<T, MovieScheduleSyncLogUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more MovieScheduleSyncLogs and returns the data updated in the database.
+     * @param {MovieScheduleSyncLogUpdateManyAndReturnArgs} args - Arguments to update many MovieScheduleSyncLogs.
+     * @example
+     * // Update many MovieScheduleSyncLogs
+     * const movieScheduleSyncLog = await prisma.movieScheduleSyncLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more MovieScheduleSyncLogs and only return the `id`
+     * const movieScheduleSyncLogWithIdOnly = await prisma.movieScheduleSyncLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends MovieScheduleSyncLogUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, MovieScheduleSyncLogUpdateManyAndReturnArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncLogPayload<ExtArgs>,
+        T,
+        'updateManyAndReturn',
+        GlobalOmitOptions
+      >
+    >;
+
+    /**
+     * Create or update one MovieScheduleSyncLog.
+     * @param {MovieScheduleSyncLogUpsertArgs} args - Arguments to update or create a MovieScheduleSyncLog.
+     * @example
+     * // Update or create a MovieScheduleSyncLog
+     * const movieScheduleSyncLog = await prisma.movieScheduleSyncLog.upsert({
+     *   create: {
+     *     // ... data to create a MovieScheduleSyncLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MovieScheduleSyncLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MovieScheduleSyncLogUpsertArgs>(
+      args: SelectSubset<T, MovieScheduleSyncLogUpsertArgs<ExtArgs>>
+    ): Prisma__MovieScheduleSyncLogClient<
+      $Result.GetResult<
+        Prisma.$MovieScheduleSyncLogPayload<ExtArgs>,
+        T,
+        'upsert',
+        GlobalOmitOptions
+      >,
+      never,
+      ExtArgs,
+      GlobalOmitOptions
+    >;
+
+    /**
+     * Count the number of MovieScheduleSyncLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncLogCountArgs} args - Arguments to filter MovieScheduleSyncLogs to count.
+     * @example
+     * // Count the number of MovieScheduleSyncLogs
+     * const count = await prisma.movieScheduleSyncLog.count({
+     *   where: {
+     *     // ... the filter for the MovieScheduleSyncLogs we want to count
+     *   }
+     * })
+     **/
+    count<T extends MovieScheduleSyncLogCountArgs>(
+      args?: Subset<T, MovieScheduleSyncLogCountArgs>
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MovieScheduleSyncLogCountAggregateOutputType>
+        : number
+    >;
+
+    /**
+     * Allows you to perform aggregations operations on a MovieScheduleSyncLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+     **/
+    aggregate<T extends MovieScheduleSyncLogAggregateArgs>(
+      args: Subset<T, MovieScheduleSyncLogAggregateArgs>
+    ): Prisma.PrismaPromise<GetMovieScheduleSyncLogAggregateType<T>>;
+
+    /**
+     * Group by MovieScheduleSyncLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MovieScheduleSyncLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+     **/
+    groupBy<
+      T extends MovieScheduleSyncLogGroupByArgs,
+      HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MovieScheduleSyncLogGroupByArgs['orderBy'] }
+        : { orderBy?: MovieScheduleSyncLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+        ? `Error: "by" must not be empty.`
+        : HavingValid extends False
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [Error, 'Field ', P, ` in "having" needs to be provided in "by"`];
+            }[HavingFields]
+          : 'take' extends Keys<T>
+            ? 'orderBy' extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : 'skip' extends Keys<T>
+              ? 'orderBy' extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+    >(
+      args: SubsetIntersection<T, MovieScheduleSyncLogGroupByArgs, OrderByArg> & InputErrors
+    ): {} extends InputErrors
+      ? GetMovieScheduleSyncLogGroupByPayload<T>
+      : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the MovieScheduleSyncLog model
+     */
+    readonly fields: MovieScheduleSyncLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MovieScheduleSyncLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MovieScheduleSyncLogClient<
+    T,
+    Null = never,
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    GlobalOmitOptions = {}
+  > extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+      onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
+    ): $Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(
+      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null
+    ): $Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>;
+  }
+
+  /**
+   * Fields of the MovieScheduleSyncLog model
+   */
+  interface MovieScheduleSyncLogFieldRefs {
+    readonly id: FieldRef<'MovieScheduleSyncLog', 'String'>;
+    readonly status: FieldRef<'MovieScheduleSyncLog', 'String'>;
+    readonly message: FieldRef<'MovieScheduleSyncLog', 'String'>;
+    readonly rowCount: FieldRef<'MovieScheduleSyncLog', 'Int'>;
+    readonly startedAt: FieldRef<'MovieScheduleSyncLog', 'DateTime'>;
+    readonly finishedAt: FieldRef<'MovieScheduleSyncLog', 'DateTime'>;
+    readonly createdAt: FieldRef<'MovieScheduleSyncLog', 'DateTime'>;
+  }
+
+  // Custom InputTypes
+  /**
+   * MovieScheduleSyncLog findUnique
+   */
+  export type MovieScheduleSyncLogFindUniqueArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncLog to fetch.
+     */
+    where: MovieScheduleSyncLogWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncLog findUniqueOrThrow
+   */
+  export type MovieScheduleSyncLogFindUniqueOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncLog to fetch.
+     */
+    where: MovieScheduleSyncLogWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncLog findFirst
+   */
+  export type MovieScheduleSyncLogFindFirstArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncLog to fetch.
+     */
+    where?: MovieScheduleSyncLogWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncLogs to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncLogOrderByWithRelationInput
+      | MovieScheduleSyncLogOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for MovieScheduleSyncLogs.
+     */
+    cursor?: MovieScheduleSyncLogWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncLogs from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncLogs.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of MovieScheduleSyncLogs.
+     */
+    distinct?: MovieScheduleSyncLogScalarFieldEnum | MovieScheduleSyncLogScalarFieldEnum[];
+  };
+
+  /**
+   * MovieScheduleSyncLog findFirstOrThrow
+   */
+  export type MovieScheduleSyncLogFindFirstOrThrowArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncLog to fetch.
+     */
+    where?: MovieScheduleSyncLogWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncLogs to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncLogOrderByWithRelationInput
+      | MovieScheduleSyncLogOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for MovieScheduleSyncLogs.
+     */
+    cursor?: MovieScheduleSyncLogWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncLogs from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncLogs.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of MovieScheduleSyncLogs.
+     */
+    distinct?: MovieScheduleSyncLogScalarFieldEnum | MovieScheduleSyncLogScalarFieldEnum[];
+  };
+
+  /**
+   * MovieScheduleSyncLog findMany
+   */
+  export type MovieScheduleSyncLogFindManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+    /**
+     * Filter, which MovieScheduleSyncLogs to fetch.
+     */
+    where?: MovieScheduleSyncLogWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of MovieScheduleSyncLogs to fetch.
+     */
+    orderBy?:
+      | MovieScheduleSyncLogOrderByWithRelationInput
+      | MovieScheduleSyncLogOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing MovieScheduleSyncLogs.
+     */
+    cursor?: MovieScheduleSyncLogWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` MovieScheduleSyncLogs from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` MovieScheduleSyncLogs.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of MovieScheduleSyncLogs.
+     */
+    distinct?: MovieScheduleSyncLogScalarFieldEnum | MovieScheduleSyncLogScalarFieldEnum[];
+  };
+
+  /**
+   * MovieScheduleSyncLog create
+   */
+  export type MovieScheduleSyncLogCreateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+    /**
+     * The data needed to create a MovieScheduleSyncLog.
+     */
+    data: XOR<MovieScheduleSyncLogCreateInput, MovieScheduleSyncLogUncheckedCreateInput>;
+  };
+
+  /**
+   * MovieScheduleSyncLog createMany
+   */
+  export type MovieScheduleSyncLogCreateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to create many MovieScheduleSyncLogs.
+     */
+    data: MovieScheduleSyncLogCreateManyInput | MovieScheduleSyncLogCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * MovieScheduleSyncLog createManyAndReturn
+   */
+  export type MovieScheduleSyncLogCreateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+    /**
+     * The data used to create many MovieScheduleSyncLogs.
+     */
+    data: MovieScheduleSyncLogCreateManyInput | MovieScheduleSyncLogCreateManyInput[];
+    skipDuplicates?: boolean;
+  };
+
+  /**
+   * MovieScheduleSyncLog update
+   */
+  export type MovieScheduleSyncLogUpdateArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+    /**
+     * The data needed to update a MovieScheduleSyncLog.
+     */
+    data: XOR<MovieScheduleSyncLogUpdateInput, MovieScheduleSyncLogUncheckedUpdateInput>;
+    /**
+     * Choose, which MovieScheduleSyncLog to update.
+     */
+    where: MovieScheduleSyncLogWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncLog updateMany
+   */
+  export type MovieScheduleSyncLogUpdateManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * The data used to update MovieScheduleSyncLogs.
+     */
+    data: XOR<
+      MovieScheduleSyncLogUpdateManyMutationInput,
+      MovieScheduleSyncLogUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which MovieScheduleSyncLogs to update
+     */
+    where?: MovieScheduleSyncLogWhereInput;
+    /**
+     * Limit how many MovieScheduleSyncLogs to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * MovieScheduleSyncLog updateManyAndReturn
+   */
+  export type MovieScheduleSyncLogUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+    /**
+     * The data used to update MovieScheduleSyncLogs.
+     */
+    data: XOR<
+      MovieScheduleSyncLogUpdateManyMutationInput,
+      MovieScheduleSyncLogUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which MovieScheduleSyncLogs to update
+     */
+    where?: MovieScheduleSyncLogWhereInput;
+    /**
+     * Limit how many MovieScheduleSyncLogs to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * MovieScheduleSyncLog upsert
+   */
+  export type MovieScheduleSyncLogUpsertArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+    /**
+     * The filter to search for the MovieScheduleSyncLog to update in case it exists.
+     */
+    where: MovieScheduleSyncLogWhereUniqueInput;
+    /**
+     * In case the MovieScheduleSyncLog found by the `where` argument doesn't exist, create a new MovieScheduleSyncLog with this data.
+     */
+    create: XOR<MovieScheduleSyncLogCreateInput, MovieScheduleSyncLogUncheckedCreateInput>;
+    /**
+     * In case the MovieScheduleSyncLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MovieScheduleSyncLogUpdateInput, MovieScheduleSyncLogUncheckedUpdateInput>;
+  };
+
+  /**
+   * MovieScheduleSyncLog delete
+   */
+  export type MovieScheduleSyncLogDeleteArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+    /**
+     * Filter which MovieScheduleSyncLog to delete.
+     */
+    where: MovieScheduleSyncLogWhereUniqueInput;
+  };
+
+  /**
+   * MovieScheduleSyncLog deleteMany
+   */
+  export type MovieScheduleSyncLogDeleteManyArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Filter which MovieScheduleSyncLogs to delete
+     */
+    where?: MovieScheduleSyncLogWhereInput;
+    /**
+     * Limit how many MovieScheduleSyncLogs to delete.
+     */
+    limit?: number;
+  };
+
+  /**
+   * MovieScheduleSyncLog without action
+   */
+  export type MovieScheduleSyncLogDefaultArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  > = {
+    /**
+     * Select specific fields to fetch from the MovieScheduleSyncLog
+     */
+    select?: MovieScheduleSyncLogSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MovieScheduleSyncLog
+     */
+    omit?: MovieScheduleSyncLogOmit<ExtArgs> | null;
+  };
+
+  /**
    * Model ItemSalesTarget
    */
 
@@ -21305,6 +25501,54 @@ export namespace Prisma {
   export type MovieScheduleScalarFieldEnum =
     (typeof MovieScheduleScalarFieldEnum)[keyof typeof MovieScheduleScalarFieldEnum];
 
+  export const MovieScheduleSyncSettingScalarFieldEnum: {
+    id: 'id';
+    enabled: 'enabled';
+    sourceType: 'sourceType';
+    apiUrl: 'apiUrl';
+    apiToken: 'apiToken';
+    lastSyncAt: 'lastSyncAt';
+    lastSyncStatus: 'lastSyncStatus';
+    lastSyncMessage: 'lastSyncMessage';
+    lastSyncCount: 'lastSyncCount';
+    createdAt: 'createdAt';
+    updatedAt: 'updatedAt';
+  };
+
+  export type MovieScheduleSyncSettingScalarFieldEnum =
+    (typeof MovieScheduleSyncSettingScalarFieldEnum)[keyof typeof MovieScheduleSyncSettingScalarFieldEnum];
+
+  export const MovieScheduleSyncedRowScalarFieldEnum: {
+    id: 'id';
+    sourceKey: 'sourceKey';
+    movieName: 'movieName';
+    normalizedMovieName: 'normalizedMovieName';
+    screenName: 'screenName';
+    showDate: 'showDate';
+    showTime: 'showTime';
+    showDateTime: 'showDateTime';
+    isActive: 'isActive';
+    syncBatchId: 'syncBatchId';
+    createdAt: 'createdAt';
+    updatedAt: 'updatedAt';
+  };
+
+  export type MovieScheduleSyncedRowScalarFieldEnum =
+    (typeof MovieScheduleSyncedRowScalarFieldEnum)[keyof typeof MovieScheduleSyncedRowScalarFieldEnum];
+
+  export const MovieScheduleSyncLogScalarFieldEnum: {
+    id: 'id';
+    status: 'status';
+    message: 'message';
+    rowCount: 'rowCount';
+    startedAt: 'startedAt';
+    finishedAt: 'finishedAt';
+    createdAt: 'createdAt';
+  };
+
+  export type MovieScheduleSyncLogScalarFieldEnum =
+    (typeof MovieScheduleSyncLogScalarFieldEnum)[keyof typeof MovieScheduleSyncLogScalarFieldEnum];
+
   export const ItemSalesTargetScalarFieldEnum: {
     id: 'id';
     itemName: 'itemName';
@@ -22365,6 +26609,280 @@ export namespace Prisma {
     status?: EnumRecordStatusWithAggregatesFilter<'MovieSchedule'> | $Enums.RecordStatus;
     createdAt?: DateTimeWithAggregatesFilter<'MovieSchedule'> | Date | string;
     updatedAt?: DateTimeWithAggregatesFilter<'MovieSchedule'> | Date | string;
+  };
+
+  export type MovieScheduleSyncSettingWhereInput = {
+    AND?: MovieScheduleSyncSettingWhereInput | MovieScheduleSyncSettingWhereInput[];
+    OR?: MovieScheduleSyncSettingWhereInput[];
+    NOT?: MovieScheduleSyncSettingWhereInput | MovieScheduleSyncSettingWhereInput[];
+    id?: StringFilter<'MovieScheduleSyncSetting'> | string;
+    enabled?: BoolFilter<'MovieScheduleSyncSetting'> | boolean;
+    sourceType?: StringFilter<'MovieScheduleSyncSetting'> | string;
+    apiUrl?: StringNullableFilter<'MovieScheduleSyncSetting'> | string | null;
+    apiToken?: StringNullableFilter<'MovieScheduleSyncSetting'> | string | null;
+    lastSyncAt?: DateTimeNullableFilter<'MovieScheduleSyncSetting'> | Date | string | null;
+    lastSyncStatus?: StringNullableFilter<'MovieScheduleSyncSetting'> | string | null;
+    lastSyncMessage?: StringNullableFilter<'MovieScheduleSyncSetting'> | string | null;
+    lastSyncCount?: IntFilter<'MovieScheduleSyncSetting'> | number;
+    createdAt?: DateTimeFilter<'MovieScheduleSyncSetting'> | Date | string;
+    updatedAt?: DateTimeFilter<'MovieScheduleSyncSetting'> | Date | string;
+  };
+
+  export type MovieScheduleSyncSettingOrderByWithRelationInput = {
+    id?: SortOrder;
+    enabled?: SortOrder;
+    sourceType?: SortOrder;
+    apiUrl?: SortOrderInput | SortOrder;
+    apiToken?: SortOrderInput | SortOrder;
+    lastSyncAt?: SortOrderInput | SortOrder;
+    lastSyncStatus?: SortOrderInput | SortOrder;
+    lastSyncMessage?: SortOrderInput | SortOrder;
+    lastSyncCount?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncSettingWhereUniqueInput = Prisma.AtLeast<
+    {
+      id?: string;
+      AND?: MovieScheduleSyncSettingWhereInput | MovieScheduleSyncSettingWhereInput[];
+      OR?: MovieScheduleSyncSettingWhereInput[];
+      NOT?: MovieScheduleSyncSettingWhereInput | MovieScheduleSyncSettingWhereInput[];
+      enabled?: BoolFilter<'MovieScheduleSyncSetting'> | boolean;
+      sourceType?: StringFilter<'MovieScheduleSyncSetting'> | string;
+      apiUrl?: StringNullableFilter<'MovieScheduleSyncSetting'> | string | null;
+      apiToken?: StringNullableFilter<'MovieScheduleSyncSetting'> | string | null;
+      lastSyncAt?: DateTimeNullableFilter<'MovieScheduleSyncSetting'> | Date | string | null;
+      lastSyncStatus?: StringNullableFilter<'MovieScheduleSyncSetting'> | string | null;
+      lastSyncMessage?: StringNullableFilter<'MovieScheduleSyncSetting'> | string | null;
+      lastSyncCount?: IntFilter<'MovieScheduleSyncSetting'> | number;
+      createdAt?: DateTimeFilter<'MovieScheduleSyncSetting'> | Date | string;
+      updatedAt?: DateTimeFilter<'MovieScheduleSyncSetting'> | Date | string;
+    },
+    'id'
+  >;
+
+  export type MovieScheduleSyncSettingOrderByWithAggregationInput = {
+    id?: SortOrder;
+    enabled?: SortOrder;
+    sourceType?: SortOrder;
+    apiUrl?: SortOrderInput | SortOrder;
+    apiToken?: SortOrderInput | SortOrder;
+    lastSyncAt?: SortOrderInput | SortOrder;
+    lastSyncStatus?: SortOrderInput | SortOrder;
+    lastSyncMessage?: SortOrderInput | SortOrder;
+    lastSyncCount?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+    _count?: MovieScheduleSyncSettingCountOrderByAggregateInput;
+    _avg?: MovieScheduleSyncSettingAvgOrderByAggregateInput;
+    _max?: MovieScheduleSyncSettingMaxOrderByAggregateInput;
+    _min?: MovieScheduleSyncSettingMinOrderByAggregateInput;
+    _sum?: MovieScheduleSyncSettingSumOrderByAggregateInput;
+  };
+
+  export type MovieScheduleSyncSettingScalarWhereWithAggregatesInput = {
+    AND?:
+      | MovieScheduleSyncSettingScalarWhereWithAggregatesInput
+      | MovieScheduleSyncSettingScalarWhereWithAggregatesInput[];
+    OR?: MovieScheduleSyncSettingScalarWhereWithAggregatesInput[];
+    NOT?:
+      | MovieScheduleSyncSettingScalarWhereWithAggregatesInput
+      | MovieScheduleSyncSettingScalarWhereWithAggregatesInput[];
+    id?: StringWithAggregatesFilter<'MovieScheduleSyncSetting'> | string;
+    enabled?: BoolWithAggregatesFilter<'MovieScheduleSyncSetting'> | boolean;
+    sourceType?: StringWithAggregatesFilter<'MovieScheduleSyncSetting'> | string;
+    apiUrl?: StringNullableWithAggregatesFilter<'MovieScheduleSyncSetting'> | string | null;
+    apiToken?: StringNullableWithAggregatesFilter<'MovieScheduleSyncSetting'> | string | null;
+    lastSyncAt?:
+      | DateTimeNullableWithAggregatesFilter<'MovieScheduleSyncSetting'>
+      | Date
+      | string
+      | null;
+    lastSyncStatus?: StringNullableWithAggregatesFilter<'MovieScheduleSyncSetting'> | string | null;
+    lastSyncMessage?:
+      | StringNullableWithAggregatesFilter<'MovieScheduleSyncSetting'>
+      | string
+      | null;
+    lastSyncCount?: IntWithAggregatesFilter<'MovieScheduleSyncSetting'> | number;
+    createdAt?: DateTimeWithAggregatesFilter<'MovieScheduleSyncSetting'> | Date | string;
+    updatedAt?: DateTimeWithAggregatesFilter<'MovieScheduleSyncSetting'> | Date | string;
+  };
+
+  export type MovieScheduleSyncedRowWhereInput = {
+    AND?: MovieScheduleSyncedRowWhereInput | MovieScheduleSyncedRowWhereInput[];
+    OR?: MovieScheduleSyncedRowWhereInput[];
+    NOT?: MovieScheduleSyncedRowWhereInput | MovieScheduleSyncedRowWhereInput[];
+    id?: StringFilter<'MovieScheduleSyncedRow'> | string;
+    sourceKey?: StringFilter<'MovieScheduleSyncedRow'> | string;
+    movieName?: StringFilter<'MovieScheduleSyncedRow'> | string;
+    normalizedMovieName?: StringNullableFilter<'MovieScheduleSyncedRow'> | string | null;
+    screenName?: StringFilter<'MovieScheduleSyncedRow'> | string;
+    showDate?: StringFilter<'MovieScheduleSyncedRow'> | string;
+    showTime?: StringFilter<'MovieScheduleSyncedRow'> | string;
+    showDateTime?: DateTimeNullableFilter<'MovieScheduleSyncedRow'> | Date | string | null;
+    isActive?: BoolFilter<'MovieScheduleSyncedRow'> | boolean;
+    syncBatchId?: StringNullableFilter<'MovieScheduleSyncedRow'> | string | null;
+    createdAt?: DateTimeFilter<'MovieScheduleSyncedRow'> | Date | string;
+    updatedAt?: DateTimeFilter<'MovieScheduleSyncedRow'> | Date | string;
+  };
+
+  export type MovieScheduleSyncedRowOrderByWithRelationInput = {
+    id?: SortOrder;
+    sourceKey?: SortOrder;
+    movieName?: SortOrder;
+    normalizedMovieName?: SortOrderInput | SortOrder;
+    screenName?: SortOrder;
+    showDate?: SortOrder;
+    showTime?: SortOrder;
+    showDateTime?: SortOrderInput | SortOrder;
+    isActive?: SortOrder;
+    syncBatchId?: SortOrderInput | SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncedRowWhereUniqueInput = Prisma.AtLeast<
+    {
+      id?: string;
+      sourceKey?: string;
+      AND?: MovieScheduleSyncedRowWhereInput | MovieScheduleSyncedRowWhereInput[];
+      OR?: MovieScheduleSyncedRowWhereInput[];
+      NOT?: MovieScheduleSyncedRowWhereInput | MovieScheduleSyncedRowWhereInput[];
+      movieName?: StringFilter<'MovieScheduleSyncedRow'> | string;
+      normalizedMovieName?: StringNullableFilter<'MovieScheduleSyncedRow'> | string | null;
+      screenName?: StringFilter<'MovieScheduleSyncedRow'> | string;
+      showDate?: StringFilter<'MovieScheduleSyncedRow'> | string;
+      showTime?: StringFilter<'MovieScheduleSyncedRow'> | string;
+      showDateTime?: DateTimeNullableFilter<'MovieScheduleSyncedRow'> | Date | string | null;
+      isActive?: BoolFilter<'MovieScheduleSyncedRow'> | boolean;
+      syncBatchId?: StringNullableFilter<'MovieScheduleSyncedRow'> | string | null;
+      createdAt?: DateTimeFilter<'MovieScheduleSyncedRow'> | Date | string;
+      updatedAt?: DateTimeFilter<'MovieScheduleSyncedRow'> | Date | string;
+    },
+    'id' | 'sourceKey'
+  >;
+
+  export type MovieScheduleSyncedRowOrderByWithAggregationInput = {
+    id?: SortOrder;
+    sourceKey?: SortOrder;
+    movieName?: SortOrder;
+    normalizedMovieName?: SortOrderInput | SortOrder;
+    screenName?: SortOrder;
+    showDate?: SortOrder;
+    showTime?: SortOrder;
+    showDateTime?: SortOrderInput | SortOrder;
+    isActive?: SortOrder;
+    syncBatchId?: SortOrderInput | SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+    _count?: MovieScheduleSyncedRowCountOrderByAggregateInput;
+    _max?: MovieScheduleSyncedRowMaxOrderByAggregateInput;
+    _min?: MovieScheduleSyncedRowMinOrderByAggregateInput;
+  };
+
+  export type MovieScheduleSyncedRowScalarWhereWithAggregatesInput = {
+    AND?:
+      | MovieScheduleSyncedRowScalarWhereWithAggregatesInput
+      | MovieScheduleSyncedRowScalarWhereWithAggregatesInput[];
+    OR?: MovieScheduleSyncedRowScalarWhereWithAggregatesInput[];
+    NOT?:
+      | MovieScheduleSyncedRowScalarWhereWithAggregatesInput
+      | MovieScheduleSyncedRowScalarWhereWithAggregatesInput[];
+    id?: StringWithAggregatesFilter<'MovieScheduleSyncedRow'> | string;
+    sourceKey?: StringWithAggregatesFilter<'MovieScheduleSyncedRow'> | string;
+    movieName?: StringWithAggregatesFilter<'MovieScheduleSyncedRow'> | string;
+    normalizedMovieName?:
+      | StringNullableWithAggregatesFilter<'MovieScheduleSyncedRow'>
+      | string
+      | null;
+    screenName?: StringWithAggregatesFilter<'MovieScheduleSyncedRow'> | string;
+    showDate?: StringWithAggregatesFilter<'MovieScheduleSyncedRow'> | string;
+    showTime?: StringWithAggregatesFilter<'MovieScheduleSyncedRow'> | string;
+    showDateTime?:
+      | DateTimeNullableWithAggregatesFilter<'MovieScheduleSyncedRow'>
+      | Date
+      | string
+      | null;
+    isActive?: BoolWithAggregatesFilter<'MovieScheduleSyncedRow'> | boolean;
+    syncBatchId?: StringNullableWithAggregatesFilter<'MovieScheduleSyncedRow'> | string | null;
+    createdAt?: DateTimeWithAggregatesFilter<'MovieScheduleSyncedRow'> | Date | string;
+    updatedAt?: DateTimeWithAggregatesFilter<'MovieScheduleSyncedRow'> | Date | string;
+  };
+
+  export type MovieScheduleSyncLogWhereInput = {
+    AND?: MovieScheduleSyncLogWhereInput | MovieScheduleSyncLogWhereInput[];
+    OR?: MovieScheduleSyncLogWhereInput[];
+    NOT?: MovieScheduleSyncLogWhereInput | MovieScheduleSyncLogWhereInput[];
+    id?: StringFilter<'MovieScheduleSyncLog'> | string;
+    status?: StringFilter<'MovieScheduleSyncLog'> | string;
+    message?: StringNullableFilter<'MovieScheduleSyncLog'> | string | null;
+    rowCount?: IntFilter<'MovieScheduleSyncLog'> | number;
+    startedAt?: DateTimeFilter<'MovieScheduleSyncLog'> | Date | string;
+    finishedAt?: DateTimeNullableFilter<'MovieScheduleSyncLog'> | Date | string | null;
+    createdAt?: DateTimeFilter<'MovieScheduleSyncLog'> | Date | string;
+  };
+
+  export type MovieScheduleSyncLogOrderByWithRelationInput = {
+    id?: SortOrder;
+    status?: SortOrder;
+    message?: SortOrderInput | SortOrder;
+    rowCount?: SortOrder;
+    startedAt?: SortOrder;
+    finishedAt?: SortOrderInput | SortOrder;
+    createdAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncLogWhereUniqueInput = Prisma.AtLeast<
+    {
+      id?: string;
+      AND?: MovieScheduleSyncLogWhereInput | MovieScheduleSyncLogWhereInput[];
+      OR?: MovieScheduleSyncLogWhereInput[];
+      NOT?: MovieScheduleSyncLogWhereInput | MovieScheduleSyncLogWhereInput[];
+      status?: StringFilter<'MovieScheduleSyncLog'> | string;
+      message?: StringNullableFilter<'MovieScheduleSyncLog'> | string | null;
+      rowCount?: IntFilter<'MovieScheduleSyncLog'> | number;
+      startedAt?: DateTimeFilter<'MovieScheduleSyncLog'> | Date | string;
+      finishedAt?: DateTimeNullableFilter<'MovieScheduleSyncLog'> | Date | string | null;
+      createdAt?: DateTimeFilter<'MovieScheduleSyncLog'> | Date | string;
+    },
+    'id'
+  >;
+
+  export type MovieScheduleSyncLogOrderByWithAggregationInput = {
+    id?: SortOrder;
+    status?: SortOrder;
+    message?: SortOrderInput | SortOrder;
+    rowCount?: SortOrder;
+    startedAt?: SortOrder;
+    finishedAt?: SortOrderInput | SortOrder;
+    createdAt?: SortOrder;
+    _count?: MovieScheduleSyncLogCountOrderByAggregateInput;
+    _avg?: MovieScheduleSyncLogAvgOrderByAggregateInput;
+    _max?: MovieScheduleSyncLogMaxOrderByAggregateInput;
+    _min?: MovieScheduleSyncLogMinOrderByAggregateInput;
+    _sum?: MovieScheduleSyncLogSumOrderByAggregateInput;
+  };
+
+  export type MovieScheduleSyncLogScalarWhereWithAggregatesInput = {
+    AND?:
+      | MovieScheduleSyncLogScalarWhereWithAggregatesInput
+      | MovieScheduleSyncLogScalarWhereWithAggregatesInput[];
+    OR?: MovieScheduleSyncLogScalarWhereWithAggregatesInput[];
+    NOT?:
+      | MovieScheduleSyncLogScalarWhereWithAggregatesInput
+      | MovieScheduleSyncLogScalarWhereWithAggregatesInput[];
+    id?: StringWithAggregatesFilter<'MovieScheduleSyncLog'> | string;
+    status?: StringWithAggregatesFilter<'MovieScheduleSyncLog'> | string;
+    message?: StringNullableWithAggregatesFilter<'MovieScheduleSyncLog'> | string | null;
+    rowCount?: IntWithAggregatesFilter<'MovieScheduleSyncLog'> | number;
+    startedAt?: DateTimeWithAggregatesFilter<'MovieScheduleSyncLog'> | Date | string;
+    finishedAt?:
+      | DateTimeNullableWithAggregatesFilter<'MovieScheduleSyncLog'>
+      | Date
+      | string
+      | null;
+    createdAt?: DateTimeWithAggregatesFilter<'MovieScheduleSyncLog'> | Date | string;
   };
 
   export type ItemSalesTargetWhereInput = {
@@ -23592,6 +28110,279 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
   };
 
+  export type MovieScheduleSyncSettingCreateInput = {
+    id?: string;
+    enabled?: boolean;
+    sourceType?: string;
+    apiUrl?: string | null;
+    apiToken?: string | null;
+    lastSyncAt?: Date | string | null;
+    lastSyncStatus?: string | null;
+    lastSyncMessage?: string | null;
+    lastSyncCount?: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type MovieScheduleSyncSettingUncheckedCreateInput = {
+    id?: string;
+    enabled?: boolean;
+    sourceType?: string;
+    apiUrl?: string | null;
+    apiToken?: string | null;
+    lastSyncAt?: Date | string | null;
+    lastSyncStatus?: string | null;
+    lastSyncMessage?: string | null;
+    lastSyncCount?: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type MovieScheduleSyncSettingUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    enabled?: BoolFieldUpdateOperationsInput | boolean;
+    sourceType?: StringFieldUpdateOperationsInput | string;
+    apiUrl?: NullableStringFieldUpdateOperationsInput | string | null;
+    apiToken?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncMessage?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncCount?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MovieScheduleSyncSettingUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    enabled?: BoolFieldUpdateOperationsInput | boolean;
+    sourceType?: StringFieldUpdateOperationsInput | string;
+    apiUrl?: NullableStringFieldUpdateOperationsInput | string | null;
+    apiToken?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncMessage?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncCount?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MovieScheduleSyncSettingCreateManyInput = {
+    id?: string;
+    enabled?: boolean;
+    sourceType?: string;
+    apiUrl?: string | null;
+    apiToken?: string | null;
+    lastSyncAt?: Date | string | null;
+    lastSyncStatus?: string | null;
+    lastSyncMessage?: string | null;
+    lastSyncCount?: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type MovieScheduleSyncSettingUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    enabled?: BoolFieldUpdateOperationsInput | boolean;
+    sourceType?: StringFieldUpdateOperationsInput | string;
+    apiUrl?: NullableStringFieldUpdateOperationsInput | string | null;
+    apiToken?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncMessage?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncCount?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MovieScheduleSyncSettingUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    enabled?: BoolFieldUpdateOperationsInput | boolean;
+    sourceType?: StringFieldUpdateOperationsInput | string;
+    apiUrl?: NullableStringFieldUpdateOperationsInput | string | null;
+    apiToken?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    lastSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncMessage?: NullableStringFieldUpdateOperationsInput | string | null;
+    lastSyncCount?: IntFieldUpdateOperationsInput | number;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MovieScheduleSyncedRowCreateInput = {
+    id?: string;
+    sourceKey: string;
+    movieName: string;
+    normalizedMovieName?: string | null;
+    screenName: string;
+    showDate: string;
+    showTime: string;
+    showDateTime?: Date | string | null;
+    isActive?: boolean;
+    syncBatchId?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type MovieScheduleSyncedRowUncheckedCreateInput = {
+    id?: string;
+    sourceKey: string;
+    movieName: string;
+    normalizedMovieName?: string | null;
+    screenName: string;
+    showDate: string;
+    showTime: string;
+    showDateTime?: Date | string | null;
+    isActive?: boolean;
+    syncBatchId?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type MovieScheduleSyncedRowUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sourceKey?: StringFieldUpdateOperationsInput | string;
+    movieName?: StringFieldUpdateOperationsInput | string;
+    normalizedMovieName?: NullableStringFieldUpdateOperationsInput | string | null;
+    screenName?: StringFieldUpdateOperationsInput | string;
+    showDate?: StringFieldUpdateOperationsInput | string;
+    showTime?: StringFieldUpdateOperationsInput | string;
+    showDateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    syncBatchId?: NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MovieScheduleSyncedRowUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sourceKey?: StringFieldUpdateOperationsInput | string;
+    movieName?: StringFieldUpdateOperationsInput | string;
+    normalizedMovieName?: NullableStringFieldUpdateOperationsInput | string | null;
+    screenName?: StringFieldUpdateOperationsInput | string;
+    showDate?: StringFieldUpdateOperationsInput | string;
+    showTime?: StringFieldUpdateOperationsInput | string;
+    showDateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    syncBatchId?: NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MovieScheduleSyncedRowCreateManyInput = {
+    id?: string;
+    sourceKey: string;
+    movieName: string;
+    normalizedMovieName?: string | null;
+    screenName: string;
+    showDate: string;
+    showTime: string;
+    showDateTime?: Date | string | null;
+    isActive?: boolean;
+    syncBatchId?: string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
+
+  export type MovieScheduleSyncedRowUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sourceKey?: StringFieldUpdateOperationsInput | string;
+    movieName?: StringFieldUpdateOperationsInput | string;
+    normalizedMovieName?: NullableStringFieldUpdateOperationsInput | string | null;
+    screenName?: StringFieldUpdateOperationsInput | string;
+    showDate?: StringFieldUpdateOperationsInput | string;
+    showTime?: StringFieldUpdateOperationsInput | string;
+    showDateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    syncBatchId?: NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MovieScheduleSyncedRowUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    sourceKey?: StringFieldUpdateOperationsInput | string;
+    movieName?: StringFieldUpdateOperationsInput | string;
+    normalizedMovieName?: NullableStringFieldUpdateOperationsInput | string | null;
+    screenName?: StringFieldUpdateOperationsInput | string;
+    showDate?: StringFieldUpdateOperationsInput | string;
+    showTime?: StringFieldUpdateOperationsInput | string;
+    showDateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: BoolFieldUpdateOperationsInput | boolean;
+    syncBatchId?: NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MovieScheduleSyncLogCreateInput = {
+    id?: string;
+    status: string;
+    message?: string | null;
+    rowCount?: number;
+    startedAt?: Date | string;
+    finishedAt?: Date | string | null;
+    createdAt?: Date | string;
+  };
+
+  export type MovieScheduleSyncLogUncheckedCreateInput = {
+    id?: string;
+    status: string;
+    message?: string | null;
+    rowCount?: number;
+    startedAt?: Date | string;
+    finishedAt?: Date | string | null;
+    createdAt?: Date | string;
+  };
+
+  export type MovieScheduleSyncLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    status?: StringFieldUpdateOperationsInput | string;
+    message?: NullableStringFieldUpdateOperationsInput | string | null;
+    rowCount?: IntFieldUpdateOperationsInput | number;
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MovieScheduleSyncLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    status?: StringFieldUpdateOperationsInput | string;
+    message?: NullableStringFieldUpdateOperationsInput | string | null;
+    rowCount?: IntFieldUpdateOperationsInput | number;
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MovieScheduleSyncLogCreateManyInput = {
+    id?: string;
+    status: string;
+    message?: string | null;
+    rowCount?: number;
+    startedAt?: Date | string;
+    finishedAt?: Date | string | null;
+    createdAt?: Date | string;
+  };
+
+  export type MovieScheduleSyncLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    status?: StringFieldUpdateOperationsInput | string;
+    message?: NullableStringFieldUpdateOperationsInput | string | null;
+    rowCount?: IntFieldUpdateOperationsInput | number;
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
+  export type MovieScheduleSyncLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string;
+    status?: StringFieldUpdateOperationsInput | string;
+    message?: NullableStringFieldUpdateOperationsInput | string | null;
+    rowCount?: IntFieldUpdateOperationsInput | number;
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string;
+  };
+
   export type ItemSalesTargetCreateInput = {
     id?: string;
     itemName: string;
@@ -24620,6 +29411,139 @@ export namespace Prisma {
     status?: SortOrder;
     createdAt?: SortOrder;
     updatedAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncSettingCountOrderByAggregateInput = {
+    id?: SortOrder;
+    enabled?: SortOrder;
+    sourceType?: SortOrder;
+    apiUrl?: SortOrder;
+    apiToken?: SortOrder;
+    lastSyncAt?: SortOrder;
+    lastSyncStatus?: SortOrder;
+    lastSyncMessage?: SortOrder;
+    lastSyncCount?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncSettingAvgOrderByAggregateInput = {
+    lastSyncCount?: SortOrder;
+  };
+
+  export type MovieScheduleSyncSettingMaxOrderByAggregateInput = {
+    id?: SortOrder;
+    enabled?: SortOrder;
+    sourceType?: SortOrder;
+    apiUrl?: SortOrder;
+    apiToken?: SortOrder;
+    lastSyncAt?: SortOrder;
+    lastSyncStatus?: SortOrder;
+    lastSyncMessage?: SortOrder;
+    lastSyncCount?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncSettingMinOrderByAggregateInput = {
+    id?: SortOrder;
+    enabled?: SortOrder;
+    sourceType?: SortOrder;
+    apiUrl?: SortOrder;
+    apiToken?: SortOrder;
+    lastSyncAt?: SortOrder;
+    lastSyncStatus?: SortOrder;
+    lastSyncMessage?: SortOrder;
+    lastSyncCount?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncSettingSumOrderByAggregateInput = {
+    lastSyncCount?: SortOrder;
+  };
+
+  export type MovieScheduleSyncedRowCountOrderByAggregateInput = {
+    id?: SortOrder;
+    sourceKey?: SortOrder;
+    movieName?: SortOrder;
+    normalizedMovieName?: SortOrder;
+    screenName?: SortOrder;
+    showDate?: SortOrder;
+    showTime?: SortOrder;
+    showDateTime?: SortOrder;
+    isActive?: SortOrder;
+    syncBatchId?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncedRowMaxOrderByAggregateInput = {
+    id?: SortOrder;
+    sourceKey?: SortOrder;
+    movieName?: SortOrder;
+    normalizedMovieName?: SortOrder;
+    screenName?: SortOrder;
+    showDate?: SortOrder;
+    showTime?: SortOrder;
+    showDateTime?: SortOrder;
+    isActive?: SortOrder;
+    syncBatchId?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncedRowMinOrderByAggregateInput = {
+    id?: SortOrder;
+    sourceKey?: SortOrder;
+    movieName?: SortOrder;
+    normalizedMovieName?: SortOrder;
+    screenName?: SortOrder;
+    showDate?: SortOrder;
+    showTime?: SortOrder;
+    showDateTime?: SortOrder;
+    isActive?: SortOrder;
+    syncBatchId?: SortOrder;
+    createdAt?: SortOrder;
+    updatedAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncLogCountOrderByAggregateInput = {
+    id?: SortOrder;
+    status?: SortOrder;
+    message?: SortOrder;
+    rowCount?: SortOrder;
+    startedAt?: SortOrder;
+    finishedAt?: SortOrder;
+    createdAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncLogAvgOrderByAggregateInput = {
+    rowCount?: SortOrder;
+  };
+
+  export type MovieScheduleSyncLogMaxOrderByAggregateInput = {
+    id?: SortOrder;
+    status?: SortOrder;
+    message?: SortOrder;
+    rowCount?: SortOrder;
+    startedAt?: SortOrder;
+    finishedAt?: SortOrder;
+    createdAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncLogMinOrderByAggregateInput = {
+    id?: SortOrder;
+    status?: SortOrder;
+    message?: SortOrder;
+    rowCount?: SortOrder;
+    startedAt?: SortOrder;
+    finishedAt?: SortOrder;
+    createdAt?: SortOrder;
+  };
+
+  export type MovieScheduleSyncLogSumOrderByAggregateInput = {
+    rowCount?: SortOrder;
   };
 
   export type ItemSalesTargetCountOrderByAggregateInput = {

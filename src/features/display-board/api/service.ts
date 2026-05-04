@@ -1,7 +1,9 @@
 import 'server-only';
 
+import { format } from 'date-fns';
 import { prisma } from '@/lib/prisma';
 import { getActiveAlerts } from '@/features/alerts/api/service';
+import { getEnabledSyncedMovieScheduleRowsForDate } from '@/features/movie-schedule-sync/api/service';
 
 import {
   getCachedDisplayBoardData,
@@ -74,6 +76,28 @@ function normalizeShift(value: string | null | undefined): string | null {
   return trimmed ? trimmed : null;
 }
 
+function mapSyncedMovieScheduleItem(record: {
+  id: string;
+  movieName: string;
+  screenName: string;
+  showDate: string;
+  showTime: string;
+  showDateTime: Date | null;
+}): DisplayBoardMovieItem {
+  const showTime = record.showDateTime ?? new Date(`${record.showDate}T${record.showTime}:00`);
+
+  return {
+    id: record.id,
+    movieName: record.movieName,
+    screenName: record.screenName,
+    showTime: Number.isNaN(showTime.getTime()) ? new Date() : showTime
+  };
+}
+
+function isUpcomingMovieShow(item: DisplayBoardMovieItem, now: Date): boolean {
+  return item.showTime >= now;
+}
+
 function normalizeAvailability(
   displayPage: { status: string } | null
 ): DisplayBoardResult['availability'] {
@@ -106,8 +130,6 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     eventsTotal,
     meetings,
     meetingsTotal,
-    movieSchedules,
-    movieSchedulesTotal,
     advertisements,
     alerts,
     salesTargets,
@@ -155,26 +177,6 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
       where: {
         status: 'ACTIVE',
         startAt: {
-          gte: start,
-          lt: end
-        }
-      }
-    }),
-    prisma.movieSchedule.findMany({
-      where: {
-        status: 'ACTIVE',
-        showTime: {
-          gte: start,
-          lt: end
-        }
-      },
-      orderBy: [{ showTime: 'asc' }, { movieName: 'asc' }],
-      take: 5
-    }),
-    prisma.movieSchedule.count({
-      where: {
-        status: 'ACTIVE',
-        showTime: {
           gte: start,
           lt: end
         }
@@ -251,6 +253,42 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     })
   ]);
 
+  const syncedMovieScheduleRows = await getEnabledSyncedMovieScheduleRowsForDate(
+    format(now, 'yyyy-MM-dd')
+  );
+
+  let movieSchedules: DisplayBoardMovieItem[] = [];
+  let movieSchedulesTotal = 0;
+
+  if (syncedMovieScheduleRows.length > 0) {
+    movieSchedules = syncedMovieScheduleRows
+      .map(mapSyncedMovieScheduleItem)
+      .filter((item) => isUpcomingMovieShow(item, now));
+    movieSchedulesTotal = movieSchedules.length;
+  } else {
+    const manualMovieSchedules = await prisma.movieSchedule.findMany({
+      where: {
+        status: 'ACTIVE',
+        showTime: {
+          gte: start,
+          lt: end
+        }
+      },
+      orderBy: [{ showTime: 'asc' }, { movieName: 'asc' }],
+      take: 5
+    });
+
+    movieSchedules = manualMovieSchedules
+      .map((movieSchedule) => ({
+        id: movieSchedule.id,
+        movieName: movieSchedule.movieName,
+        screenName: movieSchedule.screenName,
+        showTime: movieSchedule.showTime
+      }))
+      .filter((item) => isUpcomingMovieShow(item, now));
+    movieSchedulesTotal = movieSchedules.length;
+  }
+
   const activeAdvertisements = advertisements.filter((advertisement) =>
     isActiveContractNow(advertisement, now)
   );
@@ -304,7 +342,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
       total: meetingsTotal
     },
     movieSchedules: {
-      items: movieSchedules as DisplayBoardMovieItem[],
+      items: movieSchedules,
       total: movieSchedulesTotal
     },
     advertisements: {
