@@ -1,10 +1,11 @@
 import 'server-only';
 
 import { randomUUID } from 'crypto';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 
 import { bumpDisplayBoardRefreshToken } from '@/features/display-board/api/cache';
 import { parseDateInputValue } from '@/features/movie-schedule/lib/date';
+import type { Prisma } from '@/generated/prisma';
 import { prisma } from '@/lib/prisma';
 
 import { DEFAULT_MOVIE_SCHEDULE_SYNC_API_URL, MOVIE_SCHEDULE_SYNC_SETTING_ID } from '../constants';
@@ -60,13 +61,45 @@ function normalizeApiUrl(value?: string): string {
   return trimmed ? trimmed : DEFAULT_MOVIE_SCHEDULE_SYNC_API_URL;
 }
 
-function toDate(value: unknown): Date | null {
-  if (!value) {
+function parseFlexibleDate(value: unknown): Date | null {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+
+  if (typeof value !== 'string') {
     return null;
   }
 
-  const date = value instanceof Date ? value : new Date(String(value));
-  return Number.isNaN(date.getTime()) ? null : date;
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const supportedFormats = [
+    'yyyy-MM-dd',
+    'EEEE, dd MMMM yyyy',
+    'EEEE, d MMMM yyyy',
+    'dd MMMM yyyy',
+    'd MMMM yyyy',
+    'dd-MM-yyyy',
+    'd-MM-yyyy',
+    'MM/dd/yyyy',
+    'M/d/yyyy'
+  ];
+
+  for (const pattern of supportedFormats) {
+    const parsed = parse(trimmed, pattern, new Date());
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed;
+    }
+  }
+
+  const fallback = new Date(trimmed);
+  return Number.isNaN(fallback.getTime()) ? null : fallback;
+}
+
+function toDate(value: unknown): Date | null {
+  return parseFlexibleDate(value);
 }
 
 function normalizeTimeToHHmm(value: unknown): string | null {
@@ -147,23 +180,51 @@ function getMovieName(raw: Record<string, unknown>): string | null {
     getStringValue(raw.movieName) ??
     getStringValue(raw.title) ??
     getStringValue(raw.name) ??
-    getStringValue(raw.movieTitle)
+    getStringValue(raw.movieTitle) ??
+    getStringValue(raw.movie)
   );
 }
 
 function getScreenName(raw: Record<string, unknown>): string | null {
-  return (
+  const value =
     getStringValue(raw.screenName) ??
     getStringValue(raw.screen) ??
     getStringValue(raw.location) ??
-    getStringValue(raw.house)
-  );
+    getStringValue(raw.house) ??
+    getStringValue(raw.auditorium) ??
+    getStringValue(raw.screenLabel);
+
+  if (!value) {
+    return null;
+  }
+
+  const normalized = value.trim().replace(/\s+/g, ' ');
+  const upper = normalized.toUpperCase();
+
+  if (upper === 'MAXIMUS') {
+    return 'Maximus';
+  }
+
+  const screenMatch = upper.match(/^SCREEN\s*(\d+)$/);
+  if (screenMatch) {
+    return `Screen ${screenMatch[1]}`;
+  }
+
+  const platinumMatch = upper.match(/^PLATINUM\s*(\d+)$/);
+  if (platinumMatch) {
+    return `Platinum ${platinumMatch[1]}`;
+  }
+
+  return normalized;
 }
 
 function getShowDate(raw: Record<string, unknown>, fallbackDate: string): string {
   const direct =
-    getStringValue(raw.showDate) ?? getStringValue(raw.date) ?? getStringValue(raw.day);
-  const parsed = parseDateInputValue(direct ?? fallbackDate);
+    getStringValue(raw.showDate) ??
+    getStringValue(raw.date) ??
+    getStringValue(raw.day) ??
+    getStringValue(raw.businessDate);
+  const parsed = parseFlexibleDate(direct ?? fallbackDate);
 
   return parsed ? format(parsed, 'yyyy-MM-dd') : fallbackDate;
 }
@@ -239,58 +300,260 @@ function normalizeRow(
   };
 }
 
-function collectRows(payload: unknown, fallbackDate: string): Array<Record<string, unknown>> {
-  if (!payload) {
-    return [];
+const MOVIE_SCHEDULE_SYNC_PARSE_MAX_DEPTH = 3;
+
+type MovieScheduleSyncParseResult = {
+  rows: Array<Record<string, unknown>>;
+  invalidCount: number;
+  supported: boolean;
+  summary: string;
+};
+
+type MovieScheduleSyncNormalizedRow = NonNullable<ReturnType<typeof normalizeRow>>;
+
+type MovieScheduleSyncNormalizedResponse = {
+  rows: MovieScheduleSyncNormalizedRow[];
+  invalidCount: number;
+  supported: boolean;
+  summary: string;
+};
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function summarizeMovieSchedulePayload(payload: unknown): string {
+  if (payload === null) {
+    return 'null';
   }
 
   if (Array.isArray(payload)) {
-    return payload.flatMap((item) => collectRows(item, fallbackDate));
+    return `array(len=${payload.length})`;
   }
 
-  if (typeof payload !== 'object') {
-    return [];
+  if (!isPlainObject(payload)) {
+    return typeof payload;
   }
+
+  const keys = Object.keys(payload);
+  if (keys.length === 0) {
+    return 'object(no-keys)';
+  }
+
+  return keys.slice(0, 12).join(', ');
+}
+
+function isMovieScheduleRowLike(record: Record<string, unknown>): boolean {
+  return (
+    !!getMovieName(record) &&
+    (!!getScreenName(record) ||
+      !!getStringValue(record.showTime) ||
+      !!getStringValue(record.showDateTime) ||
+      !!getStringValue(record.datetime) ||
+      !!getStringValue(record.startDateTime) ||
+      !!getStringValue(record.start_at) ||
+      !!getStringValue(record.startTime) ||
+      !!getStringValue(record.start))
+  );
+}
+
+function collectMovieScheduleRows(
+  payload: unknown,
+  fallbackDate: string,
+  context: {
+    depth: number;
+    visited: WeakSet<object>;
+    inheritedMovieName?: string;
+  } = {
+    depth: 0,
+    visited: new WeakSet<object>()
+  }
+): MovieScheduleSyncParseResult {
+  if (payload == null || context.depth > MOVIE_SCHEDULE_SYNC_PARSE_MAX_DEPTH) {
+    return {
+      rows: [],
+      invalidCount: 0,
+      supported: false,
+      summary: summarizeMovieSchedulePayload(payload)
+    };
+  }
+
+  if (Array.isArray(payload)) {
+    const rows: Array<Record<string, unknown>> = [];
+    let invalidCount = 0;
+    let supported = false;
+
+    for (const item of payload) {
+      const result = collectMovieScheduleRows(item, fallbackDate, {
+        depth: context.depth + 1,
+        visited: context.visited,
+        inheritedMovieName: context.inheritedMovieName
+      });
+
+      rows.push(...result.rows);
+      invalidCount += result.invalidCount;
+      supported = supported || result.supported;
+    }
+
+    return {
+      rows,
+      invalidCount,
+      supported: true,
+      summary: summarizeMovieSchedulePayload(payload)
+    };
+  }
+
+  if (!isPlainObject(payload)) {
+    return {
+      rows: [],
+      invalidCount: 0,
+      supported: false,
+      summary: summarizeMovieSchedulePayload(payload)
+    };
+  }
+
+  if (context.visited.has(payload)) {
+    return {
+      rows: [],
+      invalidCount: 0,
+      supported: true,
+      summary: summarizeMovieSchedulePayload(payload)
+    };
+  }
+
+  context.visited.add(payload);
 
   const record = payload as Record<string, unknown>;
-  const arraysToInspect = [
-    'rows',
-    'data',
-    'items',
-    'results',
-    'movies',
-    'showtimes',
-    'screenTimes'
-  ];
-  for (const key of arraysToInspect) {
-    const value = record[key];
-    if (Array.isArray(value)) {
-      if (key === 'screenTimes' || key === 'showtimes') {
-        const parentMovieName = getMovieName(record);
-        return value.flatMap((item) => collectRows({ ...record, ...item }, fallbackDate));
-      }
+  const movieName = getMovieName(record) ?? context.inheritedMovieName;
+  const rows: Array<Record<string, unknown>> = [];
+  let invalidCount = 0;
+  let supported = false;
 
-      const nestedRows = value.flatMap((item) => collectRows(item, fallbackDate));
-      if (nestedRows.length > 0) {
-        return nestedRows;
+  const explicitArrayKeys = ['rows', 'data', 'items', 'results'] as const;
+  for (const key of explicitArrayKeys) {
+    const value = record[key];
+
+    if (Array.isArray(value)) {
+      supported = true;
+
+      for (const item of value) {
+        const result = collectMovieScheduleRows(item, fallbackDate, {
+          depth: context.depth + 1,
+          visited: context.visited,
+          inheritedMovieName: movieName ?? context.inheritedMovieName
+        });
+
+        rows.push(...result.rows);
+        invalidCount += result.invalidCount;
+        supported = supported || result.supported;
+      }
+    } else if (isPlainObject(value)) {
+      const result = collectMovieScheduleRows(value, fallbackDate, {
+        depth: context.depth + 1,
+        visited: context.visited,
+        inheritedMovieName: movieName ?? context.inheritedMovieName
+      });
+
+      if (result.supported || result.rows.length > 0) {
+        supported = true;
+        rows.push(...result.rows);
+        invalidCount += result.invalidCount;
       }
     }
   }
 
-  if (getMovieName(record) && (getScreenName(record) || record.showTime || record.showDateTime)) {
-    return [record];
+  if (Array.isArray(record.movies)) {
+    supported = true;
+
+    for (const item of record.movies) {
+      const result = collectMovieScheduleRows(item, fallbackDate, {
+        depth: context.depth + 1,
+        visited: context.visited
+      });
+
+      rows.push(...result.rows);
+      invalidCount += result.invalidCount;
+      supported = supported || result.supported;
+    }
   }
 
-  return Object.values(record).flatMap((value) => collectRows(value, fallbackDate));
+  const nestedArrayKeys = ['showtimes', 'screenTimes', 'screens'] as const;
+  for (const key of nestedArrayKeys) {
+    const value = record[key];
+
+    if (Array.isArray(value)) {
+      supported = true;
+
+      for (const item of value) {
+        const result = collectMovieScheduleRows(item, fallbackDate, {
+          depth: context.depth + 1,
+          visited: context.visited,
+          inheritedMovieName: movieName ?? context.inheritedMovieName
+        });
+
+        rows.push(...result.rows);
+        invalidCount += result.invalidCount;
+        supported = supported || result.supported;
+      }
+    } else if (isPlainObject(value)) {
+      const result = collectMovieScheduleRows(value, fallbackDate, {
+        depth: context.depth + 1,
+        visited: context.visited,
+        inheritedMovieName: movieName ?? context.inheritedMovieName
+      });
+
+      if (result.supported || result.rows.length > 0) {
+        supported = true;
+        rows.push(...result.rows);
+        invalidCount += result.invalidCount;
+      }
+    }
+  }
+
+  if (isMovieScheduleRowLike(record)) {
+    const normalized = normalizeRow(
+      record,
+      fallbackDate,
+      0,
+      movieName ?? context.inheritedMovieName
+    );
+    supported = true;
+
+    if (normalized) {
+      rows.push(normalized);
+    } else {
+      invalidCount += 1;
+    }
+  }
+
+  return {
+    rows,
+    invalidCount,
+    supported,
+    summary: summarizeMovieSchedulePayload(payload)
+  };
 }
 
-function normalizeResponseRows(payload: unknown, showDate: string) {
-  const collected = collectRows(payload, showDate);
-  const normalized = collected
-    .map((row, index) => normalizeRow(row, showDate, index))
-    .filter((row): row is NonNullable<ReturnType<typeof normalizeRow>> => !!row);
+function normalizeResponseRows(
+  payload: unknown,
+  showDate: string
+): MovieScheduleSyncNormalizedResponse {
+  const collected = collectMovieScheduleRows(payload, showDate);
 
-  const unique = new Map<string, NonNullable<ReturnType<typeof normalizeRow>>>();
+  if (!collected.supported) {
+    return {
+      rows: [],
+      invalidCount: collected.invalidCount,
+      supported: false,
+      summary: collected.summary
+    };
+  }
+
+  const normalized: MovieScheduleSyncNormalizedRow[] = collected.rows
+    .map((row, index) => normalizeRow(row, showDate, index))
+    .filter((row): row is MovieScheduleSyncNormalizedRow => !!row);
+
+  const unique = new Map<string, MovieScheduleSyncNormalizedRow>();
 
   for (const row of normalized) {
     if (!unique.has(row.sourceKey)) {
@@ -298,7 +561,33 @@ function normalizeResponseRows(payload: unknown, showDate: string) {
     }
   }
 
-  return [...unique.values()];
+  return {
+    rows: [...unique.values()],
+    invalidCount: collected.invalidCount,
+    supported: collected.supported,
+    summary: collected.summary
+  };
+}
+
+export function movieScheduleSyncParserSmokeTest() {
+  const cyclicPayload: Record<string, unknown> = {
+    movies: [
+      {
+        movie: 'Fresh Fountain',
+        showtimes: [
+          {
+            screen: 'SCREEN 3',
+            time: '12:00 PM',
+            date: 'Monday, 04 May 2026'
+          }
+        ]
+      }
+    ]
+  };
+
+  cyclicPayload.self = cyclicPayload;
+
+  return normalizeResponseRows(cyclicPayload, '2026-05-04');
 }
 
 function mapSettingRecord(record: {
@@ -541,6 +830,7 @@ export async function runMovieScheduleSync(values: MovieScheduleSyncRunValues) {
 
   const startedAt = new Date();
   const syncBatchId = randomUUID();
+  let sourcePayload: unknown = null;
   const log = await prisma.movieScheduleSyncLog.create({
     data: {
       status: 'RUNNING',
@@ -574,13 +864,63 @@ export async function runMovieScheduleSync(values: MovieScheduleSyncRunValues) {
       );
     }
 
-    const payload = await response.json().catch(() => null);
-    const normalizedRows = normalizeResponseRows(payload, selectedDate).map((row) => ({
-      ...row,
-      syncBatchId
-    }));
+    sourcePayload = await response.json().catch(() => null);
+    const parsedResponse = normalizeResponseRows(sourcePayload, selectedDate);
+
+    if (!parsedResponse.supported) {
+      const message = `Unsupported movie schedule API response format. Keys: ${parsedResponse.summary}`;
+
+      await prisma.movieScheduleSyncSetting.upsert({
+        where: { id: MOVIE_SCHEDULE_SYNC_SETTING_ID },
+        create: {
+          id: MOVIE_SCHEDULE_SYNC_SETTING_ID,
+          enabled: setting.enabled,
+          sourceType: setting.sourceType,
+          apiUrl: setting.apiUrl,
+          apiToken: setting.apiTokenSet ? (settingRecord?.apiToken ?? null) : null,
+          lastSyncAt: new Date(),
+          lastSyncStatus: 'FAILED',
+          lastSyncMessage: message,
+          lastSyncCount: 0
+        },
+        update: {
+          lastSyncAt: new Date(),
+          lastSyncStatus: 'FAILED',
+          lastSyncMessage: message,
+          lastSyncCount: 0
+        }
+      });
+
+      await prisma.movieScheduleSyncLog.update({
+        where: { id: log.id },
+        data: {
+          status: 'FAILED',
+          message,
+          rowCount: 0,
+          finishedAt: new Date()
+        }
+      });
+
+      throw new MovieScheduleSyncServiceError(message, 502);
+    }
+
+    const normalizedRows: Prisma.MovieScheduleSyncedRowCreateManyInput[] = parsedResponse.rows.map(
+      (row) => ({
+        ...row,
+        syncBatchId
+      })
+    );
+    const successMessage =
+      parsedResponse.invalidCount > 0
+        ? `Imported ${normalizedRows.length} row(s) from Digital Signage API, skipped ${parsedResponse.invalidCount} invalid row(s)`
+        : `Imported ${normalizedRows.length} row(s) from Digital Signage API`;
 
     if (normalizedRows.length === 0) {
+      const message =
+        parsedResponse.invalidCount > 0
+          ? `Skipped ${parsedResponse.invalidCount} invalid row(s)`
+          : 'Source returned no rows for the selected date';
+
       await prisma.movieScheduleSyncSetting.upsert({
         where: { id: MOVIE_SCHEDULE_SYNC_SETTING_ID },
         create: {
@@ -591,13 +931,13 @@ export async function runMovieScheduleSync(values: MovieScheduleSyncRunValues) {
           apiToken: setting.apiTokenSet ? (settingRecord?.apiToken ?? null) : null,
           lastSyncAt: new Date(),
           lastSyncStatus: 'EMPTY',
-          lastSyncMessage: 'Source returned no rows for the selected date',
+          lastSyncMessage: message,
           lastSyncCount: 0
         },
         update: {
           lastSyncAt: new Date(),
           lastSyncStatus: 'EMPTY',
-          lastSyncMessage: 'Source returned no rows for the selected date',
+          lastSyncMessage: message,
           lastSyncCount: 0
         }
       });
@@ -606,7 +946,7 @@ export async function runMovieScheduleSync(values: MovieScheduleSyncRunValues) {
         where: { id: log.id },
         data: {
           status: 'EMPTY',
-          message: 'Source returned no rows for the selected date',
+          message,
           rowCount: 0,
           finishedAt: new Date()
         }
@@ -637,13 +977,13 @@ export async function runMovieScheduleSync(values: MovieScheduleSyncRunValues) {
           apiToken: setting.apiTokenSet ? (settingRecord?.apiToken ?? null) : null,
           lastSyncAt: new Date(),
           lastSyncStatus: 'SUCCESS',
-          lastSyncMessage: `Synced ${normalizedRows.length} row(s)`,
+          lastSyncMessage: successMessage,
           lastSyncCount: normalizedRows.length
         },
         update: {
           lastSyncAt: new Date(),
           lastSyncStatus: 'SUCCESS',
-          lastSyncMessage: `Synced ${normalizedRows.length} row(s)`,
+          lastSyncMessage: successMessage,
           lastSyncCount: normalizedRows.length
         }
       });
@@ -652,7 +992,7 @@ export async function runMovieScheduleSync(values: MovieScheduleSyncRunValues) {
         where: { id: log.id },
         data: {
           status: 'SUCCESS',
-          message: `Synced ${normalizedRows.length} row(s)`,
+          message: successMessage,
           rowCount: normalizedRows.length,
           finishedAt: new Date()
         }
@@ -663,7 +1003,13 @@ export async function runMovieScheduleSync(values: MovieScheduleSyncRunValues) {
 
     return getMovieScheduleSyncOverview(selectedDate);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Movie schedule sync failed';
+    const fallbackSummary = summarizeMovieSchedulePayload(sourcePayload);
+    const message =
+      error instanceof Error
+        ? error.message.includes('Maximum call stack size exceeded')
+          ? `Unsupported movie schedule API response format. Keys: ${fallbackSummary}`
+          : error.message
+        : `Movie schedule sync failed. Keys: ${fallbackSummary}`;
 
     await prisma.movieScheduleSyncSetting.upsert({
       where: { id: MOVIE_SCHEDULE_SYNC_SETTING_ID },
