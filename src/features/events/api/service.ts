@@ -23,6 +23,10 @@ function normalizeOptionalText(value?: string): string | null {
   return trimmed ? trimmed : null;
 }
 
+function normalizeRequiredText(value: string): string {
+  return value.trim();
+}
+
 function normalizeOptionalDateTime(value?: string): Date | null {
   const trimmed = value?.trim();
   return trimmed ? parseDateTimeInputValue(trimmed) : null;
@@ -90,10 +94,10 @@ export async function getEventRecords(
 export async function createEventRecord(values: EventRecordFormValues) {
   const event = await prisma.eventRecord.create({
     data: {
-      title: values.title.trim(),
+      title: normalizeRequiredText(values.title),
       clientName: normalizeOptionalText(values.clientName),
       companyName: normalizeOptionalText(values.companyName),
-      screenName: normalizeOptionalText(values.screenName),
+      screenName: normalizeRequiredText(values.screenName),
       startAt: normalizeRequiredDateTime(values.startAt),
       endAt: normalizeOptionalDateTime(values.endAt),
       status: values.status
@@ -109,10 +113,10 @@ export async function updateEventRecord(id: string, values: EventRecordFormValue
   const event = await prisma.eventRecord.update({
     where: { id },
     data: {
-      title: values.title.trim(),
+      title: normalizeRequiredText(values.title),
       clientName: normalizeOptionalText(values.clientName),
       companyName: normalizeOptionalText(values.companyName),
-      screenName: normalizeOptionalText(values.screenName),
+      screenName: normalizeRequiredText(values.screenName),
       startAt: normalizeRequiredDateTime(values.startAt),
       endAt: normalizeOptionalDateTime(values.endAt),
       status: values.status

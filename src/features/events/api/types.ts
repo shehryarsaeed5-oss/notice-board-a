@@ -1,3 +1,5 @@
+import type { EventScreenValue, EventTitleValue } from '../constants';
+
 export const EVENT_RECORD_STATUSES = ['ACTIVE', 'INACTIVE', 'ARCHIVED'] as const;
 
 export type EventRecordStatus = (typeof EVENT_RECORD_STATUSES)[number];
@@ -16,10 +18,10 @@ export interface EventRecordItem {
 }
 
 export interface EventRecordFormValues {
-  title: string;
+  title: EventTitleValue;
   clientName?: string;
   companyName?: string;
-  screenName?: string;
+  screenName: EventScreenValue;
   startAt: string;
   endAt?: string;
   status: EventRecordStatus;

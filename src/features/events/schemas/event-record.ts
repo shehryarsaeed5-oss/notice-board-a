@@ -2,6 +2,7 @@ import * as z from 'zod';
 
 import { isValidDateTimeInputValue } from '@/lib/date-time';
 import { EVENT_RECORD_STATUSES } from '../api/types';
+import { EVENT_SCREEN_VALUES, EVENT_TITLE_VALUES } from '../constants';
 
 const optionalText = z.preprocess((value) => {
   if (typeof value === 'string' && value.trim() === '') {
@@ -20,10 +21,10 @@ const optionalDateTime = z.preprocess((value) => {
 }, z.string().refine(isValidDateTimeInputValue, 'Enter a valid date and time').optional());
 
 export const eventRecordSchema = z.object({
-  title: z.string().trim().min(2, 'Title is required'),
+  title: z.enum(EVENT_TITLE_VALUES),
   clientName: optionalText,
   companyName: optionalText,
-  screenName: optionalText,
+  screenName: z.enum(EVENT_SCREEN_VALUES),
   startAt: z
     .string()
     .trim()

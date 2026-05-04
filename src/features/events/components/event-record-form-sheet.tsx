@@ -21,6 +21,12 @@ import { useAppForm, useFormFields } from '@/components/ui/tanstack-form';
 import { formatDateTimeInputValue } from '@/lib/date-time';
 import { createEventRecord, updateEventRecord } from '../api/client';
 import type { EventRecordItem, EventRecordStatus } from '../api/types';
+import {
+  EVENT_SCREEN_OPTIONS,
+  EVENT_SCREEN_VALUES,
+  EVENT_TITLE_OPTIONS,
+  EVENT_TITLE_VALUES
+} from '../constants';
 import { eventRecordSchema, type EventRecordFormSchemaValues } from '../schemas/event-record';
 
 const STATUS_OPTIONS: Array<{ value: EventRecordStatus; label: string }> = [
@@ -71,10 +77,10 @@ export function EventRecordFormSheet({
 
   const form = useAppForm({
     defaultValues: {
-      title: eventRecord?.title ?? '',
+      title: (eventRecord?.title ?? '') as EventRecordFormSchemaValues['title'],
       clientName: eventRecord?.clientName ?? '',
       companyName: eventRecord?.companyName ?? '',
-      screenName: eventRecord?.screenName ?? '',
+      screenName: (eventRecord?.screenName ?? '') as EventRecordFormSchemaValues['screenName'],
       startAt: eventRecord?.startAt ? formatDateTimeInputValue(eventRecord.startAt) : '',
       endAt: eventRecord?.endAt ? formatDateTimeInputValue(eventRecord.endAt) : '',
       status: eventRecord?.status ?? 'ACTIVE'
@@ -113,13 +119,14 @@ export function EventRecordFormSheet({
         <div className='flex-1 overflow-auto'>
           <form.AppForm>
             <form.Form id='event-record-form' className='space-y-4'>
-              <FormTextField
+              <FormSelectField
                 name='title'
                 label='Title'
                 required
-                placeholder='Premiere Night'
+                options={EVENT_TITLE_OPTIONS}
+                placeholder='Select event title'
                 validators={{
-                  onBlur: z.string().trim().min(2, 'Title is required')
+                  onBlur: z.enum(EVENT_TITLE_VALUES)
                 }}
               />
 
@@ -131,7 +138,16 @@ export function EventRecordFormSheet({
                 placeholder='Optional company'
               />
 
-              <FormTextField name='screenName' label='Screen' placeholder='Screen 1' />
+              <FormSelectField
+                name='screenName'
+                label='Screen'
+                required
+                options={EVENT_SCREEN_OPTIONS}
+                placeholder='Select screen'
+                validators={{
+                  onBlur: z.enum(EVENT_SCREEN_VALUES)
+                }}
+              />
 
               <form.AppField
                 name='startAt'
@@ -147,31 +163,6 @@ export function EventRecordFormSheet({
                           name={field.name}
                           type='datetime-local'
                           value={field.state.value}
-                          onBlur={field.handleBlur}
-                          onChange={(event) => field.handleChange(event.target.value)}
-                          aria-invalid={isInvalid}
-                        />
-                        <field.FieldError />
-                      </field.Field>
-                    </field.FieldSet>
-                  );
-                }}
-              />
-
-              <form.AppField
-                name='endAt'
-                children={(field) => {
-                  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
-
-                  return (
-                    <field.FieldSet>
-                      <field.Field>
-                        <field.FieldLabel htmlFor={field.name}>End</field.FieldLabel>
-                        <Input
-                          id={field.name}
-                          name={field.name}
-                          type='datetime-local'
-                          value={field.state.value ?? ''}
                           onBlur={field.handleBlur}
                           onChange={(event) => field.handleChange(event.target.value)}
                           aria-invalid={isInvalid}

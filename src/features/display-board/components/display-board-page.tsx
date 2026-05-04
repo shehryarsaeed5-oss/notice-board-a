@@ -432,8 +432,12 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                         </Badge>
                       </div>
                       <div className='mt-3 flex flex-wrap gap-2 text-xs text-zinc-400'>
-                        {event.screenName && <RecordChip>{event.screenName}</RecordChip>}
-                        {event.endAt && <RecordChip>Ends {formatTime(event.endAt)}</RecordChip>}
+                        <RecordChip>{event.screenName ?? '—'}</RecordChip>
+                        {event.endAt ? (
+                          <RecordChip>Ends {formatTime(event.endAt)}</RecordChip>
+                        ) : (
+                          <RecordChip>Ends —</RecordChip>
+                        )}
                       </div>
                     </div>
                   ))}
