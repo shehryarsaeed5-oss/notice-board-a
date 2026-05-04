@@ -1,6 +1,7 @@
 import { Icons } from '@/components/icons';
 import PageContainer from '@/components/layout/page-container';
 import { Badge } from '@/components/ui/badge';
+import { badgeToneClass } from '@/lib/status-badge';
 import {
   Card,
   CardAction,
@@ -176,8 +177,8 @@ function StatusRow({
         variant='outline'
         className={
           tone === 'success'
-            ? 'gap-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-            : 'gap-1.5'
+            ? `gap-1.5 ${badgeToneClass('success')}`
+            : `gap-1.5 ${badgeToneClass('neutral')}`
         }
       >
         {tone === 'success' ? (

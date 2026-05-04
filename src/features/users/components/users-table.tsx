@@ -16,6 +16,7 @@ import {
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
 import { cn } from '@/lib/utils';
 import { getUserPermissions } from '@/lib/permissions';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 
 import type { UserRecord } from '../api/types';
@@ -28,27 +29,14 @@ interface UsersTableProps {
 
 type UserSortKey = 'name' | 'email' | 'role' | 'permissions' | 'status' | 'createdAt';
 
-function getStatusClass(status: UserRecord['status']) {
-  switch (status) {
-    case 'ACTIVE':
-      return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
-    case 'INACTIVE':
-      return 'border-amber-500/30 bg-amber-500/10 text-amber-300';
-    case 'ARCHIVED':
-      return 'border-muted-foreground/20 bg-muted/40 text-muted-foreground';
-    default:
-      return '';
-  }
-}
-
 function getRoleClass(role: UserRecord['role']) {
   switch (role) {
     case 'ADMIN':
-      return 'border-primary/30 bg-primary/10 text-primary';
+      return 'border-emerald-700/40 bg-emerald-950/35 text-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200';
     case 'CUSTOM':
-      return 'border-sky-500/30 bg-sky-500/10 text-sky-300';
+      return 'border-sky-700/40 bg-sky-950/35 text-sky-100 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200';
     case 'VIEWER':
-      return 'border-violet-500/30 bg-violet-500/10 text-violet-300';
+      return 'border-slate-600/40 bg-slate-900/55 text-slate-200 dark:border-border/60 dark:bg-muted/50 dark:text-foreground';
     default:
       return '';
   }
@@ -82,7 +70,10 @@ function PermissionBadges({ user }: { user: UserRecord }) {
 
   if (user.role === 'ADMIN') {
     return (
-      <Badge variant='outline' className='border-primary/30 bg-primary/10 text-primary'>
+      <Badge
+        variant='outline'
+        className='border-emerald-700/40 bg-emerald-950/35 text-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200'
+      >
         All access
       </Badge>
     );
@@ -92,7 +83,7 @@ function PermissionBadges({ user }: { user: UserRecord }) {
     return (
       <Badge
         variant='outline'
-        className='border-muted-foreground/20 bg-muted/40 text-muted-foreground'
+        className='border-slate-600/40 bg-slate-900/55 text-slate-200 dark:border-border/60 dark:bg-muted/50 dark:text-foreground'
       >
         Dashboard only
       </Badge>
@@ -102,12 +93,19 @@ function PermissionBadges({ user }: { user: UserRecord }) {
   return (
     <div className='flex max-w-[26rem] flex-wrap gap-1.5'>
       {permissions.slice(0, 4).map((permission) => (
-        <Badge key={permission} variant='outline' className='border-border/60 bg-background'>
+        <Badge
+          key={permission}
+          variant='outline'
+          className='border-border/60 bg-muted/40 text-foreground dark:bg-background'
+        >
           {PERMISSION_LABELS[permission] ?? permission}
         </Badge>
       ))}
       {permissions.length > 4 && (
-        <Badge variant='outline' className='border-border/60 bg-background'>
+        <Badge
+          variant='outline'
+          className='border-border/60 bg-muted/40 text-foreground dark:bg-background'
+        >
           +{permissions.length - 4} more
         </Badge>
       )}
@@ -217,7 +215,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                     <TableCell>
                       <Badge
                         variant='outline'
-                        className={cn('gap-1.5', getStatusClass(user.status))}
+                        className={cn('gap-1.5', statusBadgeClass(user.status))}
                       >
                         {user.status}
                       </Badge>

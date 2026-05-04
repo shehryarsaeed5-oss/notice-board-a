@@ -5,6 +5,7 @@ import PageContainer from '@/components/layout/page-container';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { badgeToneClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 
 import { getDisplayPages } from '@/features/display-pages/api/service';
@@ -12,19 +13,6 @@ import type { DisplayPageRecord } from '@/features/display-pages/api/types';
 import { DisplayPagesTable } from '@/features/display-pages/components/display-pages-table';
 
 import { BoardsDisplaysRefreshButton } from './boards-displays-refresh-button';
-
-function getStatusClass(status: DisplayPageRecord['status']) {
-  switch (status) {
-    case 'ACTIVE':
-      return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
-    case 'INACTIVE':
-      return 'border-amber-500/30 bg-amber-500/10 text-amber-300';
-    case 'ARCHIVED':
-      return 'border-muted-foreground/20 bg-muted/40 text-muted-foreground';
-    default:
-      return '';
-  }
-}
 
 function countStatus(displayPages: DisplayPageRecord[], status: DisplayPageRecord['status']) {
   return displayPages.filter((displayPage) => displayPage.status === status).length;
@@ -43,12 +31,12 @@ function OverviewCard({
 }) {
   const toneClasses =
     tone === 'emerald'
-      ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-200'
+      ? badgeToneClass('success')
       : tone === 'amber'
-        ? 'border-amber-500/20 bg-amber-500/10 text-amber-100'
+        ? badgeToneClass('warning')
         : tone === 'rose'
-          ? 'border-rose-500/20 bg-rose-500/10 text-rose-100'
-          : 'border-white/10 bg-white/5 text-zinc-100';
+          ? badgeToneClass('danger')
+          : badgeToneClass('neutral');
 
   return (
     <Card className='border-border/60 bg-card/90 shadow-sm'>
@@ -136,7 +124,7 @@ export async function BoardsDisplaysPage() {
 
         <div className='flex flex-col gap-4'>
           <div className='flex items-center justify-end'>
-            <Badge variant='outline' className='border-primary/30 bg-primary/10 text-primary'>
+            <Badge variant='outline' className={badgeToneClass('info')}>
               Public screens reload within ~5 seconds
             </Badge>
           </div>

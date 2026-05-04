@@ -22,6 +22,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { useAppForm, useFormFields } from '@/components/ui/tanstack-form';
+import { badgeToneClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 
 import {
@@ -64,15 +65,15 @@ function formatPercent(value: number | null | undefined) {
 function statusTone(status: string | null) {
   switch (status) {
     case 'COMPLETED':
-      return 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-100';
+      return badgeToneClass('success');
     case 'EMPTY':
-      return 'border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-100';
+      return badgeToneClass('warning');
     case 'SKIPPED':
-      return 'border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-100';
+      return badgeToneClass('neutral');
     case 'FAILED':
-      return 'border-rose-500/20 bg-rose-500/10 text-rose-700 dark:text-rose-100';
+      return badgeToneClass('danger');
     default:
-      return 'border-border bg-muted/50 text-foreground';
+      return badgeToneClass('neutral');
   }
 }
 

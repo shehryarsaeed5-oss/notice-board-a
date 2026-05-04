@@ -14,6 +14,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 
@@ -27,19 +28,6 @@ interface DisplayPagesTableProps {
 }
 
 type DisplayPageSortKey = 'name' | 'slug' | 'description' | 'status' | 'displayUrl' | 'createdAt';
-
-function getStatusClass(status: DisplayPageRecord['status']) {
-  switch (status) {
-    case 'ACTIVE':
-      return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
-    case 'INACTIVE':
-      return 'border-amber-500/30 bg-amber-500/10 text-amber-300';
-    case 'ARCHIVED':
-      return 'border-muted-foreground/20 bg-muted/40 text-muted-foreground';
-    default:
-      return '';
-  }
-}
 
 function formatDate(value: Date) {
   return format(value, 'MMM d, yyyy');
@@ -134,7 +122,7 @@ export function DisplayPagesTable({ displayPages }: DisplayPagesTableProps) {
                       <TableCell>
                         <Badge
                           variant='outline'
-                          className={cn('gap-1.5', getStatusClass(displayPage.status))}
+                          className={cn('gap-1.5', statusBadgeClass(displayPage.status))}
                         >
                           {displayPage.status}
                         </Badge>

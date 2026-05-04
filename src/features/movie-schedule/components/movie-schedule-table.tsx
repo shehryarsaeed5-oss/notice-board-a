@@ -14,6 +14,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 import type { MovieScheduleRecord } from '../api/types';
@@ -24,19 +25,6 @@ interface MovieScheduleTableProps {
 }
 
 type MovieSortKey = 'movieName' | 'screenName' | 'showTime' | 'status' | 'createdAt';
-
-function getStatusClass(status: MovieScheduleRecord['status']) {
-  switch (status) {
-    case 'ACTIVE':
-      return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
-    case 'INACTIVE':
-      return 'border-amber-500/30 bg-amber-500/10 text-amber-300';
-    case 'ARCHIVED':
-      return 'border-muted-foreground/20 bg-muted/40 text-muted-foreground';
-    default:
-      return '';
-  }
-}
 
 function formatDateTime(value: Date) {
   return format(value, 'MMM d, yyyy h:mm a');
@@ -134,7 +122,7 @@ export function MovieScheduleTable({ movieSchedules }: MovieScheduleTableProps) 
                     <TableCell>
                       <Badge
                         variant='outline'
-                        className={cn('gap-1.5', getStatusClass(movieSchedule.status))}
+                        className={cn('gap-1.5', statusBadgeClass(movieSchedule.status))}
                       >
                         {movieSchedule.status}
                       </Badge>

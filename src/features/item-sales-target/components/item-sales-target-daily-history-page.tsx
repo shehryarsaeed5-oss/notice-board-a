@@ -25,6 +25,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 
@@ -97,19 +98,6 @@ function historyStatusLabel(status: ItemSalesTargetDailyHistoryRow['importStatus
       return 'No Target';
     default:
       return 'Unknown';
-  }
-}
-
-function historyStatusTone(status: ItemSalesTargetDailyHistoryRow['importStatus']) {
-  switch (status) {
-    case 'IMPORTED':
-      return 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-100';
-    case 'MISSING':
-      return 'border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-100';
-    case 'NO_TARGET':
-      return 'border-muted-foreground/20 bg-muted/40 text-muted-foreground';
-    default:
-      return 'border-border bg-muted/40 text-foreground';
   }
 }
 
@@ -384,7 +372,7 @@ function HistoryTable({
                       variant='outline'
                       className={cn(
                         'rounded-full px-3 py-1 text-xs',
-                        historyStatusTone(row.importStatus)
+                        statusBadgeClass(row.importStatus)
                       )}
                     >
                       {historyStatusLabel(row.importStatus)}

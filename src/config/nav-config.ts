@@ -199,21 +199,21 @@ export const navGroups: NavGroup[] = [
         items: []
       },
       {
-        title: 'System Settings',
-        url: '/dashboard/system-settings',
-        icon: 'settings',
-        access: {
-          permission: 'systemSettings'
-        },
-        isActive: false,
-        items: []
-      },
-      {
         title: 'Users',
         url: '/dashboard/users',
         icon: 'userPen',
         access: {
           permission: 'users'
+        },
+        isActive: false,
+        items: []
+      },
+      {
+        title: 'System Settings',
+        url: '/dashboard/system-settings',
+        icon: 'settings',
+        access: {
+          permission: 'systemSettings'
         },
         isActive: false,
         items: []

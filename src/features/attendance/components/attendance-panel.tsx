@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Icons } from '@/components/icons';
 import { saveAttendance } from '../api/client';
 import type { AttendanceStatus, AttendanceType } from '../api/types';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 
 const STATUS_OPTIONS: AttendanceStatus[] = ['PRESENT', 'ABSENT', 'LEAVE', 'LATE'];
@@ -49,19 +50,6 @@ interface AttendancePanelProps {
 interface FeedbackState {
   kind: 'success' | 'error';
   message: string;
-}
-
-function statusBadgeClass(status: AttendanceStatus) {
-  switch (status) {
-    case 'PRESENT':
-      return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
-    case 'ABSENT':
-      return 'border-rose-500/30 bg-rose-500/10 text-rose-300';
-    case 'LEAVE':
-      return 'border-amber-500/30 bg-amber-500/10 text-amber-300';
-    case 'LATE':
-      return 'border-sky-500/30 bg-sky-500/10 text-sky-300';
-  }
 }
 
 export function AttendancePanel({ type, title, description, rows, date }: AttendancePanelProps) {

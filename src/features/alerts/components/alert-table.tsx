@@ -14,6 +14,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { badgeToneClass, statusBadgeClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 
@@ -27,31 +28,18 @@ interface AlertsTableProps {
 
 type AlertSortKey = 'title' | 'alertType' | 'priority' | 'startAt' | 'endAt' | 'status';
 
-function getStatusClass(status: AlertRecord['status']) {
-  switch (status) {
-    case 'ACTIVE':
-      return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
-    case 'INACTIVE':
-      return 'border-amber-500/30 bg-amber-500/10 text-amber-300';
-    case 'ARCHIVED':
-      return 'border-muted-foreground/20 bg-muted/40 text-muted-foreground';
-    default:
-      return '';
-  }
-}
-
 function getAlertTypeClass(alertType: AlertRecord['alertType']) {
   switch (alertType) {
     case 'INFO':
-      return 'border-sky-500/30 bg-sky-500/10 text-sky-300';
+      return badgeToneClass('info');
     case 'WARNING':
-      return 'border-amber-500/30 bg-amber-500/10 text-amber-300';
+      return badgeToneClass('warning');
     case 'URGENT':
-      return 'border-rose-500/30 bg-rose-500/10 text-rose-300';
+      return badgeToneClass('danger');
     case 'SUCCESS':
-      return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
+      return badgeToneClass('success');
     default:
-      return '';
+      return badgeToneClass('neutral');
   }
 }
 
@@ -165,7 +153,7 @@ export function AlertsTable({ alerts }: AlertsTableProps) {
                     <TableCell>
                       <Badge
                         variant='outline'
-                        className={cn('gap-1.5', getStatusClass(alert.status))}
+                        className={cn('gap-1.5', statusBadgeClass(alert.status))}
                       >
                         {alert.status}
                       </Badge>

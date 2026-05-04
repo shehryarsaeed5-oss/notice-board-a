@@ -14,6 +14,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 import type { AdvertisementRecord } from '../api/types';
@@ -32,19 +33,6 @@ type AdvertisementSortKey =
   | 'contractAmount'
   | 'adLocation'
   | 'status';
-
-function getStatusClass(status: AdvertisementRecord['status']) {
-  switch (status) {
-    case 'ACTIVE':
-      return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
-    case 'INACTIVE':
-      return 'border-amber-500/30 bg-amber-500/10 text-amber-300';
-    case 'ARCHIVED':
-      return 'border-muted-foreground/20 bg-muted/40 text-muted-foreground';
-    default:
-      return '';
-  }
-}
 
 function formatField(value: string | null) {
   return value?.trim() ? value : '—';
@@ -185,7 +173,7 @@ export function AdvertisementTable({ advertisements }: AdvertisementTableProps) 
                     <TableCell>
                       <Badge
                         variant='outline'
-                        className={cn('gap-1.5', getStatusClass(advertisement.status))}
+                        className={cn('gap-1.5', statusBadgeClass(advertisement.status))}
                       >
                         {advertisement.status}
                       </Badge>

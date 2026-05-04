@@ -22,6 +22,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { useAppForm, useFormFields } from '@/components/ui/tanstack-form';
+import { badgeToneClass, statusBadgeClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 
 import {
@@ -55,23 +56,6 @@ function formatDate(value: string | null | undefined) {
 function formatTime(row: MovieScheduleSyncedRowRecord) {
   const parsed = row.showDateTime ?? new Date(`${row.showDate}T${row.showTime}:00`);
   return Number.isNaN(parsed.getTime()) ? row.showTime : format(parsed, 'h:mm a');
-}
-
-function statusBadgeClass(status: string | null) {
-  switch (status) {
-    case 'SUCCESS':
-      return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
-    case 'FAILED':
-      return 'border-rose-500/30 bg-rose-500/10 text-rose-300';
-    case 'EMPTY':
-      return 'border-amber-500/30 bg-amber-500/10 text-amber-300';
-    case 'CLEARED':
-      return 'border-sky-500/30 bg-sky-500/10 text-sky-300';
-    case 'RUNNING':
-      return 'border-violet-500/30 bg-violet-500/10 text-violet-300';
-    default:
-      return 'border-border/60 bg-background text-muted-foreground';
-  }
 }
 
 function EmptyState({ message }: { message: string }) {
@@ -130,9 +114,7 @@ function PreviewTable({ rows }: { rows: MovieScheduleSyncedRowRecord[] }) {
                   <Badge
                     variant='outline'
                     className={cn(
-                      row.isActive
-                        ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                        : 'border-muted-foreground/20 bg-muted/40 text-muted-foreground'
+                      row.isActive ? badgeToneClass('success') : badgeToneClass('neutral')
                     )}
                   >
                     {row.isActive ? 'Yes' : 'No'}
@@ -320,36 +302,24 @@ export function MovieScheduleSyncClient({
               used on the public display.
             </CardDescription>
             <div className='flex flex-wrap gap-2'>
-              <Badge variant='outline' className='border-primary/30 bg-primary/10 text-primary'>
+              <Badge variant='outline' className={badgeToneClass('info')}>
                 Digital Signage API
               </Badge>
               {lastSync.apiTokenSet ? (
-                <Badge
-                  variant='outline'
-                  className='border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                >
+                <Badge variant='outline' className={badgeToneClass('success')}>
                   Token saved
                 </Badge>
               ) : (
-                <Badge
-                  variant='outline'
-                  className='border-muted-foreground/20 bg-muted/40 text-muted-foreground'
-                >
+                <Badge variant='outline' className={badgeToneClass('neutral')}>
                   Token optional
                 </Badge>
               )}
               {lastSync.enabled ? (
-                <Badge
-                  variant='outline'
-                  className='border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                >
+                <Badge variant='outline' className={badgeToneClass('success')}>
                   Sync enabled
                 </Badge>
               ) : (
-                <Badge
-                  variant='outline'
-                  className='border-muted-foreground/20 bg-muted/40 text-muted-foreground'
-                >
+                <Badge variant='outline' className={badgeToneClass('neutral')}>
                   Sync disabled
                 </Badge>
               )}
@@ -437,7 +407,7 @@ export function MovieScheduleSyncClient({
               <Button
                 type='button'
                 variant='outline'
-                className='border-rose-500/30 text-rose-200 hover:bg-rose-500/10 hover:text-rose-100'
+                className='border-rose-700/40 text-rose-100 hover:bg-rose-950/35 hover:text-rose-50'
                 onClick={clearRows}
                 isLoading={clearMutation.isPending}
               >
@@ -464,7 +434,7 @@ export function MovieScheduleSyncClient({
           <CardContent className='space-y-3'>
             <div className='flex flex-wrap items-center gap-2'>
               <LastSyncBadge status={lastSync.lastSyncStatus} />
-              <Badge variant='outline' className='border-border/60 bg-background'>
+              <Badge variant='outline' className={badgeToneClass('info')}>
                 Rows {lastSync.lastSyncCount.toLocaleString()}
               </Badge>
             </div>

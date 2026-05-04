@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppForm, useFormFields } from '@/components/ui/tanstack-form';
+import { badgeToneClass } from '@/lib/status-badge';
 
 import { saveSystemSettings } from '../api/client';
 import type { SystemSettingsResult } from '../api/types';
@@ -59,7 +60,7 @@ function EmptySettingsNotice() {
               PostgreSQL.
             </CardDescription>
           </div>
-          <Badge variant='outline' className='border-amber-500/30 bg-amber-500/10 text-amber-200'>
+          <Badge variant='outline' className={badgeToneClass('warning')}>
             Defaults active
           </Badge>
         </div>
@@ -207,7 +208,7 @@ export function SystemSettingsPage({ initialSettings }: { initialSettings: Syste
                   The refresh token is version-based, so existing cached display board payloads are
                   invalidated without requiring Redis to be available.
                 </p>
-                <Badge variant='outline' className='border-primary/30 bg-primary/10 text-primary'>
+                <Badge variant='outline' className={badgeToneClass('info')}>
                   Live display reload enabled
                 </Badge>
               </CardContent>

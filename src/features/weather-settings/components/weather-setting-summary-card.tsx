@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
+import { badgeToneClass } from '@/lib/status-badge';
 import type { WeatherSettingRecord } from '../api/types';
 
 interface WeatherSettingSummaryCardProps {
@@ -28,12 +28,6 @@ function getProviderLabel(provider: WeatherSettingRecord['provider']) {
     default:
       return provider;
   }
-}
-
-function getEnabledClass(enabled: boolean) {
-  return enabled
-    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-    : 'border-amber-500/30 bg-amber-500/10 text-amber-300';
 }
 
 function formatDateTime(value: Date) {
@@ -64,14 +58,18 @@ export function WeatherSettingSummaryCard({ weatherSetting }: WeatherSettingSumm
               <TableRow>
                 <TableCell className='font-medium'>Provider</TableCell>
                 <TableCell>
-                  <Badge variant='outline'>{getProviderLabel(weatherSetting.provider)}</Badge>
+                  <Badge variant='outline' className={badgeToneClass('info')}>
+                    {getProviderLabel(weatherSetting.provider)}
+                  </Badge>
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className='font-medium'>API Key</TableCell>
                 <TableCell>
                   {weatherSetting.apiKey ? (
-                    <Badge variant='outline'>Configured</Badge>
+                    <Badge variant='outline' className={badgeToneClass('success')}>
+                      Configured
+                    </Badge>
                   ) : (
                     <span className='text-muted-foreground'>Not set</span>
                   )}
@@ -82,7 +80,7 @@ export function WeatherSettingSummaryCard({ weatherSetting }: WeatherSettingSumm
                 <TableCell>
                   <Badge
                     variant='outline'
-                    className={cn('gap-1.5', getEnabledClass(weatherSetting.enabled))}
+                    className={badgeToneClass(weatherSetting.enabled ? 'success' : 'warning')}
                   >
                     {weatherSetting.enabled ? 'Enabled' : 'Disabled'}
                   </Badge>

@@ -14,6 +14,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 import type { MeetingScheduleRecord } from '../api/types';
@@ -24,19 +25,6 @@ interface MeetingScheduleTableProps {
 }
 
 type MeetingSortKey = 'title' | 'organizer' | 'location' | 'startAt' | 'endAt' | 'status';
-
-function getStatusClass(status: MeetingScheduleRecord['status']) {
-  switch (status) {
-    case 'ACTIVE':
-      return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
-    case 'INACTIVE':
-      return 'border-amber-500/30 bg-amber-500/10 text-amber-300';
-    case 'ARCHIVED':
-      return 'border-muted-foreground/20 bg-muted/40 text-muted-foreground';
-    default:
-      return '';
-  }
-}
 
 function formatField(value: string | null) {
   return value?.trim() ? value : '—';
@@ -140,7 +128,7 @@ export function MeetingScheduleTable({ meetings }: MeetingScheduleTableProps) {
                     <TableCell>
                       <Badge
                         variant='outline'
-                        className={cn('gap-1.5', getStatusClass(meeting.status))}
+                        className={cn('gap-1.5', statusBadgeClass(meeting.status))}
                       >
                         {meeting.status}
                       </Badge>

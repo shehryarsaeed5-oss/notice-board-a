@@ -14,6 +14,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 import type { ItemSalesTargetRecord } from '../api/types';
@@ -34,19 +35,6 @@ type ItemSalesTargetSortKey =
   | 'monthlyTarget'
   | 'status'
   | 'createdAt';
-
-function getStatusClass(status: ItemSalesTargetRecord['status']) {
-  switch (status) {
-    case 'ACTIVE':
-      return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
-    case 'INACTIVE':
-      return 'border-amber-500/30 bg-amber-500/10 text-amber-300';
-    case 'ARCHIVED':
-      return 'border-muted-foreground/20 bg-muted/40 text-muted-foreground';
-    default:
-      return '';
-  }
-}
 
 function formatTarget(value: number | null) {
   if (value === null) {
@@ -197,7 +185,7 @@ export function ItemSalesTargetTable({ itemSalesTargets }: ItemSalesTargetTableP
                     <TableCell>
                       <Badge
                         variant='outline'
-                        className={cn('gap-1.5', getStatusClass(target.status))}
+                        className={cn('gap-1.5', statusBadgeClass(target.status))}
                       >
                         {target.status}
                       </Badge>
