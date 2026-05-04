@@ -52,21 +52,21 @@ function formatDate(value: Date | null | undefined) {
 function statusTone(status: string | null) {
   switch (status) {
     case 'COMPLETED':
-      return 'border-emerald-400/30 bg-emerald-400/15 text-emerald-100';
+      return 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-100';
     case 'EMPTY':
-      return 'border-amber-400/30 bg-amber-400/15 text-amber-100';
+      return 'border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-100';
     case 'SKIPPED':
-      return 'border-sky-400/30 bg-sky-400/15 text-sky-100';
+      return 'border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-100';
     case 'FAILED':
-      return 'border-rose-400/30 bg-rose-400/15 text-rose-100';
+      return 'border-rose-500/20 bg-rose-500/10 text-rose-700 dark:text-rose-100';
     default:
-      return 'border-white/10 bg-white/5 text-zinc-100';
+      return 'border-border bg-muted/50 text-foreground';
   }
 }
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className='rounded-2xl border border-dashed border-white/10 bg-black/20 px-4 py-5 text-sm text-zinc-400'>
+    <div className='rounded-2xl border border-dashed border-border bg-muted/30 px-4 py-5 text-sm text-muted-foreground'>
       {message}
     </div>
   );
@@ -82,12 +82,12 @@ function SectionCard({
   children: ReactNode;
 }) {
   return (
-    <Card className='border-white/10 bg-white/6 text-zinc-50 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl'>
+    <Card className='border-border bg-card text-card-foreground shadow-sm'>
       <CardHeader>
-        <CardDescription className='text-[11px] uppercase tracking-[0.24em] text-zinc-400'>
+        <CardDescription className='text-[11px] uppercase tracking-[0.24em] text-muted-foreground'>
           {description}
         </CardDescription>
-        <CardTitle className='text-lg font-semibold text-zinc-50'>{title}</CardTitle>
+        <CardTitle className='text-lg font-semibold text-card-foreground'>{title}</CardTitle>
       </CardHeader>
       <CardContent className='space-y-4'>{children}</CardContent>
     </Card>
@@ -96,9 +96,9 @@ function SectionCard({
 
 function PreviewTable({ rows }: { rows: ItemSalesImportRowRecord[] }) {
   return (
-    <div className='overflow-hidden rounded-2xl border border-white/10'>
+    <div className='overflow-hidden rounded-2xl border border-border bg-card'>
       <Table>
-        <TableHeader className='bg-white/5'>
+        <TableHeader className='bg-muted/50'>
           <TableRow>
             <TableHead>Item Code</TableHead>
             <TableHead>Item Name</TableHead>
@@ -111,7 +111,7 @@ function PreviewTable({ rows }: { rows: ItemSalesImportRowRecord[] }) {
         <TableBody>
           {rows.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className='h-24 text-center text-zinc-400'>
+              <TableCell colSpan={6} className='h-24 text-center text-muted-foreground'>
                 No preview rows available for the selected date.
               </TableCell>
             </TableRow>
@@ -137,9 +137,9 @@ function PreviewTable({ rows }: { rows: ItemSalesImportRowRecord[] }) {
 
 function ImportsTable({ batches }: { batches: ItemSalesImportBatchRecord[] }) {
   return (
-    <div className='overflow-hidden rounded-2xl border border-white/10'>
+    <div className='overflow-hidden rounded-2xl border border-border bg-card'>
       <Table>
-        <TableHeader className='bg-white/5'>
+        <TableHeader className='bg-muted/50'>
           <TableRow>
             <TableHead>Report Date</TableHead>
             <TableHead>File</TableHead>
@@ -151,7 +151,7 @@ function ImportsTable({ batches }: { batches: ItemSalesImportBatchRecord[] }) {
         <TableBody>
           {batches.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className='h-24 text-center text-zinc-400'>
+              <TableCell colSpan={5} className='h-24 text-center text-muted-foreground'>
                 No import history available yet.
               </TableCell>
             </TableRow>
@@ -328,7 +328,7 @@ export function ItemSalesImportPage({
               <div className='space-y-2'>
                 <label
                   htmlFor='item-sales-import-date'
-                  className='text-sm font-medium text-zinc-100'
+                  className='text-sm font-medium text-foreground'
                 >
                   Preview Date
                 </label>
@@ -356,7 +356,7 @@ export function ItemSalesImportPage({
               <div className='space-y-2'>
                 <label
                   htmlFor='item-sales-import-from'
-                  className='text-sm font-medium text-zinc-100'
+                  className='text-sm font-medium text-foreground'
                 >
                   From Date
                 </label>
@@ -368,7 +368,10 @@ export function ItemSalesImportPage({
                 />
               </div>
               <div className='space-y-2'>
-                <label htmlFor='item-sales-import-to' className='text-sm font-medium text-zinc-100'>
+                <label
+                  htmlFor='item-sales-import-to'
+                  className='text-sm font-medium text-foreground'
+                >
                   To Date
                 </label>
                 <Input
@@ -392,38 +395,46 @@ export function ItemSalesImportPage({
 
         <SectionCard title='Last Import Status' description='Latest settings and import monitor'>
           <div className='grid gap-3 sm:grid-cols-2'>
-            <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3'>
-              <div className='text-[11px] uppercase tracking-[0.24em] text-zinc-400'>Last Scan</div>
-              <div className='mt-1 text-sm font-medium text-zinc-50'>
+            <div className='rounded-2xl border border-border bg-muted/30 px-4 py-3'>
+              <div className='text-[11px] uppercase tracking-[0.24em] text-muted-foreground'>
+                Last Scan
+              </div>
+              <div className='mt-1 text-sm font-medium text-foreground'>
                 {formatDateTime(monitor.lastScanAt)}
               </div>
             </div>
-            <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3'>
-              <div className='text-[11px] uppercase tracking-[0.24em] text-zinc-400'>
+            <div className='rounded-2xl border border-border bg-muted/30 px-4 py-3'>
+              <div className='text-[11px] uppercase tracking-[0.24em] text-muted-foreground'>
                 Last Import
               </div>
-              <div className='mt-1 text-sm font-medium text-zinc-50'>
+              <div className='mt-1 text-sm font-medium text-foreground'>
                 {formatDateTime(monitor.lastImportAt)}
               </div>
             </div>
-            <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3'>
-              <div className='text-[11px] uppercase tracking-[0.24em] text-zinc-400'>Status</div>
-              <div className='mt-1 text-sm font-medium text-zinc-50'>
+            <div className='rounded-2xl border border-border bg-muted/30 px-4 py-3'>
+              <div className='text-[11px] uppercase tracking-[0.24em] text-muted-foreground'>
+                Status
+              </div>
+              <div className='mt-1 text-sm font-medium text-foreground'>
                 {monitor.lastImportStatus ?? '—'}
               </div>
             </div>
-            <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3'>
-              <div className='text-[11px] uppercase tracking-[0.24em] text-zinc-400'>Rows</div>
-              <div className='mt-1 text-sm font-medium text-zinc-50'>
+            <div className='rounded-2xl border border-border bg-muted/30 px-4 py-3'>
+              <div className='text-[11px] uppercase tracking-[0.24em] text-muted-foreground'>
+                Rows
+              </div>
+              <div className='mt-1 text-sm font-medium text-foreground'>
                 {monitor.lastImportCount.toLocaleString()}
               </div>
             </div>
           </div>
 
-          <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-300'>
+          <div className='rounded-2xl border border-border bg-muted/30 px-4 py-3 text-sm text-foreground'>
             {monitor.lastImportMessage ?? 'No import activity yet.'}
           </div>
-          <div className='text-xs uppercase tracking-[0.22em] text-zinc-500'>{lastImportLabel}</div>
+          <div className='text-xs uppercase tracking-[0.22em] text-muted-foreground'>
+            {lastImportLabel}
+          </div>
         </SectionCard>
       </div>
 
@@ -434,8 +445,8 @@ export function ItemSalesImportPage({
         >
           {selectedBatch ? (
             <div className='space-y-3'>
-              <div className='flex flex-wrap gap-2 text-xs text-zinc-300'>
-                <Badge className='border-white/10 bg-white/5 text-zinc-100'>
+              <div className='flex flex-wrap gap-2 text-xs text-muted-foreground'>
+                <Badge className='border-border bg-muted/50 text-foreground'>
                   {selectedBatch.sourceFilename}
                 </Badge>
                 <Badge
@@ -443,7 +454,7 @@ export function ItemSalesImportPage({
                 >
                   {selectedBatch.status}
                 </Badge>
-                <Badge className='border-white/10 bg-white/5 text-zinc-100'>
+                <Badge className='border-border bg-muted/50 text-foreground'>
                   {selectedBatch.rowCount.toLocaleString()} row(s)
                 </Badge>
               </div>
