@@ -243,7 +243,7 @@ function AlertBannerCard({ alert }: { alert: DisplayBoardAlertItem }) {
         alert.alertType === 'URGENT' ? 'animate-pulse' : ''
       )}
     >
-      <div className='flex items-start justify-between gap-2.5'>
+      <div className='flex items-center justify-between gap-2.5'>
         <div className='min-w-0'>
           <div className='flex items-center gap-1.5'>
             <theme.icon className={cn('size-4 shrink-0', theme.iconClass)} />
@@ -329,7 +329,7 @@ function AttendanceRosterItem({
 }) {
   return (
     <div className='border border-white/10 bg-black/20 px-2 py-[5px]'>
-      <div className='flex items-start justify-between gap-1.5'>
+      <div className='flex items-center justify-between gap-1.5'>
         <div className='min-w-0'>
           <div className={DISPLAY_CONTENT_TITLE_CLASS}>{name}</div>
           <div className={cn('mt-0.5 flex flex-wrap gap-1', DISPLAY_CONTENT_DETAIL_CLASS)}>
@@ -367,7 +367,7 @@ function SectionCard({
   return (
     <Card className='!rounded-none flex h-full min-h-0 flex-col gap-0 overflow-hidden border-white/10 bg-white/6 py-0 text-zinc-50 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'>
       <CardHeader className='shrink-0 px-2.5 pt-1 pb-0'>
-        <div className='flex items-start justify-between gap-2.5'>
+        <div className='flex items-center justify-between gap-2.5'>
           <CardTitle className='text-[14px] font-semibold text-zinc-50 xl:text-[15px]'>
             {title}
           </CardTitle>
@@ -645,7 +645,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((event) => (
               <div key={event.id} className={DISPLAY_SECTION_ROW_CLASS}>
-                <div className='flex items-start justify-between gap-2.5'>
+                <div className='flex items-center justify-between gap-2.5'>
                   <div className='min-w-0'>
                     <div className={DISPLAY_CONTENT_TITLE_CLASS}>{event.title}</div>
                     <div className={cn('mt-0.5', DISPLAY_CONTENT_DETAIL_CLASS)}>
@@ -709,7 +709,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((meeting) => (
               <div key={meeting.id} className={DISPLAY_SECTION_ROW_CLASS}>
-                <div className='flex items-start justify-between gap-2.5'>
+                <div className='flex items-center justify-between gap-2.5'>
                   <div className='min-w-0'>
                     <div className={DISPLAY_CONTENT_TITLE_CLASS}>{meeting.title}</div>
                     <div className={cn('mt-0.5', DISPLAY_CONTENT_DETAIL_CLASS)}>
@@ -885,7 +885,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((ad) => (
               <div key={ad.id} className={DISPLAY_SECTION_ROW_CLASS}>
-                <div className='flex items-start justify-between gap-2.5'>
+                <div className='flex items-center justify-between gap-2.5'>
                   <div className='min-w-0'>
                     <div className={DISPLAY_CONTENT_TITLE_CLASS}>{ad.title}</div>
                     <div className='mt-0.5 flex flex-wrap gap-1 text-[10px] text-zinc-300'>
@@ -933,7 +933,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                 key={target.id}
                 className='border border-white/10 bg-black/20 px-2.5 py-1.5 rounded-none'
               >
-                <div className='flex items-start justify-between gap-2.5'>
+                <div className='flex items-center justify-between gap-2.5'>
                   <div className='min-w-0'>
                     <div className='truncate text-[12px] font-medium leading-tight text-zinc-50 xl:text-[13px]'>
                       {target.itemName}
@@ -1020,7 +1020,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((item) => (
               <div key={item.id} className={DISPLAY_SECTION_ROW_CLASS}>
-                <div className='flex items-start justify-between gap-2.5'>
+                <div className='flex items-center justify-between gap-2.5'>
                   <div className='min-w-0'>
                     <div className={DISPLAY_CONTENT_TITLE_CLASS}>{item.itemName}</div>
                     <div className='mt-0.5 flex flex-wrap gap-1 text-[10px] text-zinc-300'>

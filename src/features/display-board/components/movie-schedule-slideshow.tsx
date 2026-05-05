@@ -98,7 +98,7 @@ function MovieTimeChip({ label, isActive }: { label: string; isActive: boolean }
 function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGroup; now: number }) {
   return (
     <div className='border border-white/10 bg-black/20 px-2.5 py-1.5 rounded-none'>
-      <div className='flex items-start gap-2'>
+      <div className='flex items-center gap-2'>
         <div className='w-[clamp(7rem,22%,10rem)] shrink-0'>
           <div className='truncate text-left text-[11px] font-semibold leading-[1.05] text-zinc-50 xl:text-[12px]'>
             {group.movieName}
