@@ -83,14 +83,13 @@ function MovieTimeChip({ label, isActive }: { label: string; isActive: boolean }
   return (
     <span
       className={cn(
-        'inline-flex items-center border px-[5px] py-[2px] text-[9px] leading-none rounded-none',
+        'inline-flex items-center text-[9px] leading-none rounded-none',
         isActive
-          ? 'border-emerald-400/60 bg-emerald-500/20 text-emerald-200'
-          : 'border-white/10 bg-black/20 text-zinc-200'
+          ? 'text-emerald-200 underline decoration-emerald-400/60 decoration-1 underline-offset-2'
+          : 'text-zinc-200'
       )}
     >
       {label}
-      {isActive ? <span className='ml-1 text-[8px] uppercase tracking-[0.18em]'>Now</span> : null}
     </span>
   );
 }
@@ -106,17 +105,17 @@ function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGrou
         </div>
 
         <div className='min-w-0 flex-1'>
-          <div className='flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[10px] text-zinc-200'>
+          <div className='flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-zinc-200'>
             {group.screenGroups.map((screenGroup) => {
               return (
                 <span
                   key={`${group.movieName}-${screenGroup.screenName}`}
-                  className='inline-flex max-w-full items-center gap-1 rounded-none border border-white/10 bg-white/5 px-[5px] py-[2px]'
+                  className='inline-flex max-w-full min-w-0 items-center gap-1 rounded-none'
                 >
                   <span className='shrink-0 font-semibold text-zinc-50'>
                     {getCompactScreenLabel(screenGroup.screenName)}
                   </span>
-                  <span className='flex min-w-0 flex-wrap items-center gap-0.5'>
+                  <span className='flex min-w-0 flex-wrap items-center gap-0.5 whitespace-nowrap text-zinc-300'>
                     {screenGroup.times.map((time, index) => {
                       const active = isPlayingTime(time.startTimeIso, now);
 

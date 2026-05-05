@@ -51,8 +51,9 @@ const DISPLAY_SECTION_LIST_GAP_CLASS = 'space-y-1';
 const DISPLAY_SECTION_ROW_CLASS = 'border border-white/10 bg-black/20 px-3 py-2 rounded-none';
 const DISPLAY_SECTION_INNER_PANEL_CLASS =
   'space-y-1 border border-white/10 bg-black/18 p-2 rounded-none';
-const DISPLAY_CHIP_CLASS =
-  'inline-flex shrink-0 items-center border border-white/10 bg-white/5 px-1.5 py-[2px] text-[9px] font-medium tracking-wide text-zinc-100';
+const DISPLAY_META_INLINE_CLASS =
+  'inline-flex min-w-0 items-center truncate text-[10px] leading-none text-zinc-300';
+const DISPLAY_META_SEPARATOR_CLASS = 'mx-1 shrink-0 text-zinc-500';
 
 function getVisibleCount(block: DisplayLayoutBlockConfig, fallback: number) {
   return Math.max(1, block.rowLimit || fallback);
@@ -295,7 +296,7 @@ function attendanceStatusLabel(status: DisplayBoardAttendanceDisplayStatus) {
 
 function AttendanceStatusBadge({ status }: { status: DisplayBoardAttendanceDisplayStatus }) {
   return (
-    <Badge className={cn('!rounded-none px-1.5 py-[2px] text-[9px]', attendanceStatusTone(status))}>
+    <Badge className={cn('!rounded-none px-1.5 py-[1px] text-[9px]', attendanceStatusTone(status))}>
       {attendanceStatusLabel(status)}
     </Badge>
   );
@@ -323,11 +324,31 @@ function AttendanceRosterRow({
       <div className='flex items-center justify-between gap-1.5'>
         <div className='flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden whitespace-nowrap'>
           <div className={cn(DISPLAY_CONTENT_TITLE_CLASS, 'shrink-0 leading-none')}>{name}</div>
-          {designation ? <RecordChip>{designation}</RecordChip> : null}
-          {kind === 'staff' && department ? <RecordChip>{department}</RecordChip> : null}
-          {shift ? <RecordChip>Shift {shift}</RecordChip> : null}
+          {designation ? (
+            <span className={cn(DISPLAY_META_INLINE_CLASS, 'gap-1 shrink-0')}>
+              {kind === 'manager' ? (
+                <Icons.badgeCheck className='size-3 shrink-0 text-amber-300/90' />
+              ) : null}
+              <span className='truncate'>{designation}</span>
+            </span>
+          ) : null}
+          {kind === 'staff' && department ? (
+            <>
+              <span className={DISPLAY_META_SEPARATOR_CLASS}>•</span>
+              <span className={cn(DISPLAY_META_INLINE_CLASS, 'truncate')}>{department}</span>
+            </>
+          ) : null}
+          {shift ? (
+            <>
+              <span className={DISPLAY_META_SEPARATOR_CLASS}>•</span>
+              <span className={cn(DISPLAY_META_INLINE_CLASS, 'shrink-0')}>Shift {shift}</span>
+            </>
+          ) : null}
           {remarks ? (
-            <div className='truncate text-[10px] leading-none text-zinc-400'>{remarks}</div>
+            <>
+              <span className={DISPLAY_META_SEPARATOR_CLASS}>•</span>
+              <span className='truncate text-[10px] leading-none text-zinc-400'>{remarks}</span>
+            </>
           ) : null}
         </div>
         <AttendanceStatusBadge status={status} />
@@ -382,7 +403,7 @@ function EmptySection({ message }: { message: string }) {
 }
 
 function RecordChip({ children }: { children: ReactNode }) {
-  return <span className={DISPLAY_CHIP_CLASS}>{children}</span>;
+  return <span className={DISPLAY_META_INLINE_CLASS}>{children}</span>;
 }
 
 function HeaderWidgetBadge({ children, className }: { children: ReactNode; className?: string }) {
