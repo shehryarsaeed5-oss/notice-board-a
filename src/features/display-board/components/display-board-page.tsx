@@ -1086,7 +1086,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           minHeight: `${displayPage.resolutionHeight}px`
         }}
       >
-        <header className='relative shrink-0 rounded-none border border-white/10 bg-white/6 px-3 py-2.5 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl xl:px-4 xl:py-3'>
+        <header className='relative flex min-h-[96px] shrink-0 items-center overflow-hidden rounded-none border border-white/10 bg-white/6 px-3 py-3.5 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl xl:min-h-[104px] xl:px-4 xl:py-4'>
           <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
             <div className='flex flex-col items-center justify-center text-center'>
               <div className='text-[1.9rem] font-semibold leading-none tracking-tight text-zinc-50 md:text-[2.3rem] xl:text-[2.75rem]'>
