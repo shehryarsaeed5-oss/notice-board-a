@@ -3,7 +3,8 @@ export const DISPLAY_BLOCK_KEYS = [
   'events',
   'movieSchedule',
   'meetingSchedule',
-  'attendance',
+  'managerAvailability',
+  'staffRoster',
   'concessionPriceList',
   'itemSalesTarget',
   'advertisements',
@@ -20,6 +21,7 @@ export interface DisplayBlockDefinition {
   defaultRowLimit: number;
   minRowLimit: number;
   maxRowLimit: number;
+  headerOnly: boolean;
 }
 
 export interface DisplayLayoutBlockConfig {
@@ -27,6 +29,9 @@ export interface DisplayLayoutBlockConfig {
   enabled: boolean;
   sortOrder: number;
   rowLimit: number;
+  column: number;
+  row: number;
+  colSpan: number;
 }
 
 export interface DisplayLayoutColumns {
@@ -40,6 +45,10 @@ export interface DisplayLayoutConfig {
   blocks: DisplayLayoutBlockConfig[];
 }
 
+export const DISPLAY_GRID_COLUMN_COUNT = 3;
+export const DISPLAY_GRID_ROW_MIN = 1;
+export const DISPLAY_GRID_ROW_MAX = 20;
+
 export const DISPLAY_BLOCKS: DisplayBlockDefinition[] = [
   {
     key: 'alerts',
@@ -48,7 +57,8 @@ export const DISPLAY_BLOCKS: DisplayBlockDefinition[] = [
     defaultSortOrder: 1,
     defaultRowLimit: 3,
     minRowLimit: 1,
-    maxRowLimit: 5
+    maxRowLimit: 5,
+    headerOnly: true
   },
   {
     key: 'events',
@@ -57,7 +67,8 @@ export const DISPLAY_BLOCKS: DisplayBlockDefinition[] = [
     defaultSortOrder: 2,
     defaultRowLimit: 4,
     minRowLimit: 1,
-    maxRowLimit: 8
+    maxRowLimit: 8,
+    headerOnly: false
   },
   {
     key: 'movieSchedule',
@@ -66,7 +77,8 @@ export const DISPLAY_BLOCKS: DisplayBlockDefinition[] = [
     defaultSortOrder: 3,
     defaultRowLimit: 8,
     minRowLimit: 1,
-    maxRowLimit: 12
+    maxRowLimit: 12,
+    headerOnly: false
   },
   {
     key: 'meetingSchedule',
@@ -75,52 +87,68 @@ export const DISPLAY_BLOCKS: DisplayBlockDefinition[] = [
     defaultSortOrder: 4,
     defaultRowLimit: 4,
     minRowLimit: 1,
-    maxRowLimit: 8
+    maxRowLimit: 8,
+    headerOnly: false
   },
   {
-    key: 'attendance',
-    label: 'Attendance',
+    key: 'managerAvailability',
+    label: 'Manager Availability',
     defaultEnabled: true,
     defaultSortOrder: 5,
     defaultRowLimit: 6,
     minRowLimit: 1,
-    maxRowLimit: 12
+    maxRowLimit: 12,
+    headerOnly: false
+  },
+  {
+    key: 'staffRoster',
+    label: 'Staff Roster',
+    defaultEnabled: true,
+    defaultSortOrder: 6,
+    defaultRowLimit: 6,
+    minRowLimit: 1,
+    maxRowLimit: 12,
+    headerOnly: false
   },
   {
     key: 'concessionPriceList',
     label: 'Concession Price List',
     defaultEnabled: true,
-    defaultSortOrder: 6,
+    defaultSortOrder: 7,
     defaultRowLimit: 8,
     minRowLimit: 1,
-    maxRowLimit: 12
+    maxRowLimit: 12,
+    headerOnly: false
   },
   {
     key: 'itemSalesTarget',
     label: 'Item Sales Target',
     defaultEnabled: true,
-    defaultSortOrder: 7,
+    defaultSortOrder: 8,
     defaultRowLimit: 3,
     minRowLimit: 1,
-    maxRowLimit: 6
+    maxRowLimit: 6,
+    headerOnly: false
   },
   {
     key: 'advertisements',
     label: 'Advertisements',
     defaultEnabled: true,
-    defaultSortOrder: 8,
+    defaultSortOrder: 9,
     defaultRowLimit: 3,
     minRowLimit: 1,
-    maxRowLimit: 6
+    maxRowLimit: 6,
+    headerOnly: false
   },
   {
     key: 'weather',
     label: 'Weather',
     defaultEnabled: true,
-    defaultSortOrder: 9,
+    defaultSortOrder: 10,
     defaultRowLimit: 1,
     minRowLimit: 1,
-    maxRowLimit: 1
+    maxRowLimit: 1,
+    headerOnly: true
   }
 ];
 
@@ -136,7 +164,9 @@ const DEFAULT_LAYOUT_CONFIG: DisplayLayoutConfig = {
     key: block.key,
     enabled: block.defaultEnabled,
     sortOrder: block.defaultSortOrder,
-    rowLimit: block.defaultRowLimit
+    rowLimit: block.defaultRowLimit,
+    ...getFlowPlacementFromSortOrder(block.defaultSortOrder),
+    colSpan: 1
   }))
 };
 
@@ -151,6 +181,61 @@ function toFiniteInteger(value: unknown, fallback: number): number {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
+}
+
+function normalizeGridColumn(value: number): number {
+  return clamp(value, 1, DISPLAY_GRID_COLUMN_COUNT);
+}
+
+function normalizeGridRow(value: number): number {
+  return clamp(value, DISPLAY_GRID_ROW_MIN, DISPLAY_GRID_ROW_MAX);
+}
+
+function normalizeGridColSpan(value: number, column: number): number {
+  const maxSpan = column >= DISPLAY_GRID_COLUMN_COUNT ? 1 : 2;
+  return clamp(value, 1, maxSpan);
+}
+
+function getFlowPlacementFromSortOrder(sortOrder: number): {
+  column: number;
+  row: number;
+} {
+  const safeSortOrder = Math.max(1, sortOrder);
+
+  return {
+    column: ((safeSortOrder - 1) % DISPLAY_GRID_COLUMN_COUNT) + 1,
+    row: Math.floor((safeSortOrder - 1) / DISPLAY_GRID_COLUMN_COUNT) + 1
+  };
+}
+
+function getSortOrderFromPlacement(column: number, row: number): number {
+  return (row - 1) * DISPLAY_GRID_COLUMN_COUNT + column;
+}
+
+function normalizeLegacyAttendanceBlock(rawBlocks: unknown[]): {
+  enabled?: boolean;
+  sortOrder?: number;
+  rowLimit?: number;
+} | null {
+  const legacyBlock = rawBlocks.find(
+    (block) => (block as { key?: unknown } | null | undefined)?.key === 'attendance'
+  ) as Partial<DisplayLayoutBlockConfig> | undefined;
+
+  if (!legacyBlock) {
+    return null;
+  }
+
+  return {
+    enabled: typeof legacyBlock.enabled === 'boolean' ? legacyBlock.enabled : undefined,
+    sortOrder: toFiniteInteger(
+      legacyBlock.sortOrder,
+      findDefinition('managerAvailability').defaultSortOrder
+    ),
+    rowLimit: toFiniteInteger(
+      legacyBlock.rowLimit,
+      findDefinition('managerAvailability').defaultRowLimit
+    )
+  };
 }
 
 function normalizeDisplayLayoutColumns(input: unknown): DisplayLayoutColumns {
@@ -202,6 +287,7 @@ export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfi
   const rawBlocks = Array.isArray((input as { blocks?: unknown } | null | undefined)?.blocks)
     ? ((input as { blocks?: unknown[] }).blocks ?? [])
     : [];
+  const legacyAttendance = normalizeLegacyAttendanceBlock(rawBlocks);
 
   return {
     columns: normalizeDisplayLayoutColumns(rawColumns),
@@ -209,24 +295,69 @@ export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfi
       const rawBlock = rawBlocks.find(
         (block) => (block as { key?: unknown } | null | undefined)?.key === definition.key
       ) as Partial<DisplayLayoutBlockConfig> | undefined;
-
-      const sortOrder = clamp(
-        toFiniteInteger(rawBlock?.sortOrder, definition.defaultSortOrder),
-        0,
-        999
-      );
+      const legacySortOrder = legacyAttendance?.sortOrder ?? definition.defaultSortOrder;
+      const sortOrderSeed =
+        rawBlock?.sortOrder !== undefined
+          ? toFiniteInteger(rawBlock.sortOrder, legacySortOrder)
+          : definition.key === 'managerAvailability' && legacyAttendance
+            ? legacySortOrder
+            : definition.key === 'staffRoster' && legacyAttendance
+              ? legacySortOrder + 1
+              : legacyAttendance && legacySortOrder < definition.defaultSortOrder
+                ? definition.defaultSortOrder + 1
+                : definition.defaultSortOrder;
+      const placement =
+        rawBlock?.column !== undefined || rawBlock?.row !== undefined
+          ? {
+              column: normalizeGridColumn(
+                toFiniteInteger(
+                  rawBlock?.column,
+                  getFlowPlacementFromSortOrder(sortOrderSeed).column
+                )
+              ),
+              row: normalizeGridRow(
+                toFiniteInteger(rawBlock?.row, getFlowPlacementFromSortOrder(sortOrderSeed).row)
+              )
+            }
+          : getFlowPlacementFromSortOrder(sortOrderSeed);
+      const column = normalizeGridColumn(placement.column);
+      const row = normalizeGridRow(placement.row);
+      const sortOrder =
+        rawBlock?.sortOrder !== undefined
+          ? clamp(toFiniteInteger(rawBlock.sortOrder, legacySortOrder), 0, 999)
+          : clamp(getSortOrderFromPlacement(column, row), 0, 999);
       const rowLimit = clamp(
-        toFiniteInteger(rawBlock?.rowLimit, definition.defaultRowLimit),
+        rawBlock?.rowLimit !== undefined
+          ? toFiniteInteger(rawBlock.rowLimit, definition.defaultRowLimit)
+          : definition.key === 'managerAvailability' && legacyAttendance
+            ? (legacyAttendance.rowLimit ?? definition.defaultRowLimit)
+            : definition.key === 'staffRoster' && legacyAttendance
+              ? (legacyAttendance.rowLimit ?? definition.defaultRowLimit)
+              : definition.defaultRowLimit,
         definition.minRowLimit,
         definition.maxRowLimit
+      );
+      const enabled =
+        typeof rawBlock?.enabled === 'boolean'
+          ? rawBlock.enabled
+          : definition.key === 'managerAvailability' && legacyAttendance
+            ? (legacyAttendance.enabled ?? definition.defaultEnabled)
+            : definition.key === 'staffRoster' && legacyAttendance
+              ? (legacyAttendance.enabled ?? definition.defaultEnabled)
+              : definition.defaultEnabled;
+      const colSpan = normalizeGridColSpan(
+        rawBlock?.colSpan !== undefined ? toFiniteInteger(rawBlock.colSpan, 1) : 1,
+        column
       );
 
       return {
         key: definition.key,
-        enabled:
-          typeof rawBlock?.enabled === 'boolean' ? rawBlock.enabled : definition.defaultEnabled,
+        enabled,
         sortOrder,
-        rowLimit
+        rowLimit,
+        column,
+        row,
+        colSpan
       };
     })
   };
@@ -238,6 +369,14 @@ export function getEnabledSortedDisplayBlocks(
   return normalizeDisplayLayoutConfig(config)
     .blocks.filter((block) => block.enabled)
     .sort((left, right) => {
+      if (left.row !== right.row) {
+        return left.row - right.row;
+      }
+
+      if (left.column !== right.column) {
+        return left.column - right.column;
+      }
+
       if (left.sortOrder !== right.sortOrder) {
         return left.sortOrder - right.sortOrder;
       }
@@ -248,4 +387,8 @@ export function getEnabledSortedDisplayBlocks(
 
 export function getDisplayBlockDefinition(key: DisplayBlockKey): DisplayBlockDefinition {
   return findDefinition(key);
+}
+
+export function isHeaderOnlyDisplayBlock(key: DisplayBlockKey): boolean {
+  return findDefinition(key).headerOnly;
 }

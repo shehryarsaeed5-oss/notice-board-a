@@ -15,6 +15,7 @@ import type {
   DisplayBoardWeatherData
 } from '../api/types';
 import {
+  getDisplayBlockDefinition,
   getEnabledSortedDisplayBlocks,
   type DisplayBlockKey,
   type DisplayLayoutBlockConfig
@@ -44,13 +45,9 @@ const VISIBLE_MANAGER_ATTENDANCE_COUNT = 3;
 const DISPLAY_LAYOUT_GAP_CLASS = 'gap-2';
 const DISPLAY_LAYOUT_PADDING_CLASS = 'p-2';
 const DISPLAY_CONTENT_TITLE_CLASS = 'truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]';
-const DISPLAY_CONTENT_DETAIL_CLASS = 'text-[11px] leading-[1.15] text-zinc-300 xl:text-[12px]';
-const DISPLAY_CONTENT_META_CLASS = 'text-[10px] leading-[1.15] text-zinc-400';
 const DISPLAY_CONTENT_SMALL_CLASS = 'text-[11px] leading-[1.15]';
 const DISPLAY_SECTION_LIST_GAP_CLASS = 'space-y-1';
 const DISPLAY_SECTION_ROW_CLASS = 'border border-white/10 bg-black/20 px-3 py-2 rounded-none';
-const DISPLAY_SECTION_INNER_PANEL_CLASS =
-  'space-y-1 border border-white/10 bg-black/18 p-2 rounded-none';
 const DISPLAY_META_INLINE_CLASS =
   'inline-flex min-w-0 items-center truncate text-[10px] leading-none text-zinc-300';
 const DISPLAY_META_SEPARATOR_CLASS = 'mx-1 shrink-0 text-zinc-500';
@@ -622,8 +619,23 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const weatherBlock = getBlock('weather');
   const alertsBlock = getBlock('alerts');
   const visibleGridBlocks = layoutBlocks.filter(
-    (block) => block.key !== 'weather' && block.key !== 'alerts'
+    (block) => !getDisplayBlockDefinition(block.key).headerOnly
   );
+  const positionedGridBlocks = visibleGridBlocks.slice().sort((left, right) => {
+    if (left.row !== right.row) {
+      return left.row - right.row;
+    }
+
+    if (left.column !== right.column) {
+      return left.column - right.column;
+    }
+
+    if (left.sortOrder !== right.sortOrder) {
+      return left.sortOrder - right.sortOrder;
+    }
+
+    return left.key.localeCompare(right.key);
+  });
   const currentDate = formatDate(renderedAt);
   const firstAlert = alerts.items[0] ?? null;
 
@@ -753,11 +765,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         return [];
       }
 
-      case 'attendance': {
-        const attendanceLimit = getVisibleCount(block, VISIBLE_STAFF_ATTENDANCE_COUNT);
-        const managerPages = chunkItems(activeManagersWithAttendanceToday.items, attendanceLimit);
-        const staffPages = chunkItems(activeStaffWithAttendanceToday.items, attendanceLimit);
-
+      case 'managerAvailability':
+      case 'staffRoster': {
         const renderManagerPage = (pageItems: typeof activeManagersWithAttendanceToday.items) => (
           <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((item) => (
@@ -795,11 +804,12 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           title: string,
           icon: ComponentType<{ className?: string }>,
           total: number,
-          pages: T[],
+          items: T[],
+          pageSize: number,
           renderPage: (pageItems: T[]) => ReactNode,
           emptyMessage: string
         ) {
-          const pageChunks = chunkItems(pages, attendanceLimit);
+          const pageChunks = chunkItems(items, pageSize);
 
           return (
             <SectionCard title={title} icon={icon} count={total}>
@@ -818,12 +828,47 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           );
         }
 
+        if (key === 'managerAvailability') {
+          const blockRowLimit = getVisibleCount(block, VISIBLE_MANAGER_ATTENDANCE_COUNT);
+
+          return [
+            renderPagedCard(
+              'Manager Availability',
+              Icons.teams,
+              activeManagersWithAttendanceToday.total,
+              activeManagersWithAttendanceToday.items,
+              blockRowLimit,
+              renderManagerPage,
+              'No active managers found.'
+            )
+          ];
+        }
+
+        if (key === 'staffRoster') {
+          const blockRowLimit = getVisibleCount(block, VISIBLE_STAFF_ATTENDANCE_COUNT);
+
+          return [
+            renderPagedCard(
+              'Staff Roster',
+              Icons.user,
+              activeStaffWithAttendanceToday.total,
+              activeStaffWithAttendanceToday.items,
+              blockRowLimit,
+              renderStaffPage,
+              'No active staff found.'
+            )
+          ];
+        }
+
+        const legacyRowLimit = getVisibleCount(block, VISIBLE_STAFF_ATTENDANCE_COUNT);
+
         return [
           renderPagedCard(
             'Manager Availability',
             Icons.teams,
             activeManagersWithAttendanceToday.total,
             activeManagersWithAttendanceToday.items,
+            legacyRowLimit,
             renderManagerPage,
             'No active managers found.'
           ),
@@ -832,6 +877,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             Icons.user,
             activeStaffWithAttendanceToday.total,
             activeStaffWithAttendanceToday.items,
+            legacyRowLimit,
             renderStaffPage,
             'No active staff found.'
           )
@@ -1113,9 +1159,16 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               } as CSSProperties
             }
           >
-            {visibleGridBlocks.flatMap((block) =>
+            {positionedGridBlocks.flatMap((block) =>
               renderBlockCards(block.key).map((node, index) => (
-                <div key={`${block.key}-${index}`} className='min-h-0'>
+                <div
+                  key={`${block.key}-${index}`}
+                  className='min-h-0'
+                  style={{
+                    gridColumn: `${block.column} / span ${block.colSpan}`,
+                    gridRow: `${block.row}`
+                  }}
+                >
                   {node}
                 </div>
               ))

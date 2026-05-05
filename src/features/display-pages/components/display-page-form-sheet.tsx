@@ -380,7 +380,7 @@ export function DisplayPageFormSheet({
                         </FieldLegend>
                         <FieldDescription>
                           Enable the widgets that should appear on the public display and set their
-                          row limits.
+                          grid placement and rows per slide.
                         </FieldDescription>
                       </div>
 
@@ -399,101 +399,256 @@ export function DisplayPageFormSheet({
                           return (
                             <div
                               key={definition.key}
-                              className='grid gap-3 rounded-xl border border-border/60 bg-background/70 p-3 md:grid-cols-[minmax(0,1fr)_120px_120px]'
+                              className='grid gap-3 rounded-xl border border-border/60 bg-background/70 p-3'
                             >
-                              <label className='flex items-start gap-3'>
-                                <Checkbox
-                                  checked={block.enabled}
-                                  onCheckedChange={(checked) => {
-                                    const nextBlocks = layoutConfig.blocks.map((item) =>
-                                      item.key === definition.key
-                                        ? {
-                                            ...item,
-                                            enabled: checked === true
-                                          }
-                                        : item
-                                    );
+                              <div className='flex flex-wrap items-start justify-between gap-3'>
+                                <label className='flex items-start gap-3'>
+                                  <Checkbox
+                                    checked={block.enabled}
+                                    onCheckedChange={(checked) => {
+                                      const nextBlocks = layoutConfig.blocks.map((item) =>
+                                        item.key === definition.key
+                                          ? {
+                                              ...item,
+                                              enabled: checked === true
+                                            }
+                                          : item
+                                      );
 
-                                    field.handleChange({ ...layoutConfig, blocks: nextBlocks });
-                                    field.handleBlur();
-                                  }}
-                                />
+                                      field.handleChange({ ...layoutConfig, blocks: nextBlocks });
+                                      field.handleBlur();
+                                    }}
+                                  />
 
-                                <span className='flex flex-col gap-1'>
-                                  <span className='text-sm font-medium text-foreground'>
-                                    {definition.label}
+                                  <span className='flex flex-col gap-1'>
+                                    <span className='text-sm font-medium text-foreground'>
+                                      {definition.label}
+                                    </span>
+                                    <span className='text-muted-foreground text-xs'>
+                                      {definition.headerOnly
+                                        ? 'Header-only block'
+                                        : 'Place this block on the TV grid using column, row, and width.'}
+                                    </span>
                                   </span>
-                                  <span className='text-muted-foreground text-xs'>
-                                    Default {definition.defaultSortOrder} · rows{' '}
-                                    {definition.minRowLimit}-{definition.maxRowLimit}
-                                  </span>
+                                </label>
+
+                                <span
+                                  className={cn(
+                                    'inline-flex items-center rounded-none border px-2 py-1 text-[10px] font-medium uppercase tracking-[0.18em]',
+                                    definition.headerOnly
+                                      ? 'border-amber-400/30 bg-amber-500/10 text-amber-100'
+                                      : 'border-white/10 bg-white/5 text-zinc-100'
+                                  )}
+                                >
+                                  {definition.headerOnly ? 'Header only' : 'TV grid'}
                                 </span>
-                              </label>
-
-                              <div className='grid gap-1.5'>
-                                <label
-                                  htmlFor={`sort-${definition.key}`}
-                                  className='text-xs font-medium text-muted-foreground'
-                                >
-                                  Sort Order
-                                </label>
-                                <Input
-                                  id={`sort-${definition.key}`}
-                                  type='number'
-                                  min={0}
-                                  step={1}
-                                  value={block.sortOrder}
-                                  onBlur={field.handleBlur}
-                                  onChange={(event) => {
-                                    const nextValue = Number(event.target.value || 0);
-                                    const nextBlocks = layoutConfig.blocks.map((item) =>
-                                      item.key === definition.key
-                                        ? {
-                                            ...item,
-                                            sortOrder: Number.isFinite(nextValue)
-                                              ? nextValue
-                                              : definition.defaultSortOrder
-                                          }
-                                        : item
-                                    );
-
-                                    field.handleChange({ ...layoutConfig, blocks: nextBlocks });
-                                  }}
-                                />
                               </div>
 
-                              <div className='grid gap-1.5'>
-                                <label
-                                  htmlFor={`rows-${definition.key}`}
-                                  className='text-xs font-medium text-muted-foreground'
-                                >
-                                  Row Limit
-                                </label>
-                                <Input
-                                  id={`rows-${definition.key}`}
-                                  type='number'
-                                  min={definition.minRowLimit}
-                                  max={definition.maxRowLimit}
-                                  step={1}
-                                  value={block.rowLimit}
-                                  onBlur={field.handleBlur}
-                                  onChange={(event) => {
-                                    const nextValue = Number(event.target.value || 0);
-                                    const nextBlocks = layoutConfig.blocks.map((item) =>
-                                      item.key === definition.key
-                                        ? {
-                                            ...item,
-                                            rowLimit: Number.isFinite(nextValue)
-                                              ? nextValue
-                                              : definition.defaultRowLimit
-                                          }
-                                        : item
-                                    );
+                              {definition.headerOnly ? (
+                                <div className='grid gap-3 md:grid-cols-[160px_minmax(0,1fr)]'>
+                                  <div className='grid gap-1.5'>
+                                    <label
+                                      htmlFor={`rows-${definition.key}`}
+                                      className='text-xs font-medium text-muted-foreground'
+                                    >
+                                      Rows/Slide
+                                    </label>
+                                    <Input
+                                      id={`rows-${definition.key}`}
+                                      type='number'
+                                      min={definition.minRowLimit}
+                                      max={definition.maxRowLimit}
+                                      step={1}
+                                      value={block.rowLimit}
+                                      onBlur={field.handleBlur}
+                                      onChange={(event) => {
+                                        const nextValue = Number(event.target.value || 0);
+                                        const nextBlocks = layoutConfig.blocks.map((item) =>
+                                          item.key === definition.key
+                                            ? {
+                                                ...item,
+                                                rowLimit: Number.isFinite(nextValue)
+                                                  ? nextValue
+                                                  : definition.defaultRowLimit
+                                              }
+                                            : item
+                                        );
 
-                                    field.handleChange({ ...layoutConfig, blocks: nextBlocks });
-                                  }}
-                                />
-                              </div>
+                                        field.handleChange({ ...layoutConfig, blocks: nextBlocks });
+                                      }}
+                                    />
+                                  </div>
+
+                                  <div className='flex items-center gap-2 rounded-md border border-dashed border-border/60 bg-muted/20 px-3 py-2 text-xs text-muted-foreground'>
+                                    <Icons.info className='size-4 shrink-0 text-amber-500' />
+                                    Header-only block. It controls the top header summary area, not
+                                    the TV grid.
+                                  </div>
+                                </div>
+                              ) : (
+                                <>
+                                  <div className='grid gap-3 md:grid-cols-4'>
+                                    <div className='grid gap-1.5'>
+                                      <label
+                                        htmlFor={`column-${definition.key}`}
+                                        className='text-xs font-medium text-muted-foreground'
+                                      >
+                                        Column
+                                      </label>
+                                      <Input
+                                        id={`column-${definition.key}`}
+                                        type='number'
+                                        min={1}
+                                        max={3}
+                                        step={1}
+                                        value={block.column}
+                                        onBlur={field.handleBlur}
+                                        onChange={(event) => {
+                                          const nextValue = Number(event.target.value || 0);
+                                          const nextColumn = Number.isFinite(nextValue)
+                                            ? Math.min(3, Math.max(1, nextValue))
+                                            : 1;
+
+                                          const nextBlocks = layoutConfig.blocks.map((item) =>
+                                            item.key === definition.key
+                                              ? {
+                                                  ...item,
+                                                  column: nextColumn,
+                                                  colSpan:
+                                                    nextColumn === 3 && item.colSpan > 1
+                                                      ? 1
+                                                      : item.colSpan
+                                                }
+                                              : item
+                                          );
+
+                                          field.handleChange({
+                                            ...layoutConfig,
+                                            blocks: nextBlocks
+                                          });
+                                        }}
+                                      />
+                                    </div>
+
+                                    <div className='grid gap-1.5'>
+                                      <label
+                                        htmlFor={`row-${definition.key}`}
+                                        className='text-xs font-medium text-muted-foreground'
+                                      >
+                                        Row
+                                      </label>
+                                      <Input
+                                        id={`row-${definition.key}`}
+                                        type='number'
+                                        min={1}
+                                        max={20}
+                                        step={1}
+                                        value={block.row}
+                                        onBlur={field.handleBlur}
+                                        onChange={(event) => {
+                                          const nextValue = Number(event.target.value || 0);
+                                          const nextRow = Number.isFinite(nextValue)
+                                            ? Math.min(20, Math.max(1, nextValue))
+                                            : 1;
+
+                                          const nextBlocks = layoutConfig.blocks.map((item) =>
+                                            item.key === definition.key
+                                              ? {
+                                                  ...item,
+                                                  row: nextRow
+                                                }
+                                              : item
+                                          );
+
+                                          field.handleChange({
+                                            ...layoutConfig,
+                                            blocks: nextBlocks
+                                          });
+                                        }}
+                                      />
+                                    </div>
+
+                                    <div className='grid gap-1.5'>
+                                      <label
+                                        htmlFor={`span-${definition.key}`}
+                                        className='text-xs font-medium text-muted-foreground'
+                                      >
+                                        Width
+                                      </label>
+                                      <select
+                                        id={`span-${definition.key}`}
+                                        value={block.colSpan}
+                                        onBlur={field.handleBlur}
+                                        onChange={(event) => {
+                                          const nextValue = Number(event.target.value || 1);
+                                          const nextColSpan =
+                                            Number.isFinite(nextValue) && nextValue === 2 ? 2 : 1;
+                                          const nextBlocks = layoutConfig.blocks.map((item) =>
+                                            item.key === definition.key
+                                              ? {
+                                                  ...item,
+                                                  colSpan: block.column === 3 ? 1 : nextColSpan
+                                                }
+                                              : item
+                                          );
+
+                                          field.handleChange({
+                                            ...layoutConfig,
+                                            blocks: nextBlocks
+                                          });
+                                        }}
+                                        className='h-10 rounded-md border border-input bg-background px-3 py-2 text-sm'
+                                      >
+                                        <option value={1}>1 column</option>
+                                        <option value={2} disabled={block.column === 3}>
+                                          2 columns
+                                        </option>
+                                      </select>
+                                    </div>
+
+                                    <div className='grid gap-1.5'>
+                                      <label
+                                        htmlFor={`rows-${definition.key}`}
+                                        className='text-xs font-medium text-muted-foreground'
+                                      >
+                                        Rows/Slide
+                                      </label>
+                                      <Input
+                                        id={`rows-${definition.key}`}
+                                        type='number'
+                                        min={definition.minRowLimit}
+                                        max={definition.maxRowLimit}
+                                        step={1}
+                                        value={block.rowLimit}
+                                        onBlur={field.handleBlur}
+                                        onChange={(event) => {
+                                          const nextValue = Number(event.target.value || 0);
+                                          const nextBlocks = layoutConfig.blocks.map((item) =>
+                                            item.key === definition.key
+                                              ? {
+                                                  ...item,
+                                                  rowLimit: Number.isFinite(nextValue)
+                                                    ? nextValue
+                                                    : definition.defaultRowLimit
+                                                }
+                                              : item
+                                          );
+
+                                          field.handleChange({
+                                            ...layoutConfig,
+                                            blocks: nextBlocks
+                                          });
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className='text-xs text-muted-foreground'>
+                                    Column and row control where the card appears on the TV. Width 2
+                                    columns makes the card wider.
+                                  </div>
+                                </>
+                              )}
                             </div>
                           );
                         })}

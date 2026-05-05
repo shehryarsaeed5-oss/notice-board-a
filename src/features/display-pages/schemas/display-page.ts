@@ -4,7 +4,11 @@ import { isDisplayPageSlug } from '../lib/slug';
 import {
   DISPLAY_BLOCKS,
   DISPLAY_BLOCK_KEYS,
-  getDefaultDisplayLayoutConfig
+  DISPLAY_GRID_COLUMN_COUNT,
+  DISPLAY_GRID_ROW_MAX,
+  DISPLAY_GRID_ROW_MIN,
+  getDefaultDisplayLayoutConfig,
+  isHeaderOnlyDisplayBlock
 } from '../lib/display-layout-config';
 
 function normalizeNumber(value: unknown) {
@@ -40,7 +44,13 @@ export const displayLayoutBlockSchema = z
     key: z.enum(DISPLAY_BLOCK_KEYS),
     enabled: z.boolean(),
     sortOrder: z.preprocess(normalizeNumber, z.number().int().nonnegative()),
-    rowLimit: z.preprocess(normalizeNumber, z.number().int().nonnegative())
+    rowLimit: z.preprocess(normalizeNumber, z.number().int().nonnegative()),
+    column: z.preprocess(normalizeNumber, z.number().int().min(1).max(DISPLAY_GRID_COLUMN_COUNT)),
+    row: z.preprocess(
+      normalizeNumber,
+      z.number().int().min(DISPLAY_GRID_ROW_MIN).max(DISPLAY_GRID_ROW_MAX)
+    ),
+    colSpan: z.preprocess(normalizeNumber, z.number().int().min(1).max(2))
   })
   .superRefine((value, ctx) => {
     const definition = DISPLAY_BLOCKS.find((block) => block.key === value.key);
@@ -55,12 +65,56 @@ export const displayLayoutBlockSchema = z
         message: `Row limit must be between ${definition.minRowLimit} and ${definition.maxRowLimit}`
       });
     }
+
+    if (
+      !isHeaderOnlyDisplayBlock(value.key) &&
+      value.column === DISPLAY_GRID_COLUMN_COUNT &&
+      value.colSpan === 2
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['colSpan'],
+        message: 'Width 2 columns cannot start in column 3'
+      });
+    }
   });
 
-export const displayLayoutConfigSchema = z.object({
-  columns: displayLayoutColumnsSchema,
-  blocks: z.array(displayLayoutBlockSchema).length(DISPLAY_BLOCKS.length)
-});
+export const displayLayoutConfigSchema = z
+  .object({
+    columns: displayLayoutColumnsSchema,
+    blocks: z.array(displayLayoutBlockSchema).length(DISPLAY_BLOCKS.length)
+  })
+  .superRefine((value, ctx) => {
+    const occupied: Array<{ key: string; row: number; start: number; end: number }> = [];
+
+    value.blocks.forEach((block, index) => {
+      if (!block.enabled || isHeaderOnlyDisplayBlock(block.key)) {
+        return;
+      }
+
+      const startColumn = block.column;
+      const endColumn = Math.min(DISPLAY_GRID_COLUMN_COUNT, block.column + block.colSpan - 1);
+      const overlapping = occupied.find(
+        (item) => item.row === block.row && !(endColumn < item.start || startColumn > item.end)
+      );
+
+      if (overlapping) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['blocks', index, 'column'],
+          message: 'Two display blocks overlap in the same grid position'
+        });
+        return;
+      }
+
+      occupied.push({
+        key: block.key,
+        row: block.row,
+        start: startColumn,
+        end: endColumn
+      });
+    });
+  });
 
 export const displayPageSchema = z.object({
   name: z.string().trim().min(1, 'Name is required'),

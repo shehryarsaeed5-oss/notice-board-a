@@ -1,4 +1,5 @@
 import { redisGet, redisIncr, redisSet } from '@/lib/redis';
+import { normalizeDisplayLayoutConfig } from '@/features/display-pages/lib/display-layout-config';
 
 import type { DisplayBoardData } from './types';
 
@@ -50,7 +51,8 @@ function reviveDisplayPage(value: Record<string, unknown>) {
   return {
     ...value,
     createdAt: toDate(value.createdAt),
-    updatedAt: toDate(value.updatedAt)
+    updatedAt: toDate(value.updatedAt),
+    layoutConfig: normalizeDisplayLayoutConfig(value.layoutConfig)
   };
 }
 
@@ -265,15 +267,6 @@ export async function getCachedDisplayBoardData(slug: string, version: string) {
   }
 
   if (!parsed || parsed.version !== version) {
-    return null;
-  }
-
-  const raw = parsed.data as Record<string, unknown> | null;
-  if (
-    !raw ||
-    !Object.prototype.hasOwnProperty.call(raw, 'activeManagersWithAttendanceToday') ||
-    !Object.prototype.hasOwnProperty.call(raw, 'activeStaffWithAttendanceToday')
-  ) {
     return null;
   }
 
