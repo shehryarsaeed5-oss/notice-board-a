@@ -1,12 +1,18 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { cn } from '@/lib/utils';
 import { DisplayCardSlideshow } from './display-card-slideshow';
+
+export interface MovieScheduleSlideshowTimeItem {
+  label: string;
+  startTimeIso: string;
+}
 
 export interface MovieScheduleSlideshowScreenGroup {
   screenName: string;
-  times: string[];
+  times: MovieScheduleSlideshowTimeItem[];
 }
 
 export interface MovieScheduleSlideshowMovieGroup {
@@ -20,7 +26,7 @@ interface MovieScheduleSlideshowProps {
   rowLimit: number;
 }
 
-const MAX_VISIBLE_TIMES_PER_SCREEN = 3;
+const DEFAULT_MOVIE_RUNTIME_MINUTES = 150;
 
 function getCompactScreenLabel(screenName: string) {
   const normalized = screenName.trim().toLowerCase();
@@ -47,51 +53,112 @@ function getCompactScreenLabel(screenName: string) {
   }
 }
 
-function MovieGroupCard({ group }: { group: MovieScheduleSlideshowMovieGroup }) {
-  return (
-    <div className='border border-white/10 bg-black/20 px-3 py-2.5 rounded-none'>
-      <div className='space-y-1.5'>
-        <div className='truncate text-[12px] font-semibold leading-tight text-zinc-50 xl:text-[13px]'>
-          {group.movieName}
-        </div>
-        <div className='flex flex-wrap gap-1 text-[11px] text-zinc-200'>
-          {group.screenGroups.map((screenGroup) => {
-            const visibleTimes = screenGroup.times.slice(0, MAX_VISIBLE_TIMES_PER_SCREEN);
-            const hiddenCount = screenGroup.times.length - visibleTimes.length;
+function useLiveNow() {
+  const [now, setNow] = useState(() => Date.now());
 
-            return (
-              <span
-                key={`${group.movieName}-${screenGroup.screenName}`}
-                className='inline-flex max-w-full items-center border border-white/10 bg-white/5 px-1.5 py-[3px] rounded-none'
-              >
-                <span className='shrink-0 font-semibold text-zinc-50'>
-                  {getCompactScreenLabel(screenGroup.screenName)}
+  useEffect(() => {
+    const handle = window.setInterval(() => {
+      setNow(Date.now());
+    }, 30_000);
+
+    return () => window.clearInterval(handle);
+  }, []);
+
+  return now;
+}
+
+function isPlayingTime(startTimeIso: string, now: number) {
+  const startTime = new Date(startTimeIso);
+  if (Number.isNaN(startTime.getTime())) {
+    return false;
+  }
+
+  const endTime = new Date(startTime.getTime() + DEFAULT_MOVIE_RUNTIME_MINUTES * 60_000);
+  const current = new Date(now);
+
+  return current >= startTime && current <= endTime;
+}
+
+function MovieTimeChip({ label, isActive }: { label: string; isActive: boolean }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center border px-[5px] py-[2px] text-[9px] leading-none rounded-none',
+        isActive
+          ? 'border-emerald-400/60 bg-emerald-500/20 text-emerald-200'
+          : 'border-white/10 bg-black/20 text-zinc-200'
+      )}
+    >
+      {label}
+      {isActive ? <span className='ml-1 text-[8px] uppercase tracking-[0.18em]'>Now</span> : null}
+    </span>
+  );
+}
+
+function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGroup; now: number }) {
+  return (
+    <div className='border border-white/10 bg-black/20 px-2.5 py-1.5 rounded-none'>
+      <div className='flex items-start gap-2'>
+        <div className='w-[clamp(7rem,22%,10rem)] shrink-0'>
+          <div className='truncate text-left text-[11px] font-semibold leading-[1.05] text-zinc-50 xl:text-[12px]'>
+            {group.movieName}
+          </div>
+        </div>
+
+        <div className='min-w-0 flex-1'>
+          <div className='flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[10px] text-zinc-200'>
+            {group.screenGroups.map((screenGroup) => {
+              return (
+                <span
+                  key={`${group.movieName}-${screenGroup.screenName}`}
+                  className='inline-flex max-w-full items-center gap-1 rounded-none border border-white/10 bg-white/5 px-[5px] py-[2px]'
+                >
+                  <span className='shrink-0 font-semibold text-zinc-50'>
+                    {getCompactScreenLabel(screenGroup.screenName)}
+                  </span>
+                  <span className='flex min-w-0 flex-wrap items-center gap-0.5'>
+                    {screenGroup.times.map((time, index) => {
+                      const active = isPlayingTime(time.startTimeIso, now);
+
+                      return (
+                        <span
+                          key={`${group.movieName}-${screenGroup.screenName}-${time.startTimeIso}`}
+                        >
+                          {index > 0 ? <span className='mr-1 text-zinc-500'>|</span> : null}
+                          <MovieTimeChip label={time.label} isActive={active} />
+                        </span>
+                      );
+                    })}
+                  </span>
                 </span>
-                <span className='mx-1 text-zinc-400'> </span>
-                <span className='min-w-0 truncate text-zinc-200'>
-                  {visibleTimes.join(' | ')}
-                  {hiddenCount > 0 ? ` +${hiddenCount}` : ''}
-                </span>
-              </span>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function MovieSchedulePage({ movieGroups }: { movieGroups: MovieScheduleSlideshowMovieGroup[] }) {
+function MovieSchedulePage({
+  movieGroups,
+  now
+}: {
+  movieGroups: MovieScheduleSlideshowMovieGroup[];
+  now: number;
+}) {
   return (
-    <div className='space-y-1.5'>
+    <div className='space-y-1'>
       {movieGroups.map((movie) => (
-        <MovieGroupCard key={`${movie.movieName}-${movie.firstShowTime}`} group={movie} />
+        <MovieGroupCard key={`${movie.movieName}-${movie.firstShowTime}`} group={movie} now={now} />
       ))}
     </div>
   );
 }
 
 export function MovieScheduleSlideshow({ movieGroups, rowLimit }: MovieScheduleSlideshowProps) {
+  const now = useLiveNow();
+
   const pages = useMemo(() => {
     const size = Math.max(1, rowLimit);
     const chunks: MovieScheduleSlideshowMovieGroup[][] = [];
@@ -108,13 +175,13 @@ export function MovieScheduleSlideshow({ movieGroups, rowLimit }: MovieScheduleS
   }
 
   if (pages.length === 1) {
-    return <MovieSchedulePage movieGroups={pages[0]} />;
+    return <MovieSchedulePage movieGroups={pages[0]} now={now} />;
   }
 
   return (
     <DisplayCardSlideshow className='h-full min-h-0' intervalMs={7_000}>
       {pages.map((pageMovies, index) => (
-        <MovieSchedulePage key={index} movieGroups={pageMovies} />
+        <MovieSchedulePage key={index} movieGroups={pageMovies} now={now} />
       ))}
     </DisplayCardSlideshow>
   );

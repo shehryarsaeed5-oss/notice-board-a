@@ -23,6 +23,7 @@ import { DisplayBoardClock } from './display-board-clock';
 import { DisplayCardSlideshow } from './display-card-slideshow';
 import {
   MovieScheduleSlideshow,
+  type MovieScheduleSlideshowTimeItem,
   type MovieScheduleSlideshowMovieGroup
 } from './movie-schedule-slideshow';
 
@@ -42,9 +43,15 @@ const VISIBLE_MANAGER_ATTENDANCE_COUNT = 3;
 const DISPLAY_LAYOUT_GAP_CLASS = 'gap-2';
 const DISPLAY_LAYOUT_PADDING_CLASS = 'p-2';
 const DISPLAY_CONTENT_TITLE_CLASS = 'truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]';
-const DISPLAY_CONTENT_DETAIL_CLASS = 'text-[11px] leading-4 text-zinc-300 xl:text-[12px]';
-const DISPLAY_CONTENT_META_CLASS = 'text-[10px] leading-4 text-zinc-400';
-const DISPLAY_CONTENT_SMALL_CLASS = 'text-[11px] leading-4';
+const DISPLAY_CONTENT_DETAIL_CLASS = 'text-[11px] leading-[1.15] text-zinc-300 xl:text-[12px]';
+const DISPLAY_CONTENT_META_CLASS = 'text-[10px] leading-[1.15] text-zinc-400';
+const DISPLAY_CONTENT_SMALL_CLASS = 'text-[11px] leading-[1.15]';
+const DISPLAY_SECTION_LIST_GAP_CLASS = 'space-y-1';
+const DISPLAY_SECTION_ROW_CLASS = 'border border-white/10 bg-black/20 px-3 py-2 rounded-none';
+const DISPLAY_SECTION_INNER_PANEL_CLASS =
+  'space-y-1 border border-white/10 bg-black/18 p-2 rounded-none';
+const DISPLAY_CHIP_CLASS =
+  'inline-flex items-center border border-white/10 bg-white/5 px-1.5 py-[2px] text-[9px] font-medium tracking-wide text-zinc-100';
 
 function getVisibleCount(block: DisplayLayoutBlockConfig, fallback: number) {
   return Math.max(1, block.rowLimit || fallback);
@@ -167,10 +174,17 @@ function toMovieScheduleSlideshowGroups(
   return groupedMovies.map((movie) => ({
     movieName: movie.movieName,
     firstShowTime: movie.firstShowTime.toISOString(),
-    screenGroups: movie.screenGroups.map((screenGroup) => ({
-      screenName: screenGroup.screenName,
-      times: screenGroup.times.map((time) => formatCompactMovieTime(time))
-    }))
+    screenGroups: movie.screenGroups.map((screenGroup) => {
+      const times: MovieScheduleSlideshowTimeItem[] = screenGroup.times.map((time) => ({
+        label: formatCompactMovieTime(time),
+        startTimeIso: time.toISOString()
+      }));
+
+      return {
+        screenName: screenGroup.screenName,
+        times
+      };
+    })
   }));
 }
 
@@ -224,34 +238,34 @@ function AlertBannerCard({ alert }: { alert: DisplayBoardAlertItem }) {
   return (
     <div
       className={cn(
-        'border px-2.5 py-1.5 text-zinc-50 backdrop-blur-xl',
+        'border px-2 py-1.5 text-zinc-50 backdrop-blur-xl',
         theme.accent,
         alert.alertType === 'URGENT' ? 'animate-pulse' : ''
       )}
     >
-      <div className='flex items-start justify-between gap-3'>
+      <div className='flex items-start justify-between gap-2.5'>
         <div className='min-w-0'>
-          <div className='flex items-center gap-2'>
+          <div className='flex items-center gap-1.5'>
             <theme.icon className={cn('size-4 shrink-0', theme.iconClass)} />
             <div className='truncate text-[13px] font-semibold tracking-tight text-zinc-50 xl:text-sm'>
               {alert.title}
             </div>
           </div>
           {alert.message ? (
-            <div className='mt-1 max-h-8 overflow-hidden text-[11px] leading-4 text-zinc-100/90'>
+            <div className='mt-0.5 max-h-8 overflow-hidden text-[11px] leading-[1.15] text-zinc-100/90'>
               {alert.message}
             </div>
           ) : null}
         </div>
         <Badge
           variant='outline'
-          className={cn('!rounded-none px-2.5 py-0.5 text-[10px]', theme.badge)}
+          className={cn('!rounded-none px-2 py-[2px] text-[9px]', theme.badge)}
         >
           {alert.alertType}
         </Badge>
       </div>
 
-      <div className='mt-2 flex flex-wrap gap-1.5 text-[10px] text-zinc-200/80'>
+      <div className='mt-1.5 flex flex-wrap gap-1 text-[10px] text-zinc-200/80'>
         <RecordChip>Priority {alert.priority}</RecordChip>
         <RecordChip>Until {formatAlertExpiry(alert.endAt)}</RecordChip>
       </div>
@@ -293,9 +307,9 @@ function SummaryStatPill({
             : statusTone('LATE');
 
   return (
-    <div className={cn('border px-1.5 py-0.5', toneClass)}>
+    <div className={cn('border px-1.5 py-[3px]', toneClass)}>
       <div className='text-[9px] uppercase tracking-[0.2em] text-current/70'>{label}</div>
-      <div className='mt-0.5 text-[11px] font-semibold text-current'>{value.toLocaleString()}</div>
+      <div className='mt-0.5 text-[10px] font-semibold text-current'>{value.toLocaleString()}</div>
     </div>
   );
 }
@@ -314,8 +328,8 @@ function AttendanceRosterItem({
   remarks?: string | null;
 }) {
   return (
-    <div className='border border-white/10 bg-black/20 px-2.5 py-1.5'>
-      <div className='flex items-start justify-between gap-2'>
+    <div className='border border-white/10 bg-black/20 px-2 py-[5px]'>
+      <div className='flex items-start justify-between gap-1.5'>
         <div className='min-w-0'>
           <div className={DISPLAY_CONTENT_TITLE_CLASS}>{name}</div>
           <div className={cn('mt-0.5 flex flex-wrap gap-1', DISPLAY_CONTENT_DETAIL_CLASS)}>
@@ -323,15 +337,15 @@ function AttendanceRosterItem({
             {department && <RecordChip>{department}</RecordChip>}
           </div>
         </div>
-        <Badge className='!rounded-none border-emerald-400/30 bg-emerald-400/15 px-2 py-0.5 text-[10px] text-emerald-100'>
+        <Badge className='!rounded-none border-emerald-400/30 bg-emerald-400/15 px-1.5 py-[2px] text-[9px] text-emerald-100'>
           PRESENT
         </Badge>
       </div>
-      <div className={cn('mt-1 flex flex-wrap gap-1', DISPLAY_CONTENT_META_CLASS)}>
+      <div className={cn('mt-0.5 flex flex-wrap gap-1', DISPLAY_CONTENT_META_CLASS)}>
         <RecordChip>Shift: {shift ?? '—'}</RecordChip>
       </div>
       {remarks ? (
-        <div className={cn('mt-1 max-h-7 overflow-hidden', DISPLAY_CONTENT_META_CLASS)}>
+        <div className={cn('mt-0.5 max-h-7 overflow-hidden', DISPLAY_CONTENT_META_CLASS)}>
           {remarks}
         </div>
       ) : null}
@@ -352,21 +366,18 @@ function SectionCard({
 }) {
   return (
     <Card className='!rounded-none flex h-full min-h-0 flex-col gap-0 overflow-hidden border-white/10 bg-white/6 py-0 text-zinc-50 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'>
-      <CardHeader className='shrink-0 px-3 pt-1.5 pb-0'>
-        <div className='flex items-start justify-between gap-3'>
+      <CardHeader className='shrink-0 px-2.5 pt-1 pb-0'>
+        <div className='flex items-start justify-between gap-2.5'>
           <CardTitle className='text-[14px] font-semibold text-zinc-50 xl:text-[15px]'>
             {title}
           </CardTitle>
-          <Badge
-            variant='outline'
-            className='!rounded-none border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'
-          >
-            <Icon className='mr-1 size-3' />
-            {count.toLocaleString()}
-          </Badge>
+          <div className='flex items-center gap-1 text-[9px] text-zinc-100'>
+            <Icon className='size-3 text-zinc-200' />
+            <span className='font-medium tabular-nums leading-none'>{count.toLocaleString()}</span>
+          </div>
         </div>
       </CardHeader>
-      <CardContent className='flex min-h-0 flex-1 flex-col gap-1 px-3 pb-3 pt-0.5'>
+      <CardContent className='flex min-h-0 flex-1 flex-col gap-0.5 px-2.5 pb-2.5 pt-0.5'>
         {children}
       </CardContent>
     </Card>
@@ -377,7 +388,7 @@ function EmptySection({ message }: { message: string }) {
   return (
     <div
       className={cn(
-        'flex items-center gap-2 border border-dashed border-white/10 bg-black/18 px-2 py-0.5 text-zinc-400',
+        'flex items-center gap-1.5 border border-dashed border-white/10 bg-black/18 px-2 py-0.5 text-zinc-400',
         DISPLAY_CONTENT_SMALL_CLASS
       )}
     >
@@ -388,11 +399,7 @@ function EmptySection({ message }: { message: string }) {
 }
 
 function RecordChip({ children }: { children: ReactNode }) {
-  return (
-    <span className='inline-flex items-center border border-white/10 bg-white/5 px-1.5 py-[3px] text-[9px] font-medium tracking-wide text-zinc-100'>
-      {children}
-    </span>
-  );
+  return <span className={DISPLAY_CHIP_CLASS}>{children}</span>;
 }
 
 function HeaderWidgetBadge({ children, className }: { children: ReactNode; className?: string }) {
@@ -400,7 +407,7 @@ function HeaderWidgetBadge({ children, className }: { children: ReactNode; class
     <Badge
       variant='outline'
       className={cn(
-        '!rounded-none border-white/10 bg-white/5 px-2 py-0.5 text-[9px] text-zinc-100',
+        '!rounded-none border-white/10 bg-white/5 px-1.5 py-[2px] text-[9px] text-zinc-100',
         className
       )}
     >
@@ -418,7 +425,7 @@ function HeaderWeatherWidget({ weather }: { weather: DisplayBoardWeatherData | n
 
   return (
     <div className='flex min-w-0 max-w-[340px] flex-none items-center gap-2 bg-transparent px-0 py-0 shadow-none backdrop-blur-0'>
-      <div className='relative size-9 shrink-0 overflow-hidden bg-transparent'>
+      <div className='relative size-10 shrink-0 overflow-hidden bg-transparent'>
         <Image
           src={weatherIconSrc}
           alt=''
@@ -432,25 +439,25 @@ function HeaderWeatherWidget({ weather }: { weather: DisplayBoardWeatherData | n
         {weather ? (
           weather.status === 'ready' ? (
             <div className='space-y-0.5'>
-              <div className='truncate text-[13px] font-semibold leading-none text-zinc-50'>
+              <div className='truncate text-[15px] font-semibold leading-none text-zinc-50'>
                 {temperatureLabel} {weather.city}
               </div>
-              <div className='truncate text-[10px] text-zinc-300'>
+              <div className='truncate text-[12px] text-zinc-300'>
                 {weather.condition ?? 'Weather unavailable'}
               </div>
             </div>
           ) : (
             <div className='space-y-0.5'>
-              <div className='truncate text-[12px] font-medium text-zinc-50'>
+              <div className='truncate text-[15px] font-medium text-zinc-50'>
                 Weather unavailable
               </div>
-              <div className='truncate text-[10px] text-zinc-300'>Weather unavailable</div>
+              <div className='truncate text-[12px] text-zinc-300'>Weather unavailable</div>
             </div>
           )
         ) : (
           <div className='space-y-0.5'>
-            <div className='text-[12px] font-medium text-zinc-50'>Weather not set</div>
-            <div className='truncate text-[10px] text-zinc-300'>
+            <div className='text-[15px] font-medium text-zinc-50'>Weather not set</div>
+            <div className='truncate text-[12px] text-zinc-300'>
               Enable the weather block and configure a city
             </div>
           </div>
@@ -486,19 +493,19 @@ function HeaderSummaryWidget({
   return (
     <div
       className={cn(
-        'flex min-w-0 items-center gap-2 border px-2.5 py-2 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl !rounded-none',
+        'flex min-w-0 items-center gap-1.5 border px-2 py-1.5 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl !rounded-none',
         toneClass
       )}
     >
-      <div className='!rounded-none flex size-8 shrink-0 items-center justify-center border border-white/10 bg-black/20'>
-        <Icon className={cn('size-4', iconClass)} />
+      <div className='!rounded-none flex size-7 shrink-0 items-center justify-center border border-white/10 bg-black/20'>
+        <Icon className={cn('size-3.5', iconClass)} />
       </div>
       <div className='min-w-0'>
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-1.5'>
           <div className='text-[9px] uppercase tracking-[0.22em] text-zinc-300'>{label}</div>
           <HeaderWidgetBadge>{countLabel}</HeaderWidgetBadge>
         </div>
-        {detail ? <div className='truncate text-[11px] text-zinc-200/90'>{detail}</div> : null}
+        {detail ? <div className='truncate text-[10px] text-zinc-200/90'>{detail}</div> : null}
       </div>
     </div>
   );
@@ -523,7 +530,7 @@ function StatBlock({
   return (
     <div className={`border px-2 py-1 rounded-none ${toneClass}`}>
       <div className='text-[9px] uppercase tracking-[0.18em] text-current/70'>{label}</div>
-      <div className='mt-0.5 text-[11px] font-semibold leading-4 text-current xl:text-[12px]'>
+      <div className='mt-0.5 text-[10px] font-semibold leading-[1.15] text-current xl:text-[11px]'>
         {value}
       </div>
     </div>
@@ -635,16 +642,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = getVisibleCount(block, VISIBLE_EVENT_COUNT);
         const eventPages = chunkItems(events.items, pageSize);
         const renderEventPage = (pageItems: typeof events.items) => (
-          <div className='space-y-1.5'>
+          <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((event) => (
-              <div
-                key={event.id}
-                className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
-              >
-                <div className='flex items-start justify-between gap-3'>
+              <div key={event.id} className={DISPLAY_SECTION_ROW_CLASS}>
+                <div className='flex items-start justify-between gap-2.5'>
                   <div className='min-w-0'>
                     <div className={DISPLAY_CONTENT_TITLE_CLASS}>{event.title}</div>
-                    <div className={cn('mt-1', DISPLAY_CONTENT_DETAIL_CLASS)}>
+                    <div className={cn('mt-0.5', DISPLAY_CONTENT_DETAIL_CLASS)}>
                       {event.clientName ?? event.companyName ?? 'General event'}
                     </div>
                   </div>
@@ -652,7 +656,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                     {formatTime(event.startAt)}
                   </Badge>
                 </div>
-                <div className='mt-2 flex flex-wrap gap-1.5 text-[11px] text-zinc-400'>
+                <div className='mt-1.5 flex flex-wrap gap-1 text-[10px] text-zinc-400'>
                   <RecordChip>{event.screenName ?? '—'}</RecordChip>
                   {event.endAt ? (
                     <RecordChip>Ends {formatTime(event.endAt)}</RecordChip>
@@ -702,16 +706,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = getVisibleCount(block, VISIBLE_MEETING_COUNT);
         const meetingPages = chunkItems(meetings.items, pageSize);
         const renderMeetingPage = (pageItems: typeof meetings.items) => (
-          <div className='space-y-1.5'>
+          <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((meeting) => (
-              <div
-                key={meeting.id}
-                className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
-              >
-                <div className='flex items-start justify-between gap-3'>
+              <div key={meeting.id} className={DISPLAY_SECTION_ROW_CLASS}>
+                <div className='flex items-start justify-between gap-2.5'>
                   <div className='min-w-0'>
                     <div className={DISPLAY_CONTENT_TITLE_CLASS}>{meeting.title}</div>
-                    <div className={cn('mt-1', DISPLAY_CONTENT_DETAIL_CLASS)}>
+                    <div className={cn('mt-0.5', DISPLAY_CONTENT_DETAIL_CLASS)}>
                       {meeting.organizer ?? 'No organizer listed'}
                     </div>
                   </div>
@@ -719,7 +720,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                     {formatTime(meeting.startAt)}
                   </Badge>
                 </div>
-                <div className='mt-2 flex flex-wrap gap-1.5 text-[11px] text-zinc-400'>
+                <div className='mt-1.5 flex flex-wrap gap-1 text-[10px] text-zinc-400'>
                   {meeting.location && <RecordChip>{meeting.location}</RecordChip>}
                   {meeting.endAt && <RecordChip>Ends {formatTime(meeting.endAt)}</RecordChip>}
                 </div>
@@ -768,7 +769,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             ? chunkItems(presentManagers as AttendanceRenderableItem[], managerLimit)
             : [];
         const renderRosterPage = (pageItems: AttendanceRenderableItem[]) => (
-          <div className='space-y-1.5'>
+          <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((item) => (
               <AttendanceRosterItem
                 key={item.id}
@@ -787,7 +788,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             {attendanceSummary.staffMarked + attendanceSummary.managerMarked === 0 ? (
               <EmptySection message='Attendance not marked yet.' />
             ) : (
-              <div className='space-y-2.5'>
+              <div className='space-y-2'>
                 <div className='grid grid-cols-2 gap-1 xl:grid-cols-5'>
                   <SummaryStatPill
                     label='Staff Present'
@@ -816,23 +817,20 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   />
                 </div>
 
-                <div className='grid gap-2.5 xl:grid-cols-2'>
-                  <div className='space-y-1.5 border border-white/10 bg-black/18 p-2.5 rounded-none'>
-                    <div className='flex items-center justify-between gap-2'>
+                <div className='grid gap-2 xl:grid-cols-2'>
+                  <div className={DISPLAY_SECTION_INNER_PANEL_CLASS}>
+                    <div className='flex items-center justify-between gap-1.5'>
                       <div>
                         <div className='text-[10px] uppercase tracking-[0.22em] text-zinc-400'>
                           Staff Present
                         </div>
-                        <div className='mt-0.5 text-[13px] font-semibold text-zinc-50 xl:text-sm'>
+                        <div className='mt-0.5 text-[12px] font-semibold text-zinc-50 xl:text-[13px]'>
                           {attendanceSummary.staffCounts.PRESENT.toLocaleString()} present
                         </div>
                       </div>
-                      <Badge
-                        variant='outline'
-                        className='!rounded-none border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'
-                      >
+                      <div className='text-[9px] font-medium text-zinc-100 tabular-nums'>
                         {staffPages[0]?.length ?? 0} shown
-                      </Badge>
+                      </div>
                     </div>
                     {presentStaff.length === 0 ? (
                       <EmptySection message='No present staff entries yet.' />
@@ -847,22 +845,19 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                     )}
                   </div>
 
-                  <div className='space-y-1.5 border border-white/10 bg-black/18 p-2.5 rounded-none'>
-                    <div className='flex items-center justify-between gap-2'>
+                  <div className={DISPLAY_SECTION_INNER_PANEL_CLASS}>
+                    <div className='flex items-center justify-between gap-1.5'>
                       <div>
                         <div className='text-[10px] uppercase tracking-[0.22em] text-zinc-400'>
                           Manager Present
                         </div>
-                        <div className='mt-0.5 text-[13px] font-semibold text-zinc-50 xl:text-sm'>
+                        <div className='mt-0.5 text-[12px] font-semibold text-zinc-50 xl:text-[13px]'>
                           {attendanceSummary.managerCounts.PRESENT.toLocaleString()} present
                         </div>
                       </div>
-                      <Badge
-                        variant='outline'
-                        className='!rounded-none border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'
-                      >
+                      <div className='text-[9px] font-medium text-zinc-100 tabular-nums'>
                         {managerPages[0]?.length ?? 0} shown
-                      </Badge>
+                      </div>
                     </div>
                     {presentManagers.length === 0 ? (
                       <EmptySection message='No present manager entries yet.' />
@@ -887,16 +882,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = getVisibleCount(block, VISIBLE_AD_COUNT);
         const adPages = chunkItems(advertisements.items, pageSize);
         const renderAdPage = (pageItems: typeof advertisements.items) => (
-          <div className='space-y-1.5'>
+          <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((ad) => (
-              <div
-                key={ad.id}
-                className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
-              >
-                <div className='flex items-start justify-between gap-3'>
+              <div key={ad.id} className={DISPLAY_SECTION_ROW_CLASS}>
+                <div className='flex items-start justify-between gap-2.5'>
                   <div className='min-w-0'>
                     <div className={DISPLAY_CONTENT_TITLE_CLASS}>{ad.title}</div>
-                    <div className='mt-0.5 flex flex-wrap gap-1.5 text-[11px] text-zinc-300'>
+                    <div className='mt-0.5 flex flex-wrap gap-1 text-[10px] text-zinc-300'>
                       <RecordChip>Active contract</RecordChip>
                       <RecordChip>
                         {formatShortDate(ad.startAt)} - {formatShortDate(ad.endAt)}
@@ -935,18 +927,18 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = getVisibleCount(block, VISIBLE_TARGET_COUNT);
         const targetPages = chunkItems(salesTargets.items, pageSize);
         const renderTargetPage = (pageItems: typeof salesTargets.items) => (
-          <div className='space-y-1'>
+          <div className='space-y-0.5'>
             {pageItems.map((target) => (
               <div
                 key={target.id}
-                className='border border-white/10 bg-black/20 px-2.5 py-2 rounded-none'
+                className='border border-white/10 bg-black/20 px-2.5 py-1.5 rounded-none'
               >
-                <div className='flex items-start justify-between gap-3'>
+                <div className='flex items-start justify-between gap-2.5'>
                   <div className='min-w-0'>
-                    <div className='truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]'>
+                    <div className='truncate text-[12px] font-medium leading-tight text-zinc-50 xl:text-[13px]'>
                       {target.itemName}
                     </div>
-                    <div className='mt-0.5 flex flex-wrap gap-1.25 text-[11px] text-zinc-300'>
+                    <div className='mt-0.5 flex flex-wrap gap-1 text-[10px] text-zinc-300'>
                       {target.itemCodes.length > 0 ? (
                         <RecordChip>
                           {target.itemCodes.length} code
@@ -961,14 +953,14 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                       )}
                     </div>
                   </div>
-                  <div className='flex flex-col items-end gap-1 text-right'>
-                    <Badge className='!rounded-none border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'>
+                  <div className='flex flex-col items-end gap-0.5 text-right'>
+                    <Badge className='!rounded-none border-white/10 bg-white/5 px-1.5 py-[2px] text-[9px] text-zinc-100'>
                       Order {target.displayOrder}
                     </Badge>
-                    <div className='text-[10px] uppercase tracking-[0.18em] text-zinc-400'>
+                    <div className='text-[9px] uppercase tracking-[0.18em] text-zinc-400'>
                       Last import
                     </div>
-                    <div className='text-[11px] text-zinc-200'>
+                    <div className='text-[10px] text-zinc-200'>
                       {formatDateTime(target.lastImportAt)}
                     </div>
                   </div>
@@ -977,12 +969,12 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                 {!target.daily.dataAvailable &&
                 !target.weekly.dataAvailable &&
                 !target.monthly.dataAvailable ? (
-                  <div className='mt-2'>
+                  <div className='mt-1.5'>
                     <EmptySection message='Sales data not imported for the selected period.' />
                   </div>
                 ) : null}
 
-                <div className='mt-2 grid grid-cols-1 gap-1 xl:grid-cols-3'>
+                <div className='mt-1.5 grid grid-cols-1 gap-1 xl:grid-cols-3'>
                   <StatBlock
                     label='Daily'
                     value={formatProgress(target.daily)}
@@ -1025,16 +1017,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = getVisibleCount(block, VISIBLE_CONCESSION_COUNT);
         const concessionPages = chunkItems(concessionPriceList.items, pageSize);
         const renderConcessionPage = (pageItems: typeof concessionPriceList.items) => (
-          <div className='space-y-1.5'>
+          <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((item) => (
-              <div
-                key={item.id}
-                className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
-              >
-                <div className='flex items-start justify-between gap-3'>
+              <div key={item.id} className={DISPLAY_SECTION_ROW_CLASS}>
+                <div className='flex items-start justify-between gap-2.5'>
                   <div className='min-w-0'>
                     <div className={DISPLAY_CONTENT_TITLE_CLASS}>{item.itemName}</div>
-                    <div className='mt-0.5 flex flex-wrap gap-1.5 text-[11px] text-zinc-300'>
+                    <div className='mt-0.5 flex flex-wrap gap-1 text-[10px] text-zinc-300'>
                       {item.category && <RecordChip>{item.category}</RecordChip>}
                       <RecordChip>{item.status}</RecordChip>
                     </div>
@@ -1043,7 +1032,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                     {formatPrice(item.price)}
                   </Badge>
                 </div>
-                <div className='mt-1.5 flex flex-wrap gap-1.5 text-[11px] text-zinc-400'>
+                <div className='mt-1 flex flex-wrap gap-1 text-[10px] text-zinc-400'>
                   <RecordChip>Sort {item.sortOrder}</RecordChip>
                 </div>
               </div>
@@ -1093,27 +1082,27 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           minHeight: `${displayPage.resolutionHeight}px`
         }}
       >
-        <header className='relative flex min-h-[96px] shrink-0 items-center overflow-hidden rounded-none border border-white/10 bg-white/6 px-3 py-3.5 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl xl:min-h-[104px] xl:px-4 xl:py-4'>
+        <header className='relative flex min-h-[76px] shrink-0 items-center overflow-hidden rounded-none border border-white/10 bg-white/6 px-3 py-2 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl xl:min-h-[84px] xl:px-4 xl:py-2.5'>
           <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
             <div className='flex flex-col items-center justify-center text-center'>
-              <div className='text-[1.9rem] font-semibold leading-none tracking-tight text-zinc-50 md:text-[2.3rem] xl:text-[2.75rem]'>
+              <div className='text-[1.65rem] font-semibold leading-none tracking-tight text-zinc-50 md:text-[1.95rem] xl:text-[2.3rem]'>
                 <DisplayBoardClock initialIso={renderedAt.toISOString()} />
               </div>
-              <div className='mt-1.5 text-[14px] font-medium text-zinc-300 md:text-[15px]'>
+              <div className='mt-0.5 text-[15px] font-medium text-zinc-300 md:text-[16px]'>
                 {currentDate}
               </div>
             </div>
           </div>
 
           <div className='pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 xl:left-4'>
-            <div className='flex min-w-0 items-center gap-2.5 overflow-visible pointer-events-auto'>
+            <div className='flex min-w-0 items-center gap-2 overflow-visible pointer-events-auto'>
               <Image
                 src='/Logo/cue-logo.png'
                 alt='CUE logo'
                 width={200}
                 height={80}
                 priority
-                className='h-[64px] w-auto max-h-[80px] max-w-[150px] shrink-0 object-contain xl:h-[72px]'
+                className='h-[60px] w-auto max-h-[76px] max-w-[145px] shrink-0 object-contain xl:h-[66px]'
               />
               {weatherBlock ? <HeaderWeatherWidget weather={weather} /> : null}
             </div>

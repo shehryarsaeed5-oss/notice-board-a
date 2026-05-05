@@ -50,16 +50,18 @@ export function DisplayCardSlideshow({
       <div className={cn('flex-1 min-h-0', contentClassName)}>{pages[pageIndex] ?? pages[0]}</div>
 
       {showPagination ? (
-        <div className={cn('mt-auto flex items-center justify-end gap-2 pt-1', indicatorClassName)}>
-          <span className='inline-flex items-center border border-white/10 bg-white/5 px-2 py-0.5 text-[9px] font-medium text-zinc-200 rounded-none'>
+        <div
+          className={cn('mt-auto flex items-center justify-end gap-1 pt-0.5', indicatorClassName)}
+        >
+          <span className='text-[9px] font-medium text-zinc-200 tabular-nums'>
             {pageIndex + 1}/{pageCount}
           </span>
-          <div className='flex items-center gap-1'>
+          <div className='flex items-center gap-0.5'>
             {pages.map((_, index) => (
               <span
                 key={index}
                 className={cn(
-                  'size-1.5 rounded-none transition-colors',
+                  'size-1.5 transition-colors',
                   index === pageIndex ? 'bg-amber-300' : 'bg-white/20'
                 )}
               />
