@@ -1085,7 +1085,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
 
       <div
         className={cn(
-          'relative mx-auto flex min-h-[100dvh] w-full max-w-full flex-col overflow-hidden xl:h-[100dvh] xl:min-h-0',
+          'relative mx-auto flex min-h-[100dvh] w-full max-w-full flex-col gap-2 overflow-hidden xl:h-[100dvh] xl:min-h-0',
           DISPLAY_LAYOUT_PADDING_CLASS
         )}
         style={{
