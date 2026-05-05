@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { cn } from '@/lib/utils';
 
 import { getDisplayBoardBySlug } from '../api/service';
-import type { DisplayBoardAlertItem } from '../api/types';
+import type { DisplayBoardAlertItem, DisplayBoardWeatherSetting } from '../api/types';
 import {
   getEnabledSortedDisplayBlocks,
   type DisplayBlockKey,
@@ -308,6 +308,100 @@ function RecordChip({ children }: { children: ReactNode }) {
   );
 }
 
+function HeaderWidgetBadge({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <Badge
+      variant='outline'
+      className={cn(
+        'rounded-full border-white/10 bg-white/5 px-2 py-0.5 text-[9px] text-zinc-100',
+        className
+      )}
+    >
+      {children}
+    </Badge>
+  );
+}
+
+function HeaderWeatherWidget({
+  weatherSetting
+}: {
+  weatherSetting: DisplayBoardWeatherSetting | null;
+}) {
+  const hasWeather = Boolean(weatherSetting);
+
+  return (
+    <div className='flex min-w-0 items-center gap-2 rounded-[16px] border border-white/10 bg-black/18 px-3 py-2 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl'>
+      <div className='flex size-8 shrink-0 items-center justify-center rounded-full border border-amber-400/20 bg-amber-400/10'>
+        <Icons.sun className='size-4 text-amber-200' />
+      </div>
+      <div className='min-w-0'>
+        <div className='flex items-center gap-2'>
+          <div className='text-[9px] uppercase tracking-[0.22em] text-amber-200/80'>Weather</div>
+          <HeaderWidgetBadge className='text-amber-100'>
+            {hasWeather ? 'Active' : 'Not set'}
+          </HeaderWidgetBadge>
+        </div>
+        {weatherSetting ? (
+          <div className='min-w-0'>
+            <div className='truncate text-[12px] font-semibold text-zinc-50'>
+              {weatherSetting.city}
+            </div>
+            <div className='truncate text-[10px] text-zinc-300'>
+              Provider: {weatherSetting.provider}
+            </div>
+          </div>
+        ) : (
+          <div className='truncate text-[11px] font-medium text-zinc-300'>Weather not set</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function HeaderSummaryWidget({
+  label,
+  icon: Icon,
+  countLabel,
+  detail,
+  tone
+}: {
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+  countLabel: string;
+  detail: string | null;
+  tone: 'amber' | 'rose' | 'violet';
+}) {
+  const toneClass =
+    tone === 'amber'
+      ? 'border-amber-400/20 bg-amber-400/10 text-amber-100'
+      : tone === 'rose'
+        ? 'border-rose-400/20 bg-rose-400/10 text-rose-100'
+        : 'border-violet-400/20 bg-violet-400/10 text-violet-100';
+
+  const iconClass =
+    tone === 'amber' ? 'text-amber-200' : tone === 'rose' ? 'text-rose-200' : 'text-violet-200';
+
+  return (
+    <div
+      className={cn(
+        'flex min-w-0 items-center gap-2 rounded-[16px] border px-3 py-2 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl',
+        toneClass
+      )}
+    >
+      <div className='flex size-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20'>
+        <Icon className={cn('size-4', iconClass)} />
+      </div>
+      <div className='min-w-0'>
+        <div className='flex items-center gap-2'>
+          <div className='text-[9px] uppercase tracking-[0.22em] text-zinc-300'>{label}</div>
+          <HeaderWidgetBadge>{countLabel}</HeaderWidgetBadge>
+        </div>
+        {detail ? <div className='truncate text-[11px] text-zinc-200/90'>{detail}</div> : null}
+      </div>
+    </div>
+  );
+}
+
 function StatBlock({
   label,
   value,
@@ -402,11 +496,17 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const layoutBlocks = getEnabledSortedDisplayBlocks(displayPage.layoutConfig);
   const layoutBlockMap = new Map(layoutBlocks.map((block) => [block.key, block] as const));
   const getBlock = (key: DisplayBlockKey) => layoutBlockMap.get(key);
+  const weatherBlock = getBlock('weather');
+  const alertsBlock = getBlock('alerts');
+  const movieScheduleBlock = getBlock('movieSchedule');
+  const visibleGridBlocks = layoutBlocks.filter((block) => block.key !== 'weather');
   const presentStaff = attendance.staff.items.filter((item) => item.status === 'PRESENT');
   const presentManagers = attendance.managers.items.filter((item) => item.status === 'PRESENT');
   const currentDate = formatDate(renderedAt);
   const totalAttendance = attendanceSummary.staffMarked + attendanceSummary.managerMarked;
   const expectedAttendance = attendanceSummary.staffExpected + attendanceSummary.managerExpected;
+  const firstAlert = alerts.items[0] ?? null;
+  const nextMovie = movieSchedules.items[0] ?? null;
 
   const renderBlockCard = (key: DisplayBlockKey) => {
     const block = getBlock(key);
@@ -610,34 +710,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
       }
 
       case 'weather': {
-        return (
-          <SectionCard
-            title='Weather'
-            description='Live configuration'
-            icon={Icons.sun}
-            count={weatherSetting ? 1 : 0}
-          >
-            {weatherSetting ? (
-              <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-4'>
-                <div className='flex items-center justify-between gap-3'>
-                  <div>
-                    <div className='text-lg font-medium text-zinc-50 xl:text-[20px]'>
-                      {weatherSetting.city}
-                    </div>
-                    <div className='mt-1 text-sm text-zinc-300'>
-                      Provider: {weatherSetting.provider}
-                    </div>
-                  </div>
-                  <Badge className='border-emerald-400/30 bg-emerald-400/15 text-emerald-200'>
-                    Enabled
-                  </Badge>
-                </div>
-              </div>
-            ) : (
-              <EmptySection message='No enabled weather setting is configured.' />
-            )}
-          </SectionCard>
-        );
+        return null;
       }
 
       case 'attendance': {
@@ -994,8 +1067,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         }}
       >
         <header className='shrink-0 rounded-[22px] border border-white/10 bg-white/6 px-3 py-2.5 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl xl:px-4 xl:py-3'>
-          <div className='grid min-h-[76px] grid-cols-[minmax(180px,0.95fr)_minmax(0,1.25fr)_minmax(180px,0.95fr)] items-center gap-3 xl:min-h-[86px]'>
-            <div className='flex items-center overflow-hidden'>
+          <div className='grid min-h-[76px] grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)_minmax(0,1fr)] items-center gap-3 xl:min-h-[86px]'>
+            <div className='flex min-w-0 items-center gap-3 justify-self-start overflow-hidden'>
               <Image
                 src='/Logo/cue-logo.png'
                 alt='CUE logo'
@@ -1004,9 +1077,10 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                 priority
                 className='h-[64px] w-auto max-h-[80px] max-w-[200px] object-contain xl:h-[72px]'
               />
+              {weatherBlock ? <HeaderWeatherWidget weatherSetting={weatherSetting} /> : null}
             </div>
 
-            <div className='flex flex-col items-center justify-center text-center'>
+            <div className='flex flex-col items-center justify-center text-center justify-self-center'>
               <div className='text-3xl font-semibold leading-none tracking-tight text-zinc-50 md:text-[2.9rem] xl:text-[3.4rem]'>
                 <DisplayBoardClock initialIso={renderedAt.toISOString()} />
               </div>
@@ -1015,7 +1089,31 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               </div>
             </div>
 
-            <div aria-hidden='true' className='flex items-center justify-end' />
+            <div className='flex min-w-0 items-center justify-end gap-2 justify-self-end overflow-hidden'>
+              {alertsBlock ? (
+                <HeaderSummaryWidget
+                  label='Alerts'
+                  icon={Icons.alertCircle}
+                  countLabel={`${alerts.total.toLocaleString()} active`}
+                  detail={firstAlert ? firstAlert.title : 'No active alerts'}
+                  tone='rose'
+                />
+              ) : null}
+              {movieScheduleBlock ? (
+                <HeaderSummaryWidget
+                  label='Movies'
+                  icon={Icons.video}
+                  countLabel={`${movieSchedules.total.toLocaleString()} today`}
+                  detail={
+                    nextMovie
+                      ? `${formatTime(nextMovie.showTime)} · ${nextMovie.movieName}`
+                      : 'No shows today'
+                  }
+                  tone='violet'
+                />
+              ) : null}
+              {!alertsBlock && !movieScheduleBlock ? <div aria-hidden='true' /> : null}
+            </div>
           </div>
         </header>
 
@@ -1031,7 +1129,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           </section>
         ) : (
           <section className='grid flex-1 min-h-0 gap-3 overflow-hidden xl:grid-cols-3 xl:auto-rows-[minmax(0,1fr)]'>
-            {layoutBlocks.map((block) => (
+            {visibleGridBlocks.map((block) => (
               <div key={block.key} className='min-h-0'>
                 {renderBlockCard(block.key)}
               </div>
