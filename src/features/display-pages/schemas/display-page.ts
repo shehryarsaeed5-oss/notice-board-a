@@ -19,6 +19,22 @@ function normalizeNumber(value: unknown) {
   return typeof value === 'string' ? Number(value) : value;
 }
 
+const displayLayoutColumnsSchema = z
+  .object({
+    left: z.preprocess(normalizeNumber, z.number().int().min(20).max(60)),
+    center: z.preprocess(normalizeNumber, z.number().int().min(20).max(60)),
+    right: z.preprocess(normalizeNumber, z.number().int().min(20).max(60))
+  })
+  .superRefine((value, ctx) => {
+    if (value.left + value.center + value.right !== 100) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['columns'],
+        message: 'Column widths must total 100%'
+      });
+    }
+  });
+
 export const displayLayoutBlockSchema = z
   .object({
     key: z.enum(DISPLAY_BLOCK_KEYS),
@@ -42,6 +58,7 @@ export const displayLayoutBlockSchema = z
   });
 
 export const displayLayoutConfigSchema = z.object({
+  columns: displayLayoutColumnsSchema,
   blocks: z.array(displayLayoutBlockSchema).length(DISPLAY_BLOCKS.length)
 });
 

@@ -145,6 +145,14 @@ export function DisplayPagesTable({ displayPages }: DisplayPagesTableProps) {
                             variant='outline'
                             className='border-border/60 bg-muted/40 text-foreground'
                           >
+                            Cols {displayPage.layoutConfig.columns.left}/
+                            {displayPage.layoutConfig.columns.center}/
+                            {displayPage.layoutConfig.columns.right}
+                          </Badge>
+                          <Badge
+                            variant='outline'
+                            className='border-border/60 bg-muted/40 text-foreground'
+                          >
                             {enabledBlocks.length}/{DISPLAY_BLOCKS.length} blocks
                           </Badge>
                         </div>

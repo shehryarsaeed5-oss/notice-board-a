@@ -20,6 +20,7 @@ import {
   SheetTitle
 } from '@/components/ui/sheet';
 import { useAppForm, useFormFields } from '@/components/ui/tanstack-form';
+import { cn } from '@/lib/utils';
 
 import { createDisplayPage, updateDisplayPage } from '../api/client';
 import type { DisplayPageRecord, DisplayPageStatus } from '../api/types';
@@ -266,9 +267,113 @@ export function DisplayPageFormSheet({
                 name='layoutConfig'
                 children={(field) => {
                   const layoutConfig = field.state.value ?? getDefaultDisplayLayoutConfig();
+                  const columns = layoutConfig.columns ?? getDefaultDisplayLayoutConfig().columns;
+                  const columnTotal = columns.left + columns.center + columns.right;
 
                   return (
                     <FieldSet className='gap-4 rounded-xl border border-border/60 bg-muted/20 p-4'>
+                      <div className='flex flex-col gap-1.5'>
+                        <FieldLegend className='mb-0 text-sm font-medium'>
+                          TV Column Widths
+                        </FieldLegend>
+                        <FieldDescription>
+                          Set how wide each public display column should be on the TV layout.
+                        </FieldDescription>
+                      </div>
+
+                      <div className='grid gap-3 md:grid-cols-3'>
+                        <div className='grid gap-1.5'>
+                          <label
+                            htmlFor='display-column-left'
+                            className='text-xs font-medium text-muted-foreground'
+                          >
+                            Left Column %
+                          </label>
+                          <Input
+                            id='display-column-left'
+                            type='number'
+                            min={20}
+                            max={60}
+                            step={1}
+                            value={columns.left}
+                            onBlur={field.handleBlur}
+                            onChange={(event) => {
+                              const nextValue = Number(event.target.value || 0);
+                              const nextColumns = {
+                                ...columns,
+                                left: Number.isFinite(nextValue) ? nextValue : 33
+                              };
+
+                              field.handleChange({ ...layoutConfig, columns: nextColumns });
+                            }}
+                          />
+                        </div>
+
+                        <div className='grid gap-1.5'>
+                          <label
+                            htmlFor='display-column-center'
+                            className='text-xs font-medium text-muted-foreground'
+                          >
+                            Center Column %
+                          </label>
+                          <Input
+                            id='display-column-center'
+                            type='number'
+                            min={20}
+                            max={60}
+                            step={1}
+                            value={columns.center}
+                            onBlur={field.handleBlur}
+                            onChange={(event) => {
+                              const nextValue = Number(event.target.value || 0);
+                              const nextColumns = {
+                                ...columns,
+                                center: Number.isFinite(nextValue) ? nextValue : 34
+                              };
+
+                              field.handleChange({ ...layoutConfig, columns: nextColumns });
+                            }}
+                          />
+                        </div>
+
+                        <div className='grid gap-1.5'>
+                          <label
+                            htmlFor='display-column-right'
+                            className='text-xs font-medium text-muted-foreground'
+                          >
+                            Right Column %
+                          </label>
+                          <Input
+                            id='display-column-right'
+                            type='number'
+                            min={20}
+                            max={60}
+                            step={1}
+                            value={columns.right}
+                            onBlur={field.handleBlur}
+                            onChange={(event) => {
+                              const nextValue = Number(event.target.value || 0);
+                              const nextColumns = {
+                                ...columns,
+                                right: Number.isFinite(nextValue) ? nextValue : 33
+                              };
+
+                              field.handleChange({ ...layoutConfig, columns: nextColumns });
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div
+                        className={cn(
+                          'text-xs',
+                          columnTotal === 100 ? 'text-muted-foreground' : 'text-destructive'
+                        )}
+                      >
+                        Total must equal 100%. Use this to make one column wider and another smaller
+                        on the TV layout. Current total: {columnTotal}%.
+                      </div>
+
                       <div className='flex flex-col gap-1.5'>
                         <FieldLegend className='mb-0 text-sm font-medium'>
                           Display Blocks
@@ -309,7 +414,7 @@ export function DisplayPageFormSheet({
                                         : item
                                     );
 
-                                    field.handleChange({ blocks: nextBlocks });
+                                    field.handleChange({ ...layoutConfig, blocks: nextBlocks });
                                     field.handleBlur();
                                   }}
                                 />
@@ -352,7 +457,7 @@ export function DisplayPageFormSheet({
                                         : item
                                     );
 
-                                    field.handleChange({ blocks: nextBlocks });
+                                    field.handleChange({ ...layoutConfig, blocks: nextBlocks });
                                   }}
                                 />
                               </div>
@@ -385,7 +490,7 @@ export function DisplayPageFormSheet({
                                         : item
                                     );
 
-                                    field.handleChange({ blocks: nextBlocks });
+                                    field.handleChange({ ...layoutConfig, blocks: nextBlocks });
                                   }}
                                 />
                               </div>

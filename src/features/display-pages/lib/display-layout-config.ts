@@ -29,7 +29,14 @@ export interface DisplayLayoutBlockConfig {
   rowLimit: number;
 }
 
+export interface DisplayLayoutColumns {
+  left: number;
+  center: number;
+  right: number;
+}
+
 export interface DisplayLayoutConfig {
+  columns: DisplayLayoutColumns;
   blocks: DisplayLayoutBlockConfig[];
 }
 
@@ -117,7 +124,14 @@ export const DISPLAY_BLOCKS: DisplayBlockDefinition[] = [
   }
 ];
 
+export const DEFAULT_DISPLAY_LAYOUT_COLUMNS: DisplayLayoutColumns = {
+  left: 33,
+  center: 34,
+  right: 33
+};
+
 const DEFAULT_LAYOUT_CONFIG: DisplayLayoutConfig = {
+  columns: { ...DEFAULT_DISPLAY_LAYOUT_COLUMNS },
   blocks: DISPLAY_BLOCKS.map((block) => ({
     key: block.key,
     enabled: block.defaultEnabled,
@@ -139,22 +153,58 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
+function normalizeDisplayLayoutColumns(input: unknown): DisplayLayoutColumns {
+  const rawColumns =
+    input !== null && typeof input === 'object'
+      ? (input as Partial<DisplayLayoutColumns>)
+      : undefined;
+
+  const left = clamp(
+    toFiniteInteger(rawColumns?.left, DEFAULT_DISPLAY_LAYOUT_COLUMNS.left),
+    20,
+    60
+  );
+  const center = clamp(
+    toFiniteInteger(rawColumns?.center, DEFAULT_DISPLAY_LAYOUT_COLUMNS.center),
+    20,
+    60
+  );
+  const right = clamp(
+    toFiniteInteger(rawColumns?.right, DEFAULT_DISPLAY_LAYOUT_COLUMNS.right),
+    20,
+    60
+  );
+
+  if (left + center + right !== 100) {
+    return { ...DEFAULT_DISPLAY_LAYOUT_COLUMNS };
+  }
+
+  return {
+    left,
+    center,
+    right
+  };
+}
+
 function findDefinition(key: DisplayBlockKey): DisplayBlockDefinition {
   return DISPLAY_BLOCKS.find((block) => block.key === key) ?? DISPLAY_BLOCKS[0];
 }
 
 export function getDefaultDisplayLayoutConfig(): DisplayLayoutConfig {
   return {
+    columns: { ...DEFAULT_DISPLAY_LAYOUT_COLUMNS },
     blocks: DEFAULT_LAYOUT_CONFIG.blocks.map((block) => ({ ...block }))
   };
 }
 
 export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfig {
+  const rawColumns = (input as { columns?: unknown } | null | undefined)?.columns;
   const rawBlocks = Array.isArray((input as { blocks?: unknown } | null | undefined)?.blocks)
     ? ((input as { blocks?: unknown[] }).blocks ?? [])
     : [];
 
   return {
+    columns: normalizeDisplayLayoutColumns(rawColumns),
     blocks: DISPLAY_BLOCKS.map((definition) => {
       const rawBlock = rawBlocks.find(
         (block) => (block as { key?: unknown } | null | undefined)?.key === definition.key

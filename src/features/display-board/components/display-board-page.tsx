@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import type { ComponentType, ReactNode } from 'react';
+import type { CSSProperties, ComponentType, ReactNode } from 'react';
 import Image from 'next/image';
 
 import { Icons } from '@/components/icons';
@@ -39,6 +39,8 @@ const VISIBLE_TARGET_COUNT = 4;
 const VISIBLE_CONCESSION_COUNT = 4;
 const VISIBLE_STAFF_ATTENDANCE_COUNT = 6;
 const VISIBLE_MANAGER_ATTENDANCE_COUNT = 3;
+const DISPLAY_LAYOUT_GAP_CLASS = 'gap-2';
+const DISPLAY_LAYOUT_PADDING_CLASS = 'p-2';
 const DISPLAY_CONTENT_TITLE_CLASS = 'truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]';
 const DISPLAY_CONTENT_DETAIL_CLASS = 'text-[11px] leading-4 text-zinc-300 xl:text-[12px]';
 const DISPLAY_CONTENT_META_CLASS = 'text-[10px] leading-4 text-zinc-400';
@@ -602,6 +604,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
 
   const renderedAt = new Date();
   const layoutBlocks = getEnabledSortedDisplayBlocks(displayPage.layoutConfig);
+  const layoutColumns = displayPage.layoutConfig.columns;
+  const displayGridColumns = `${layoutColumns.left}fr ${layoutColumns.center}fr ${layoutColumns.right}fr`;
   const layoutBlockMap = new Map(layoutBlocks.map((block) => [block.key, block] as const));
   const getBlock = (key: DisplayBlockKey) => layoutBlockMap.get(key);
   const weatherBlock = getBlock('weather');
@@ -1080,7 +1084,10 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
       <div className='absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500' />
 
       <div
-        className='relative mx-auto flex min-h-[100dvh] w-full max-w-full flex-col gap-2 overflow-hidden p-3 md:p-4 xl:h-[100dvh] xl:min-h-0 xl:p-4 2xl:p-5'
+        className={cn(
+          'relative mx-auto flex min-h-[100dvh] w-full max-w-full flex-col overflow-hidden xl:h-[100dvh] xl:min-h-0',
+          DISPLAY_LAYOUT_PADDING_CLASS
+        )}
         style={{
           maxWidth: `${displayPage.resolutionWidth}px`,
           minHeight: `${displayPage.resolutionHeight}px`
@@ -1139,7 +1146,20 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             </div>
           </section>
         ) : (
-          <section className='grid flex-1 min-h-0 gap-2 overflow-hidden xl:grid-cols-3 xl:auto-rows-[minmax(0,1fr)]'>
+          <section
+            className={cn(
+              'grid flex-1 min-h-0 overflow-hidden xl:auto-rows-[minmax(0,1fr)] xl:[grid-template-columns:var(--display-grid-columns)]',
+              DISPLAY_LAYOUT_GAP_CLASS
+            )}
+            style={
+              {
+                boxSizing: 'border-box',
+                maxWidth: '100%',
+                width: '100%',
+                '--display-grid-columns': displayGridColumns
+              } as CSSProperties
+            }
+          >
             {visibleGridBlocks.map((block) => (
               <div key={block.key} className='min-h-0'>
                 {renderBlockCard(block.key)}
