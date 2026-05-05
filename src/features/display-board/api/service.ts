@@ -25,8 +25,10 @@ import type {
   DisplayBoardEventItem,
   DisplayBoardMeetingItem,
   DisplayBoardMovieItem,
+  DisplayBoardManagerAvailabilityItem,
   DisplayBoardResult,
-  DisplayBoardSalesTargetItem
+  DisplayBoardSalesTargetItem,
+  DisplayBoardStaffRosterItem
 } from './types';
 
 function getTodayRange(baseDate = new Date()): { start: Date; end: Date } {
@@ -76,6 +78,14 @@ function isActiveContractNow(
 function normalizeShift(value: string | null | undefined): string | null {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
+}
+
+function mapAttendanceStatus(
+  status: string | null | undefined
+): 'PRESENT' | 'ABSENT' | 'LEAVE' | 'LATE' | 'NOT_MARKED' {
+  return status === 'PRESENT' || status === 'ABSENT' || status === 'LEAVE' || status === 'LATE'
+    ? status
+    : 'NOT_MARKED';
 }
 
 function mapSyncedMovieScheduleItem(record: {
@@ -145,6 +155,8 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     concessionPriceList,
     concessionPriceListTotal,
     weatherSetting,
+    activeStaffMembers,
+    activeManagers,
     staffExpected,
     managerExpected,
     staffAttendanceRecords,
@@ -212,6 +224,18 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
         enabled: true
       },
       orderBy: [{ updatedAt: 'desc' }, { createdAt: 'desc' }]
+    }),
+    prisma.staffMember.findMany({
+      where: {
+        status: 'ACTIVE'
+      },
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }]
+    }),
+    prisma.manager.findMany({
+      where: {
+        status: 'ACTIVE'
+      },
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }]
     }),
     prisma.staffMember.count({
       where: {
@@ -290,6 +314,13 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     activeAdvertisements.length > 0 ? activeAdvertisements : advertisements;
   const visibleAlerts = alerts.alerts;
 
+  const staffAttendanceById = new Map(
+    staffAttendanceRecords.map((record) => [record.staffId, record])
+  );
+  const managerAttendanceById = new Map(
+    managerAttendanceRecords.map((record) => [record.managerId, record])
+  );
+
   const staffAttendance = staffAttendanceRecords
     .map((record) => ({
       id: record.staff.id,
@@ -314,6 +345,39 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
       remarks: normalizeShift(record.remarks)
     }))
     .sort(sortByRoster);
+
+  const activeStaffWithAttendanceToday = activeStaffMembers
+    .map((staff) => {
+      const attendance = staffAttendanceById.get(staff.id);
+
+      return {
+        id: staff.id,
+        name: staff.name,
+        designation: staff.designation,
+        department: staff.department,
+        sortOrder: staff.sortOrder,
+        shift: normalizeShift(attendance?.shift),
+        status: mapAttendanceStatus(attendance?.status),
+        remarks: normalizeShift(attendance?.remarks)
+      };
+    })
+    .sort(sortByRoster) as DisplayBoardStaffRosterItem[];
+
+  const activeManagersWithAttendanceToday = activeManagers
+    .map((manager) => {
+      const attendance = managerAttendanceById.get(manager.id);
+
+      return {
+        id: manager.id,
+        name: manager.name,
+        designation: manager.designation,
+        sortOrder: manager.sortOrder,
+        shift: normalizeShift(attendance?.shift),
+        status: mapAttendanceStatus(attendance?.status),
+        remarks: normalizeShift(attendance?.remarks)
+      };
+    })
+    .sort(sortByRoster) as DisplayBoardManagerAvailabilityItem[];
 
   const attendanceSummary: DisplayBoardAttendanceSummary = {
     staffExpected,
@@ -364,6 +428,14 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
         items: managerAttendance as DisplayBoardAttendanceManagerItem[],
         total: managerAttendance.length
       }
+    },
+    activeManagersWithAttendanceToday: {
+      items: activeManagersWithAttendanceToday,
+      total: activeManagersWithAttendanceToday.length
+    },
+    activeStaffWithAttendanceToday: {
+      items: activeStaffWithAttendanceToday,
+      total: activeStaffWithAttendanceToday.length
     },
     weather,
     attendanceSummary

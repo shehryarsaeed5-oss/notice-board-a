@@ -131,6 +131,29 @@ export interface DisplayBoardAttendanceManagerItem {
   remarks: string | null;
 }
 
+export type DisplayBoardAttendanceDisplayStatus = AttendanceStatus | 'NOT_MARKED';
+
+export interface DisplayBoardManagerAvailabilityItem {
+  id: string;
+  name: string;
+  designation: string | null;
+  sortOrder: number;
+  shift: string | null;
+  status: DisplayBoardAttendanceDisplayStatus;
+  remarks: string | null;
+}
+
+export interface DisplayBoardStaffRosterItem {
+  id: string;
+  name: string;
+  designation: string;
+  department: string | null;
+  sortOrder: number;
+  shift: string | null;
+  status: DisplayBoardAttendanceDisplayStatus;
+  remarks: string | null;
+}
+
 export interface DisplayBoardWeatherSetting {
   id: string;
   city: string;
@@ -213,6 +236,14 @@ export interface DisplayBoardData {
       items: DisplayBoardAttendanceManagerItem[];
       total: number;
     };
+  };
+  activeManagersWithAttendanceToday: {
+    items: DisplayBoardManagerAvailabilityItem[];
+    total: number;
+  };
+  activeStaffWithAttendanceToday: {
+    items: DisplayBoardStaffRosterItem[];
+    total: number;
   };
   weather: DisplayBoardWeatherData | null;
   attendanceSummary: DisplayBoardAttendanceSummary;

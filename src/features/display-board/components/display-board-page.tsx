@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { getDisplayBoardBySlug } from '../api/service';
 import type {
   DisplayBoardAlertItem,
+  DisplayBoardAttendanceDisplayStatus,
   DisplayBoardMovieItem,
   DisplayBoardWeatherData
 } from '../api/types';
@@ -51,7 +52,7 @@ const DISPLAY_SECTION_ROW_CLASS = 'border border-white/10 bg-black/20 px-3 py-2 
 const DISPLAY_SECTION_INNER_PANEL_CLASS =
   'space-y-1 border border-white/10 bg-black/18 p-2 rounded-none';
 const DISPLAY_CHIP_CLASS =
-  'inline-flex items-center border border-white/10 bg-white/5 px-1.5 py-[2px] text-[9px] font-medium tracking-wide text-zinc-100';
+  'inline-flex shrink-0 items-center border border-white/10 bg-white/5 px-1.5 py-[2px] text-[9px] font-medium tracking-wide text-zinc-100';
 
 function getVisibleCount(block: DisplayLayoutBlockConfig, fallback: number) {
   return Math.max(1, block.rowLimit || fallback);
@@ -273,7 +274,7 @@ function AlertBannerCard({ alert }: { alert: DisplayBoardAlertItem }) {
   );
 }
 
-function statusTone(status: 'PRESENT' | 'ABSENT' | 'LEAVE' | 'LATE') {
+function attendanceStatusTone(status: DisplayBoardAttendanceDisplayStatus) {
   switch (status) {
     case 'PRESENT':
       return 'border-emerald-400/30 bg-emerald-400/15 text-emerald-100';
@@ -283,72 +284,54 @@ function statusTone(status: 'PRESENT' | 'ABSENT' | 'LEAVE' | 'LATE') {
       return 'border-amber-400/30 bg-amber-400/10 text-amber-100';
     case 'LATE':
       return 'border-orange-400/30 bg-orange-400/10 text-orange-100';
+    case 'NOT_MARKED':
+      return 'border-white/10 bg-white/5 text-zinc-200';
   }
 }
 
-function SummaryStatPill({
-  label,
-  value,
-  tone
-}: {
-  label: string;
-  value: number;
-  tone: 'emerald' | 'rose' | 'amber' | 'orange' | 'zinc';
-}) {
-  const toneClass =
-    tone === 'zinc'
-      ? 'border-white/10 bg-white/5 text-zinc-100'
-      : tone === 'emerald'
-        ? statusTone('PRESENT')
-        : tone === 'rose'
-          ? statusTone('ABSENT')
-          : tone === 'amber'
-            ? statusTone('LEAVE')
-            : statusTone('LATE');
+function attendanceStatusLabel(status: DisplayBoardAttendanceDisplayStatus) {
+  return status === 'NOT_MARKED' ? 'Not marked' : status;
+}
 
+function AttendanceStatusBadge({ status }: { status: DisplayBoardAttendanceDisplayStatus }) {
   return (
-    <div className={cn('border px-1.5 py-[3px]', toneClass)}>
-      <div className='text-[9px] uppercase tracking-[0.2em] text-current/70'>{label}</div>
-      <div className='mt-0.5 text-[10px] font-semibold text-current'>{value.toLocaleString()}</div>
-    </div>
+    <Badge className={cn('!rounded-none px-1.5 py-[2px] text-[9px]', attendanceStatusTone(status))}>
+      {attendanceStatusLabel(status)}
+    </Badge>
   );
 }
 
-function AttendanceRosterItem({
+function AttendanceRosterRow({
   name,
   designation,
   department,
   shift,
-  remarks
+  remarks,
+  status,
+  kind
 }: {
   name: string;
   designation: string | null;
   department?: string | null;
   shift: string | null;
   remarks?: string | null;
+  status: DisplayBoardAttendanceDisplayStatus;
+  kind: 'staff' | 'manager';
 }) {
   return (
-    <div className='border border-white/10 bg-black/20 px-2 py-[5px]'>
+    <div className='border border-white/10 bg-black/20 px-2 py-[5px] rounded-none'>
       <div className='flex items-center justify-between gap-1.5'>
-        <div className='min-w-0'>
-          <div className={DISPLAY_CONTENT_TITLE_CLASS}>{name}</div>
-          <div className={cn('mt-0.5 flex flex-wrap gap-1', DISPLAY_CONTENT_DETAIL_CLASS)}>
-            {designation && <RecordChip>{designation}</RecordChip>}
-            {department && <RecordChip>{department}</RecordChip>}
-          </div>
+        <div className='flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden whitespace-nowrap'>
+          <div className={cn(DISPLAY_CONTENT_TITLE_CLASS, 'shrink-0 leading-none')}>{name}</div>
+          {designation ? <RecordChip>{designation}</RecordChip> : null}
+          {kind === 'staff' && department ? <RecordChip>{department}</RecordChip> : null}
+          {shift ? <RecordChip>Shift {shift}</RecordChip> : null}
+          {remarks ? (
+            <div className='truncate text-[10px] leading-none text-zinc-400'>{remarks}</div>
+          ) : null}
         </div>
-        <Badge className='!rounded-none border-emerald-400/30 bg-emerald-400/15 px-1.5 py-[2px] text-[9px] text-emerald-100'>
-          PRESENT
-        </Badge>
+        <AttendanceStatusBadge status={status} />
       </div>
-      <div className={cn('mt-0.5 flex flex-wrap gap-1', DISPLAY_CONTENT_META_CLASS)}>
-        <RecordChip>Shift: {shift ?? '—'}</RecordChip>
-      </div>
-      {remarks ? (
-        <div className={cn('mt-0.5 max-h-7 overflow-hidden', DISPLAY_CONTENT_META_CLASS)}>
-          {remarks}
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -604,9 +587,9 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
     alerts,
     salesTargets,
     concessionPriceList,
-    attendance,
-    weather,
-    attendanceSummary
+    activeManagersWithAttendanceToday,
+    activeStaffWithAttendanceToday,
+    weather
   } = data;
 
   const renderedAt = new Date();
@@ -620,22 +603,19 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const visibleGridBlocks = layoutBlocks.filter(
     (block) => block.key !== 'weather' && block.key !== 'alerts'
   );
-  const presentStaff = attendance.staff.items.filter((item) => item.status === 'PRESENT');
-  const presentManagers = attendance.managers.items.filter((item) => item.status === 'PRESENT');
   const currentDate = formatDate(renderedAt);
-  const totalAttendance = attendanceSummary.staffMarked + attendanceSummary.managerMarked;
   const firstAlert = alerts.items[0] ?? null;
 
-  const renderBlockCard = (key: DisplayBlockKey) => {
+  const renderBlockCards = (key: DisplayBlockKey): ReactNode[] => {
     const block = getBlock(key);
 
     if (!block) {
-      return null;
+      return [];
     }
 
     switch (key) {
       case 'alerts': {
-        return null;
+        return [];
       }
 
       case 'events': {
@@ -646,30 +626,30 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             {pageItems.map((event) => (
               <div key={event.id} className={DISPLAY_SECTION_ROW_CLASS}>
                 <div className='flex items-center justify-between gap-2.5'>
-                  <div className='min-w-0'>
-                    <div className={DISPLAY_CONTENT_TITLE_CLASS}>{event.title}</div>
-                    <div className={cn('mt-0.5', DISPLAY_CONTENT_DETAIL_CLASS)}>
-                      {event.clientName ?? event.companyName ?? 'General event'}
+                  <div className='min-w-0 flex-1 overflow-hidden whitespace-nowrap'>
+                    <div className={cn(DISPLAY_CONTENT_TITLE_CLASS, 'leading-none')}>
+                      {event.title}
+                    </div>
+                    <div className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] text-zinc-300'>
+                      <RecordChip>
+                        {event.clientName ?? event.companyName ?? 'General event'}
+                      </RecordChip>
+                      <RecordChip>{event.screenName ?? '—'}</RecordChip>
+                      <RecordChip>
+                        {event.endAt ? `Ends ${formatTime(event.endAt)}` : 'Ends —'}
+                      </RecordChip>
                     </div>
                   </div>
                   <Badge className='!rounded-none border-white/10 bg-white/5 text-zinc-100'>
                     {formatTime(event.startAt)}
                   </Badge>
                 </div>
-                <div className='mt-1.5 flex flex-wrap gap-1 text-[10px] text-zinc-400'>
-                  <RecordChip>{event.screenName ?? '—'}</RecordChip>
-                  {event.endAt ? (
-                    <RecordChip>Ends {formatTime(event.endAt)}</RecordChip>
-                  ) : (
-                    <RecordChip>Ends —</RecordChip>
-                  )}
-                </div>
               </div>
             ))}
           </div>
         );
 
-        return (
+        return [
           <SectionCard title='Today Events' icon={Icons.calendar} count={events.total}>
             {eventPages.length === 0 ? (
               <EmptySection message='No active events scheduled for today.' />
@@ -683,7 +663,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               </DisplayCardSlideshow>
             )}
           </SectionCard>
-        );
+        ];
       }
 
       case 'movieSchedule': {
@@ -691,7 +671,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const rowLimit = getVisibleCount(block, VISIBLE_MOVIE_COUNT);
         const slideshowMovies = toMovieScheduleSlideshowGroups(groupedMovies);
 
-        return (
+        return [
           <SectionCard title='Movie Schedule' icon={Icons.video} count={movieSchedules.total}>
             {slideshowMovies.length === 0 ? (
               <EmptySection message='No active movie shows scheduled for today.' />
@@ -699,7 +679,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               <MovieScheduleSlideshow movieGroups={slideshowMovies} rowLimit={rowLimit} />
             )}
           </SectionCard>
-        );
+        ];
       }
 
       case 'meetingSchedule': {
@@ -710,26 +690,28 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             {pageItems.map((meeting) => (
               <div key={meeting.id} className={DISPLAY_SECTION_ROW_CLASS}>
                 <div className='flex items-center justify-between gap-2.5'>
-                  <div className='min-w-0'>
-                    <div className={DISPLAY_CONTENT_TITLE_CLASS}>{meeting.title}</div>
-                    <div className={cn('mt-0.5', DISPLAY_CONTENT_DETAIL_CLASS)}>
-                      {meeting.organizer ?? 'No organizer listed'}
+                  <div className='min-w-0 flex-1 overflow-hidden whitespace-nowrap'>
+                    <div className={cn(DISPLAY_CONTENT_TITLE_CLASS, 'leading-none')}>
+                      {meeting.title}
+                    </div>
+                    <div className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] text-zinc-300'>
+                      <RecordChip>{meeting.organizer ?? 'No organizer listed'}</RecordChip>
+                      {meeting.location ? <RecordChip>{meeting.location}</RecordChip> : null}
+                      {meeting.endAt ? (
+                        <RecordChip>Ends {formatTime(meeting.endAt)}</RecordChip>
+                      ) : null}
                     </div>
                   </div>
                   <Badge className='!rounded-none border-white/10 bg-white/5 text-zinc-100'>
                     {formatTime(meeting.startAt)}
                   </Badge>
                 </div>
-                <div className='mt-1.5 flex flex-wrap gap-1 text-[10px] text-zinc-400'>
-                  {meeting.location && <RecordChip>{meeting.location}</RecordChip>}
-                  {meeting.endAt && <RecordChip>Ends {formatTime(meeting.endAt)}</RecordChip>}
-                </div>
               </div>
             ))}
           </div>
         );
 
-        return (
+        return [
           <SectionCard title='Meeting Schedule' icon={Icons.clock} count={meetings.total}>
             {meetingPages.length === 0 ? (
               <EmptySection message='No active meetings scheduled for today.' />
@@ -743,139 +725,96 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               </DisplayCardSlideshow>
             )}
           </SectionCard>
-        );
+        ];
       }
 
       case 'weather': {
-        return null;
+        return [];
       }
 
       case 'attendance': {
         const attendanceLimit = getVisibleCount(block, VISIBLE_STAFF_ATTENDANCE_COUNT);
-        const staffLimit = Math.max(1, Math.ceil(attendanceLimit / 2));
-        const managerLimit = Math.max(0, attendanceLimit - staffLimit);
-        type AttendanceRenderableItem = {
-          id: string;
-          name: string;
-          designation: string | null;
-          department?: string | null;
-          shift: string | null;
-          remarks?: string | null;
-        };
+        const managerPages = chunkItems(activeManagersWithAttendanceToday.items, attendanceLimit);
+        const staffPages = chunkItems(activeStaffWithAttendanceToday.items, attendanceLimit);
 
-        const staffPages = chunkItems(presentStaff as AttendanceRenderableItem[], staffLimit);
-        const managerPages =
-          managerLimit > 0
-            ? chunkItems(presentManagers as AttendanceRenderableItem[], managerLimit)
-            : [];
-        const renderRosterPage = (pageItems: AttendanceRenderableItem[]) => (
+        const renderManagerPage = (pageItems: typeof activeManagersWithAttendanceToday.items) => (
           <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((item) => (
-              <AttendanceRosterItem
+              <AttendanceRosterRow
                 key={item.id}
+                kind='manager'
                 name={item.name}
                 designation={item.designation}
-                department={item.department}
                 shift={item.shift}
                 remarks={item.remarks}
+                status={item.status}
               />
             ))}
           </div>
         );
 
-        return (
-          <SectionCard title='Attendance' icon={Icons.teams} count={totalAttendance}>
-            {attendanceSummary.staffMarked + attendanceSummary.managerMarked === 0 ? (
-              <EmptySection message='Attendance not marked yet.' />
-            ) : (
-              <div className='space-y-2'>
-                <div className='grid grid-cols-2 gap-1 xl:grid-cols-5'>
-                  <SummaryStatPill
-                    label='Staff Present'
-                    value={attendanceSummary.staffCounts.PRESENT}
-                    tone='emerald'
-                  />
-                  <SummaryStatPill
-                    label='Absent'
-                    value={attendanceSummary.staffCounts.ABSENT}
-                    tone='rose'
-                  />
-                  <SummaryStatPill
-                    label='Leave'
-                    value={attendanceSummary.staffCounts.LEAVE}
-                    tone='amber'
-                  />
-                  <SummaryStatPill
-                    label='Late'
-                    value={attendanceSummary.staffCounts.LATE}
-                    tone='orange'
-                  />
-                  <SummaryStatPill
-                    label='Manager Present'
-                    value={attendanceSummary.managerCounts.PRESENT}
-                    tone='emerald'
-                  />
-                </div>
-
-                <div className='grid gap-2 xl:grid-cols-2'>
-                  <div className={DISPLAY_SECTION_INNER_PANEL_CLASS}>
-                    <div className='flex items-center justify-between gap-1.5'>
-                      <div>
-                        <div className='text-[10px] uppercase tracking-[0.22em] text-zinc-400'>
-                          Staff Present
-                        </div>
-                        <div className='mt-0.5 text-[12px] font-semibold text-zinc-50 xl:text-[13px]'>
-                          {attendanceSummary.staffCounts.PRESENT.toLocaleString()} present
-                        </div>
-                      </div>
-                      <div className='text-[9px] font-medium text-zinc-100 tabular-nums'>
-                        {staffPages[0]?.length ?? 0} shown
-                      </div>
-                    </div>
-                    {presentStaff.length === 0 ? (
-                      <EmptySection message='No present staff entries yet.' />
-                    ) : staffPages.length === 1 ? (
-                      renderRosterPage(staffPages[0])
-                    ) : (
-                      <DisplayCardSlideshow className='h-full min-h-0'>
-                        {staffPages.map((page, index) => (
-                          <div key={index}>{renderRosterPage(page)}</div>
-                        ))}
-                      </DisplayCardSlideshow>
-                    )}
-                  </div>
-
-                  <div className={DISPLAY_SECTION_INNER_PANEL_CLASS}>
-                    <div className='flex items-center justify-between gap-1.5'>
-                      <div>
-                        <div className='text-[10px] uppercase tracking-[0.22em] text-zinc-400'>
-                          Manager Present
-                        </div>
-                        <div className='mt-0.5 text-[12px] font-semibold text-zinc-50 xl:text-[13px]'>
-                          {attendanceSummary.managerCounts.PRESENT.toLocaleString()} present
-                        </div>
-                      </div>
-                      <div className='text-[9px] font-medium text-zinc-100 tabular-nums'>
-                        {managerPages[0]?.length ?? 0} shown
-                      </div>
-                    </div>
-                    {presentManagers.length === 0 ? (
-                      <EmptySection message='No present manager entries yet.' />
-                    ) : managerPages.length === 1 ? (
-                      renderRosterPage(managerPages[0])
-                    ) : (
-                      <DisplayCardSlideshow className='h-full min-h-0'>
-                        {managerPages.map((page, index) => (
-                          <div key={index}>{renderRosterPage(page)}</div>
-                        ))}
-                      </DisplayCardSlideshow>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </SectionCard>
+        const renderStaffPage = (pageItems: typeof activeStaffWithAttendanceToday.items) => (
+          <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
+            {pageItems.map((item) => (
+              <AttendanceRosterRow
+                key={item.id}
+                kind='staff'
+                name={item.name}
+                designation={item.designation}
+                department={item.department}
+                shift={item.shift}
+                remarks={item.remarks}
+                status={item.status}
+              />
+            ))}
+          </div>
         );
+
+        function renderPagedCard<T extends { id: string }>(
+          title: string,
+          icon: ComponentType<{ className?: string }>,
+          total: number,
+          pages: T[],
+          renderPage: (pageItems: T[]) => ReactNode,
+          emptyMessage: string
+        ) {
+          const pageChunks = chunkItems(pages, attendanceLimit);
+
+          return (
+            <SectionCard title={title} icon={icon} count={total}>
+              {pageChunks.length === 0 ? (
+                <EmptySection message={emptyMessage} />
+              ) : pageChunks.length === 1 ? (
+                renderPage(pageChunks[0] ?? [])
+              ) : (
+                <DisplayCardSlideshow className='h-full min-h-0'>
+                  {pageChunks.map((page, index) => (
+                    <div key={index}>{renderPage(page)}</div>
+                  ))}
+                </DisplayCardSlideshow>
+              )}
+            </SectionCard>
+          );
+        }
+
+        return [
+          renderPagedCard(
+            'Manager Availability',
+            Icons.teams,
+            activeManagersWithAttendanceToday.total,
+            activeManagersWithAttendanceToday.items,
+            renderManagerPage,
+            'No active managers found.'
+          ),
+          renderPagedCard(
+            'Staff Roster',
+            Icons.user,
+            activeStaffWithAttendanceToday.total,
+            activeStaffWithAttendanceToday.items,
+            renderStaffPage,
+            'No active staff found.'
+          )
+        ];
       }
 
       case 'advertisements': {
@@ -886,9 +825,11 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             {pageItems.map((ad) => (
               <div key={ad.id} className={DISPLAY_SECTION_ROW_CLASS}>
                 <div className='flex items-center justify-between gap-2.5'>
-                  <div className='min-w-0'>
-                    <div className={DISPLAY_CONTENT_TITLE_CLASS}>{ad.title}</div>
-                    <div className='mt-0.5 flex flex-wrap gap-1 text-[10px] text-zinc-300'>
+                  <div className='min-w-0 flex-1 overflow-hidden whitespace-nowrap'>
+                    <div className={cn(DISPLAY_CONTENT_TITLE_CLASS, 'leading-none')}>
+                      {ad.title}
+                    </div>
+                    <div className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] text-zinc-300'>
                       <RecordChip>Active contract</RecordChip>
                       <RecordChip>
                         {formatShortDate(ad.startAt)} - {formatShortDate(ad.endAt)}
@@ -902,7 +843,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           </div>
         );
 
-        return (
+        return [
           <SectionCard
             title='Advertisement Contracts'
             icon={Icons.media}
@@ -920,7 +861,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               </DisplayCardSlideshow>
             )}
           </SectionCard>
-        );
+        ];
       }
 
       case 'itemSalesTarget': {
@@ -934,11 +875,11 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                 className='border border-white/10 bg-black/20 px-2.5 py-1.5 rounded-none'
               >
                 <div className='flex items-center justify-between gap-2.5'>
-                  <div className='min-w-0'>
-                    <div className='truncate text-[12px] font-medium leading-tight text-zinc-50 xl:text-[13px]'>
+                  <div className='min-w-0 flex-1 overflow-hidden whitespace-nowrap'>
+                    <div className='truncate text-[12px] font-medium leading-none text-zinc-50 xl:text-[13px]'>
                       {target.itemName}
                     </div>
-                    <div className='mt-0.5 flex flex-wrap gap-1 text-[10px] text-zinc-300'>
+                    <div className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] text-zinc-300'>
                       {target.itemCodes.length > 0 ? (
                         <RecordChip>
                           {target.itemCodes.length} code
@@ -996,7 +937,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           </div>
         );
 
-        return (
+        return [
           <SectionCard title='Sales Targets' icon={Icons.adjustments} count={salesTargets.total}>
             {targetPages.length === 0 ? (
               <EmptySection message='No active sales targets are currently available.' />
@@ -1010,7 +951,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               </DisplayCardSlideshow>
             )}
           </SectionCard>
-        );
+        ];
       }
 
       case 'concessionPriceList': {
@@ -1021,9 +962,11 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             {pageItems.map((item) => (
               <div key={item.id} className={DISPLAY_SECTION_ROW_CLASS}>
                 <div className='flex items-center justify-between gap-2.5'>
-                  <div className='min-w-0'>
-                    <div className={DISPLAY_CONTENT_TITLE_CLASS}>{item.itemName}</div>
-                    <div className='mt-0.5 flex flex-wrap gap-1 text-[10px] text-zinc-300'>
+                  <div className='min-w-0 flex-1 overflow-hidden whitespace-nowrap'>
+                    <div className={cn(DISPLAY_CONTENT_TITLE_CLASS, 'leading-none')}>
+                      {item.itemName}
+                    </div>
+                    <div className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] text-zinc-300'>
                       {item.category && <RecordChip>{item.category}</RecordChip>}
                       <RecordChip>{item.status}</RecordChip>
                     </div>
@@ -1040,7 +983,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           </div>
         );
 
-        return (
+        return [
           <SectionCard
             title='Concession Price List'
             icon={Icons.billing}
@@ -1058,11 +1001,11 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               </DisplayCardSlideshow>
             )}
           </SectionCard>
-        );
+        ];
       }
 
       default:
-        return null;
+        return [];
     }
   };
 
@@ -1149,11 +1092,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               } as CSSProperties
             }
           >
-            {visibleGridBlocks.map((block) => (
-              <div key={block.key} className='min-h-0'>
-                {renderBlockCard(block.key)}
-              </div>
-            ))}
+            {visibleGridBlocks.flatMap((block) =>
+              renderBlockCards(block.key).map((node, index) => (
+                <div key={`${block.key}-${index}`} className='min-h-0'>
+                  {node}
+                </div>
+              ))
+            )}
           </section>
         )}
       </div>

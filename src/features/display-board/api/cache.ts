@@ -159,6 +159,8 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
     salesTargets?: DisplayBoardData['salesTargets'];
     concessionPriceList?: DisplayBoardData['concessionPriceList'];
     attendance?: DisplayBoardData['attendance'];
+    activeManagersWithAttendanceToday?: DisplayBoardData['activeManagersWithAttendanceToday'];
+    activeStaffWithAttendanceToday?: DisplayBoardData['activeStaffWithAttendanceToday'];
     weather?: DisplayBoardData['weather'];
     weatherSetting?: DisplayBoardData['weather'];
     attendanceSummary: DisplayBoardData['attendanceSummary'];
@@ -178,6 +180,14 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
   const attendance = board.attendance ?? {
     staff: { items: [], total: 0 },
     managers: { items: [], total: 0 }
+  };
+  const activeManagersWithAttendanceToday = board.activeManagersWithAttendanceToday ?? {
+    items: [],
+    total: 0
+  };
+  const activeStaffWithAttendanceToday = board.activeStaffWithAttendanceToday ?? {
+    items: [],
+    total: 0
   };
 
   return {
@@ -219,6 +229,8 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
     },
     concessionPriceList,
     attendance,
+    activeManagersWithAttendanceToday,
+    activeStaffWithAttendanceToday,
     weather: reviveWeather(board.weather ?? board.weatherSetting),
     attendanceSummary: board.attendanceSummary
   };
@@ -253,6 +265,15 @@ export async function getCachedDisplayBoardData(slug: string, version: string) {
   }
 
   if (!parsed || parsed.version !== version) {
+    return null;
+  }
+
+  const raw = parsed.data as Record<string, unknown> | null;
+  if (
+    !raw ||
+    !Object.prototype.hasOwnProperty.call(raw, 'activeManagersWithAttendanceToday') ||
+    !Object.prototype.hasOwnProperty.call(raw, 'activeStaffWithAttendanceToday')
+  ) {
     return null;
   }
 
