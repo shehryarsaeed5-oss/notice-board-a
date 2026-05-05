@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
-import { cn } from '@/lib/utils';
+import { DisplayCardSlideshow } from './display-card-slideshow';
 
 export interface MovieScheduleSlideshowScreenGroup {
   screenName: string;
@@ -20,24 +20,7 @@ interface MovieScheduleSlideshowProps {
   rowLimit: number;
 }
 
-const SLIDE_INTERVAL_MS = 7_000;
 const MAX_VISIBLE_TIMES_PER_SCREEN = 3;
-const MOVIE_GROUP_TITLE_CLASS =
-  'truncate text-[12px] font-semibold leading-tight text-zinc-50 xl:text-[13px]';
-
-function chunkMovieGroups(
-  movieGroups: MovieScheduleSlideshowMovieGroup[],
-  rowLimit: number
-): MovieScheduleSlideshowMovieGroup[][] {
-  const size = Math.max(1, rowLimit);
-  const pages: MovieScheduleSlideshowMovieGroup[][] = [];
-
-  for (let index = 0; index < movieGroups.length; index += size) {
-    pages.push(movieGroups.slice(index, index + size));
-  }
-
-  return pages;
-}
 
 function getCompactScreenLabel(screenName: string) {
   const normalized = screenName.trim().toLowerCase();
@@ -68,7 +51,9 @@ function MovieGroupCard({ group }: { group: MovieScheduleSlideshowMovieGroup }) 
   return (
     <div className='border border-white/10 bg-black/20 px-3 py-2.5 rounded-none'>
       <div className='space-y-1.5'>
-        <div className={MOVIE_GROUP_TITLE_CLASS}>{group.movieName}</div>
+        <div className='truncate text-[12px] font-semibold leading-tight text-zinc-50 xl:text-[13px]'>
+          {group.movieName}
+        </div>
         <div className='flex flex-wrap gap-1 text-[11px] text-zinc-200'>
           {group.screenGroups.map((screenGroup) => {
             const visibleTimes = screenGroup.times.slice(0, MAX_VISIBLE_TIMES_PER_SCREEN);
@@ -84,7 +69,7 @@ function MovieGroupCard({ group }: { group: MovieScheduleSlideshowMovieGroup }) 
                 </span>
                 <span className='mx-1 text-zinc-400'> </span>
                 <span className='min-w-0 truncate text-zinc-200'>
-                  {visibleTimes.join(', ')}
+                  {visibleTimes.join(' | ')}
                   {hiddenCount > 0 ? ` +${hiddenCount}` : ''}
                 </span>
               </span>
@@ -96,66 +81,41 @@ function MovieGroupCard({ group }: { group: MovieScheduleSlideshowMovieGroup }) 
   );
 }
 
-export function MovieScheduleSlideshow({ movieGroups, rowLimit }: MovieScheduleSlideshowProps) {
-  const pages = useMemo(() => chunkMovieGroups(movieGroups, rowLimit), [movieGroups, rowLimit]);
-  const [pageIndex, setPageIndex] = useState(0);
-  const pageCount = pages.length;
-  const currentPage = pages[pageIndex] ?? pages[0] ?? [];
-  const showPagination = pageCount > 1;
+function MovieSchedulePage({ movieGroups }: { movieGroups: MovieScheduleSlideshowMovieGroup[] }) {
+  return (
+    <div className='space-y-1.5'>
+      {movieGroups.map((movie) => (
+        <MovieGroupCard key={`${movie.movieName}-${movie.firstShowTime}`} group={movie} />
+      ))}
+    </div>
+  );
+}
 
-  useEffect(() => {
-    setPageIndex(0);
+export function MovieScheduleSlideshow({ movieGroups, rowLimit }: MovieScheduleSlideshowProps) {
+  const pages = useMemo(() => {
+    const size = Math.max(1, rowLimit);
+    const chunks: MovieScheduleSlideshowMovieGroup[][] = [];
+
+    for (let index = 0; index < movieGroups.length; index += size) {
+      chunks.push(movieGroups.slice(index, index + size));
+    }
+
+    return chunks;
   }, [movieGroups, rowLimit]);
 
-  useEffect(() => {
-    if (pageCount <= 1) {
-      setPageIndex(0);
-      return;
-    }
+  if (pages.length === 0) {
+    return null;
+  }
 
-    const handle = window.setInterval(() => {
-      setPageIndex((current) => (current + 1) % pageCount);
-    }, SLIDE_INTERVAL_MS);
-
-    return () => window.clearInterval(handle);
-  }, [pageCount]);
-
-  useEffect(() => {
-    if (pageIndex >= pageCount) {
-      setPageIndex(0);
-    }
-  }, [pageCount, pageIndex]);
+  if (pages.length === 1) {
+    return <MovieSchedulePage movieGroups={pages[0]} />;
+  }
 
   return (
-    <div className='flex h-full min-h-0 flex-col'>
-      <div className='space-y-1.5'>
-        {currentPage.map((movie) => (
-          <MovieGroupCard key={`${movie.movieName}-${movie.firstShowTime}`} group={movie} />
-        ))}
-      </div>
-
-      {showPagination ? (
-        <div className='mt-0.5 flex items-center justify-end gap-2 text-[9px] text-zinc-400'>
-          <span
-            className={cn(
-              'inline-flex items-center border border-white/10 bg-white/5 px-2 py-0.5 font-medium text-zinc-200 rounded-none'
-            )}
-          >
-            {pageIndex + 1}/{pageCount}
-          </span>
-          <div className='flex items-center gap-1'>
-            {pages.map((_, index) => (
-              <span
-                key={index}
-                className={cn(
-                  'size-1.5 rounded-none transition-colors',
-                  index === pageIndex ? 'bg-amber-300' : 'bg-white/20'
-                )}
-              />
-            ))}
-          </div>
-        </div>
-      ) : null}
-    </div>
+    <DisplayCardSlideshow className='h-full min-h-0' intervalMs={7_000}>
+      {pages.map((pageMovies, index) => (
+        <MovieSchedulePage key={index} movieGroups={pageMovies} />
+      ))}
+    </DisplayCardSlideshow>
   );
 }

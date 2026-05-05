@@ -158,8 +158,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
           lt: end
         }
       },
-      orderBy: [{ startAt: 'asc' }, { title: 'asc' }],
-      take: 5
+      orderBy: [{ startAt: 'asc' }, { title: 'asc' }]
     }),
     prisma.eventRecord.count({
       where: {
@@ -178,8 +177,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
           lt: end
         }
       },
-      orderBy: [{ startAt: 'asc' }, { title: 'asc' }],
-      take: 5
+      orderBy: [{ startAt: 'asc' }, { title: 'asc' }]
     }),
     prisma.meetingSchedule.count({
       where: {
@@ -202,8 +200,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
       where: {
         status: 'ACTIVE'
       },
-      orderBy: [{ sortOrder: 'asc' }, { itemName: 'asc' }],
-      take: 5
+      orderBy: [{ sortOrder: 'asc' }, { itemName: 'asc' }]
     }),
     prisma.concessionPriceItem.count({
       where: {
@@ -272,8 +269,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
           lt: end
         }
       },
-      orderBy: [{ showTime: 'asc' }, { movieName: 'asc' }],
-      take: 5
+      orderBy: [{ showTime: 'asc' }, { movieName: 'asc' }]
     });
 
     movieSchedules = manualMovieSchedules
@@ -344,7 +340,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
       total: movieSchedulesTotal
     },
     advertisements: {
-      items: visibleAdvertisements.slice(0, 5) as DisplayBoardAdvertisementItem[],
+      items: visibleAdvertisements as DisplayBoardAdvertisementItem[],
       total: visibleAdvertisements.length
     },
     alerts: {

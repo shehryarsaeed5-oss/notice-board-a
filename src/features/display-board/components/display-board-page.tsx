@@ -20,6 +20,7 @@ import {
 } from '@/features/display-pages/lib/display-layout-config';
 import { DisplayBoardAutoRefresh } from './display-board-auto-refresh';
 import { DisplayBoardClock } from './display-board-clock';
+import { DisplayCardSlideshow } from './display-card-slideshow';
 import {
   MovieScheduleSlideshow,
   type MovieScheduleSlideshowMovieGroup
@@ -45,6 +46,17 @@ const DISPLAY_CONTENT_SMALL_CLASS = 'text-[11px] leading-4';
 
 function getVisibleCount(block: DisplayLayoutBlockConfig, fallback: number) {
   return Math.max(1, block.rowLimit || fallback);
+}
+
+function chunkItems<T>(items: T[], pageSize: number): T[][] {
+  const size = Math.max(1, pageSize);
+  const pages: T[][] = [];
+
+  for (let index = 0; index < items.length; index += size) {
+    pages.push(items.slice(index, index + size));
+  }
+
+  return pages;
 }
 
 function formatTime(value: Date) {
@@ -329,14 +341,12 @@ function SectionCard({
   title,
   icon: Icon,
   count,
-  children,
-  footer
+  children
 }: {
   title: string;
   icon: ComponentType<{ className?: string }>;
   count: number;
   children: ReactNode;
-  footer?: ReactNode;
 }) {
   return (
     <Card className='!rounded-none flex h-full min-h-0 flex-col gap-0 overflow-hidden border-white/10 bg-white/6 py-0 text-zinc-50 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'>
@@ -356,7 +366,6 @@ function SectionCard({
       </CardHeader>
       <CardContent className='flex min-h-0 flex-1 flex-col gap-1 px-3 pb-3 pt-0.5'>
         {children}
-        {footer}
       </CardContent>
     </Card>
   );
@@ -372,14 +381,6 @@ function EmptySection({ message }: { message: string }) {
     >
       <Icons.info className='size-3.5 shrink-0 text-amber-300/80' />
       <span className='max-h-8 overflow-hidden'>{message}</span>
-    </div>
-  );
-}
-
-function CompactMorePill({ label }: { label: string }) {
-  return (
-    <div className='inline-flex items-center border border-amber-400/20 bg-amber-400/10 px-2 py-0.5 text-[9px] font-medium tracking-wide text-amber-200'>
-      {label}
     </div>
   );
 }
@@ -414,8 +415,8 @@ function HeaderWeatherWidget({ weather }: { weather: DisplayBoardWeatherData | n
       : 'Weather unavailable';
 
   return (
-    <div className='flex min-w-0 max-w-[340px] flex-none items-center gap-2 bg-black/15 px-2.5 py-2 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl rounded-none'>
-      <div className='relative size-9 shrink-0 overflow-hidden bg-white/5 rounded-none'>
+    <div className='flex min-w-0 max-w-[340px] flex-none items-center gap-2 bg-transparent px-0 py-0 shadow-none backdrop-blur-0'>
+      <div className='relative size-9 shrink-0 overflow-hidden bg-transparent'>
         <Image
           src={weatherIconSrc}
           alt=''
@@ -483,7 +484,7 @@ function HeaderSummaryWidget({
   return (
     <div
       className={cn(
-        '!rounded-none flex min-w-0 items-center gap-2 border px-2.5 py-2 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl',
+        'flex min-w-0 items-center gap-2 border px-2.5 py-2 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl !rounded-none',
         toneClass
       )}
     >
@@ -612,7 +613,6 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const presentManagers = attendance.managers.items.filter((item) => item.status === 'PRESENT');
   const currentDate = formatDate(renderedAt);
   const totalAttendance = attendanceSummary.staffMarked + attendanceSummary.managerMarked;
-  const expectedAttendance = attendanceSummary.staffExpected + attendanceSummary.managerExpected;
   const firstAlert = alerts.items[0] ?? null;
 
   const renderBlockCard = (key: DisplayBlockKey) => {
@@ -628,54 +628,51 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
       }
 
       case 'events': {
-        const visibleEvents = events.items.slice(0, getVisibleCount(block, VISIBLE_EVENT_COUNT));
-
-        return (
-          <SectionCard
-            title='Today Events'
-            icon={Icons.calendar}
-            count={events.total}
-            footer={
-              events.total > visibleEvents.length ? (
-                <div className='flex justify-end'>
-                  <CompactMorePill
-                    label={`Showing ${visibleEvents.length} of ${events.total} events`}
-                  />
-                </div>
-              ) : null
-            }
-          >
-            {visibleEvents.length === 0 ? (
-              <EmptySection message='No active events scheduled for today.' />
-            ) : (
-              <div className='space-y-1.5'>
-                {visibleEvents.map((event) => (
-                  <div
-                    key={event.id}
-                    className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
-                  >
-                    <div className='flex items-start justify-between gap-3'>
-                      <div className='min-w-0'>
-                        <div className={DISPLAY_CONTENT_TITLE_CLASS}>{event.title}</div>
-                        <div className={cn('mt-1', DISPLAY_CONTENT_DETAIL_CLASS)}>
-                          {event.clientName ?? event.companyName ?? 'General event'}
-                        </div>
-                      </div>
-                      <Badge className='!rounded-none border-white/10 bg-white/5 text-zinc-100'>
-                        {formatTime(event.startAt)}
-                      </Badge>
-                    </div>
-                    <div className='mt-2 flex flex-wrap gap-1.5 text-[11px] text-zinc-400'>
-                      <RecordChip>{event.screenName ?? '—'}</RecordChip>
-                      {event.endAt ? (
-                        <RecordChip>Ends {formatTime(event.endAt)}</RecordChip>
-                      ) : (
-                        <RecordChip>Ends —</RecordChip>
-                      )}
+        const pageSize = getVisibleCount(block, VISIBLE_EVENT_COUNT);
+        const eventPages = chunkItems(events.items, pageSize);
+        const renderEventPage = (pageItems: typeof events.items) => (
+          <div className='space-y-1.5'>
+            {pageItems.map((event) => (
+              <div
+                key={event.id}
+                className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
+              >
+                <div className='flex items-start justify-between gap-3'>
+                  <div className='min-w-0'>
+                    <div className={DISPLAY_CONTENT_TITLE_CLASS}>{event.title}</div>
+                    <div className={cn('mt-1', DISPLAY_CONTENT_DETAIL_CLASS)}>
+                      {event.clientName ?? event.companyName ?? 'General event'}
                     </div>
                   </div>
-                ))}
+                  <Badge className='!rounded-none border-white/10 bg-white/5 text-zinc-100'>
+                    {formatTime(event.startAt)}
+                  </Badge>
+                </div>
+                <div className='mt-2 flex flex-wrap gap-1.5 text-[11px] text-zinc-400'>
+                  <RecordChip>{event.screenName ?? '—'}</RecordChip>
+                  {event.endAt ? (
+                    <RecordChip>Ends {formatTime(event.endAt)}</RecordChip>
+                  ) : (
+                    <RecordChip>Ends —</RecordChip>
+                  )}
+                </div>
               </div>
+            ))}
+          </div>
+        );
+
+        return (
+          <SectionCard title='Today Events' icon={Icons.calendar} count={events.total}>
+            {eventPages.length === 0 ? (
+              <EmptySection message='No active events scheduled for today.' />
+            ) : eventPages.length === 1 ? (
+              renderEventPage(eventPages[0])
+            ) : (
+              <DisplayCardSlideshow className='h-full min-h-0'>
+                {eventPages.map((page, index) => (
+                  <div key={index}>{renderEventPage(page)}</div>
+                ))}
+              </DisplayCardSlideshow>
             )}
           </SectionCard>
         );
@@ -698,53 +695,47 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
       }
 
       case 'meetingSchedule': {
-        const visibleMeetings = meetings.items.slice(
-          0,
-          getVisibleCount(block, VISIBLE_MEETING_COUNT)
+        const pageSize = getVisibleCount(block, VISIBLE_MEETING_COUNT);
+        const meetingPages = chunkItems(meetings.items, pageSize);
+        const renderMeetingPage = (pageItems: typeof meetings.items) => (
+          <div className='space-y-1.5'>
+            {pageItems.map((meeting) => (
+              <div
+                key={meeting.id}
+                className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
+              >
+                <div className='flex items-start justify-between gap-3'>
+                  <div className='min-w-0'>
+                    <div className={DISPLAY_CONTENT_TITLE_CLASS}>{meeting.title}</div>
+                    <div className={cn('mt-1', DISPLAY_CONTENT_DETAIL_CLASS)}>
+                      {meeting.organizer ?? 'No organizer listed'}
+                    </div>
+                  </div>
+                  <Badge className='!rounded-none border-white/10 bg-white/5 text-zinc-100'>
+                    {formatTime(meeting.startAt)}
+                  </Badge>
+                </div>
+                <div className='mt-2 flex flex-wrap gap-1.5 text-[11px] text-zinc-400'>
+                  {meeting.location && <RecordChip>{meeting.location}</RecordChip>}
+                  {meeting.endAt && <RecordChip>Ends {formatTime(meeting.endAt)}</RecordChip>}
+                </div>
+              </div>
+            ))}
+          </div>
         );
 
         return (
-          <SectionCard
-            title='Meeting Schedule'
-            icon={Icons.clock}
-            count={meetings.total}
-            footer={
-              meetings.total > visibleMeetings.length ? (
-                <div className='flex justify-end'>
-                  <CompactMorePill
-                    label={`Showing ${visibleMeetings.length} of ${meetings.total} meetings`}
-                  />
-                </div>
-              ) : null
-            }
-          >
-            {visibleMeetings.length === 0 ? (
+          <SectionCard title='Meeting Schedule' icon={Icons.clock} count={meetings.total}>
+            {meetingPages.length === 0 ? (
               <EmptySection message='No active meetings scheduled for today.' />
+            ) : meetingPages.length === 1 ? (
+              renderMeetingPage(meetingPages[0])
             ) : (
-              <div className='space-y-1.5'>
-                {visibleMeetings.map((meeting) => (
-                  <div
-                    key={meeting.id}
-                    className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
-                  >
-                    <div className='flex items-start justify-between gap-3'>
-                      <div className='min-w-0'>
-                        <div className={DISPLAY_CONTENT_TITLE_CLASS}>{meeting.title}</div>
-                        <div className={cn('mt-1', DISPLAY_CONTENT_DETAIL_CLASS)}>
-                          {meeting.organizer ?? 'No organizer listed'}
-                        </div>
-                      </div>
-                      <Badge className='!rounded-none border-white/10 bg-white/5 text-zinc-100'>
-                        {formatTime(meeting.startAt)}
-                      </Badge>
-                    </div>
-                    <div className='mt-2 flex flex-wrap gap-1.5 text-[11px] text-zinc-400'>
-                      {meeting.location && <RecordChip>{meeting.location}</RecordChip>}
-                      {meeting.endAt && <RecordChip>Ends {formatTime(meeting.endAt)}</RecordChip>}
-                    </div>
-                  </div>
+              <DisplayCardSlideshow className='h-full min-h-0'>
+                {meetingPages.map((page, index) => (
+                  <div key={index}>{renderMeetingPage(page)}</div>
                 ))}
-              </div>
+              </DisplayCardSlideshow>
             )}
           </SectionCard>
         );
@@ -758,8 +749,34 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const attendanceLimit = getVisibleCount(block, VISIBLE_STAFF_ATTENDANCE_COUNT);
         const staffLimit = Math.max(1, Math.ceil(attendanceLimit / 2));
         const managerLimit = Math.max(0, attendanceLimit - staffLimit);
-        const visibleStaff = presentStaff.slice(0, staffLimit);
-        const visibleManagers = presentManagers.slice(0, managerLimit);
+        type AttendanceRenderableItem = {
+          id: string;
+          name: string;
+          designation: string | null;
+          department?: string | null;
+          shift: string | null;
+          remarks?: string | null;
+        };
+
+        const staffPages = chunkItems(presentStaff as AttendanceRenderableItem[], staffLimit);
+        const managerPages =
+          managerLimit > 0
+            ? chunkItems(presentManagers as AttendanceRenderableItem[], managerLimit)
+            : [];
+        const renderRosterPage = (pageItems: AttendanceRenderableItem[]) => (
+          <div className='space-y-1.5'>
+            {pageItems.map((item) => (
+              <AttendanceRosterItem
+                key={item.id}
+                name={item.name}
+                designation={item.designation}
+                department={item.department}
+                shift={item.shift}
+                remarks={item.remarks}
+              />
+            ))}
+          </div>
+        );
 
         return (
           <SectionCard title='Attendance' icon={Icons.teams} count={totalAttendance}>
@@ -810,29 +827,19 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                         variant='outline'
                         className='!rounded-none border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'
                       >
-                        {visibleStaff.length} shown
+                        {staffPages[0]?.length ?? 0} shown
                       </Badge>
                     </div>
-                    {visibleStaff.length === 0 ? (
+                    {presentStaff.length === 0 ? (
                       <EmptySection message='No present staff entries yet.' />
+                    ) : staffPages.length === 1 ? (
+                      renderRosterPage(staffPages[0])
                     ) : (
-                      <div className='space-y-1.5'>
-                        {visibleStaff.map((item) => (
-                          <AttendanceRosterItem
-                            key={item.id}
-                            name={item.name}
-                            designation={item.designation}
-                            department={item.department}
-                            shift={item.shift}
-                            remarks={item.remarks}
-                          />
+                      <DisplayCardSlideshow className='h-full min-h-0'>
+                        {staffPages.map((page, index) => (
+                          <div key={index}>{renderRosterPage(page)}</div>
                         ))}
-                        {presentStaff.length > visibleStaff.length && (
-                          <CompactMorePill
-                            label={`+${presentStaff.length - visibleStaff.length} more staff`}
-                          />
-                        )}
-                      </div>
+                      </DisplayCardSlideshow>
                     )}
                   </div>
 
@@ -850,28 +857,19 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                         variant='outline'
                         className='!rounded-none border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'
                       >
-                        {visibleManagers.length} shown
+                        {managerPages[0]?.length ?? 0} shown
                       </Badge>
                     </div>
-                    {visibleManagers.length === 0 ? (
+                    {presentManagers.length === 0 ? (
                       <EmptySection message='No present manager entries yet.' />
+                    ) : managerPages.length === 1 ? (
+                      renderRosterPage(managerPages[0])
                     ) : (
-                      <div className='space-y-1.5'>
-                        {visibleManagers.map((item) => (
-                          <AttendanceRosterItem
-                            key={item.id}
-                            name={item.name}
-                            designation={item.designation}
-                            shift={item.shift}
-                            remarks={item.remarks}
-                          />
+                      <DisplayCardSlideshow className='h-full min-h-0'>
+                        {managerPages.map((page, index) => (
+                          <div key={index}>{renderRosterPage(page)}</div>
                         ))}
-                        {presentManagers.length > visibleManagers.length && (
-                          <CompactMorePill
-                            label={`+${presentManagers.length - visibleManagers.length} more managers`}
-                          />
-                        )}
-                      </div>
+                      </DisplayCardSlideshow>
                     )}
                   </div>
                 </div>
@@ -882,152 +880,171 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
       }
 
       case 'advertisements': {
-        const visibleAds = advertisements.items.slice(0, getVisibleCount(block, VISIBLE_AD_COUNT));
+        const pageSize = getVisibleCount(block, VISIBLE_AD_COUNT);
+        const adPages = chunkItems(advertisements.items, pageSize);
+        const renderAdPage = (pageItems: typeof advertisements.items) => (
+          <div className='space-y-1.5'>
+            {pageItems.map((ad) => (
+              <div
+                key={ad.id}
+                className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
+              >
+                <div className='flex items-start justify-between gap-3'>
+                  <div className='min-w-0'>
+                    <div className={DISPLAY_CONTENT_TITLE_CLASS}>{ad.title}</div>
+                    <div className='mt-0.5 flex flex-wrap gap-1.5 text-[11px] text-zinc-300'>
+                      <RecordChip>Active contract</RecordChip>
+                      <RecordChip>
+                        {formatShortDate(ad.startAt)} - {formatShortDate(ad.endAt)}
+                      </RecordChip>
+                      {ad.adLocation && <RecordChip>{ad.adLocation}</RecordChip>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
 
         return (
           <SectionCard
             title='Advertisement Contracts'
             icon={Icons.media}
             count={advertisements.total}
-            footer={
-              advertisements.total > visibleAds.length ? (
-                <div className='flex justify-end'>
-                  <CompactMorePill
-                    label={`Showing ${visibleAds.length} of ${advertisements.total} contracts`}
-                  />
-                </div>
-              ) : null
-            }
           >
-            {visibleAds.length === 0 ? (
+            {adPages.length === 0 ? (
               <EmptySection message='No active advertisement contracts are currently available.' />
+            ) : adPages.length === 1 ? (
+              renderAdPage(adPages[0])
             ) : (
-              <div className='space-y-1.5'>
-                {visibleAds.map((ad) => (
-                  <div
-                    key={ad.id}
-                    className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
-                  >
-                    <div className='flex items-start justify-between gap-3'>
-                      <div className='min-w-0'>
-                        <div className={DISPLAY_CONTENT_TITLE_CLASS}>{ad.title}</div>
-                        <div className='mt-0.5 flex flex-wrap gap-1.5 text-[11px] text-zinc-300'>
-                          <RecordChip>Active contract</RecordChip>
-                          <RecordChip>
-                            {formatShortDate(ad.startAt)} - {formatShortDate(ad.endAt)}
-                          </RecordChip>
-                          {ad.adLocation && <RecordChip>{ad.adLocation}</RecordChip>}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+              <DisplayCardSlideshow className='h-full min-h-0'>
+                {adPages.map((page, index) => (
+                  <div key={index}>{renderAdPage(page)}</div>
                 ))}
-              </div>
+              </DisplayCardSlideshow>
             )}
           </SectionCard>
         );
       }
 
       case 'itemSalesTarget': {
-        const visibleTargets = salesTargets.items.slice(
-          0,
-          getVisibleCount(block, VISIBLE_TARGET_COUNT)
+        const pageSize = getVisibleCount(block, VISIBLE_TARGET_COUNT);
+        const targetPages = chunkItems(salesTargets.items, pageSize);
+        const renderTargetPage = (pageItems: typeof salesTargets.items) => (
+          <div className='space-y-1'>
+            {pageItems.map((target) => (
+              <div
+                key={target.id}
+                className='border border-white/10 bg-black/20 px-2.5 py-2 rounded-none'
+              >
+                <div className='flex items-start justify-between gap-3'>
+                  <div className='min-w-0'>
+                    <div className='truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]'>
+                      {target.itemName}
+                    </div>
+                    <div className='mt-0.5 flex flex-wrap gap-1.25 text-[11px] text-zinc-300'>
+                      {target.itemCodes.length > 0 ? (
+                        <RecordChip>
+                          {target.itemCodes.length} code
+                          {target.itemCodes.length === 1 ? '' : 's'}
+                        </RecordChip>
+                      ) : target.itemCode ? (
+                        <RecordChip>{target.itemCode}</RecordChip>
+                      ) : null}
+                      <RecordChip>{target.status}</RecordChip>
+                      {target.startDate && (
+                        <RecordChip>Start {formatShortDate(target.startDate)}</RecordChip>
+                      )}
+                    </div>
+                  </div>
+                  <div className='flex flex-col items-end gap-1 text-right'>
+                    <Badge className='!rounded-none border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'>
+                      Order {target.displayOrder}
+                    </Badge>
+                    <div className='text-[10px] uppercase tracking-[0.18em] text-zinc-400'>
+                      Last import
+                    </div>
+                    <div className='text-[11px] text-zinc-200'>
+                      {formatDateTime(target.lastImportAt)}
+                    </div>
+                  </div>
+                </div>
+
+                {!target.daily.dataAvailable &&
+                !target.weekly.dataAvailable &&
+                !target.monthly.dataAvailable ? (
+                  <div className='mt-2'>
+                    <EmptySection message='Sales data not imported for the selected period.' />
+                  </div>
+                ) : null}
+
+                <div className='mt-2 grid grid-cols-1 gap-1 xl:grid-cols-3'>
+                  <StatBlock
+                    label='Daily'
+                    value={formatProgress(target.daily)}
+                    tone={target.daily.dataAvailable ? 'emerald' : 'zinc'}
+                  />
+                  <StatBlock
+                    label='Weekly'
+                    value={formatProgress(target.weekly)}
+                    tone={target.weekly.dataAvailable ? 'amber' : 'zinc'}
+                  />
+                  <StatBlock
+                    label='Monthly'
+                    value={formatProgress(target.monthly)}
+                    tone={target.monthly.dataAvailable ? 'emerald' : 'zinc'}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         );
 
         return (
-          <SectionCard
-            title='Sales Targets'
-            icon={Icons.adjustments}
-            count={salesTargets.total}
-            footer={
-              salesTargets.total > visibleTargets.length ? (
-                <div className='flex justify-end'>
-                  <CompactMorePill
-                    label={`Showing ${visibleTargets.length} of ${salesTargets.total} targets`}
-                  />
-                </div>
-              ) : null
-            }
-          >
-            {visibleTargets.length === 0 ? (
+          <SectionCard title='Sales Targets' icon={Icons.adjustments} count={salesTargets.total}>
+            {targetPages.length === 0 ? (
               <EmptySection message='No active sales targets are currently available.' />
+            ) : targetPages.length === 1 ? (
+              renderTargetPage(targetPages[0])
             ) : (
-              <div className='space-y-1'>
-                {visibleTargets.map((target) => (
-                  <div
-                    key={target.id}
-                    className='border border-white/10 bg-black/20 px-2.5 py-2 rounded-none'
-                  >
-                    <div className='flex items-start justify-between gap-3'>
-                      <div className='min-w-0'>
-                        <div className='truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]'>
-                          {target.itemName}
-                        </div>
-                        <div className='mt-0.5 flex flex-wrap gap-1.25 text-[11px] text-zinc-300'>
-                          {target.itemCodes.length > 0 ? (
-                            <RecordChip>
-                              {target.itemCodes.length} code
-                              {target.itemCodes.length === 1 ? '' : 's'}
-                            </RecordChip>
-                          ) : target.itemCode ? (
-                            <RecordChip>{target.itemCode}</RecordChip>
-                          ) : null}
-                          <RecordChip>{target.status}</RecordChip>
-                          {target.startDate && (
-                            <RecordChip>Start {formatShortDate(target.startDate)}</RecordChip>
-                          )}
-                        </div>
-                      </div>
-                      <div className='flex flex-col items-end gap-1 text-right'>
-                        <Badge className='!rounded-none border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'>
-                          Order {target.displayOrder}
-                        </Badge>
-                        <div className='text-[10px] uppercase tracking-[0.18em] text-zinc-400'>
-                          Last import
-                        </div>
-                        <div className='text-[11px] text-zinc-200'>
-                          {formatDateTime(target.lastImportAt)}
-                        </div>
-                      </div>
-                    </div>
-
-                    {!target.daily.dataAvailable &&
-                    !target.weekly.dataAvailable &&
-                    !target.monthly.dataAvailable ? (
-                      <div className='mt-2'>
-                        <EmptySection message='Sales data not imported for the selected period.' />
-                      </div>
-                    ) : null}
-
-                    <div className='mt-2 grid grid-cols-1 gap-1 xl:grid-cols-3'>
-                      <StatBlock
-                        label='Daily'
-                        value={formatProgress(target.daily)}
-                        tone={target.daily.dataAvailable ? 'emerald' : 'zinc'}
-                      />
-                      <StatBlock
-                        label='Weekly'
-                        value={formatProgress(target.weekly)}
-                        tone={target.weekly.dataAvailable ? 'amber' : 'zinc'}
-                      />
-                      <StatBlock
-                        label='Monthly'
-                        value={formatProgress(target.monthly)}
-                        tone={target.monthly.dataAvailable ? 'emerald' : 'zinc'}
-                      />
-                    </div>
-                  </div>
+              <DisplayCardSlideshow className='h-full min-h-0'>
+                {targetPages.map((page, index) => (
+                  <div key={index}>{renderTargetPage(page)}</div>
                 ))}
-              </div>
+              </DisplayCardSlideshow>
             )}
           </SectionCard>
         );
       }
 
       case 'concessionPriceList': {
-        const visibleConcessions = concessionPriceList.items.slice(
-          0,
-          getVisibleCount(block, VISIBLE_CONCESSION_COUNT)
+        const pageSize = getVisibleCount(block, VISIBLE_CONCESSION_COUNT);
+        const concessionPages = chunkItems(concessionPriceList.items, pageSize);
+        const renderConcessionPage = (pageItems: typeof concessionPriceList.items) => (
+          <div className='space-y-1.5'>
+            {pageItems.map((item) => (
+              <div
+                key={item.id}
+                className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
+              >
+                <div className='flex items-start justify-between gap-3'>
+                  <div className='min-w-0'>
+                    <div className={DISPLAY_CONTENT_TITLE_CLASS}>{item.itemName}</div>
+                    <div className='mt-0.5 flex flex-wrap gap-1.5 text-[11px] text-zinc-300'>
+                      {item.category && <RecordChip>{item.category}</RecordChip>}
+                      <RecordChip>{item.status}</RecordChip>
+                    </div>
+                  </div>
+                  <Badge className='!rounded-none border-amber-400/30 bg-amber-400/15 text-amber-100'>
+                    {formatPrice(item.price)}
+                  </Badge>
+                </div>
+                <div className='mt-1.5 flex flex-wrap gap-1.5 text-[11px] text-zinc-400'>
+                  <RecordChip>Sort {item.sortOrder}</RecordChip>
+                </div>
+              </div>
+            ))}
+          </div>
         );
 
         return (
@@ -1035,43 +1052,17 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             title='Concession Price List'
             icon={Icons.billing}
             count={concessionPriceList.total}
-            footer={
-              concessionPriceList.total > visibleConcessions.length ? (
-                <div className='flex justify-end'>
-                  <CompactMorePill
-                    label={`Showing ${visibleConcessions.length} of ${concessionPriceList.total} items`}
-                  />
-                </div>
-              ) : null
-            }
           >
-            {visibleConcessions.length === 0 ? (
+            {concessionPages.length === 0 ? (
               <EmptySection message='No active concession price items are currently available.' />
+            ) : concessionPages.length === 1 ? (
+              renderConcessionPage(concessionPages[0])
             ) : (
-              <div className='space-y-1.5'>
-                {visibleConcessions.map((item) => (
-                  <div
-                    key={item.id}
-                    className='border border-white/10 bg-black/20 px-3.5 py-2.5 rounded-none'
-                  >
-                    <div className='flex items-start justify-between gap-3'>
-                      <div className='min-w-0'>
-                        <div className={DISPLAY_CONTENT_TITLE_CLASS}>{item.itemName}</div>
-                        <div className='mt-0.5 flex flex-wrap gap-1.5 text-[11px] text-zinc-300'>
-                          {item.category && <RecordChip>{item.category}</RecordChip>}
-                          <RecordChip>{item.status}</RecordChip>
-                        </div>
-                      </div>
-                      <Badge className='!rounded-none border-amber-400/30 bg-amber-400/15 text-amber-100'>
-                        {formatPrice(item.price)}
-                      </Badge>
-                    </div>
-                    <div className='mt-1.5 flex flex-wrap gap-1.5 text-[11px] text-zinc-400'>
-                      <RecordChip>Sort {item.sortOrder}</RecordChip>
-                    </div>
-                  </div>
+              <DisplayCardSlideshow className='h-full min-h-0'>
+                {concessionPages.map((page, index) => (
+                  <div key={index}>{renderConcessionPage(page)}</div>
                 ))}
-              </div>
+              </DisplayCardSlideshow>
             )}
           </SectionCard>
         );
@@ -1095,9 +1086,20 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           minHeight: `${displayPage.resolutionHeight}px`
         }}
       >
-        <header className='shrink-0 rounded-none border border-white/10 bg-white/6 px-3 py-2.5 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl xl:px-4 xl:py-3'>
-          <div className='grid min-h-[76px] grid-cols-[minmax(300px,1.25fr)_minmax(0,0.75fr)_minmax(220px,1fr)] items-center gap-2 xl:min-h-[86px] xl:gap-3'>
-            <div className='flex min-w-0 items-center gap-2.5 justify-self-start overflow-visible'>
+        <header className='relative shrink-0 rounded-none border border-white/10 bg-white/6 px-3 py-2.5 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl xl:px-4 xl:py-3'>
+          <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
+            <div className='flex flex-col items-center justify-center text-center'>
+              <div className='text-[1.9rem] font-semibold leading-none tracking-tight text-zinc-50 md:text-[2.3rem] xl:text-[2.75rem]'>
+                <DisplayBoardClock initialIso={renderedAt.toISOString()} />
+              </div>
+              <div className='mt-1.5 text-[14px] font-medium text-zinc-300 md:text-[15px]'>
+                {currentDate}
+              </div>
+            </div>
+          </div>
+
+          <div className='pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 xl:left-4'>
+            <div className='flex min-w-0 items-center gap-2.5 overflow-visible pointer-events-auto'>
               <Image
                 src='/Logo/cue-logo.png'
                 alt='CUE logo'
@@ -1108,17 +1110,10 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               />
               {weatherBlock ? <HeaderWeatherWidget weather={weather} /> : null}
             </div>
+          </div>
 
-            <div className='flex flex-col items-center justify-center text-center justify-self-center'>
-              <div className='text-[1.9rem] font-semibold leading-none tracking-tight text-zinc-50 md:text-[2.3rem] xl:text-[2.75rem]'>
-                <DisplayBoardClock initialIso={renderedAt.toISOString()} />
-              </div>
-              <div className='mt-1.5 text-[14px] font-medium text-zinc-300 md:text-[15px]'>
-                {currentDate}
-              </div>
-            </div>
-
-            <div className='flex min-w-0 items-center justify-end gap-2 justify-self-end overflow-hidden'>
+          <div className='pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 xl:right-4'>
+            <div className='flex min-w-0 items-center justify-end gap-2 overflow-hidden pointer-events-auto'>
               {alertsBlock ? (
                 <HeaderSummaryWidget
                   label='Alerts'
