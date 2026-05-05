@@ -25,6 +25,18 @@ export interface AdminSession {
   user: AdminSessionUser;
 }
 
+function isRequestSecure(request: Request): boolean {
+  const forwardedProto = request.headers.get('x-forwarded-proto');
+  if (forwardedProto) {
+    const firstProto = forwardedProto.split(',')[0]?.trim().toLowerCase();
+    if (firstProto) {
+      return firstProto === 'https';
+    }
+  }
+
+  return new URL(request.url).protocol === 'https:';
+}
+
 export async function getCurrentAdminSession(): Promise<AdminSession | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_SESSION_COOKIE_NAME)?.value;
@@ -94,8 +106,8 @@ export async function createAdminSessionCookie(userId: string): Promise<{
   };
 }
 
-export function getAdminCookieOptions(expiresAt: Date) {
-  return buildSessionCookieOptions(expiresAt);
+export function getAdminCookieOptions(request: Request, expiresAt: Date) {
+  return buildSessionCookieOptions(expiresAt, isRequestSecure(request));
 }
 
 export { AUTH_SESSION_COOKIE_NAME };

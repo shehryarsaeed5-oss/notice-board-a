@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <radialGradient id="sunDay" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(23 21) rotate(90) scale(12)">
+      <stop offset="0" stop-color="#FFF59D"/>
+      <stop offset="0.6" stop-color="#FFD54F"/>
+      <stop offset="1" stop-color="#FF9800"/>
+    </radialGradient>
+    <linearGradient id="cloudDay" x1="10" y1="30" x2="54" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F8FBFF"/>
+      <stop offset="1" stop-color="#BFD3EA"/>
+    </linearGradient>
+  </defs>
+  <circle cx="23" cy="22" r="10" fill="url(#sunDay)"/>
+  <g stroke="#FFB300" stroke-linecap="round" stroke-width="2.6">
+    <path d="M23 8v4"/>
+    <path d="M23 32v4"/>
+    <path d="M9 22h4"/>
+    <path d="M33 22h4"/>
+    <path d="M13 12l3 3"/>
+    <path d="M30 29l3 3"/>
+    <path d="M30 14l3-3"/>
+    <path d="M13 31l3-3"/>
+  </g>
+  <path d="M19 48h25c7 0 12-4.8 12-10.8 0-5.5-4.2-10-9.7-10.7C44.1 20.8 39.5 17 34 17c-5.3 0-9.9 3.5-11.4 8.4C16.2 25.7 11 30.5 11 36.5 11 43.1 14.9 48 19 48z" fill="url(#cloudDay)"/>
+</svg>

@@ -16,7 +16,7 @@ import {
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
 import { cn } from '@/lib/utils';
 import { getUserPermissions } from '@/lib/permissions';
-import { statusBadgeClass } from '@/lib/status-badge';
+import { permissionBadgeClass, roleBadgeClass, statusBadgeClass } from '@/lib/status-badge';
 import { sortRows, toggleSort, type SortState } from '@/lib/table-sort';
 
 import type { UserRecord } from '../api/types';
@@ -28,19 +28,6 @@ interface UsersTableProps {
 }
 
 type UserSortKey = 'name' | 'email' | 'role' | 'permissions' | 'status' | 'createdAt';
-
-function getRoleClass(role: UserRecord['role']) {
-  switch (role) {
-    case 'ADMIN':
-      return 'border-emerald-700/40 bg-emerald-950/35 text-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200';
-    case 'CUSTOM':
-      return 'border-sky-700/40 bg-sky-950/35 text-sky-100 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200';
-    case 'VIEWER':
-      return 'border-slate-600/40 bg-slate-900/55 text-slate-200 dark:border-border/60 dark:bg-muted/50 dark:text-foreground';
-    default:
-      return '';
-  }
-}
 
 function formatDate(value: Date) {
   return format(value, 'MMM d, yyyy');
@@ -70,10 +57,7 @@ function PermissionBadges({ user }: { user: UserRecord }) {
 
   if (user.role === 'ADMIN') {
     return (
-      <Badge
-        variant='outline'
-        className='border-emerald-700/40 bg-emerald-950/35 text-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200'
-      >
+      <Badge variant='outline' className={permissionBadgeClass('all')}>
         All access
       </Badge>
     );
@@ -81,10 +65,7 @@ function PermissionBadges({ user }: { user: UserRecord }) {
 
   if (user.role === 'VIEWER') {
     return (
-      <Badge
-        variant='outline'
-        className='border-slate-600/40 bg-slate-900/55 text-slate-200 dark:border-border/60 dark:bg-muted/50 dark:text-foreground'
-      >
+      <Badge variant='outline' className={permissionBadgeClass()}>
         Dashboard only
       </Badge>
     );
@@ -93,19 +74,12 @@ function PermissionBadges({ user }: { user: UserRecord }) {
   return (
     <div className='flex max-w-[26rem] flex-wrap gap-1.5'>
       {permissions.slice(0, 4).map((permission) => (
-        <Badge
-          key={permission}
-          variant='outline'
-          className='border-border/60 bg-muted/40 text-foreground dark:bg-background'
-        >
+        <Badge key={permission} variant='outline' className={permissionBadgeClass()}>
           {PERMISSION_LABELS[permission] ?? permission}
         </Badge>
       ))}
       {permissions.length > 4 && (
-        <Badge
-          variant='outline'
-          className='border-border/60 bg-muted/40 text-foreground dark:bg-background'
-        >
+        <Badge variant='outline' className={permissionBadgeClass('more')}>
           +{permissions.length - 4} more
         </Badge>
       )}
@@ -193,10 +167,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                         <div className='flex items-center gap-2 font-medium'>
                           <span>{user.name}</span>
                           {user.id === currentUserId && (
-                            <Badge
-                              variant='outline'
-                              className='border-primary/30 bg-primary/10 text-primary'
-                            >
+                            <Badge variant='outline' className={statusBadgeClass('INFO')}>
                               You
                             </Badge>
                           )}
@@ -205,7 +176,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                     </TableCell>
                     <TableCell className='whitespace-nowrap'>{user.email}</TableCell>
                     <TableCell>
-                      <Badge variant='outline' className={cn('gap-1.5', getRoleClass(user.role))}>
+                      <Badge variant='outline' className={cn('gap-1.5', roleBadgeClass(user.role))}>
                         {user.role}
                       </Badge>
                     </TableCell>

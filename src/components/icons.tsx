@@ -26,6 +26,12 @@ import {
   IconClipboardText,
   IconClock,
   IconCode,
+  IconCloud,
+  IconCloudBolt,
+  IconCloudFog,
+  IconCloudOff,
+  IconCloudRain,
+  IconCloudSnow,
   IconCommand,
   IconCreditCard,
   IconCopy,
@@ -56,6 +62,7 @@ import {
   IconMessage,
   IconMinus,
   IconMoon,
+  IconMist,
   IconMusic,
   IconPalette,
   IconPaperclip,
@@ -76,6 +83,7 @@ import {
   IconStack2,
   IconStar,
   IconSun,
+  IconSunHigh,
   IconTrash,
   IconTrendingDown,
   IconTrendingUp,
@@ -88,6 +96,7 @@ import {
   IconUserX,
   IconUsers,
   IconVideo,
+  IconWind,
   IconCrown,
   IconX
 } from '@tabler/icons-react';
@@ -181,7 +190,15 @@ export const Icons = {
   minus: IconMinus,
 
   // Theme
+  cloud: IconCloud,
+  cloudBolt: IconCloudBolt,
+  cloudFog: IconCloudFog,
+  cloudOff: IconCloudOff,
+  cloudRain: IconCloudRain,
+  cloudSnow: IconCloudSnow,
+  mist: IconMist,
   sun: IconSun,
+  sunHigh: IconSunHigh,
   moon: IconMoon,
   brightness: IconBrightness,
   laptop: IconDeviceLaptop,
@@ -223,5 +240,6 @@ export const Icons = {
   slash: IconSlash,
   calendar: IconCalendar,
   galleryVerticalEnd: IconStack2,
-  moreHorizontal: IconDots
+  moreHorizontal: IconDots,
+  wind: IconWind
 };

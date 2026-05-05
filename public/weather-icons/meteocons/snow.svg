@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="snowCloud" x1="10" y1="18" x2="54" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F7FBFF"/>
+      <stop offset="1" stop-color="#B5C8DD"/>
+    </linearGradient>
+  </defs>
+  <path d="M18 34h28c7 0 12-4.8 12-10.8 0-5.5-4.2-10-9.7-10.7C46.8 7.8 42.2 4 36.7 4c-5.3 0-9.9 3.5-11.4 8.4C15.2 12.7 10 17.5 10 23.5 10 30.1 13.9 34 18 34z" fill="url(#snowCloud)"/>
+  <g stroke="#8DD3FF" stroke-linecap="round" stroke-width="2.4">
+    <path d="M22 43h0"/>
+    <path d="M32 48h0"/>
+    <path d="M42 43h0"/>
+    <path d="M22 43l0 0"/>
+  </g>
+  <g stroke="#8DD3FF" stroke-linecap="round" stroke-width="2.2">
+    <path d="M22 42l0 5"/>
+    <path d="M19.5 44.5l5-0.5"/>
+    <path d="M20 40.5l4 4"/>
+    <path d="M24 40.5l-4 4"/>
+    <path d="M32 47l0 5"/>
+    <path d="M29.5 49.5l5-0.5"/>
+    <path d="M30 45.5l4 4"/>
+    <path d="M34 45.5l-4 4"/>
+    <path d="M42 42l0 5"/>
+    <path d="M39.5 44.5l5-0.5"/>
+    <path d="M40 40.5l4 4"/>
+    <path d="M44 40.5l-4 4"/>
+  </g>
+</svg>

@@ -1,13 +1,15 @@
 import { createAdminSessionCookie, getAdminCookieOptions } from '@/lib/auth';
 import { AUTH_SESSION_COOKIE_NAME } from '@/lib/auth-session';
 import { prisma } from '@/lib/prisma';
+import { getSafeInternalRedirectPath } from '@/lib/redirect';
 import { verifyPassword } from '@/lib/password';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const loginSchema = z.object({
   email: z.string().trim().email(),
-  password: z.string().min(1)
+  password: z.string().min(1),
+  redirectTo: z.string().optional()
 });
 
 export async function POST(request: Request) {
@@ -63,12 +65,13 @@ export async function POST(request: Request) {
   }
 
   const { token, expiresAt } = await createAdminSessionCookie(user.id);
+  const redirectTo = getSafeInternalRedirectPath(parsed.data.redirectTo);
   const response = NextResponse.json({
     ok: true,
-    redirectTo: '/dashboard'
+    redirectTo
   });
 
-  response.cookies.set(AUTH_SESSION_COOKIE_NAME, token, getAdminCookieOptions(expiresAt));
+  response.cookies.set(AUTH_SESSION_COOKIE_NAME, token, getAdminCookieOptions(request, expiresAt));
 
   return response;
 }

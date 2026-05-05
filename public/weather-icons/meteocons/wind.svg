@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="windStroke" x1="10" y1="20" x2="54" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7FE3FF"/>
+      <stop offset="1" stop-color="#4B9CFF"/>
+    </linearGradient>
+  </defs>
+  <path d="M12 24h26c4.4 0 8-3.1 8-7 0-3.6-2.9-6.5-6.6-6.5-3.2 0-5.8 2.2-6.3 5.2" stroke="url(#windStroke)" stroke-linecap="round" stroke-width="4"/>
+  <path d="M10 36h34c5 0 9-3.4 9-7.6 0-4-3.2-7.2-7.4-7.2-3.6 0-6.5 2.4-7.2 5.8" stroke="url(#windStroke)" stroke-linecap="round" stroke-width="4"/>
+  <path d="M18 46h22c4 0 7-2.7 7-6 0-3.1-2.5-5.6-5.7-5.6-2.7 0-4.9 1.8-5.4 4.4" stroke="url(#windStroke)" stroke-linecap="round" stroke-width="4"/>
+</svg>

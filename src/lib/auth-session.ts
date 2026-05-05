@@ -88,11 +88,11 @@ export async function verifySessionToken(token: string): Promise<AdminSessionPay
   }
 }
 
-export function buildSessionCookieOptions(expiresAt: Date) {
+export function buildSessionCookieOptions(expiresAt: Date, secure: boolean) {
   return {
     httpOnly: true,
     sameSite: 'lax' as const,
-    secure: process.env.NODE_ENV === 'production',
+    secure,
     path: '/',
     expires: expiresAt,
     maxAge: AUTH_SESSION_MAX_AGE

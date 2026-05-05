@@ -7,6 +7,7 @@ import { getEnabledSyncedMovieScheduleRowsForDate } from '@/features/movie-sched
 import { getItemSalesTargetDisplaySummaryForDisplay } from '@/features/item-sales-target/import/api/service';
 import { normalizeDisplayLayoutConfig } from '@/features/display-pages/lib/display-layout-config';
 
+import { getDisplayBoardWeatherData } from './weather';
 import {
   getCachedDisplayBoardData,
   getDisplayBoardRefreshToken,
@@ -25,8 +26,7 @@ import type {
   DisplayBoardMeetingItem,
   DisplayBoardMovieItem,
   DisplayBoardResult,
-  DisplayBoardSalesTargetItem,
-  DisplayBoardWeatherSetting
+  DisplayBoardSalesTargetItem
 } from './types';
 
 function getTodayRange(baseDate = new Date()): { start: Date; end: Date } {
@@ -250,9 +250,10 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     })
   ]);
 
-  const syncedMovieScheduleRows = await getEnabledSyncedMovieScheduleRowsForDate(
-    format(now, 'yyyy-MM-dd')
-  );
+  const [weather, syncedMovieScheduleRows] = await Promise.all([
+    getDisplayBoardWeatherData(weatherSetting),
+    getEnabledSyncedMovieScheduleRowsForDate(format(now, 'yyyy-MM-dd'))
+  ]);
 
   let movieSchedules: DisplayBoardMovieItem[] = [];
   let movieSchedulesTotal = 0;
@@ -368,14 +369,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
         total: managerAttendance.length
       }
     },
-    weatherSetting: (weatherSetting
-      ? {
-          id: weatherSetting.id,
-          city: weatherSetting.city,
-          provider: weatherSetting.provider as DisplayBoardWeatherSetting['provider'],
-          enabled: weatherSetting.enabled
-        }
-      : null) as DisplayBoardWeatherSetting | null,
+    weather,
     attendanceSummary
   };
 

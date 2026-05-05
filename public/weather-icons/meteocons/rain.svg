@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="rainCloud" x1="10" y1="18" x2="54" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F3F8FF"/>
+      <stop offset="1" stop-color="#AFC4DD"/>
+    </linearGradient>
+    <linearGradient id="rainDrop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7FE3FF"/>
+      <stop offset="1" stop-color="#2D8BFF"/>
+    </linearGradient>
+  </defs>
+  <path d="M18 36h28c7 0 12-4.8 12-10.8 0-5.5-4.2-10-9.7-10.7C46.8 9.8 42.2 6 36.7 6c-5.3 0-9.9 3.5-11.4 8.4C15.2 14.7 10 19.5 10 25.5 10 32.1 13.9 36 18 36z" fill="url(#rainCloud)"/>
+  <path d="M22 44c1.6-2.3 2.4-4.3 2.4-6.1 0-1.4-.6-2.8-1.8-4.2-1.2 1.4-1.8 2.8-1.8 4.2 0 1.8.8 3.8 2.4 6.1z" fill="url(#rainDrop)"/>
+  <path d="M32 48c1.6-2.3 2.4-4.3 2.4-6.1 0-1.4-.6-2.8-1.8-4.2-1.2 1.4-1.8 2.8-1.8 4.2 0 1.8.8 3.8 2.4 6.1z" fill="url(#rainDrop)"/>
+  <path d="M42 44c1.6-2.3 2.4-4.3 2.4-6.1 0-1.4-.6-2.8-1.8-4.2-1.2 1.4-1.8 2.8-1.8 4.2 0 1.8.8 3.8 2.4 6.1z" fill="url(#rainDrop)"/>
+</svg>

@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { cn } from '@/lib/utils';
 
 import { getDisplayBoardBySlug } from '../api/service';
-import type { DisplayBoardAlertItem, DisplayBoardWeatherSetting } from '../api/types';
+import type { DisplayBoardAlertItem, DisplayBoardWeatherData } from '../api/types';
 import {
   getEnabledSortedDisplayBlocks,
   type DisplayBlockKey,
@@ -241,14 +241,12 @@ function AttendanceRosterItem({
 
 function SectionCard({
   title,
-  description,
   icon: Icon,
   count,
   children,
   footer
 }: {
   title: string;
-  description: string;
   icon: ComponentType<{ className?: string }>;
   count: number;
   children: ReactNode;
@@ -256,16 +254,11 @@ function SectionCard({
 }) {
   return (
     <Card className='flex h-full min-h-0 flex-col gap-0 overflow-hidden border-white/10 bg-white/6 py-0 text-zinc-50 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'>
-      <CardHeader className='shrink-0 px-3.5 pt-2.5 pb-1'>
+      <CardHeader className='shrink-0 px-3.5 pt-2 pb-0.5'>
         <div className='flex items-start justify-between gap-3'>
-          <div className='space-y-1'>
-            <CardDescription className='text-[9px] uppercase tracking-[0.2em] text-zinc-400'>
-              {description}
-            </CardDescription>
-            <CardTitle className='text-[14px] font-semibold text-zinc-50 xl:text-[15px]'>
-              {title}
-            </CardTitle>
-          </div>
+          <CardTitle className='text-[14px] font-semibold text-zinc-50 xl:text-[15px]'>
+            {title}
+          </CardTitle>
           <Badge
             variant='outline'
             className='rounded-full border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'
@@ -275,7 +268,7 @@ function SectionCard({
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className='flex min-h-0 flex-1 flex-col gap-1.5 px-3.5 pb-3.5 pt-0'>
+      <CardContent className='flex min-h-0 flex-1 flex-col gap-1.5 px-3.5 pb-3.5 pt-1'>
         {children}
         {footer}
       </CardContent>
@@ -322,36 +315,51 @@ function HeaderWidgetBadge({ children, className }: { children: ReactNode; class
   );
 }
 
-function HeaderWeatherWidget({
-  weatherSetting
-}: {
-  weatherSetting: DisplayBoardWeatherSetting | null;
-}) {
-  const hasWeather = Boolean(weatherSetting);
+function HeaderWeatherWidget({ weather }: { weather: DisplayBoardWeatherData | null }) {
+  const weatherIconSrc = weather?.iconPath ?? '/weather-icons/meteocons/not-available.svg';
+  const temperatureLabel =
+    weather && weather.status === 'ready' && weather.temperatureC !== null
+      ? `${Math.round(weather.temperatureC)}°C`
+      : 'Weather unavailable';
 
   return (
-    <div className='flex min-w-0 items-center gap-2 rounded-[16px] border border-white/10 bg-black/18 px-3 py-2 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl'>
-      <div className='flex size-8 shrink-0 items-center justify-center rounded-full border border-amber-400/20 bg-amber-400/10'>
-        <Icons.sun className='size-4 text-amber-200' />
+    <div className='flex min-w-0 max-w-[340px] flex-none items-center gap-2 rounded-[16px] bg-black/15 px-2.5 py-2 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl'>
+      <div className='relative size-9 shrink-0 overflow-hidden rounded-full bg-white/5'>
+        <Image
+          src={weatherIconSrc}
+          alt=''
+          width={40}
+          height={40}
+          unoptimized
+          className='size-full object-contain'
+        />
       </div>
       <div className='min-w-0'>
-        <div className='flex items-center gap-2'>
-          <div className='text-[9px] uppercase tracking-[0.22em] text-amber-200/80'>Weather</div>
-          <HeaderWidgetBadge className='text-amber-100'>
-            {hasWeather ? 'Active' : 'Not set'}
-          </HeaderWidgetBadge>
-        </div>
-        {weatherSetting ? (
-          <div className='min-w-0'>
-            <div className='truncate text-[12px] font-semibold text-zinc-50'>
-              {weatherSetting.city}
+        {weather ? (
+          weather.status === 'ready' ? (
+            <div className='space-y-0.5'>
+              <div className='truncate text-[13px] font-semibold leading-none text-zinc-50'>
+                {temperatureLabel} {weather.city}
+              </div>
+              <div className='truncate text-[10px] text-zinc-300'>
+                {weather.condition ?? 'Weather unavailable'}
+              </div>
             </div>
+          ) : (
+            <div className='space-y-0.5'>
+              <div className='truncate text-[12px] font-medium text-zinc-50'>
+                Weather unavailable
+              </div>
+              <div className='truncate text-[10px] text-zinc-300'>Weather unavailable</div>
+            </div>
+          )
+        ) : (
+          <div className='space-y-0.5'>
+            <div className='text-[12px] font-medium text-zinc-50'>Weather not set</div>
             <div className='truncate text-[10px] text-zinc-300'>
-              Provider: {weatherSetting.provider}
+              Enable the weather block and configure a city
             </div>
           </div>
-        ) : (
-          <div className='truncate text-[11px] font-medium text-zinc-300'>Weather not set</div>
         )}
       </div>
     </div>
@@ -384,7 +392,7 @@ function HeaderSummaryWidget({
   return (
     <div
       className={cn(
-        'flex min-w-0 items-center gap-2 rounded-[16px] border px-3 py-2 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl',
+        'flex min-w-0 items-center gap-2 rounded-[16px] border px-2.5 py-2 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl',
         toneClass
       )}
     >
@@ -488,7 +496,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
     salesTargets,
     concessionPriceList,
     attendance,
-    weatherSetting,
+    weather,
     attendanceSummary
   } = data;
 
@@ -498,15 +506,15 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const getBlock = (key: DisplayBlockKey) => layoutBlockMap.get(key);
   const weatherBlock = getBlock('weather');
   const alertsBlock = getBlock('alerts');
-  const movieScheduleBlock = getBlock('movieSchedule');
-  const visibleGridBlocks = layoutBlocks.filter((block) => block.key !== 'weather');
+  const visibleGridBlocks = layoutBlocks.filter(
+    (block) => block.key !== 'weather' && block.key !== 'alerts'
+  );
   const presentStaff = attendance.staff.items.filter((item) => item.status === 'PRESENT');
   const presentManagers = attendance.managers.items.filter((item) => item.status === 'PRESENT');
   const currentDate = formatDate(renderedAt);
   const totalAttendance = attendanceSummary.staffMarked + attendanceSummary.managerMarked;
   const expectedAttendance = attendanceSummary.staffExpected + attendanceSummary.managerExpected;
   const firstAlert = alerts.items[0] ?? null;
-  const nextMovie = movieSchedules.items[0] ?? null;
 
   const renderBlockCard = (key: DisplayBlockKey) => {
     const block = getBlock(key);
@@ -517,33 +525,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
 
     switch (key) {
       case 'alerts': {
-        const visibleAlerts = alerts.items.slice(0, getVisibleCount(block, VISIBLE_ALERT_COUNT));
-
-        return (
-          <SectionCard
-            title='Alerts'
-            description='Live notices'
-            icon={Icons.alertCircle}
-            count={alerts.total}
-            footer={
-              alerts.total > visibleAlerts.length ? (
-                <div className='flex justify-end'>
-                  <CompactMorePill label={`+${alerts.total - visibleAlerts.length} more alerts`} />
-                </div>
-              ) : null
-            }
-          >
-            {visibleAlerts.length === 0 ? (
-              <EmptySection message='No active alerts are currently available.' />
-            ) : (
-              <div className='space-y-2'>
-                {visibleAlerts.map((alert) => (
-                  <AlertBannerCard key={alert.id} alert={alert} />
-                ))}
-              </div>
-            )}
-          </SectionCard>
-        );
+        return null;
       }
 
       case 'events': {
@@ -552,7 +534,6 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         return (
           <SectionCard
             title='Today Events'
-            description='Scheduled today'
             icon={Icons.calendar}
             count={events.total}
             footer={
@@ -612,7 +593,6 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         return (
           <SectionCard
             title='Movie Schedule'
-            description="Today's showtimes"
             icon={Icons.video}
             count={movieSchedules.total}
             footer={
@@ -662,7 +642,6 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         return (
           <SectionCard
             title='Meeting Schedule'
-            description="Today's meetings"
             icon={Icons.clock}
             count={meetings.total}
             footer={
@@ -721,12 +700,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const visibleManagers = presentManagers.slice(0, managerLimit);
 
         return (
-          <SectionCard
-            title='Attendance'
-            description="Today's roster and status"
-            icon={Icons.teams}
-            count={totalAttendance}
-          >
+          <SectionCard title='Attendance' icon={Icons.teams} count={totalAttendance}>
             {attendanceSummary.staffMarked + attendanceSummary.managerMarked === 0 ? (
               <EmptySection message='Attendance not marked yet.' />
             ) : (
@@ -851,7 +825,6 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         return (
           <SectionCard
             title='Advertisement Contracts'
-            description='Active company contracts'
             icon={Icons.media}
             count={advertisements.total}
             footer={
@@ -904,7 +877,6 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         return (
           <SectionCard
             title='Sales Targets'
-            description='Active targets'
             icon={Icons.adjustments}
             count={salesTargets.total}
             footer={
@@ -1001,7 +973,6 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         return (
           <SectionCard
             title='Concession Price List'
-            description='Live counter prices'
             icon={Icons.billing}
             count={concessionPriceList.total}
             footer={
@@ -1067,24 +1038,24 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         }}
       >
         <header className='shrink-0 rounded-[22px] border border-white/10 bg-white/6 px-3 py-2.5 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl xl:px-4 xl:py-3'>
-          <div className='grid min-h-[76px] grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)_minmax(0,1fr)] items-center gap-3 xl:min-h-[86px]'>
-            <div className='flex min-w-0 items-center gap-3 justify-self-start overflow-hidden'>
+          <div className='grid min-h-[76px] grid-cols-[minmax(300px,1.25fr)_minmax(0,0.75fr)_minmax(220px,1fr)] items-center gap-2 xl:min-h-[86px] xl:gap-3'>
+            <div className='flex min-w-0 items-center gap-2.5 justify-self-start overflow-visible'>
               <Image
                 src='/Logo/cue-logo.png'
                 alt='CUE logo'
                 width={200}
                 height={80}
                 priority
-                className='h-[64px] w-auto max-h-[80px] max-w-[200px] object-contain xl:h-[72px]'
+                className='h-[64px] w-auto max-h-[80px] max-w-[150px] shrink-0 object-contain xl:h-[72px]'
               />
-              {weatherBlock ? <HeaderWeatherWidget weatherSetting={weatherSetting} /> : null}
+              {weatherBlock ? <HeaderWeatherWidget weather={weather} /> : null}
             </div>
 
             <div className='flex flex-col items-center justify-center text-center justify-self-center'>
-              <div className='text-3xl font-semibold leading-none tracking-tight text-zinc-50 md:text-[2.9rem] xl:text-[3.4rem]'>
+              <div className='text-[1.9rem] font-semibold leading-none tracking-tight text-zinc-50 md:text-[2.3rem] xl:text-[2.75rem]'>
                 <DisplayBoardClock initialIso={renderedAt.toISOString()} />
               </div>
-              <div className='mt-1.5 text-[12px] font-medium text-zinc-300 md:text-[13px]'>
+              <div className='mt-1.5 text-[14px] font-medium text-zinc-300 md:text-[15px]'>
                 {currentDate}
               </div>
             </div>
@@ -1099,20 +1070,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   tone='rose'
                 />
               ) : null}
-              {movieScheduleBlock ? (
-                <HeaderSummaryWidget
-                  label='Movies'
-                  icon={Icons.video}
-                  countLabel={`${movieSchedules.total.toLocaleString()} today`}
-                  detail={
-                    nextMovie
-                      ? `${formatTime(nextMovie.showTime)} · ${nextMovie.movieName}`
-                      : 'No shows today'
-                  }
-                  tone='violet'
-                />
-              ) : null}
-              {!alertsBlock && !movieScheduleBlock ? <div aria-hidden='true' /> : null}
+              {!alertsBlock ? <div aria-hidden='true' /> : null}
             </div>
           </div>
         </header>

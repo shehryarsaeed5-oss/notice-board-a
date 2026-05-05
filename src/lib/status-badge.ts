@@ -40,6 +40,27 @@ export function badgeToneClass(tone: BadgeTone): string {
   return BADGE_TONE_CLASSES[tone];
 }
 
+export function roleBadgeClass(role: string | null | undefined): string {
+  switch ((role ?? '').toUpperCase()) {
+    case 'ADMIN':
+      return badgeToneClass('success');
+    case 'CUSTOM':
+      return badgeToneClass('info');
+    case 'VIEWER':
+      return badgeToneClass('neutral');
+    default:
+      return badgeToneClass('neutral');
+  }
+}
+
+export function permissionBadgeClass(kind: 'default' | 'more' | 'all' = 'default'): string {
+  if (kind === 'all') {
+    return badgeToneClass('success');
+  }
+
+  return badgeToneClass('neutral');
+}
+
 export function statusBadgeClass(status: string | null | undefined): string {
   const tone = STATUS_TONE_MAP[(status ?? '').toUpperCase()] ?? 'neutral';
   return badgeToneClass(tone);

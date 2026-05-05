@@ -5,7 +5,8 @@ import { buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppForm } from '@/components/ui/tanstack-form';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
+import { getSafeInternalRedirectPath } from '@/lib/redirect';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import * as z from 'zod';
 import { toast } from 'sonner';
@@ -18,6 +19,8 @@ const loginSchema = z.object({
 
 export default function SignInViewPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = getSafeInternalRedirectPath(searchParams.get('redirectTo'));
 
   const form = useAppForm({
     defaultValues: {
@@ -33,7 +36,10 @@ export default function SignInViewPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(value)
+        body: JSON.stringify({
+          ...value,
+          redirectTo
+        })
       });
 
       const data = (await response.json().catch(() => null)) as {
@@ -47,7 +53,7 @@ export default function SignInViewPage() {
       }
 
       toast.success('Signed in.');
-      router.replace(data?.redirectTo ?? '/dashboard');
+      router.replace(getSafeInternalRedirectPath(data?.redirectTo, redirectTo));
       router.refresh();
     }
   });

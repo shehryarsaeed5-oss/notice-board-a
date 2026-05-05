@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <radialGradient id="moonGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(31 31) rotate(90) scale(16)">
+      <stop offset="0" stop-color="#E1F5FE"/>
+      <stop offset="0.7" stop-color="#90CAF9"/>
+      <stop offset="1" stop-color="#42A5F5"/>
+    </radialGradient>
+  </defs>
+  <path d="M40 10c-1.2 3.2-1.2 6.8.2 10.3 1.4 3.6 4 6.5 7.3 8.1-1.8 5.2-6.7 8.9-12.5 8.9-7.2 0-13-5.8-13-13s5.8-13 13-13c1.8 0 3.5.4 5 .7z" fill="url(#moonGlow)"/>
+  <circle cx="23" cy="18" r="1.8" fill="#FFFDE7"/>
+  <circle cx="48" cy="20" r="1.2" fill="#FFFDE7"/>
+  <circle cx="45" cy="39" r="1.6" fill="#FFFDE7"/>
+  <circle cx="18" cy="42" r="1.2" fill="#FFFDE7"/>
+</svg>

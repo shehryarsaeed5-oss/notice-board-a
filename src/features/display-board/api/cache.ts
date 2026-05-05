@@ -12,6 +12,32 @@ interface DisplayBoardCacheEntry {
   data: unknown;
 }
 
+function reviveWeather(value: unknown) {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const entry = value as Record<string, unknown>;
+  const status =
+    entry.status === 'ready' || entry.status === 'unavailable' ? entry.status : 'unavailable';
+  const iconKey = typeof entry.iconKey === 'string' ? entry.iconKey : 'cloudOff';
+  const iconPath =
+    typeof entry.iconPath === 'string'
+      ? entry.iconPath
+      : '/weather-icons/meteocons/not-available.svg';
+
+  return {
+    ...entry,
+    temperatureC: typeof entry.temperatureC === 'number' ? entry.temperatureC : null,
+    condition: typeof entry.condition === 'string' ? entry.condition : null,
+    weatherCode: typeof entry.weatherCode === 'number' ? entry.weatherCode : null,
+    iconKey,
+    iconPath,
+    updatedAt: entry.updatedAt ? toDate(entry.updatedAt) : new Date(),
+    status
+  } as DisplayBoardData['weather'];
+}
+
 function toDate(value: unknown): Date {
   if (value instanceof Date) {
     return value;
@@ -133,7 +159,8 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
     salesTargets?: DisplayBoardData['salesTargets'];
     concessionPriceList?: DisplayBoardData['concessionPriceList'];
     attendance?: DisplayBoardData['attendance'];
-    weatherSetting: DisplayBoardData['weatherSetting'];
+    weather?: DisplayBoardData['weather'];
+    weatherSetting?: DisplayBoardData['weather'];
     attendanceSummary: DisplayBoardData['attendanceSummary'];
   };
   const alerts = board.alerts ?? {
@@ -192,7 +219,7 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
     },
     concessionPriceList,
     attendance,
-    weatherSetting: board.weatherSetting,
+    weather: reviveWeather(board.weather ?? board.weatherSetting),
     attendanceSummary: board.attendanceSummary
   };
 }

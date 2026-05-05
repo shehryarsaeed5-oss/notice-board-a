@@ -138,6 +138,32 @@ export interface DisplayBoardWeatherSetting {
   enabled: boolean;
 }
 
+export type DisplayBoardWeatherIconKey =
+  | 'sunHigh'
+  | 'moon'
+  | 'cloud'
+  | 'cloudFog'
+  | 'cloudRain'
+  | 'cloudSnow'
+  | 'cloudBolt'
+  | 'cloudOff'
+  | 'mist'
+  | 'wind';
+
+export interface DisplayBoardWeatherData {
+  id: string;
+  city: string;
+  provider: WeatherSettingProvider;
+  enabled: boolean;
+  temperatureC: number | null;
+  condition: string | null;
+  weatherCode: number | null;
+  iconKey: DisplayBoardWeatherIconKey;
+  iconPath: string;
+  updatedAt: Date;
+  status: 'ready' | 'unavailable';
+}
+
 export interface DisplayBoardAttendanceSummary {
   staffExpected: number;
   managerExpected: number;
@@ -188,7 +214,7 @@ export interface DisplayBoardData {
       total: number;
     };
   };
-  weatherSetting: DisplayBoardWeatherSetting | null;
+  weather: DisplayBoardWeatherData | null;
   attendanceSummary: DisplayBoardAttendanceSummary;
 }
 
