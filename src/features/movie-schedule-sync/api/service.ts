@@ -731,8 +731,7 @@ export async function getEnabledSyncedMovieScheduleRowsForDate(
       showDate: selectedDate,
       isActive: true
     },
-    orderBy: [{ showDateTime: 'asc' }, { movieName: 'asc' }, { screenName: 'asc' }],
-    take: 10
+    orderBy: [{ showDateTime: 'asc' }, { movieName: 'asc' }, { screenName: 'asc' }]
   });
 
   return rows.map(mapSyncedRowRecord);
