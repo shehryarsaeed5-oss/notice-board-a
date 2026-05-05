@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import type { ComponentType, ReactNode } from 'react';
+import Image from 'next/image';
 
 import { Icons } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
@@ -125,7 +126,7 @@ function AlertBannerCard({ alert }: { alert: DisplayBoardAlertItem }) {
   return (
     <div
       className={cn(
-        'rounded-[24px] border px-4 py-3.5 text-zinc-50 backdrop-blur-xl',
+        'rounded-[18px] border px-3 py-2 text-zinc-50 backdrop-blur-xl',
         theme.accent,
         alert.alertType === 'URGENT' ? 'animate-pulse' : ''
       )}
@@ -134,22 +135,25 @@ function AlertBannerCard({ alert }: { alert: DisplayBoardAlertItem }) {
         <div className='min-w-0'>
           <div className='flex items-center gap-2'>
             <theme.icon className={cn('size-4 shrink-0', theme.iconClass)} />
-            <div className='truncate text-[15px] font-semibold tracking-tight text-zinc-50 xl:text-base'>
+            <div className='truncate text-[13px] font-semibold tracking-tight text-zinc-50 xl:text-sm'>
               {alert.title}
             </div>
           </div>
           {alert.message ? (
-            <div className='mt-2 max-h-10 overflow-hidden text-sm leading-5 text-zinc-100/90'>
+            <div className='mt-1 max-h-8 overflow-hidden text-[11px] leading-4 text-zinc-100/90'>
               {alert.message}
             </div>
           ) : null}
         </div>
-        <Badge variant='outline' className={cn('rounded-full px-3 py-1 text-xs', theme.badge)}>
+        <Badge
+          variant='outline'
+          className={cn('rounded-full px-2.5 py-0.5 text-[10px]', theme.badge)}
+        >
           {alert.alertType}
         </Badge>
       </div>
 
-      <div className='mt-3 flex flex-wrap gap-2 text-xs text-zinc-200/80'>
+      <div className='mt-2 flex flex-wrap gap-1.5 text-[10px] text-zinc-200/80'>
         <RecordChip>Priority {alert.priority}</RecordChip>
         <RecordChip>Until {formatAlertExpiry(alert.endAt)}</RecordChip>
       </div>
@@ -191,9 +195,9 @@ function SummaryStatPill({
             : statusTone('LATE');
 
   return (
-    <div className={cn('rounded-2xl border px-3 py-2.5', toneClass)}>
-      <div className='text-[11px] uppercase tracking-[0.24em] text-current/70'>{label}</div>
-      <div className='mt-1 text-base font-semibold text-current'>{value.toLocaleString()}</div>
+    <div className={cn('rounded-lg border px-2 py-1', toneClass)}>
+      <div className='text-[9px] uppercase tracking-[0.2em] text-current/70'>{label}</div>
+      <div className='mt-0.5 text-[11px] font-semibold text-current'>{value.toLocaleString()}</div>
     </div>
   );
 }
@@ -212,21 +216,25 @@ function AttendanceRosterItem({
   remarks?: string | null;
 }) {
   return (
-    <div className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'>
-      <div className='flex items-start justify-between gap-3'>
+    <div className='rounded-lg border border-white/10 bg-black/20 px-3 py-2'>
+      <div className='flex items-start justify-between gap-2'>
         <div className='min-w-0'>
-          <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>{name}</div>
-          <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
+          <div className='truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]'>{name}</div>
+          <div className='mt-0.5 flex flex-wrap gap-1 text-[10px] text-zinc-300'>
             {designation && <RecordChip>{designation}</RecordChip>}
             {department && <RecordChip>{department}</RecordChip>}
           </div>
         </div>
-        <Badge className='border-emerald-400/30 bg-emerald-400/15 text-emerald-100'>PRESENT</Badge>
+        <Badge className='border-emerald-400/30 bg-emerald-400/15 px-2 py-0.5 text-[10px] text-emerald-100'>
+          PRESENT
+        </Badge>
       </div>
-      <div className='mt-2 flex flex-wrap gap-2 text-xs text-zinc-400'>
+      <div className='mt-1 flex flex-wrap gap-1 text-[10px] text-zinc-400'>
         <RecordChip>Shift: {shift ?? '—'}</RecordChip>
       </div>
-      {remarks ? <div className='mt-2 text-xs text-zinc-400'>{remarks}</div> : null}
+      {remarks ? (
+        <div className='mt-1 max-h-7 overflow-hidden text-[10px] text-zinc-400'>{remarks}</div>
+      ) : null}
     </div>
   );
 }
@@ -247,27 +255,27 @@ function SectionCard({
   footer?: ReactNode;
 }) {
   return (
-    <Card className='flex h-full min-h-0 flex-col overflow-hidden border-white/10 bg-white/6 text-zinc-50 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl'>
-      <CardHeader className='shrink-0 pb-3'>
+    <Card className='flex h-full min-h-0 flex-col gap-0 overflow-hidden border-white/10 bg-white/6 py-0 text-zinc-50 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'>
+      <CardHeader className='shrink-0 px-3.5 pt-2.5 pb-1'>
         <div className='flex items-start justify-between gap-3'>
           <div className='space-y-1'>
-            <CardDescription className='text-[11px] uppercase tracking-[0.28em] text-zinc-400'>
+            <CardDescription className='text-[9px] uppercase tracking-[0.2em] text-zinc-400'>
               {description}
             </CardDescription>
-            <CardTitle className='text-lg font-semibold text-zinc-50 xl:text-[21px]'>
+            <CardTitle className='text-[14px] font-semibold text-zinc-50 xl:text-[15px]'>
               {title}
             </CardTitle>
           </div>
           <Badge
             variant='outline'
-            className='rounded-full border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-100'
+            className='rounded-full border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'
           >
-            <Icon className='mr-1.5 size-3.5' />
+            <Icon className='mr-1 size-3' />
             {count.toLocaleString()}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className='flex min-h-0 flex-1 flex-col gap-3 pt-0'>
+      <CardContent className='flex min-h-0 flex-1 flex-col gap-1.5 px-3.5 pb-3.5 pt-0'>
         {children}
         {footer}
       </CardContent>
@@ -277,16 +285,16 @@ function SectionCard({
 
 function EmptySection({ message }: { message: string }) {
   return (
-    <div className='flex items-center gap-2 rounded-2xl border border-dashed border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-400'>
-      <Icons.info className='size-4 shrink-0 text-amber-300/80' />
-      <span>{message}</span>
+    <div className='flex items-center gap-2 rounded-lg border border-dashed border-white/10 bg-black/18 px-2.5 py-1 text-[11px] leading-4 text-zinc-400'>
+      <Icons.info className='size-3.5 shrink-0 text-amber-300/80' />
+      <span className='max-h-8 overflow-hidden'>{message}</span>
     </div>
   );
 }
 
 function CompactMorePill({ label }: { label: string }) {
   return (
-    <div className='inline-flex items-center rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 text-[11px] font-medium tracking-wide text-amber-200'>
+    <div className='inline-flex items-center rounded-full border border-amber-400/20 bg-amber-400/10 px-2 py-0.5 text-[9px] font-medium tracking-wide text-amber-200'>
       {label}
     </div>
   );
@@ -294,7 +302,7 @@ function CompactMorePill({ label }: { label: string }) {
 
 function RecordChip({ children }: { children: ReactNode }) {
   return (
-    <span className='inline-flex items-center rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium tracking-wide text-zinc-100'>
+    <span className='inline-flex items-center rounded-full border border-white/10 bg-white/5 px-1.5 py-0.5 text-[9px] font-medium tracking-wide text-zinc-100'>
       {children}
     </span>
   );
@@ -317,9 +325,9 @@ function StatBlock({
         : 'border-white/10 bg-white/5 text-zinc-100';
 
   return (
-    <div className={`rounded-2xl border px-3 py-2.5 ${toneClass}`}>
-      <div className='text-[11px] uppercase tracking-[0.24em] text-current/70'>{label}</div>
-      <div className='mt-1 text-base font-semibold text-current'>{value}</div>
+    <div className={`rounded-lg border px-2 py-1 ${toneClass}`}>
+      <div className='text-[9px] uppercase tracking-[0.18em] text-current/70'>{label}</div>
+      <div className='mt-0.5 text-[10px] font-semibold leading-4 text-current'>{value}</div>
     </div>
   );
 }
@@ -378,7 +386,6 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
 
   const {
     displayPage,
-    generatedAt,
     events,
     meetings,
     movieSchedules,
@@ -398,7 +405,6 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const presentStaff = attendance.staff.items.filter((item) => item.status === 'PRESENT');
   const presentManagers = attendance.managers.items.filter((item) => item.status === 'PRESENT');
   const currentDate = formatDate(renderedAt);
-  const updatedAt = formatDateTime(generatedAt);
   const totalAttendance = attendanceSummary.staffMarked + attendanceSummary.managerMarked;
   const expectedAttendance = attendanceSummary.staffExpected + attendanceSummary.managerExpected;
 
@@ -430,7 +436,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             {visibleAlerts.length === 0 ? (
               <EmptySection message='No active alerts are currently available.' />
             ) : (
-              <div className='space-y-3'>
+              <div className='space-y-2'>
                 {visibleAlerts.map((alert) => (
                   <AlertBannerCard key={alert.id} alert={alert} />
                 ))}
@@ -651,8 +657,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             {attendanceSummary.staffMarked + attendanceSummary.managerMarked === 0 ? (
               <EmptySection message='Attendance not marked yet.' />
             ) : (
-              <div className='space-y-4'>
-                <div className='grid grid-cols-2 gap-2 xl:grid-cols-5'>
+              <div className='space-y-3'>
+                <div className='grid grid-cols-2 gap-1.5 xl:grid-cols-5'>
                   <SummaryStatPill
                     label='Staff Present'
                     value={attendanceSummary.staffCounts.PRESENT}
@@ -680,18 +686,21 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   />
                 </div>
 
-                <div className='grid gap-4 xl:grid-cols-2'>
-                  <div className='space-y-3 rounded-[26px] border border-white/10 bg-black/18 p-4'>
-                    <div className='flex items-center justify-between gap-3'>
+                <div className='grid gap-3 xl:grid-cols-2'>
+                  <div className='space-y-2 rounded-[22px] border border-white/10 bg-black/18 p-3'>
+                    <div className='flex items-center justify-between gap-2'>
                       <div>
-                        <div className='text-sm uppercase tracking-[0.24em] text-zinc-400'>
+                        <div className='text-[10px] uppercase tracking-[0.22em] text-zinc-400'>
                           Staff Present
                         </div>
-                        <div className='mt-1 text-lg font-semibold text-zinc-50'>
+                        <div className='mt-0.5 text-sm font-semibold text-zinc-50'>
                           {attendanceSummary.staffCounts.PRESENT.toLocaleString()} present
                         </div>
                       </div>
-                      <Badge variant='outline' className='border-white/10 bg-white/5 text-zinc-100'>
+                      <Badge
+                        variant='outline'
+                        className='border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'
+                      >
                         {visibleStaff.length} shown
                       </Badge>
                     </div>
@@ -718,17 +727,20 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                     )}
                   </div>
 
-                  <div className='space-y-3 rounded-[26px] border border-white/10 bg-black/18 p-4'>
-                    <div className='flex items-center justify-between gap-3'>
+                  <div className='space-y-2 rounded-[22px] border border-white/10 bg-black/18 p-3'>
+                    <div className='flex items-center justify-between gap-2'>
                       <div>
-                        <div className='text-sm uppercase tracking-[0.24em] text-zinc-400'>
+                        <div className='text-[10px] uppercase tracking-[0.22em] text-zinc-400'>
                           Manager Present
                         </div>
-                        <div className='mt-1 text-lg font-semibold text-zinc-50'>
+                        <div className='mt-0.5 text-sm font-semibold text-zinc-50'>
                           {attendanceSummary.managerCounts.PRESENT.toLocaleString()} present
                         </div>
                       </div>
-                      <Badge variant='outline' className='border-white/10 bg-white/5 text-zinc-100'>
+                      <Badge
+                        variant='outline'
+                        className='border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'
+                      >
                         {visibleManagers.length} shown
                       </Badge>
                     </div>
@@ -835,18 +847,18 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             {visibleTargets.length === 0 ? (
               <EmptySection message='No active sales targets are currently available.' />
             ) : (
-              <div className='space-y-2'>
+              <div className='space-y-1.5'>
                 {visibleTargets.map((target) => (
                   <div
                     key={target.id}
-                    className='rounded-2xl border border-white/10 bg-black/20 px-4 py-3.5'
+                    className='rounded-xl border border-white/10 bg-black/20 px-3 py-2.5'
                   >
                     <div className='flex items-start justify-between gap-3'>
                       <div className='min-w-0'>
-                        <div className='truncate text-[15px] font-medium text-zinc-50 xl:text-base'>
+                        <div className='truncate text-[13px] font-medium text-zinc-50 xl:text-sm'>
                           {target.itemName}
                         </div>
-                        <div className='mt-1 flex flex-wrap gap-2 text-xs text-zinc-300'>
+                        <div className='mt-1 flex flex-wrap gap-1.5 text-[11px] text-zinc-300'>
                           {target.itemCodes.length > 0 ? (
                             <RecordChip>
                               {target.itemCodes.length} code
@@ -862,13 +874,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                         </div>
                       </div>
                       <div className='flex flex-col items-end gap-1 text-right'>
-                        <Badge className='border-white/10 bg-white/5 text-zinc-100'>
+                        <Badge className='border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-zinc-100'>
                           Order {target.displayOrder}
                         </Badge>
-                        <div className='text-[11px] uppercase tracking-[0.2em] text-zinc-400'>
+                        <div className='text-[10px] uppercase tracking-[0.18em] text-zinc-400'>
                           Last import
                         </div>
-                        <div className='text-xs text-zinc-200'>
+                        <div className='text-[11px] text-zinc-200'>
                           {formatDateTime(target.lastImportAt)}
                         </div>
                       </div>
@@ -877,12 +889,12 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                     {!target.daily.dataAvailable &&
                     !target.weekly.dataAvailable &&
                     !target.monthly.dataAvailable ? (
-                      <div className='mt-3'>
+                      <div className='mt-2'>
                         <EmptySection message='Sales data not imported for the selected period.' />
                       </div>
                     ) : null}
 
-                    <div className='mt-3 grid grid-cols-1 gap-2 text-xs text-zinc-300 xl:grid-cols-3'>
+                    <div className='mt-2.5 grid grid-cols-1 gap-1.5 text-xs text-zinc-300 xl:grid-cols-3'>
                       <StatBlock
                         label='Daily'
                         value={formatProgress(target.daily)}
@@ -975,50 +987,35 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
       <div className='absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500' />
 
       <div
-        className='relative mx-auto flex min-h-[100dvh] w-full max-w-full flex-col gap-4 overflow-hidden p-4 md:p-6 xl:h-[100dvh] xl:min-h-0 xl:p-6 2xl:p-8'
+        className='relative mx-auto flex min-h-[100dvh] w-full max-w-full flex-col gap-3 overflow-hidden p-3 md:p-4 xl:h-[100dvh] xl:min-h-0 xl:p-4 2xl:p-5'
         style={{
           maxWidth: `${displayPage.resolutionWidth}px`,
           minHeight: `${displayPage.resolutionHeight}px`
         }}
       >
-        <header className='shrink-0 rounded-[30px] border border-white/10 bg-white/6 px-5 py-4 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl xl:px-6 xl:py-5'>
-          <div className='flex flex-wrap items-center gap-2'>
-            <Badge className='border-amber-400/30 bg-amber-400/15 px-3 py-1 text-amber-200'>
-              Live Display
-            </Badge>
-            <Badge variant='outline' className='border-white/10 bg-white/5 px-3 py-1 text-zinc-100'>
-              {displayPage.slug}
-            </Badge>
-            <Badge variant='outline' className='border-white/10 bg-white/5 px-3 py-1 text-zinc-100'>
-              {displayPage.resolutionWidth}x{displayPage.resolutionHeight}
-            </Badge>
-          </div>
-
-          <div className='mt-4 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between'>
-            <div className='space-y-2'>
-              <h1 className='text-3xl font-semibold tracking-tight text-balance text-zinc-50 md:text-5xl xl:text-6xl'>
-                {displayPage.name}
-              </h1>
-              <p className='max-w-4xl text-sm leading-6 text-zinc-300 md:text-[15px] xl:max-w-5xl'>
-                Public cinema notice board optimized for TV/LCD output.
-              </p>
+        <header className='shrink-0 rounded-[22px] border border-white/10 bg-white/6 px-3 py-2.5 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl xl:px-4 xl:py-3'>
+          <div className='grid min-h-[76px] grid-cols-[minmax(180px,0.95fr)_minmax(0,1.25fr)_minmax(180px,0.95fr)] items-center gap-3 xl:min-h-[86px]'>
+            <div className='flex items-center overflow-hidden'>
+              <Image
+                src='/Logo/cue-logo.png'
+                alt='CUE logo'
+                width={200}
+                height={80}
+                priority
+                className='h-[64px] w-auto max-h-[80px] max-w-[200px] object-contain xl:h-[72px]'
+              />
             </div>
 
-            <div className='rounded-3xl border border-white/10 bg-black/20 px-4 py-3 shadow-inner shadow-black/20 xl:min-w-[320px] xl:px-5'>
-              <div className='text-[11px] font-medium uppercase tracking-[0.28em] text-amber-200/80'>
-                Current date / time
+            <div className='flex flex-col items-center justify-center text-center'>
+              <div className='text-3xl font-semibold leading-none tracking-tight text-zinc-50 md:text-[2.9rem] xl:text-[3.4rem]'>
+                <DisplayBoardClock initialIso={renderedAt.toISOString()} />
               </div>
-              <div className='mt-2 flex items-end gap-3'>
-                <div className='text-3xl font-semibold leading-none tracking-tight text-zinc-50 md:text-4xl xl:text-5xl'>
-                  <DisplayBoardClock initialIso={renderedAt.toISOString()} />
-                </div>
-                <div className='pb-1 text-sm text-zinc-300 md:text-[15px]'>{currentDate}</div>
+              <div className='mt-1.5 text-[12px] font-medium text-zinc-300 md:text-[13px]'>
+                {currentDate}
               </div>
-              <div className='mt-3 text-[11px] uppercase tracking-[0.22em] text-zinc-400'>
-                Last updated
-              </div>
-              <div className='mt-1 text-sm text-zinc-100 md:text-[15px]'>{updatedAt}</div>
             </div>
+
+            <div aria-hidden='true' className='flex items-center justify-end' />
           </div>
         </header>
 
@@ -1033,7 +1030,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             </div>
           </section>
         ) : (
-          <section className='grid flex-1 min-h-0 gap-4 overflow-hidden xl:grid-cols-3 xl:auto-rows-[minmax(0,1fr)]'>
+          <section className='grid flex-1 min-h-0 gap-3 overflow-hidden xl:grid-cols-3 xl:auto-rows-[minmax(0,1fr)]'>
             {layoutBlocks.map((block) => (
               <div key={block.key} className='min-h-0'>
                 {renderBlockCard(block.key)}
