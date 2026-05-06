@@ -302,6 +302,38 @@ function AttendanceStatusBadge({ status }: { status: DisplayBoardAttendanceDispl
   );
 }
 
+function getManagerDutyLabel(status: DisplayBoardAttendanceDisplayStatus) {
+  switch (status) {
+    case 'PRESENT':
+      return 'ON DUTY';
+    case 'LEAVE':
+      return 'ON LEAVE';
+    case 'ABSENT':
+      return 'OFF';
+    case 'LATE':
+      return 'LATE';
+    case 'NOT_MARKED':
+      return 'OFF';
+    default:
+      return 'OFF';
+  }
+}
+
+function getManagerDutyTone(status: DisplayBoardAttendanceDisplayStatus) {
+  switch (status) {
+    case 'PRESENT':
+      return 'text-emerald-300';
+    case 'LEAVE':
+      return 'text-amber-300';
+    case 'LATE':
+      return 'text-orange-300';
+    case 'ABSENT':
+    case 'NOT_MARKED':
+    default:
+      return 'text-zinc-400';
+  }
+}
+
 function AttendanceRosterRow({
   name,
   designation,
@@ -380,8 +412,13 @@ function ManagerAvailabilityRow({
         <div className='min-w-0 truncate text-[10px] leading-none text-zinc-300'>
           {phone ?? '—'}
         </div>
-        <div className='justify-self-end'>
-          <AttendanceStatusBadge status={status} />
+        <div
+          className={cn(
+            'min-w-0 truncate text-right text-[10px] font-semibold uppercase tracking-[0.08em]',
+            getManagerDutyTone(status)
+          )}
+        >
+          {getManagerDutyLabel(status)}
         </div>
       </div>
     </div>
