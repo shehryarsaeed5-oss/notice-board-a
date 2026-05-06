@@ -41,14 +41,22 @@ import { displayLayoutConfigSchema, displayPageSchema } from '../schemas/display
 import {
   DISPLAY_BLOCKS,
   DISPLAY_GRID_COLUMN_COUNT,
+  DISPLAY_GRID_ROW_HEIGHT_MAX,
+  DISPLAY_GRID_ROW_HEIGHT_MIN,
   DISPLAY_GRID_ROW_MAX,
   DISPLAY_GRID_ROW_MIN,
+  DISPLAY_GRID_ROW_SPAN_MAX,
+  expandDisplayLayoutRowsForSlots,
+  getDisplayBlockGridPlacement,
+  getDisplayBlockSlotLabel,
   getDefaultDisplayLayoutConfig,
   isHeaderOnlyDisplayBlock,
   normalizeDisplayLayoutConfig,
   type DisplayBlockDefinition,
   type DisplayBlockKey,
+  type DisplayLayoutBlockSlot,
   type DisplayLayoutBlockConfig,
+  type DisplayLayoutColumns,
   type DisplayLayoutConfig
 } from '../lib/display-layout-config';
 
@@ -61,11 +69,23 @@ function getBlockDefinition(key: DisplayBlockKey): DisplayBlockDefinition {
 }
 
 function getPlacementLabel(block: DisplayLayoutBlockConfig): string {
-  return `C${block.column} • R${block.row} • W${block.colSpan}`;
+  return `C${block.column} • Start R${block.row} • W${block.colSpan} • H${block.rowSpan} • ${getDisplayBlockSlotLabel(block.slot)}`;
 }
 
 function getRowsPerSlideLabel(block: DisplayLayoutBlockConfig) {
-  return `${block.rowLimit} row${block.rowLimit === 1 ? '' : 's'}/slide`;
+  return `Content ${block.rowLimit}`;
+}
+
+function getBlockSummaryLabel(block: DisplayLayoutBlockConfig) {
+  return `${getPlacementLabel(block)} • ${getRowsPerSlideLabel(block)}`;
+}
+
+function getSlotOptions(): Array<{ label: string; value: DisplayLayoutBlockSlot }> {
+  return [
+    { label: 'Full row', value: 'full' },
+    { label: 'Top half', value: 'top' },
+    { label: 'Bottom half', value: 'bottom' }
+  ];
 }
 
 function createFormValues(
@@ -94,6 +114,35 @@ function normalizeWidthSelection(column: number, colSpan: number) {
   }
 
   return { column, colSpan };
+}
+
+function clampInt(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, Math.trunc(value)));
+}
+
+function toSafeInt(value: unknown, fallback: number) {
+  const nextValue = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(nextValue) ? Math.trunc(nextValue) : fallback;
+}
+
+function toSafeNumber(value: unknown, fallback: number) {
+  const nextValue = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(nextValue) ? nextValue : fallback;
+}
+
+function clampNumber(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function normalizeRowHeights(values: unknown, rowCount: number): number[] {
+  const rawValues = Array.isArray(values) ? values : [];
+  return Array.from({ length: Math.max(1, rowCount) }, (_, index) =>
+    clampNumber(
+      toSafeNumber(rawValues[index], 1),
+      DISPLAY_GRID_ROW_HEIGHT_MIN,
+      DISPLAY_GRID_ROW_HEIGHT_MAX
+    )
+  );
 }
 
 function BlockListItem({
@@ -176,21 +225,33 @@ function BlockListItem({
 
 function LayoutDropOverlay({
   rowCount,
+  rowHeights,
   activeKey,
   columnTemplate
 }: {
   rowCount: number;
+  rowHeights: number[];
   activeKey: DisplayBlockKey | null;
   columnTemplate: string;
 }) {
   const cells = useMemo(() => {
-    return Array.from({ length: rowCount }).flatMap((_, rowIndex) =>
+    return Array.from({ length: DISPLAY_GRID_ROW_MAX }).flatMap((_, rowIndex) =>
       Array.from({ length: DISPLAY_GRID_COLUMN_COUNT }).map((__, columnIndex) => ({
         row: rowIndex + 1,
-        column: columnIndex + 1
+        column: columnIndex + 1,
+        rowStart: rowIndex * 2 + 1
       }))
     );
-  }, [rowCount]);
+  }, []);
+
+  const logicalVisibleRowCount = Math.min(DISPLAY_GRID_ROW_MAX, Math.max(1, rowCount + 1));
+  const overlayRowHeights = useMemo(
+    () =>
+      expandDisplayLayoutRowsForSlots(rowHeights)
+        .slice(0, DISPLAY_GRID_ROW_MAX * 2)
+        .map((value) => value),
+    [rowHeights]
+  );
 
   return (
     <div
@@ -200,27 +261,35 @@ function LayoutDropOverlay({
       )}
       style={{
         gridTemplateColumns: columnTemplate,
-        gridTemplateRows: `repeat(${rowCount}, minmax(3.5rem, 1fr))`
+        gridTemplateRows: overlayRowHeights.map((value) => `${value}fr`).join(' ')
       }}
     >
       {cells.map((cell) => {
         const cellId = `cell-${cell.row}-${cell.column}`;
         const { setNodeRef, isOver } = useDroppable({ id: cellId });
+        const isVisible = cell.row <= logicalVisibleRowCount;
 
         return (
           <div
             key={cellId}
             ref={setNodeRef}
+            style={{
+              gridColumn: `${cell.column} / span 1`,
+              gridRow: `${cell.rowStart} / span 2`
+            }}
             className={cn(
               'relative flex min-h-0 items-center justify-center border border-dashed !rounded-none transition-colors',
-              activeKey ? 'border-border/30 bg-transparent' : 'border-transparent bg-transparent',
+              isVisible && activeKey
+                ? 'border-border/30 bg-transparent'
+                : 'border-transparent bg-transparent',
+              !isVisible ? 'opacity-0' : '',
               isOver ? 'border-amber-300/70 bg-amber-500/10' : ''
             )}
           >
             <div
               className={cn(
                 'pointer-events-none text-[9px] text-muted-foreground transition-opacity',
-                activeKey ? 'opacity-100' : 'opacity-0',
+                activeKey && isVisible ? 'opacity-100' : 'opacity-0',
                 isOver ? 'text-amber-200' : ''
               )}
             >
@@ -354,9 +423,14 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
 
   const validationIssues = useMemo(() => getValidationIssues(layoutConfig), [layoutConfig]);
   const selectedBlock = useMemo(
-    () => layoutConfig.blocks.find((block) => block.key === selectedKey) ?? layoutConfig.blocks[0],
+    () =>
+      layoutConfig.blocks.find((block) => block.key === selectedKey) ??
+      layoutConfig.blocks[0] ??
+      getDefaultDisplayLayoutConfig().blocks[0],
     [layoutConfig, selectedKey]
   );
+  const columnTotal =
+    layoutConfig.columns.left + layoutConfig.columns.center + layoutConfig.columns.right;
 
   const gridBlocks = useMemo(
     () =>
@@ -380,17 +454,87 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
     [layoutConfig]
   );
 
-  const maxRow = useMemo(() => {
-    return gridBlocks.reduce((highest, block) => Math.max(highest, block.row), 1);
+  const maxGridRowUsed = useMemo(() => {
+    return gridBlocks.reduce(
+      (highest, block) => Math.max(highest, block.row + (block.rowSpan || 1) - 1),
+      1
+    );
   }, [gridBlocks]);
-
-  const previewRows = Math.max(1, maxRow);
+  const estimatedHeaderHeight = 88;
+  const estimatedAvailableHeight = Math.max(
+    0,
+    displayPage.resolutionHeight - estimatedHeaderHeight - 32
+  );
+  const previewRows = Math.max(1, maxGridRowUsed);
   const previewGridRows = Math.min(DISPLAY_GRID_ROW_MAX, previewRows);
-  const hasDenseLayout = maxRow > 8;
+  const previewRowHeights = useMemo(
+    () => normalizeRowHeights(layoutConfig.rows?.heights, previewGridRows),
+    [layoutConfig.rows?.heights, previewGridRows]
+  );
+  const previewSubRowHeights = useMemo(
+    () => expandDisplayLayoutRowsForSlots(previewRowHeights),
+    [previewRowHeights]
+  );
+  const previewRowTemplate = useMemo(
+    () => previewSubRowHeights.map((value) => `${value}fr`).join(' '),
+    [previewSubRowHeights]
+  );
+  const previewRowWeightTotal = previewRowHeights.reduce((sum, value) => sum + value, 0);
+  const estimatedRowUnitHeight = Math.max(
+    1,
+    Math.round(estimatedAvailableHeight / Math.max(1, previewRowWeightTotal))
+  );
+  const hasDenseLayout = maxGridRowUsed > 8;
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 8 } })
   );
+
+  const updateLayoutColumns = (key: keyof DisplayLayoutColumns, value: number) => {
+    setLayoutConfig((current) => ({
+      ...current,
+      columns: {
+        ...current.columns,
+        [key]: clampInt(value, 20, 60)
+      }
+    }));
+  };
+
+  const updateRowHeights = (updater: (current: number[]) => number[]) => {
+    setLayoutConfig((current) =>
+      normalizeDisplayLayoutConfig({
+        ...current,
+        rows: {
+          heights: updater(current.rows?.heights ?? [])
+        }
+      })
+    );
+  };
+
+  const applyRowHeightPreset = (preset: 'equal' | 'top' | 'middle' | 'bottom') => {
+    updateRowHeights((current) => {
+      const next = normalizeRowHeights(current, previewGridRows);
+
+      if (preset === 'equal') {
+        return Array.from({ length: previewGridRows }, () => 1);
+      }
+
+      if (previewGridRows === 1) {
+        return [1.3];
+      }
+
+      const updated = next.map(() => 1);
+      const targetIndex =
+        preset === 'top'
+          ? 0
+          : preset === 'middle'
+            ? Math.floor((previewGridRows - 1) / 2)
+            : previewGridRows - 1;
+
+      updated[targetIndex] = 1.3;
+      return updated;
+    });
+  };
 
   const handleBlockChange = (
     key: DisplayBlockKey,
@@ -591,6 +735,139 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-3'>
+            <div className='rounded-none border border-border/60 bg-muted/20 p-3'>
+              <div className='flex flex-wrap items-start justify-between gap-3'>
+                <div className='space-y-1'>
+                  <div className='text-sm font-medium text-foreground'>TV Column Widths</div>
+                  <p className='text-xs text-muted-foreground'>
+                    Adjust the public TV columns. The three values must total 100%.
+                  </p>
+                </div>
+                <div
+                  className={cn(
+                    'text-xs font-medium',
+                    columnTotal === 100 ? 'text-foreground' : 'text-destructive'
+                  )}
+                >
+                  Current total: {columnTotal}%
+                </div>
+              </div>
+
+              <div className='mt-3 grid gap-3 md:grid-cols-3'>
+                {(
+                  [
+                    ['left', 'Left Column %'],
+                    ['center', 'Center Column %'],
+                    ['right', 'Right Column %']
+                  ] as const
+                ).map(([key, label]) => (
+                  <div key={key} className='grid gap-1.5'>
+                    <DesignerFieldLabel>{label}</DesignerFieldLabel>
+                    <Input
+                      type='number'
+                      min={20}
+                      max={60}
+                      step={1}
+                      value={columns[key]}
+                      onChange={(event) =>
+                        updateLayoutColumns(key, toSafeInt(event.target.value, columns[key]))
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {columnTotal !== 100 ? (
+                <div className='mt-2 text-xs text-destructive'>Column widths must total 100%.</div>
+              ) : null}
+            </div>
+
+            <div className='rounded-none border border-border/60 bg-muted/20 p-3'>
+              <div className='flex flex-wrap items-start justify-between gap-3'>
+                <div className='space-y-1'>
+                  <div className='text-sm font-medium text-foreground'>TV Row Heights</div>
+                  <p className='text-xs text-muted-foreground'>
+                    Adjust vertical space for each TV grid row. A card with Height 2 uses the
+                    combined height of two rows.
+                  </p>
+                </div>
+                <div className='text-xs text-muted-foreground'>
+                  Example: If Row 1 is 2 and Row 2 is 1, Row 1 gets double the vertical space of Row
+                  2.
+                </div>
+              </div>
+
+              <div className='mt-3 flex flex-wrap gap-2'>
+                <Button
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  onClick={() => applyRowHeightPreset('equal')}
+                >
+                  Equal Rows
+                </Button>
+                <Button
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  onClick={() => applyRowHeightPreset('top')}
+                >
+                  Top Heavy
+                </Button>
+                <Button
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  onClick={() => applyRowHeightPreset('middle')}
+                >
+                  Middle Heavy
+                </Button>
+                <Button
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  onClick={() => applyRowHeightPreset('bottom')}
+                >
+                  Bottom Heavy
+                </Button>
+              </div>
+
+              <div className='mt-3 grid gap-3 md:grid-cols-3'>
+                {previewRowHeights.map((value, index) => (
+                  <div key={`row-height-${index}`} className='grid gap-1.5'>
+                    <DesignerFieldLabel>Row {index + 1} Height</DesignerFieldLabel>
+                    <Input
+                      type='number'
+                      min={DISPLAY_GRID_ROW_HEIGHT_MIN}
+                      max={DISPLAY_GRID_ROW_HEIGHT_MAX}
+                      step={0.1}
+                      value={value}
+                      onChange={(event) => {
+                        const nextValue = clampNumber(
+                          toSafeNumber(event.target.value, value),
+                          DISPLAY_GRID_ROW_HEIGHT_MIN,
+                          DISPLAY_GRID_ROW_HEIGHT_MAX
+                        );
+
+                        updateRowHeights((current) => {
+                          const normalized = normalizeRowHeights(current, previewGridRows);
+                          normalized[index] = nextValue;
+                          return normalized;
+                        });
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className='mt-2 flex flex-wrap items-center gap-2 text-[10px] text-muted-foreground'>
+                <span>TV grid rows used: {previewGridRows}</span>
+                <span>Approx card row height: {estimatedRowUnitHeight}px per 1fr</span>
+                <span>A card with Height 2 uses about {estimatedRowUnitHeight * 2}px.</span>
+                <span>Values are relative. 2 is twice the height of 1.</span>
+              </div>
+            </div>
+
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -631,17 +908,18 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                         className='grid gap-2 min-h-0 flex-1'
                         style={{
                           gridTemplateColumns: columnTemplate,
-                          gridTemplateRows: `repeat(${previewGridRows}, minmax(3.5rem, 1fr))`
+                          gridTemplateRows: previewRowTemplate
                         }}
                       >
                         {gridBlocks.map((block) => {
                           const isActive = activeKey === block.key;
+                          const placement = getDisplayBlockGridPlacement(block);
                           return (
                             <div
                               key={block.key}
                               style={{
                                 gridColumn: `${block.column} / span ${block.colSpan}`,
-                                gridRow: block.row
+                                gridRow: `${placement.rowStart} / span ${placement.rowSpan}`
                               }}
                               className='relative z-10'
                             >
@@ -660,6 +938,7 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
 
                       <LayoutDropOverlay
                         rowCount={previewGridRows}
+                        rowHeights={previewRowHeights}
                         activeKey={activeKey}
                         columnTemplate={columnTemplate}
                       />
@@ -707,9 +986,7 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                     {getBlockDefinition(selectedBlock.key).label}
                   </div>
                   <div className='mt-1 flex flex-wrap gap-1.5 text-[10px] text-muted-foreground'>
-                    <span>{getPlacementLabel(selectedBlock)}</span>
-                    <span>•</span>
-                    <span>{getRowsPerSlideLabel(selectedBlock)}</span>
+                    <span>{getBlockSummaryLabel(selectedBlock)}</span>
                   </div>
                 </div>
 
@@ -733,8 +1010,31 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                   </div>
 
                   {getBlockDefinition(selectedBlock.key).headerOnly ? (
-                    <div className='rounded-none border border-amber-400/20 bg-amber-500/10 p-3 text-xs text-amber-100'>
-                      Header-only block. It appears in the top header, not inside the TV grid.
+                    <div className='grid gap-3'>
+                      <div className='rounded-none border border-amber-400/20 bg-amber-500/10 p-3 text-xs text-amber-100'>
+                        Header-only block. It appears in the top header, not inside the TV grid.
+                      </div>
+
+                      <div className='grid gap-1.5'>
+                        <DesignerFieldLabel>Content Rows / Slide</DesignerFieldLabel>
+                        <Input
+                          type='number'
+                          min={getBlockDefinition(selectedBlock.key).minRowLimit}
+                          max={getBlockDefinition(selectedBlock.key).maxRowLimit}
+                          step={1}
+                          value={selectedBlock.rowLimit}
+                          onChange={(event) =>
+                            handleBlockChange(selectedBlock.key, (block) => ({
+                              ...block,
+                              rowLimit: clampInt(
+                                toSafeInt(event.target.value, block.rowLimit),
+                                getBlockDefinition(block.key).minRowLimit,
+                                getBlockDefinition(block.key).maxRowLimit
+                              )
+                            }))
+                          }
+                        />
+                      </div>
                     </div>
                   ) : (
                     <div className='grid gap-3'>
@@ -745,7 +1045,7 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                             value={String(selectedBlock.column)}
                             onValueChange={(value) =>
                               handleBlockChange(selectedBlock.key, (block) => {
-                                const column = Math.min(3, Math.max(1, Number(value)));
+                                const column = clampInt(toSafeInt(value, block.column), 1, 3);
                                 const normalized = normalizeWidthSelection(column, block.colSpan);
                                 return {
                                   ...block,
@@ -767,7 +1067,7 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                         </div>
 
                         <div className='grid gap-1.5'>
-                          <DesignerFieldLabel>Row</DesignerFieldLabel>
+                          <DesignerFieldLabel>Start Row</DesignerFieldLabel>
                           <Input
                             type='number'
                             min={1}
@@ -777,9 +1077,13 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                             onChange={(event) =>
                               handleBlockChange(selectedBlock.key, (block) => ({
                                 ...block,
-                                row: Math.min(
-                                  DISPLAY_GRID_ROW_MAX,
-                                  Math.max(1, Number(event.target.value || block.row))
+                                row: clampInt(
+                                  toSafeInt(event.target.value, block.row),
+                                  1,
+                                  Math.max(
+                                    1,
+                                    DISPLAY_GRID_ROW_MAX - Math.max(1, block.rowSpan || 1) + 1
+                                  )
                                 )
                               }))
                             }
@@ -789,12 +1093,12 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
 
                       <div className='grid gap-2 md:grid-cols-2'>
                         <div className='grid gap-1.5'>
-                          <DesignerFieldLabel>Width</DesignerFieldLabel>
+                          <DesignerFieldLabel>Card Width</DesignerFieldLabel>
                           <Select
                             value={String(selectedBlock.colSpan)}
                             onValueChange={(value) =>
                               handleBlockChange(selectedBlock.key, (block) => {
-                                const nextSpan = Number(value) === 2 ? 2 : 1;
+                                const nextSpan = toSafeInt(value, block.colSpan) === 2 ? 2 : 1;
                                 if (block.column === DISPLAY_GRID_COLUMN_COUNT && nextSpan === 2) {
                                   return { ...block, column: 2, colSpan: 2 };
                                 }
@@ -816,7 +1120,74 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                         </div>
 
                         <div className='grid gap-1.5'>
-                          <DesignerFieldLabel>Rows/Slide</DesignerFieldLabel>
+                          <DesignerFieldLabel>Cell Slot</DesignerFieldLabel>
+                          <Select
+                            value={selectedBlock.slot}
+                            onValueChange={(value) =>
+                              handleBlockChange(selectedBlock.key, (block) => ({
+                                ...block,
+                                slot: value as DisplayLayoutBlockSlot,
+                                rowSpan: value === 'full' ? block.rowSpan : 1
+                              }))
+                            }
+                          >
+                            <SelectTrigger className='w-full'>
+                              <SelectValue placeholder='Cell Slot' />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {getSlotOptions().map((option) => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <p className='text-[11px] leading-[1.3] text-muted-foreground'>
+                            Cell Slot lets two cards share the same row by using top and bottom
+                            halves.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className='grid gap-2 md:grid-cols-2'>
+                        <div className='grid gap-1.5'>
+                          <DesignerFieldLabel>Card Height</DesignerFieldLabel>
+                          <Select
+                            value={String(selectedBlock.rowSpan)}
+                            onValueChange={(value) =>
+                              handleBlockChange(selectedBlock.key, (block) => ({
+                                ...block,
+                                rowSpan: clampInt(
+                                  toSafeInt(value, 1),
+                                  1,
+                                  DISPLAY_GRID_ROW_SPAN_MAX
+                                ),
+                                slot:
+                                  clampInt(toSafeInt(value, 1), 1, DISPLAY_GRID_ROW_SPAN_MAX) > 1
+                                    ? 'full'
+                                    : block.slot
+                              }))
+                            }
+                          >
+                            <SelectTrigger className='w-full'>
+                              <SelectValue placeholder='Card Height' />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Array.from({ length: DISPLAY_GRID_ROW_SPAN_MAX }, (_, index) => {
+                                const rowCount = index + 1;
+
+                                return (
+                                  <SelectItem key={rowCount} value={String(rowCount)}>
+                                    {rowCount} row{rowCount === 1 ? '' : 's'}
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className='grid gap-1.5'>
+                          <DesignerFieldLabel>Content Rows / Slide</DesignerFieldLabel>
                           <Input
                             type='number'
                             min={getBlockDefinition(selectedBlock.key).minRowLimit}
@@ -826,17 +1197,24 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                             onChange={(event) =>
                               handleBlockChange(selectedBlock.key, (block) => ({
                                 ...block,
-                                rowLimit: Math.min(
-                                  getBlockDefinition(block.key).maxRowLimit,
-                                  Math.max(
-                                    getBlockDefinition(block.key).minRowLimit,
-                                    Number(event.target.value || block.rowLimit)
-                                  )
+                                rowLimit: clampInt(
+                                  toSafeInt(event.target.value, block.rowLimit),
+                                  getBlockDefinition(block.key).minRowLimit,
+                                  getBlockDefinition(block.key).maxRowLimit
                                 )
                               }))
                             }
                           />
                         </div>
+                      </div>
+
+                      <div className='grid gap-1.5'>
+                        <p className='text-xs text-muted-foreground'>
+                          Start Row controls where the card begins on the TV grid. Card Height
+                          controls how many TV rows the card covers vertically. Cell Slot lets two
+                          cards share the same row using top and bottom halves. Content Rows / Slide
+                          controls how many records show inside the card before slideshow.
+                        </p>
                       </div>
                     </div>
                   )}
@@ -852,8 +1230,12 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
               <div className='font-medium text-foreground'>Layout rules</div>
               <ul className='mt-1.5 space-y-1.5 pl-4 text-[11px] list-disc'>
                 <li>Column widths must total 100%.</li>
-                <li>Enabled grid blocks cannot overlap in the same row.</li>
+                <li>Enabled grid blocks cannot overlap in the same grid area.</li>
                 <li>Width 2 blocks cannot start in column 3.</li>
+                <li>Cell Slot Top or Bottom only works with Card Height 1.</li>
+                <li>Card Height cannot extend beyond layout row 20.</li>
+                <li>Start Row is the row where the card begins.</li>
+                <li>Content Rows / Slide only controls internal slideshow rows.</li>
                 <li>Header-only blocks stay in the top header.</li>
               </ul>
             </div>

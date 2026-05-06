@@ -264,36 +264,6 @@ export function DisplayPageFormSheet({
                   onBlur: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED'])
                 }}
               />
-
-              <div className='flex flex-col gap-2 rounded-xl border border-border/60 bg-muted/20 p-4'>
-                <div className='flex flex-wrap items-center justify-between gap-3'>
-                  <div className='flex flex-col gap-1'>
-                    <div className='text-sm font-medium text-foreground'>Layout Designer</div>
-                    <p className='text-muted-foreground text-xs'>
-                      Open a full-screen visual designer for the TV grid layout.
-                    </p>
-                  </div>
-                  {layoutDesignerUrl ? (
-                    <Button asChild variant='outline'>
-                      <Link href={layoutDesignerUrl} target='_blank' rel='noreferrer'>
-                        <Icons.adjustments className='mr-2 size-4' />
-                        Open Layout Designer
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button variant='outline' disabled>
-                      <Icons.adjustments className='mr-2 size-4' />
-                      Open Layout Designer
-                    </Button>
-                  )}
-                </div>
-
-                {!layoutDesignerUrl ? (
-                  <p className='text-muted-foreground text-xs'>
-                    Save the display page first to use the layout designer.
-                  </p>
-                ) : null}
-              </div>
               <form.AppField
                 name='layoutConfig'
                 children={(field) => {
@@ -313,7 +283,7 @@ export function DisplayPageFormSheet({
                           <div className='text-sm font-medium text-foreground'>Layout Designer</div>
                           <p className='text-xs text-muted-foreground'>
                             Use the full-page designer to arrange display cards, set rows per slide,
-                            and manage block visibility.
+                            manage block visibility, adjust column widths, and control card height.
                           </p>
                         </div>
 

@@ -13,6 +13,8 @@ export const DISPLAY_BLOCK_KEYS = [
 
 export type DisplayBlockKey = (typeof DISPLAY_BLOCK_KEYS)[number];
 
+export type DisplayLayoutBlockSlot = 'full' | 'top' | 'bottom';
+
 export interface DisplayBlockDefinition {
   key: DisplayBlockKey;
   label: string;
@@ -32,6 +34,8 @@ export interface DisplayLayoutBlockConfig {
   column: number;
   row: number;
   colSpan: number;
+  rowSpan: number;
+  slot: DisplayLayoutBlockSlot;
 }
 
 export interface DisplayLayoutColumns {
@@ -40,14 +44,22 @@ export interface DisplayLayoutColumns {
   right: number;
 }
 
+export interface DisplayLayoutRows {
+  heights: number[];
+}
+
 export interface DisplayLayoutConfig {
   columns: DisplayLayoutColumns;
+  rows: DisplayLayoutRows;
   blocks: DisplayLayoutBlockConfig[];
 }
 
 export const DISPLAY_GRID_COLUMN_COUNT = 3;
 export const DISPLAY_GRID_ROW_MIN = 1;
 export const DISPLAY_GRID_ROW_MAX = 20;
+export const DISPLAY_GRID_ROW_SPAN_MAX = 6;
+export const DISPLAY_GRID_ROW_HEIGHT_MIN = 0.5;
+export const DISPLAY_GRID_ROW_HEIGHT_MAX = 3;
 
 export const DISPLAY_BLOCKS: DisplayBlockDefinition[] = [
   {
@@ -160,13 +172,18 @@ export const DEFAULT_DISPLAY_LAYOUT_COLUMNS: DisplayLayoutColumns = {
 
 const DEFAULT_LAYOUT_CONFIG: DisplayLayoutConfig = {
   columns: { ...DEFAULT_DISPLAY_LAYOUT_COLUMNS },
+  rows: {
+    heights: []
+  },
   blocks: DISPLAY_BLOCKS.map((block) => ({
     key: block.key,
     enabled: block.defaultEnabled,
     sortOrder: block.defaultSortOrder,
     rowLimit: block.defaultRowLimit,
     ...getFlowPlacementFromSortOrder(block.defaultSortOrder),
-    colSpan: 1
+    colSpan: 1,
+    rowSpan: 1,
+    slot: 'full'
   }))
 };
 
@@ -177,6 +194,11 @@ function toFiniteInteger(value: unknown, fallback: number): number {
   }
 
   return Math.trunc(numeric);
+}
+
+function toFiniteNumber(value: unknown, fallback: number): number {
+  const numeric = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -196,6 +218,22 @@ function normalizeGridColSpan(value: number, column: number): number {
   return clamp(value, 1, maxSpan);
 }
 
+function normalizeGridRowSpan(value: number): number {
+  return clamp(value, 1, DISPLAY_GRID_ROW_SPAN_MAX);
+}
+
+function normalizeGridRowHeight(value: number): number {
+  return clamp(value, DISPLAY_GRID_ROW_HEIGHT_MIN, DISPLAY_GRID_ROW_HEIGHT_MAX);
+}
+
+function normalizeGridSlot(value: unknown, headerOnly: boolean): DisplayLayoutBlockSlot {
+  if (headerOnly) {
+    return 'full';
+  }
+
+  return value === 'top' || value === 'bottom' ? value : 'full';
+}
+
 function getFlowPlacementFromSortOrder(sortOrder: number): {
   column: number;
   row: number;
@@ -210,6 +248,61 @@ function getFlowPlacementFromSortOrder(sortOrder: number): {
 
 function getSortOrderFromPlacement(column: number, row: number): number {
   return (row - 1) * DISPLAY_GRID_COLUMN_COUNT + column;
+}
+
+function getGridRowCount(blocks: DisplayLayoutBlockConfig[]): number {
+  return Math.max(
+    1,
+    blocks.reduce(
+      (highest, block) =>
+        block.enabled && !findDefinition(block.key).headerOnly
+          ? Math.max(highest, block.row + block.rowSpan - 1)
+          : highest,
+      1
+    )
+  );
+}
+
+export function getDisplayBlockSlotLabel(slot: DisplayLayoutBlockSlot): string {
+  switch (slot) {
+    case 'top':
+      return 'Top';
+    case 'bottom':
+      return 'Bottom';
+    case 'full':
+    default:
+      return 'Full';
+  }
+}
+
+export function getDisplayBlockGridPlacement(block: DisplayLayoutBlockConfig): {
+  rowStart: number;
+  rowSpan: number;
+} {
+  return {
+    rowStart: (block.row - 1) * 2 + (block.slot === 'bottom' ? 2 : 1),
+    rowSpan: block.slot === 'full' ? Math.max(1, block.rowSpan) * 2 : 1
+  };
+}
+
+export function expandDisplayLayoutRowsForSlots(rowHeights: number[]): number[] {
+  return rowHeights.flatMap((value) => [value / 2, value / 2]);
+}
+
+function normalizeDisplayLayoutRows(input: unknown, rowCount: number): DisplayLayoutRows {
+  const rawRows =
+    input !== null && typeof input === 'object'
+      ? ((input as { heights?: unknown }).heights as unknown[] | undefined)
+      : undefined;
+
+  const normalized = Array.from({ length: Math.max(1, rowCount) }, (_, index) => {
+    const value = rawRows?.[index];
+    return normalizeGridRowHeight(value !== undefined ? toFiniteNumber(value, 1) || 1 : 1);
+  });
+
+  return {
+    heights: normalized
+  };
 }
 
 function normalizeLegacyAttendanceBlock(rawBlocks: unknown[]): {
@@ -260,10 +353,6 @@ function normalizeDisplayLayoutColumns(input: unknown): DisplayLayoutColumns {
     60
   );
 
-  if (left + center + right !== 100) {
-    return { ...DEFAULT_DISPLAY_LAYOUT_COLUMNS };
-  }
-
   return {
     left,
     center,
@@ -276,90 +365,111 @@ function findDefinition(key: DisplayBlockKey): DisplayBlockDefinition {
 }
 
 export function getDefaultDisplayLayoutConfig(): DisplayLayoutConfig {
+  const rows = normalizeDisplayLayoutRows(undefined, getGridRowCount(DEFAULT_LAYOUT_CONFIG.blocks));
+
   return {
     columns: { ...DEFAULT_DISPLAY_LAYOUT_COLUMNS },
+    rows,
     blocks: DEFAULT_LAYOUT_CONFIG.blocks.map((block) => ({ ...block }))
   };
 }
 
 export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfig {
   const rawColumns = (input as { columns?: unknown } | null | undefined)?.columns;
+  const rawRows = (input as { rows?: unknown } | null | undefined)?.rows;
   const rawBlocks = Array.isArray((input as { blocks?: unknown } | null | undefined)?.blocks)
     ? ((input as { blocks?: unknown[] }).blocks ?? [])
     : [];
   const legacyAttendance = normalizeLegacyAttendanceBlock(rawBlocks);
 
+  const blocks = DISPLAY_BLOCKS.map((definition) => {
+    const rawBlock = rawBlocks.find(
+      (block) => (block as { key?: unknown } | null | undefined)?.key === definition.key
+    ) as Partial<DisplayLayoutBlockConfig> | undefined;
+    const legacySortOrder = legacyAttendance?.sortOrder ?? definition.defaultSortOrder;
+    const sortOrderSeed =
+      rawBlock?.sortOrder !== undefined
+        ? toFiniteInteger(rawBlock.sortOrder, legacySortOrder)
+        : definition.key === 'managerAvailability' && legacyAttendance
+          ? legacySortOrder
+          : definition.key === 'staffRoster' && legacyAttendance
+            ? legacySortOrder + 1
+            : legacyAttendance && legacySortOrder < definition.defaultSortOrder
+              ? definition.defaultSortOrder + 1
+              : definition.defaultSortOrder;
+    const placement =
+      rawBlock?.column !== undefined || rawBlock?.row !== undefined
+        ? {
+            column: normalizeGridColumn(
+              toFiniteInteger(rawBlock?.column, getFlowPlacementFromSortOrder(sortOrderSeed).column)
+            ),
+            row: normalizeGridRow(
+              toFiniteInteger(rawBlock?.row, getFlowPlacementFromSortOrder(sortOrderSeed).row)
+            )
+          }
+        : getFlowPlacementFromSortOrder(sortOrderSeed);
+    const column = normalizeGridColumn(placement.column);
+    const row = normalizeGridRow(placement.row);
+    const sortOrder =
+      rawBlock?.sortOrder !== undefined
+        ? clamp(toFiniteInteger(rawBlock.sortOrder, legacySortOrder), 0, 999)
+        : clamp(getSortOrderFromPlacement(column, row), 0, 999);
+    const rowLimit = clamp(
+      rawBlock?.rowLimit !== undefined
+        ? toFiniteInteger(rawBlock.rowLimit, definition.defaultRowLimit)
+        : definition.key === 'managerAvailability' && legacyAttendance
+          ? (legacyAttendance.rowLimit ?? definition.defaultRowLimit)
+          : definition.key === 'staffRoster' && legacyAttendance
+            ? (legacyAttendance.rowLimit ?? definition.defaultRowLimit)
+            : definition.defaultRowLimit,
+      definition.minRowLimit,
+      definition.maxRowLimit
+    );
+    const enabled =
+      typeof rawBlock?.enabled === 'boolean'
+        ? rawBlock.enabled
+        : definition.key === 'managerAvailability' && legacyAttendance
+          ? (legacyAttendance.enabled ?? definition.defaultEnabled)
+          : definition.key === 'staffRoster' && legacyAttendance
+            ? (legacyAttendance.enabled ?? definition.defaultEnabled)
+            : definition.defaultEnabled;
+    const colSpan = normalizeGridColSpan(
+      rawBlock?.colSpan !== undefined ? toFiniteInteger(rawBlock.colSpan, 1) : 1,
+      column
+    );
+    const rowSpan = normalizeGridRowSpan(
+      rawBlock?.rowSpan !== undefined ? toFiniteInteger(rawBlock.rowSpan, 1) : 1
+    );
+    let slot = normalizeGridSlot(rawBlock?.slot, definition.headerOnly);
+    let normalizedRowSpan = rowSpan;
+
+    if (definition.headerOnly) {
+      slot = 'full';
+      normalizedRowSpan = 1;
+    } else if (slot !== 'full' && normalizedRowSpan > 1) {
+      slot = 'full';
+    } else if (slot !== 'full') {
+      normalizedRowSpan = 1;
+    }
+
+    return {
+      key: definition.key,
+      enabled,
+      sortOrder,
+      rowLimit,
+      column,
+      row,
+      colSpan,
+      rowSpan: normalizedRowSpan,
+      slot
+    };
+  });
+  const rowCount = getGridRowCount(blocks);
+
   return {
     columns: normalizeDisplayLayoutColumns(rawColumns),
-    blocks: DISPLAY_BLOCKS.map((definition) => {
-      const rawBlock = rawBlocks.find(
-        (block) => (block as { key?: unknown } | null | undefined)?.key === definition.key
-      ) as Partial<DisplayLayoutBlockConfig> | undefined;
-      const legacySortOrder = legacyAttendance?.sortOrder ?? definition.defaultSortOrder;
-      const sortOrderSeed =
-        rawBlock?.sortOrder !== undefined
-          ? toFiniteInteger(rawBlock.sortOrder, legacySortOrder)
-          : definition.key === 'managerAvailability' && legacyAttendance
-            ? legacySortOrder
-            : definition.key === 'staffRoster' && legacyAttendance
-              ? legacySortOrder + 1
-              : legacyAttendance && legacySortOrder < definition.defaultSortOrder
-                ? definition.defaultSortOrder + 1
-                : definition.defaultSortOrder;
-      const placement =
-        rawBlock?.column !== undefined || rawBlock?.row !== undefined
-          ? {
-              column: normalizeGridColumn(
-                toFiniteInteger(
-                  rawBlock?.column,
-                  getFlowPlacementFromSortOrder(sortOrderSeed).column
-                )
-              ),
-              row: normalizeGridRow(
-                toFiniteInteger(rawBlock?.row, getFlowPlacementFromSortOrder(sortOrderSeed).row)
-              )
-            }
-          : getFlowPlacementFromSortOrder(sortOrderSeed);
-      const column = normalizeGridColumn(placement.column);
-      const row = normalizeGridRow(placement.row);
-      const sortOrder =
-        rawBlock?.sortOrder !== undefined
-          ? clamp(toFiniteInteger(rawBlock.sortOrder, legacySortOrder), 0, 999)
-          : clamp(getSortOrderFromPlacement(column, row), 0, 999);
-      const rowLimit = clamp(
-        rawBlock?.rowLimit !== undefined
-          ? toFiniteInteger(rawBlock.rowLimit, definition.defaultRowLimit)
-          : definition.key === 'managerAvailability' && legacyAttendance
-            ? (legacyAttendance.rowLimit ?? definition.defaultRowLimit)
-            : definition.key === 'staffRoster' && legacyAttendance
-              ? (legacyAttendance.rowLimit ?? definition.defaultRowLimit)
-              : definition.defaultRowLimit,
-        definition.minRowLimit,
-        definition.maxRowLimit
-      );
-      const enabled =
-        typeof rawBlock?.enabled === 'boolean'
-          ? rawBlock.enabled
-          : definition.key === 'managerAvailability' && legacyAttendance
-            ? (legacyAttendance.enabled ?? definition.defaultEnabled)
-            : definition.key === 'staffRoster' && legacyAttendance
-              ? (legacyAttendance.enabled ?? definition.defaultEnabled)
-              : definition.defaultEnabled;
-      const colSpan = normalizeGridColSpan(
-        rawBlock?.colSpan !== undefined ? toFiniteInteger(rawBlock.colSpan, 1) : 1,
-        column
-      );
-
-      return {
-        key: definition.key,
-        enabled,
-        sortOrder,
-        rowLimit,
-        column,
-        row,
-        colSpan
-      };
-    })
+    rows: normalizeDisplayLayoutRows(rawRows, rowCount),
+    blocks
   };
 }
 

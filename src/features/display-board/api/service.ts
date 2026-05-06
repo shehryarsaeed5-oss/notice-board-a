@@ -371,6 +371,7 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
         id: manager.id,
         name: manager.name,
         designation: manager.designation,
+        phone: manager.phone ?? null,
         sortOrder: manager.sortOrder,
         shift: normalizeShift(attendance?.shift),
         status: mapAttendanceStatus(attendance?.status),

@@ -5,8 +5,11 @@ import {
   DISPLAY_BLOCKS,
   DISPLAY_BLOCK_KEYS,
   DISPLAY_GRID_COLUMN_COUNT,
+  DISPLAY_GRID_ROW_HEIGHT_MAX,
+  DISPLAY_GRID_ROW_HEIGHT_MIN,
   DISPLAY_GRID_ROW_MAX,
   DISPLAY_GRID_ROW_MIN,
+  DISPLAY_GRID_ROW_SPAN_MAX,
   getDefaultDisplayLayoutConfig,
   isHeaderOnlyDisplayBlock
 } from '../lib/display-layout-config';
@@ -39,6 +42,15 @@ const displayLayoutColumnsSchema = z
     }
   });
 
+const displayLayoutRowsSchema = z.object({
+  heights: z.array(
+    z.preprocess(
+      normalizeNumber,
+      z.number().min(DISPLAY_GRID_ROW_HEIGHT_MIN).max(DISPLAY_GRID_ROW_HEIGHT_MAX)
+    )
+  )
+});
+
 export const displayLayoutBlockSchema = z
   .object({
     key: z.enum(DISPLAY_BLOCK_KEYS),
@@ -50,7 +62,9 @@ export const displayLayoutBlockSchema = z
       normalizeNumber,
       z.number().int().min(DISPLAY_GRID_ROW_MIN).max(DISPLAY_GRID_ROW_MAX)
     ),
-    colSpan: z.preprocess(normalizeNumber, z.number().int().min(1).max(2))
+    colSpan: z.preprocess(normalizeNumber, z.number().int().min(1).max(2)),
+    rowSpan: z.preprocess(normalizeNumber, z.number().int().min(1).max(DISPLAY_GRID_ROW_SPAN_MAX)),
+    slot: z.enum(['full', 'top', 'bottom']).default('full')
   })
   .superRefine((value, ctx) => {
     const definition = DISPLAY_BLOCKS.find((block) => block.key === value.key);
@@ -77,15 +91,52 @@ export const displayLayoutBlockSchema = z
         message: 'Width 2 columns cannot start in column 3'
       });
     }
+
+    if (isHeaderOnlyDisplayBlock(value.key) && value.slot && value.slot !== 'full') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['slot'],
+        message: 'Header-only blocks use Full row'
+      });
+    }
+
+    if (
+      !isHeaderOnlyDisplayBlock(value.key) &&
+      value.slot &&
+      value.slot !== 'full' &&
+      value.rowSpan > 1
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['rowSpan'],
+        message: 'Card Height must be 1 when Cell Slot is Top or Bottom'
+      });
+    }
+
+    if (value.row + value.rowSpan - 1 > DISPLAY_GRID_ROW_MAX) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['rowSpan'],
+        message: `Card Height cannot extend beyond layout row ${DISPLAY_GRID_ROW_MAX}`
+      });
+    }
   });
 
 export const displayLayoutConfigSchema = z
   .object({
     columns: displayLayoutColumnsSchema,
+    rows: displayLayoutRowsSchema,
     blocks: z.array(displayLayoutBlockSchema).length(DISPLAY_BLOCKS.length)
   })
   .superRefine((value, ctx) => {
-    const occupied: Array<{ key: string; row: number; start: number; end: number }> = [];
+    const occupied: Array<{
+      key: string;
+      rowStart: number;
+      rowEnd: number;
+      start: number;
+      end: number;
+      slot: 'full' | 'top' | 'bottom';
+    }> = [];
 
     value.blocks.forEach((block, index) => {
       if (!block.enabled || isHeaderOnlyDisplayBlock(block.key)) {
@@ -94,9 +145,37 @@ export const displayLayoutConfigSchema = z
 
       const startColumn = block.column;
       const endColumn = Math.min(DISPLAY_GRID_COLUMN_COUNT, block.column + block.colSpan - 1);
-      const overlapping = occupied.find(
-        (item) => item.row === block.row && !(endColumn < item.start || startColumn > item.end)
+      const startRow = block.row;
+      const endRow = Math.min(DISPLAY_GRID_ROW_MAX, block.row + block.rowSpan - 1);
+      const overlaps = occupied.filter(
+        (item) =>
+          !(
+            endRow < item.rowStart ||
+            startRow > item.rowEnd ||
+            endColumn < item.start ||
+            startColumn > item.end
+          )
       );
+      const sameArea =
+        overlaps.length === 1 &&
+        overlaps[0] &&
+        overlaps[0].start === startColumn &&
+        overlaps[0].end === endColumn &&
+        overlaps[0].rowStart === startRow &&
+        overlaps[0].rowEnd === endRow;
+      const currentSlot = block.slot ?? 'full';
+      const overlapping = overlaps.find((item) => {
+        if (
+          sameArea &&
+          currentSlot !== 'full' &&
+          item.slot !== 'full' &&
+          item.slot !== currentSlot
+        ) {
+          return false;
+        }
+
+        return true;
+      });
 
       if (overlapping) {
         ctx.addIssue({
@@ -109,9 +188,11 @@ export const displayLayoutConfigSchema = z
 
       occupied.push({
         key: block.key,
-        row: block.row,
+        rowStart: startRow,
+        rowEnd: endRow,
         start: startColumn,
-        end: endColumn
+        end: endColumn,
+        slot: currentSlot
       });
     });
   });

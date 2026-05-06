@@ -137,6 +137,7 @@ export interface DisplayBoardManagerAvailabilityItem {
   id: string;
   name: string;
   designation: string | null;
+  phone: string | null;
   sortOrder: number;
   shift: string | null;
   status: DisplayBoardAttendanceDisplayStatus;

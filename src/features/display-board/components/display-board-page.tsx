@@ -15,8 +15,11 @@ import type {
   DisplayBoardWeatherData
 } from '../api/types';
 import {
+  expandDisplayLayoutRowsForSlots,
   getDisplayBlockDefinition,
+  getDisplayBlockGridPlacement,
   getEnabledSortedDisplayBlocks,
+  normalizeDisplayLayoutConfig,
   type DisplayBlockKey,
   type DisplayLayoutBlockConfig
 } from '@/features/display-pages/lib/display-layout-config';
@@ -354,6 +357,37 @@ function AttendanceRosterRow({
   );
 }
 
+function ManagerAvailabilityRow({
+  name,
+  designation,
+  phone,
+  status
+}: {
+  name: string;
+  designation: string | null;
+  phone: string | null;
+  status: DisplayBoardAttendanceDisplayStatus;
+}) {
+  return (
+    <div className='border border-white/10 bg-black/20 px-2 py-[5px] rounded-none'>
+      <div className='grid items-center gap-2 whitespace-nowrap [grid-template-columns:minmax(120px,1.2fr)_minmax(90px,0.9fr)_minmax(110px,0.9fr)_auto]'>
+        <div className='min-w-0 truncate text-[12px] font-medium leading-none text-zinc-50 xl:text-[13px]'>
+          {name}
+        </div>
+        <div className='min-w-0 truncate text-[10px] leading-none text-zinc-300'>
+          {designation ?? '—'}
+        </div>
+        <div className='min-w-0 truncate text-[10px] leading-none text-zinc-300'>
+          {phone ?? '—'}
+        </div>
+        <div className='justify-self-end'>
+          <AttendanceStatusBadge status={status} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SectionCard({
   title,
   icon: Icon,
@@ -611,8 +645,10 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   } = data;
 
   const renderedAt = new Date();
-  const layoutBlocks = getEnabledSortedDisplayBlocks(displayPage.layoutConfig);
-  const layoutColumns = displayPage.layoutConfig.columns;
+  const normalizedLayoutConfig = normalizeDisplayLayoutConfig(displayPage.layoutConfig);
+  const layoutBlocks = getEnabledSortedDisplayBlocks(normalizedLayoutConfig);
+  const layoutColumns = normalizedLayoutConfig.columns;
+  const layoutRowHeights = normalizedLayoutConfig.rows.heights;
   const displayGridColumns = `${layoutColumns.left}fr ${layoutColumns.center}fr ${layoutColumns.right}fr`;
   const layoutBlockMap = new Map(layoutBlocks.map((block) => [block.key, block] as const));
   const getBlock = (key: DisplayBlockKey) => layoutBlockMap.get(key);
@@ -636,6 +672,18 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
 
     return left.key.localeCompare(right.key);
   });
+  const visibleGridRowCount = Math.max(
+    1,
+    visibleGridBlocks.reduce(
+      (highest, block) => Math.max(highest, block.row + (block.rowSpan || 1) - 1),
+      1
+    )
+  );
+  const displaySubRowHeights = expandDisplayLayoutRowsForSlots(layoutRowHeights);
+  const displayGridRows = displaySubRowHeights
+    .slice(0, Math.max(1, visibleGridRowCount) * 2)
+    .map((value) => `${value}fr`)
+    .join(' ');
   const currentDate = formatDate(renderedAt);
   const firstAlert = alerts.items[0] ?? null;
 
@@ -770,13 +818,11 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const renderManagerPage = (pageItems: typeof activeManagersWithAttendanceToday.items) => (
           <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
             {pageItems.map((item) => (
-              <AttendanceRosterRow
+              <ManagerAvailabilityRow
                 key={item.id}
-                kind='manager'
                 name={item.name}
                 designation={item.designation}
-                shift={item.shift}
-                remarks={item.remarks}
+                phone={item.phone}
                 status={item.status}
               />
             ))}
@@ -1155,23 +1201,28 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                 boxSizing: 'border-box',
                 maxWidth: '100%',
                 width: '100%',
+                gridTemplateRows: displayGridRows,
                 '--display-grid-columns': displayGridColumns
               } as CSSProperties
             }
           >
             {positionedGridBlocks.flatMap((block) =>
-              renderBlockCards(block.key).map((node, index) => (
-                <div
-                  key={`${block.key}-${index}`}
-                  className='min-h-0'
-                  style={{
-                    gridColumn: `${block.column} / span ${block.colSpan}`,
-                    gridRow: `${block.row}`
-                  }}
-                >
-                  {node}
-                </div>
-              ))
+              renderBlockCards(block.key).map((node, index) => {
+                const placement = getDisplayBlockGridPlacement(block);
+
+                return (
+                  <div
+                    key={`${block.key}-${index}`}
+                    className='min-h-0'
+                    style={{
+                      gridColumn: `${block.column} / span ${block.colSpan}`,
+                      gridRow: `${placement.rowStart} / span ${placement.rowSpan}`
+                    }}
+                  >
+                    {node}
+                  </div>
+                );
+              })
             )}
           </section>
         )}

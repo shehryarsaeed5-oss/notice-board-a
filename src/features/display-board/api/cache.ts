@@ -149,6 +149,40 @@ function reviveSalesTarget(value: unknown) {
   };
 }
 
+function reviveManagerAvailability(value: unknown) {
+  if (!value || typeof value !== 'object') {
+    return {
+      id: '',
+      name: '',
+      designation: null,
+      phone: null,
+      sortOrder: 0,
+      shift: null,
+      status: 'NOT_MARKED',
+      remarks: null
+    };
+  }
+
+  const entry = value as Record<string, unknown>;
+
+  return {
+    ...entry,
+    designation: typeof entry.designation === 'string' ? entry.designation : null,
+    phone: typeof entry.phone === 'string' ? entry.phone : null,
+    sortOrder: typeof entry.sortOrder === 'number' ? entry.sortOrder : 0,
+    shift: typeof entry.shift === 'string' ? entry.shift : null,
+    status:
+      entry.status === 'PRESENT' ||
+      entry.status === 'ABSENT' ||
+      entry.status === 'LEAVE' ||
+      entry.status === 'LATE' ||
+      entry.status === 'NOT_MARKED'
+        ? entry.status
+        : 'NOT_MARKED',
+    remarks: typeof entry.remarks === 'string' ? entry.remarks : null
+  };
+}
+
 function reviveDisplayBoardData(data: unknown): DisplayBoardData {
   const board = data as {
     displayPage: Record<string, unknown>;
@@ -231,7 +265,12 @@ function reviveDisplayBoardData(data: unknown): DisplayBoardData {
     },
     concessionPriceList,
     attendance,
-    activeManagersWithAttendanceToday,
+    activeManagersWithAttendanceToday: {
+      items: activeManagersWithAttendanceToday.items.map((item) =>
+        reviveManagerAvailability(item)
+      ) as DisplayBoardData['activeManagersWithAttendanceToday']['items'],
+      total: activeManagersWithAttendanceToday.total
+    },
     activeStaffWithAttendanceToday,
     weather: reviveWeather(board.weather ?? board.weatherSetting),
     attendanceSummary: board.attendanceSummary
