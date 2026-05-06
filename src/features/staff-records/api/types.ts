@@ -32,3 +32,9 @@ export interface StaffMemberListResult {
   staffMembers: StaffMemberRecord[];
   total: number;
 }
+
+export interface StaffImportResult {
+  importedCount: number;
+  skippedCount: number;
+  failedCount: number;
+}

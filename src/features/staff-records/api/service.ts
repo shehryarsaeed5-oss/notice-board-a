@@ -2,7 +2,17 @@ import 'server-only';
 
 import { invalidateDisplayBoardCache } from '@/features/display-board/api/cache';
 import { prisma } from '@/lib/prisma';
-import type { StaffMemberFormValues, StaffMemberListFilters, StaffMemberListResult } from './types';
+import type {
+  StaffImportResult,
+  StaffMemberFormValues,
+  StaffMemberListFilters,
+  StaffMemberListResult
+} from './types';
+import {
+  buildStaffImportIdentityKey,
+  buildStaffImportPhoneKey,
+  type StaffImportPreparedRow
+} from '../lib/staff-import';
 
 function normalizeSearchTerm(value?: string): string | undefined {
   const trimmed = value?.trim();
@@ -38,6 +48,38 @@ function normalizeSortOrder(value?: number | string | null): number {
   }
 
   return Math.trunc(parsed);
+}
+
+function normalizeStaffMemberPhoneKey(value: string | null): string {
+  return value ? buildStaffImportPhoneKey(value) : '';
+}
+
+function buildExistingImportKeySets(
+  staffMembers: Array<{
+    name: string;
+    designation: string;
+    department: string | null;
+    phone: string | null;
+  }>
+) {
+  const identityKeys = new Set<string>();
+  const phoneKeys = new Set<string>();
+
+  for (const staffMember of staffMembers) {
+    const identityKey = buildStaffImportIdentityKey({
+      name: staffMember.name,
+      designation: staffMember.designation,
+      department: staffMember.department ?? ''
+    });
+    identityKeys.add(identityKey);
+
+    const phoneKey = normalizeStaffMemberPhoneKey(staffMember.phone);
+    if (phoneKey) {
+      phoneKeys.add(phoneKey);
+    }
+  }
+
+  return { identityKeys, phoneKeys };
 }
 
 function buildWhere(filters: StaffMemberListFilters) {
@@ -172,4 +214,91 @@ export async function deleteStaffMember(id: string) {
   await invalidateDisplayBoardCache();
 
   return staffMember;
+}
+
+export async function importStaffMembers(
+  rows: StaffImportPreparedRow[]
+): Promise<StaffImportResult> {
+  if (rows.length === 0) {
+    return {
+      importedCount: 0,
+      skippedCount: 0,
+      failedCount: 0
+    };
+  }
+
+  const existingStaffMembers = await prisma.staffMember.findMany({
+    select: {
+      name: true,
+      designation: true,
+      department: true,
+      phone: true
+    }
+  });
+
+  const { identityKeys: existingIdentityKeys, phoneKeys: existingPhoneKeys } =
+    buildExistingImportKeySets(existingStaffMembers);
+  const seenIdentityKeys = new Set(existingIdentityKeys);
+  const seenPhoneKeys = new Set(existingPhoneKeys);
+  const data: Array<{
+    name: string;
+    designation: string;
+    department: string | null;
+    phone: string | null;
+    sortOrder: number;
+    status: 'ACTIVE' | 'INACTIVE';
+  }> = [];
+  let skippedCount = 0;
+
+  for (const row of rows) {
+    const identityKey = row.identityKey;
+    const phoneKey = row.phoneKey;
+
+    if (phoneKey) {
+      if (seenPhoneKeys.has(phoneKey)) {
+        skippedCount += 1;
+        continue;
+      }
+
+      seenPhoneKeys.add(phoneKey);
+      seenIdentityKeys.add(identityKey);
+      data.push({
+        name: row.name,
+        designation: row.designation,
+        department: row.department,
+        phone: row.phone,
+        sortOrder: row.sortOrder,
+        status: row.status
+      });
+      continue;
+    }
+
+    if (seenIdentityKeys.has(identityKey)) {
+      skippedCount += 1;
+      continue;
+    }
+
+    seenIdentityKeys.add(identityKey);
+    data.push({
+      name: row.name,
+      designation: row.designation,
+      department: row.department,
+      phone: row.phone,
+      sortOrder: row.sortOrder,
+      status: row.status
+    });
+  }
+
+  if (data.length > 0) {
+    await prisma.staffMember.createMany({
+      data
+    });
+    await invalidateDisplayBoardCache();
+  }
+
+  return {
+    importedCount: data.length,
+    skippedCount,
+    failedCount: 0
+  };
 }

@@ -50,7 +50,8 @@ const DISPLAY_LAYOUT_PADDING_CLASS = 'p-2';
 const DISPLAY_CONTENT_TITLE_CLASS = 'truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]';
 const DISPLAY_CONTENT_SMALL_CLASS = 'text-[11px] leading-[1.15]';
 const DISPLAY_SECTION_LIST_GAP_CLASS = 'space-y-1';
-const DISPLAY_SECTION_ROW_CLASS = 'border border-white/10 bg-black/20 px-3 py-2 rounded-none';
+const DISPLAY_SECTION_ROW_CLASS =
+  'border-b border-white/10 px-3 py-2 last:border-b-0 bg-transparent rounded-none';
 const DISPLAY_META_INLINE_CLASS =
   'inline-flex min-w-0 items-center truncate text-[10px] leading-none text-zinc-300';
 const DISPLAY_META_SEPARATOR_CLASS = 'mx-1 shrink-0 text-zinc-500';
@@ -240,7 +241,7 @@ function AlertBannerCard({ alert }: { alert: DisplayBoardAlertItem }) {
   return (
     <div
       className={cn(
-        'border px-2 py-1.5 text-zinc-50 backdrop-blur-xl',
+        'border-b border-white/10 px-2 py-1.5 text-zinc-50 backdrop-blur-xl',
         theme.accent,
         alert.alertType === 'URGENT' ? 'animate-pulse' : ''
       )}
@@ -352,7 +353,7 @@ function AttendanceRosterRow({
   kind: 'staff' | 'manager';
 }) {
   return (
-    <div className='border border-white/10 bg-black/20 px-2 py-[5px] rounded-none'>
+    <div className='border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none'>
       <div className='flex items-center justify-between gap-1.5'>
         <div className='flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden whitespace-nowrap'>
           <div className={cn(DISPLAY_CONTENT_TITLE_CLASS, 'shrink-0 leading-none')}>{name}</div>
@@ -401,7 +402,7 @@ function ManagerAvailabilityRow({
   status: DisplayBoardAttendanceDisplayStatus;
 }) {
   return (
-    <div className='border border-white/10 bg-black/20 px-2 py-[5px] rounded-none'>
+    <div className='border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none'>
       <div className='grid items-center gap-2 whitespace-nowrap [grid-template-columns:minmax(120px,1.2fr)_minmax(90px,0.9fr)_minmax(110px,0.9fr)_auto]'>
         <div className='min-w-0 truncate text-[12px] font-medium leading-none text-zinc-50 xl:text-[13px]'>
           {name}
@@ -460,7 +461,7 @@ function EmptySection({ message }: { message: string }) {
   return (
     <div
       className={cn(
-        'flex items-center gap-1.5 border border-dashed border-white/10 bg-black/18 px-2 py-0.5 text-zinc-400',
+        'flex items-center gap-1.5 border-b border-dashed border-white/10 px-2 py-0.5 text-zinc-400 last:border-b-0',
         DISPLAY_CONTENT_SMALL_CLASS
       )}
     >
@@ -593,16 +594,12 @@ function StatBlock({
   tone?: 'zinc' | 'emerald' | 'amber';
 }) {
   const toneClass =
-    tone === 'emerald'
-      ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200'
-      : tone === 'amber'
-        ? 'border-amber-400/20 bg-amber-400/10 text-amber-100'
-        : 'border-white/10 bg-white/5 text-zinc-100';
+    tone === 'emerald' ? 'text-emerald-200' : tone === 'amber' ? 'text-amber-100' : 'text-zinc-100';
 
   return (
-    <div className={`border px-2 py-1 rounded-none ${toneClass}`}>
+    <div className={`flex items-center justify-between gap-2 py-1 ${toneClass}`}>
       <div className='text-[9px] uppercase tracking-[0.18em] text-current/70'>{label}</div>
-      <div className='mt-0.5 text-[10px] font-semibold leading-[1.15] text-current xl:text-[11px]'>
+      <div className='text-[10px] font-semibold leading-[1.15] text-current xl:text-[11px]'>
         {value}
       </div>
     </div>
@@ -1018,12 +1015,9 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = getVisibleCount(block, VISIBLE_TARGET_COUNT);
         const targetPages = chunkItems(salesTargets.items, pageSize);
         const renderTargetPage = (pageItems: typeof salesTargets.items) => (
-          <div className='space-y-0.5'>
+          <div className='divide-y divide-white/10'>
             {pageItems.map((target) => (
-              <div
-                key={target.id}
-                className='border border-white/10 bg-black/20 px-2.5 py-1.5 rounded-none'
-              >
+              <div key={target.id} className='px-2.5 py-1.5 rounded-none'>
                 <div className='flex items-center justify-between gap-2.5'>
                   <div className='min-w-0 flex-1 overflow-hidden whitespace-nowrap'>
                     <div className='truncate text-[12px] font-medium leading-none text-zinc-50 xl:text-[13px]'>

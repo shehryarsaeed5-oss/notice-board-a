@@ -1,7 +1,11 @@
-import type { StaffMemberFormValues, StaffMemberRecord } from './types';
+import type { StaffImportResult, StaffMemberFormValues, StaffMemberRecord } from './types';
 
 interface StaffRecordResponse {
   staffMember: StaffMemberRecord;
+}
+
+interface StaffImportRequest {
+  csvText: string;
 }
 
 async function requestJson<T>(url: string, init: RequestInit): Promise<T> {
@@ -46,5 +50,12 @@ export function archiveStaffMember(id: string) {
 export function deleteStaffMember(id: string) {
   return requestJson<StaffRecordResponse>(`/api/staff-records/${id}`, {
     method: 'DELETE'
+  });
+}
+
+export function importStaffMembersCsv(values: StaffImportRequest) {
+  return requestJson<StaffImportResult>('/api/staff-records/import', {
+    method: 'POST',
+    body: JSON.stringify(values)
   });
 }
