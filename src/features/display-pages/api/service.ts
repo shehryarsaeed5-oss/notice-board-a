@@ -121,6 +121,14 @@ export async function getDisplayPages(
   };
 }
 
+export async function getDisplayPageById(id: string) {
+  const displayPage = await prisma.displayPage.findUnique({
+    where: { id }
+  });
+
+  return displayPage ? normalizeDisplayPageRecord(displayPage) : null;
+}
+
 export async function createDisplayPage(values: DisplayPageFormValues) {
   const slug = normalizeSlug(values.slug);
 
