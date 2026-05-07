@@ -59,6 +59,10 @@ function reviveDisplayPage(value: Record<string, unknown>) {
 function reviveEvent(value: Record<string, unknown>) {
   return {
     ...value,
+    title: typeof value.title === 'string' ? value.title : '',
+    clientName: typeof value.clientName === 'string' ? value.clientName : null,
+    companyName: typeof value.companyName === 'string' ? value.companyName : null,
+    screenName: typeof value.screenName === 'string' ? value.screenName : null,
     startAt: toDate(value.startAt),
     endAt: value.endAt ? toDate(value.endAt) : null
   };
@@ -67,6 +71,9 @@ function reviveEvent(value: Record<string, unknown>) {
 function reviveMeeting(value: Record<string, unknown>) {
   return {
     ...value,
+    title: typeof value.title === 'string' ? value.title : '',
+    location: typeof value.location === 'string' ? value.location : null,
+    organizer: typeof value.organizer === 'string' ? value.organizer : null,
     startAt: toDate(value.startAt),
     endAt: value.endAt ? toDate(value.endAt) : null
   };

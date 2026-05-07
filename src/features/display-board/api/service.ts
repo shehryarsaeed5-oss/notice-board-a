@@ -143,6 +143,18 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
 
   const now = new Date();
   const { start, end } = getTodayRange(now);
+  const eventsWhere = {
+    status: 'ACTIVE' as const,
+    startAt: {
+      gte: start
+    }
+  };
+  const meetingsWhere = {
+    status: 'ACTIVE' as const,
+    startAt: {
+      gte: start
+    }
+  };
 
   const [
     events,
@@ -163,42 +175,18 @@ async function loadDisplayBoardFromDatabase(slug: string): Promise<DisplayBoardR
     managerAttendanceRecords
   ] = await Promise.all([
     prisma.eventRecord.findMany({
-      where: {
-        status: 'ACTIVE',
-        startAt: {
-          gte: start,
-          lt: end
-        }
-      },
+      where: eventsWhere,
       orderBy: [{ startAt: 'asc' }, { title: 'asc' }]
     }),
     prisma.eventRecord.count({
-      where: {
-        status: 'ACTIVE',
-        startAt: {
-          gte: start,
-          lt: end
-        }
-      }
+      where: eventsWhere
     }),
     prisma.meetingSchedule.findMany({
-      where: {
-        status: 'ACTIVE',
-        startAt: {
-          gte: start,
-          lt: end
-        }
-      },
+      where: meetingsWhere,
       orderBy: [{ startAt: 'asc' }, { title: 'asc' }]
     }),
     prisma.meetingSchedule.count({
-      where: {
-        status: 'ACTIVE',
-        startAt: {
-          gte: start,
-          lt: end
-        }
-      }
+      where: meetingsWhere
     }),
     prisma.advertisement.findMany({
       where: {

@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import type { CSSProperties, ComponentType, ReactNode } from 'react';
 import Image from 'next/image';
 
@@ -37,6 +37,8 @@ interface DisplayBoardPageProps {
   slug: string;
 }
 
+const DISPLAY_FONT_FAMILY = 'Arial, Helvetica, sans-serif';
+
 const VISIBLE_EVENT_COUNT = 4;
 const VISIBLE_MEETING_COUNT = 4;
 const VISIBLE_MOVIE_COUNT = 4;
@@ -48,13 +50,13 @@ const VISIBLE_STAFF_ATTENDANCE_COUNT = 6;
 const VISIBLE_MANAGER_ATTENDANCE_COUNT = 3;
 const DISPLAY_LAYOUT_GAP_CLASS = 'gap-2';
 const DISPLAY_LAYOUT_PADDING_CLASS = 'p-2';
-const DISPLAY_CONTENT_TITLE_CLASS = 'truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]';
-const DISPLAY_CONTENT_SMALL_CLASS = 'text-[11px] leading-[1.15]';
+const DISPLAY_CONTENT_TITLE_CLASS = 'truncate text-[12px] font-bold text-zinc-50 xl:text-[13px]';
+const DISPLAY_CONTENT_SMALL_CLASS = 'text-[11px] font-semibold leading-[1.2]';
 const DISPLAY_SECTION_LIST_GAP_CLASS = 'space-y-1';
 const DISPLAY_SECTION_ROW_CLASS =
   'border-b border-white/10 px-3 py-2 last:border-b-0 bg-transparent rounded-none';
 const DISPLAY_META_INLINE_CLASS =
-  'inline-flex min-w-0 items-center truncate text-[10px] leading-none text-zinc-300';
+  'inline-flex min-w-0 items-center truncate text-[10px] font-semibold leading-none text-zinc-100';
 const DISPLAY_META_SEPARATOR_CLASS = 'mx-1 shrink-0 text-zinc-500';
 
 function getVisibleCount(block: DisplayLayoutBlockConfig, fallback: number) {
@@ -82,6 +84,20 @@ function formatDate(value: Date) {
 
 function formatDateTime(value: Date | null | undefined) {
   return value ? format(value, 'EEEE, MMM d, yyyy • h:mm a') : '—';
+}
+
+function formatMeetingDateLabel(value: Date, now: Date) {
+  if (Number.isNaN(value.getTime())) {
+    return '—';
+  }
+
+  if (isSameDay(value, now)) {
+    return 'TODAY';
+  }
+
+  return value.getFullYear() === now.getFullYear()
+    ? format(value, 'MMM d')
+    : format(value, 'MMM d, yyyy');
 }
 
 function formatProgress(progress: {
@@ -263,12 +279,12 @@ function AlertBannerCard({ alert }: { alert: DisplayBoardAlertItem }) {
         <div className='min-w-0'>
           <div className='flex items-center gap-1.5'>
             <theme.icon className={cn('size-4 shrink-0', theme.iconClass)} />
-            <div className='truncate text-[13px] font-semibold tracking-tight text-zinc-50 xl:text-sm'>
+            <div className='truncate text-[13px] font-bold tracking-tight text-zinc-50 xl:text-sm'>
               {alert.title}
             </div>
           </div>
           {alert.message ? (
-            <div className='mt-0.5 max-h-8 overflow-hidden text-[11px] leading-[1.15] text-zinc-100/90'>
+            <div className='mt-0.5 max-h-8 overflow-hidden text-[11px] font-semibold leading-[1.2] text-zinc-100'>
               {alert.message}
             </div>
           ) : null}
@@ -281,7 +297,7 @@ function AlertBannerCard({ alert }: { alert: DisplayBoardAlertItem }) {
         </Badge>
       </div>
 
-      <div className='mt-1.5 flex flex-wrap gap-1 text-[10px] text-zinc-200/80'>
+      <div className='mt-1.5 flex flex-wrap gap-1 text-[10px] text-zinc-100'>
         <RecordChip>Priority {alert.priority}</RecordChip>
         <RecordChip>Until {formatAlertExpiry(alert.endAt)}</RecordChip>
       </div>
@@ -372,42 +388,28 @@ function AttendanceRosterRow({
   const safeContentColumns = Math.min(3, Math.max(1, Math.trunc(contentColumns) || 1));
 
   if (kind === 'manager') {
-    const layout =
-      safeContentColumns === 2
-        ? {
-            rowTemplate: 'grid-cols-[minmax(120px,1.35fr)_minmax(110px,0.95fr)_minmax(4rem,0.55fr)]'
-          }
-        : safeContentColumns === 3
-          ? {
-              rowTemplate: 'grid-cols-[minmax(120px,1.6fr)_minmax(4rem,0.55fr)]'
-            }
-          : {
-              rowTemplate:
-                'grid-cols-[minmax(120px,1.2fr)_minmax(90px,0.9fr)_minmax(110px,0.9fr)_auto]'
-            };
-
     return (
       <div
         className={cn(
-          'grid items-center gap-2 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
-          layout.rowTemplate
+          'grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
+          getManagerAvailabilityGridTemplate(safeContentColumns)
         )}
       >
-        <CompactTableCell className='truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]'>
+        <CompactTableCell className='truncate text-left text-[12px] font-bold text-zinc-50 xl:text-[13px]'>
           {name}
         </CompactTableCell>
         {safeContentColumns === 1 ? (
           <>
-            <CompactTableCell className='truncate text-[10px] text-zinc-100 xl:text-[11px]'>
+            <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
               {designation ?? '—'}
             </CompactTableCell>
-            <CompactTableCell className='truncate text-[10px] text-zinc-100 xl:text-[11px]'>
+            <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
               {phone ?? '—'}
             </CompactTableCell>
           </>
         ) : null}
         {safeContentColumns === 2 ? (
-          <CompactTableCell className='truncate text-[10px] text-zinc-100 xl:text-[11px]'>
+          <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
             {phone ?? '—'}
           </CompactTableCell>
         ) : null}
@@ -423,42 +425,30 @@ function AttendanceRosterRow({
     );
   }
 
-  const layout =
-    safeContentColumns === 2
-      ? {
-          rowTemplate: 'grid-cols-[minmax(120px,1.35fr)_minmax(90px,0.95fr)_minmax(4rem,0.55fr)]'
-        }
-      : safeContentColumns === 3
-        ? {
-            rowTemplate: 'grid-cols-[minmax(120px,1.6fr)_minmax(4rem,0.55fr)]'
-          }
-        : {
-            rowTemplate:
-              'grid-cols-[minmax(120px,1.2fr)_minmax(90px,0.9fr)_minmax(110px,0.9fr)_auto]'
-          };
+  const layout = getStaffRosterGridTemplate(safeContentColumns);
 
   return (
     <div
       className={cn(
-        'grid items-center gap-2 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
-        layout.rowTemplate
+        'grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
+        layout
       )}
     >
-      <CompactTableCell className='truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]'>
+      <CompactTableCell className='truncate text-left text-[12px] font-bold text-zinc-50 xl:text-[13px]'>
         {name}
       </CompactTableCell>
       {safeContentColumns === 1 ? (
         <>
-          <CompactTableCell className='truncate text-[10px] text-zinc-100 xl:text-[11px]'>
+          <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
             {designation || '—'}
           </CompactTableCell>
-          <CompactTableCell className='truncate text-[10px] text-zinc-100 xl:text-[11px]'>
+          <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
             {department || '—'}
           </CompactTableCell>
         </>
       ) : null}
       {safeContentColumns === 2 ? (
-        <CompactTableCell className='truncate text-[10px] text-zinc-100 xl:text-[11px]'>
+        <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
           {designation || '—'}
         </CompactTableCell>
       ) : null}
@@ -483,29 +473,16 @@ function ManagerAvailabilityRow({
   contentColumns?: number;
 }) {
   const safeContentColumns = Math.min(3, Math.max(1, Math.trunc(contentColumns) || 1));
-
-  const layout =
-    safeContentColumns === 2
-      ? {
-          rowTemplate: 'grid-cols-[minmax(120px,1.35fr)_minmax(110px,0.95fr)_minmax(4rem,0.55fr)]'
-        }
-      : safeContentColumns === 3
-        ? {
-            rowTemplate: 'grid-cols-[minmax(120px,1.6fr)_minmax(4rem,0.55fr)]'
-          }
-        : {
-            rowTemplate:
-              'grid-cols-[minmax(120px,1.2fr)_minmax(90px,0.9fr)_minmax(110px,0.9fr)_auto]'
-          };
+  const layout = getManagerAvailabilityGridTemplate(safeContentColumns);
 
   return (
     <div
       className={cn(
-        'grid items-center gap-2 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
-        layout.rowTemplate
+        'grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
+        layout
       )}
     >
-      <CompactTableCell className='truncate text-[12px] font-medium text-zinc-50 xl:text-[13px]'>
+      <CompactTableCell className='truncate text-[12px] font-bold text-zinc-50 xl:text-[13px]'>
         {name}
       </CompactTableCell>
       {safeContentColumns === 1 ? (
@@ -525,7 +502,7 @@ function ManagerAvailabilityRow({
       ) : null}
       <div
         className={cn(
-          'min-w-0 truncate text-right text-[10px] font-semibold uppercase tracking-[0.08em]',
+          'min-w-0 justify-self-end truncate text-right text-[10px] font-semibold uppercase tracking-[0.08em]',
           getManagerDutyTone(status)
         )}
       >
@@ -550,12 +527,14 @@ function SectionCard({
     <Card className='!rounded-none flex h-full min-h-0 flex-col gap-0 overflow-hidden border-white/10 bg-white/6 py-0 text-zinc-50 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'>
       <CardHeader className='shrink-0 px-2.5 pt-1 pb-0'>
         <div className='flex items-center justify-between gap-2.5'>
-          <CardTitle className='text-[14px] font-semibold text-zinc-50 xl:text-[15px]'>
+          <CardTitle className='text-[14px] font-extrabold text-zinc-50 xl:text-[15px]'>
             {title}
           </CardTitle>
-          <div className='flex items-center gap-1 text-[9px] text-zinc-100'>
-            <Icon className='size-3 text-zinc-200' />
-            <span className='font-medium tabular-nums leading-none'>{count.toLocaleString()}</span>
+          <div className='flex items-center gap-1 text-[9px] font-semibold text-zinc-100'>
+            <Icon className='size-3 text-zinc-100' />
+            <span className='font-semibold tabular-nums leading-none'>
+              {count.toLocaleString()}
+            </span>
           </div>
         </div>
       </CardHeader>
@@ -585,11 +564,39 @@ function RecordChip({ children }: { children: ReactNode }) {
 }
 
 function CompactTableCell({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('min-w-0 truncate leading-none', className)}>{children}</div>;
+  return <div className={cn('min-w-0 truncate leading-[1.15]', className)}>{children}</div>;
 }
 
 function getSafeContentColumns(block: DisplayLayoutBlockConfig) {
   return Math.min(3, Math.max(1, block.contentColumns || 1));
+}
+
+function getManagerAvailabilityGridTemplate(contentColumns: number) {
+  const safeContentColumns = Math.min(3, Math.max(1, Math.trunc(contentColumns) || 1));
+
+  if (safeContentColumns === 2) {
+    return 'grid-cols-[minmax(120px,1.35fr)_minmax(110px,0.95fr)_minmax(4rem,0.55fr)]';
+  }
+
+  if (safeContentColumns === 3) {
+    return 'grid-cols-[minmax(120px,1.6fr)_minmax(4rem,0.55fr)]';
+  }
+
+  return 'grid-cols-[minmax(120px,1.2fr)_minmax(90px,0.9fr)_minmax(110px,0.9fr)_auto]';
+}
+
+function getStaffRosterGridTemplate(contentColumns: number) {
+  const safeContentColumns = Math.min(3, Math.max(1, Math.trunc(contentColumns) || 1));
+
+  if (safeContentColumns === 2) {
+    return 'grid-cols-[minmax(120px,1.35fr)_minmax(90px,0.95fr)_minmax(4rem,0.55fr)]';
+  }
+
+  if (safeContentColumns === 3) {
+    return 'grid-cols-[minmax(120px,1.6fr)_minmax(4rem,0.55fr)]';
+  }
+
+  return 'grid-cols-[minmax(120px,1.2fr)_minmax(90px,0.9fr)_minmax(110px,0.9fr)_auto]';
 }
 
 function splitItemsIntoColumns<T>(items: T[], columnCount: number): T[][] {
@@ -611,22 +618,30 @@ function splitItemsIntoColumns<T>(items: T[], columnCount: number): T[][] {
 function CompactTableHeadingRow({
   labels,
   columnsClassName,
-  className
+  className,
+  alignments = []
 }: {
   labels: string[];
   columnsClassName: string;
   className?: string;
+  alignments?: Array<'left' | 'right'>;
 }) {
   return (
     <div
       className={cn(
-        'border-b border-white/10 px-2 pb-0.5 pt-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-400 last:border-b-0',
+        'border-b border-white/10 px-2 pb-0.5 pt-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-zinc-400 last:border-b-0',
         className
       )}
     >
-      <div className={cn('grid items-center gap-2 whitespace-nowrap', columnsClassName)}>
-        {labels.map((label) => (
-          <div key={label} className='truncate'>
+      <div className={cn('grid items-center gap-x-4 gap-y-0 whitespace-nowrap', columnsClassName)}>
+        {labels.map((label, index) => (
+          <div
+            key={label}
+            className={cn(
+              'truncate',
+              alignments[index] === 'right' ? 'justify-self-end text-right' : 'text-left'
+            )}
+          >
             {label}
           </div>
         ))}
@@ -672,25 +687,25 @@ function HeaderWeatherWidget({ weather }: { weather: DisplayBoardWeatherData | n
         {weather ? (
           weather.status === 'ready' ? (
             <div className='space-y-0.5'>
-              <div className='truncate text-[15px] font-semibold leading-none text-zinc-50'>
+              <div className='truncate text-[15px] font-bold leading-none text-zinc-50'>
                 {temperatureLabel} {weather.city}
               </div>
-              <div className='truncate text-[12px] text-zinc-300'>
+              <div className='truncate text-[12px] font-semibold text-zinc-100'>
                 {weather.condition ?? 'Weather unavailable'}
               </div>
             </div>
           ) : (
             <div className='space-y-0.5'>
-              <div className='truncate text-[15px] font-medium text-zinc-50'>
+              <div className='truncate text-[15px] font-bold text-zinc-50'>Weather unavailable</div>
+              <div className='truncate text-[12px] font-semibold text-zinc-100'>
                 Weather unavailable
               </div>
-              <div className='truncate text-[12px] text-zinc-300'>Weather unavailable</div>
             </div>
           )
         ) : (
           <div className='space-y-0.5'>
-            <div className='text-[15px] font-medium text-zinc-50'>Weather not set</div>
-            <div className='truncate text-[12px] text-zinc-300'>
+            <div className='text-[15px] font-bold text-zinc-50'>Weather not set</div>
+            <div className='truncate text-[12px] font-semibold text-zinc-100'>
               Enable the weather block and configure a city
             </div>
           </div>
@@ -738,7 +753,9 @@ function HeaderSummaryWidget({
           <div className='text-[9px] uppercase tracking-[0.22em] text-zinc-300'>{label}</div>
           <HeaderWidgetBadge>{countLabel}</HeaderWidgetBadge>
         </div>
-        {detail ? <div className='truncate text-[10px] text-zinc-200/90'>{detail}</div> : null}
+        {detail ? (
+          <div className='truncate text-[10px] font-semibold text-zinc-100'>{detail}</div>
+        ) : null}
       </div>
     </div>
   );
@@ -774,7 +791,11 @@ function DisplayBoardUnavailable({
   reason: 'inactive' | 'not_found';
 }) {
   return (
-    <main className='relative min-h-[100dvh] overflow-hidden bg-zinc-950 text-zinc-50'>
+    <main
+      data-display-board-root
+      className='relative min-h-[100dvh] overflow-hidden bg-zinc-950 text-zinc-50'
+      style={{ fontFamily: DISPLAY_FONT_FAMILY }}
+    >
       <DisplayBoardAutoRefresh />
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.16),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.06),transparent_25%),linear-gradient(180deg,#09090b_0%,#020202_100%)]' />
       <div className='relative flex min-h-[100dvh] items-center justify-center p-6'>
@@ -787,8 +808,8 @@ function DisplayBoardUnavailable({
           </CardHeader>
           <CardContent className='space-y-4'>
             <p className='text-zinc-300'>
-              The display route for <span className='font-mono text-zinc-100'>/display/{slug}</span>{' '}
-              is not currently available on the board.
+              The display route for <span className='text-zinc-100'>/display/{slug}</span> is not
+              currently available on the board.
             </p>
             <div className='flex flex-wrap items-center justify-center gap-2'>
               <Badge
@@ -900,30 +921,38 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const renderEventPage = (pageItems: typeof events.items) => (
           <div className='space-y-0.5'>
             <CompactTableHeadingRow
-              labels={['Event', 'Screen', 'Time']}
-              columnsClassName='grid-cols-[minmax(0,1.35fr)_minmax(4rem,0.7fr)_minmax(4rem,0.55fr)]'
+              labels={['Title', 'Client Name', 'Company Name', 'Screen', 'Date', 'Time']}
+              columnsClassName='grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(4rem,0.7fr)_minmax(4.5rem,0.7fr)_minmax(4rem,0.55fr)]'
+              alignments={['left', 'right', 'right', 'right', 'right', 'right']}
             />
             <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
               {pageItems.map((event) => (
-                <div key={event.id} className={DISPLAY_SECTION_ROW_CLASS}>
-                  <div className='flex items-center justify-between gap-2.5'>
-                    <div className='min-w-0 flex-1 overflow-hidden whitespace-nowrap'>
-                      <div className={cn(DISPLAY_CONTENT_TITLE_CLASS, 'leading-none')}>
-                        {event.title}
-                      </div>
-                      <div className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] text-zinc-300'>
-                        <RecordChip>
-                          {event.clientName ?? event.companyName ?? 'General event'}
-                        </RecordChip>
-                        <RecordChip>{event.screenName ?? '—'}</RecordChip>
-                        <RecordChip>
-                          {event.endAt ? `Ends ${formatTime(event.endAt)}` : 'Ends —'}
-                        </RecordChip>
-                      </div>
-                    </div>
-                    <Badge className='!rounded-none border-white/10 bg-white/5 text-zinc-100'>
-                      {formatTime(event.startAt)}
-                    </Badge>
+                <div
+                  key={event.id}
+                  className='grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(4rem,0.7fr)_minmax(4.5rem,0.7fr)_minmax(4rem,0.55fr)]'
+                >
+                  <div className='min-w-0 truncate text-[12px] font-bold leading-[1.15] text-zinc-50 xl:text-[13px]'>
+                    {event.title}
+                  </div>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                    {event.clientName ?? '—'}
+                  </div>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                    {event.companyName ?? '—'}
+                  </div>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                    {event.screenName ?? '—'}
+                  </div>
+                  <div
+                    className={cn(
+                      'min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] xl:text-[11px]',
+                      isSameDay(event.startAt, renderedAt) ? 'text-emerald-200' : 'text-zinc-100'
+                    )}
+                  >
+                    {formatMeetingDateLabel(event.startAt, renderedAt)}
+                  </div>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                    {formatTime(event.startAt)}
                   </div>
                 </div>
               ))}
@@ -932,9 +961,9 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         );
 
         return [
-          <SectionCard title='Today Events' icon={Icons.calendar} count={events.total}>
+          <SectionCard title='Today & Upcoming Events' icon={Icons.calendar} count={events.total}>
             {eventPages.length === 0 ? (
-              <EmptySection message='No active events scheduled for today.' />
+              <EmptySection message='No active events scheduled.' />
             ) : eventPages.length === 1 ? (
               renderEventPage(eventPages[0])
             ) : (
@@ -970,28 +999,35 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const renderMeetingPage = (pageItems: typeof meetings.items) => (
           <div className='space-y-0.5'>
             <CompactTableHeadingRow
-              labels={['Meeting', 'Time', 'Status']}
-              columnsClassName='grid-cols-[minmax(0,1.35fr)_minmax(4rem,0.7fr)_minmax(4rem,0.55fr)]'
+              labels={['Title', 'Organizer', 'Location', 'Date', 'Time']}
+              columnsClassName='grid-cols-[minmax(0,1.45fr)_minmax(0,0.95fr)_minmax(0,0.95fr)_minmax(4.5rem,0.7fr)_minmax(4rem,0.55fr)]'
+              alignments={['left', 'right', 'right', 'right', 'right']}
             />
             <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
               {pageItems.map((meeting) => (
-                <div key={meeting.id} className={DISPLAY_SECTION_ROW_CLASS}>
-                  <div className='flex items-center justify-between gap-2.5'>
-                    <div className='min-w-0 flex-1 overflow-hidden whitespace-nowrap'>
-                      <div className={cn(DISPLAY_CONTENT_TITLE_CLASS, 'leading-none')}>
-                        {meeting.title}
-                      </div>
-                      <div className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] text-zinc-300'>
-                        <RecordChip>{meeting.organizer ?? 'No organizer listed'}</RecordChip>
-                        {meeting.location ? <RecordChip>{meeting.location}</RecordChip> : null}
-                        {meeting.endAt ? (
-                          <RecordChip>Ends {formatTime(meeting.endAt)}</RecordChip>
-                        ) : null}
-                      </div>
-                    </div>
-                    <Badge className='!rounded-none border-white/10 bg-white/5 text-zinc-100'>
-                      {formatTime(meeting.startAt)}
-                    </Badge>
+                <div
+                  key={meeting.id}
+                  className='grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none grid-cols-[minmax(0,1.45fr)_minmax(0,0.95fr)_minmax(0,0.95fr)_minmax(4.5rem,0.7fr)_minmax(4rem,0.55fr)]'
+                >
+                  <div className='min-w-0 truncate text-[12px] font-bold leading-[1.15] text-zinc-50 xl:text-[13px]'>
+                    {meeting.title}
+                  </div>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                    {meeting.organizer ?? '—'}
+                  </div>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                    {meeting.location ?? '—'}
+                  </div>
+                  <div
+                    className={cn(
+                      'min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] xl:text-[11px]',
+                      isSameDay(meeting.startAt, renderedAt) ? 'text-emerald-200' : 'text-zinc-100'
+                    )}
+                  >
+                    {formatMeetingDateLabel(meeting.startAt, renderedAt)}
+                  </div>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                    {formatTime(meeting.startAt)}
                   </div>
                 </div>
               ))}
@@ -1023,6 +1059,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
       case 'managerAvailability':
       case 'staffRoster': {
         const contentColumns = getSafeContentColumns(block);
+        const managerGridTemplate = getManagerAvailabilityGridTemplate(contentColumns);
+        const staffGridTemplate = getStaffRosterGridTemplate(contentColumns);
 
         const renderManagerPage = (pageItems: typeof activeManagersWithAttendanceToday.items) => (
           <div className='space-y-0.5'>
@@ -1034,16 +1072,17 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                     ? ['Name', 'Status']
                     : ['Name', 'Designation', 'Phone', 'Status']
               }
-              columnsClassName={
+              columnsClassName={managerGridTemplate}
+              alignments={
                 contentColumns === 2
-                  ? 'grid-cols-[minmax(120px,1.35fr)_minmax(110px,0.95fr)_minmax(4rem,0.55fr)]'
+                  ? ['left', 'right', 'right']
                   : contentColumns === 3
-                    ? 'grid-cols-[minmax(120px,1.6fr)_minmax(4rem,0.55fr)]'
-                    : 'grid-cols-[minmax(120px,1.2fr)_minmax(90px,0.9fr)_minmax(110px,0.9fr)_auto]'
+                    ? ['left', 'right']
+                    : ['left', 'right', 'right', 'right']
               }
             />
             <div
-              className='grid gap-2'
+              className='grid gap-x-4 gap-y-2'
               style={{
                 gridTemplateColumns: `repeat(${contentColumns}, minmax(0, 1fr))`
               }}
@@ -1076,16 +1115,17 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                     ? ['Name', 'Status']
                     : ['Name', 'Designation', 'Department', 'Status']
               }
-              columnsClassName={
+              columnsClassName={staffGridTemplate}
+              alignments={
                 contentColumns === 2
-                  ? 'grid-cols-[minmax(120px,1.35fr)_minmax(90px,0.95fr)_minmax(4rem,0.55fr)]'
+                  ? ['left', 'right', 'right']
                   : contentColumns === 3
-                    ? 'grid-cols-[minmax(120px,1.6fr)_minmax(4rem,0.55fr)]'
-                    : 'grid-cols-[minmax(120px,1.2fr)_minmax(90px,0.9fr)_minmax(110px,0.9fr)_auto]'
+                    ? ['left', 'right']
+                    : ['left', 'right', 'right', 'right']
               }
             />
             <div
-              className='grid gap-2'
+              className='grid gap-x-4 gap-y-2'
               style={{
                 gridTemplateColumns: `repeat(${contentColumns}, minmax(0, 1fr))`
               }}
@@ -1203,23 +1243,24 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             <CompactTableHeadingRow
               labels={['Company', 'Start', 'End', 'Screens']}
               columnsClassName='grid-cols-[minmax(0,1.5fr)_minmax(4.5rem,0.7fr)_minmax(4.5rem,0.7fr)_minmax(0,0.95fr)]'
+              alignments={['left', 'right', 'right', 'right']}
             />
             <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
               {pageItems.map((ad) => (
                 <div
                   key={ad.id}
-                  className='grid items-center gap-2 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none [grid-template-columns:minmax(0,1.5fr)_minmax(4.5rem,0.7fr)_minmax(4.5rem,0.7fr)_minmax(0,0.95fr)]'
+                  className='grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none [grid-template-columns:minmax(0,1.5fr)_minmax(4.5rem,0.7fr)_minmax(4.5rem,0.7fr)_minmax(0,0.95fr)]'
                 >
-                  <div className='min-w-0 truncate text-[12px] font-medium leading-none text-zinc-50 xl:text-[13px]'>
+                  <div className='min-w-0 truncate text-[12px] font-bold leading-none text-zinc-50 xl:text-[13px]'>
                     {ad.title}
                   </div>
-                  <div className='min-w-0 truncate text-[10px] leading-none text-zinc-300'>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-none text-zinc-100'>
                     {formatShortDate(ad.startAt)}
                   </div>
-                  <div className='min-w-0 truncate text-[10px] leading-none text-zinc-300'>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-none text-zinc-100'>
                     {formatShortDate(ad.endAt)}
                   </div>
-                  <div className='min-w-0 truncate text-[10px] leading-none text-zinc-300'>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-none text-zinc-100'>
                     {ad.adLocation?.trim() ? ad.adLocation : 'All Screens'}
                   </div>
                 </div>
@@ -1257,62 +1298,55 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             <CompactTableHeadingRow
               labels={['Item', 'Daily', 'Weekly', 'Monthly']}
               columnsClassName='grid-cols-[minmax(0,1.2fr)_minmax(4rem,0.6fr)_minmax(4rem,0.6fr)_minmax(4rem,0.6fr)]'
+              alignments={['left', 'right', 'right', 'right']}
             />
             <div className='divide-y divide-white/10'>
               {pageItems.map((target) => (
-                <div key={target.id} className='px-2.5 py-1.5 rounded-none'>
-                  <div className='flex items-center justify-between gap-2.5'>
-                    <div className='min-w-0 flex-1 overflow-hidden whitespace-nowrap'>
-                      <div className='truncate text-[12px] font-medium leading-none text-zinc-50 xl:text-[13px]'>
-                        {target.itemName}
-                      </div>
-                      <div className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] text-zinc-300'>
-                        {target.itemCodes.length > 0 ? (
-                          <RecordChip>
-                            {target.itemCodes.length} code
-                            {target.itemCodes.length === 1 ? '' : 's'}
-                          </RecordChip>
-                        ) : target.itemCode ? (
-                          <RecordChip>{target.itemCode}</RecordChip>
-                        ) : null}
-                        <RecordChip>{target.status}</RecordChip>
-                        {target.startDate && (
-                          <RecordChip>Start {formatShortDate(target.startDate)}</RecordChip>
-                        )}
-                      </div>
+                <div
+                  key={target.id}
+                  className='grid items-start gap-x-4 gap-y-0 border-b border-white/10 px-2.5 py-1.5 last:border-b-0 rounded-none [grid-template-columns:minmax(0,1.2fr)_minmax(4rem,0.6fr)_minmax(4rem,0.6fr)_minmax(4rem,0.6fr)]'
+                >
+                  <div className='min-w-0 overflow-hidden whitespace-nowrap'>
+                    <div className='truncate text-[12px] font-bold leading-none text-zinc-50 xl:text-[13px]'>
+                      {target.itemName}
                     </div>
-                    <div className='flex flex-col items-end gap-0.5 text-right'>
-                      <Badge className='!rounded-none border-white/10 bg-white/5 px-1.5 py-[2px] text-[9px] text-zinc-100'>
-                        Order {target.displayOrder}
-                      </Badge>
-                      <div className='text-[9px] uppercase tracking-[0.18em] text-zinc-400'>
-                        Last import
-                      </div>
-                      <div className='text-[10px] text-zinc-200'>
+                    <div className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] font-semibold text-zinc-100'>
+                      {target.itemCodes.length > 0 ? (
+                        <RecordChip>
+                          {target.itemCodes.length} code
+                          {target.itemCodes.length === 1 ? '' : 's'}
+                        </RecordChip>
+                      ) : target.itemCode ? (
+                        <RecordChip>{target.itemCode}</RecordChip>
+                      ) : null}
+                      <RecordChip>{target.status}</RecordChip>
+                      {target.startDate && (
+                        <RecordChip>Start {formatShortDate(target.startDate)}</RecordChip>
+                      )}
+                    </div>
+                    <div className='mt-0.5 flex flex-wrap gap-1 text-[9px] uppercase tracking-[0.18em] text-zinc-400'>
+                      <span>Order {target.displayOrder}</span>
+                      <span>Last import</span>
+                      <span className='font-semibold text-zinc-100'>
                         {formatDateTime(target.lastImportAt)}
-                      </div>
+                      </span>
                     </div>
                   </div>
-
-                  {!target.daily.dataAvailable &&
-                  !target.weekly.dataAvailable &&
-                  !target.monthly.dataAvailable ? (
-                    <div className='mt-1.5'>
-                      <EmptySection message='Sales data not imported for the selected period.' />
-                    </div>
-                  ) : null}
-
-                  <div className='mt-1.5 grid grid-cols-1 gap-1 xl:grid-cols-3'>
+                  <div className='min-w-0 justify-self-end'>
                     <StatBlock
                       label='Daily'
                       value={formatProgress(target.daily)}
                       tone={target.daily.dataAvailable ? 'emerald' : 'zinc'}
                     />
+                  </div>
+                  <div className='min-w-0 justify-self-end'>
                     <StatBlock
                       label='Weekly'
                       value={formatProgress(target.weekly)}
                       tone={target.weekly.dataAvailable ? 'amber' : 'zinc'}
                     />
+                  </div>
+                  <div className='min-w-0 justify-self-end'>
                     <StatBlock
                       label='Monthly'
                       value={formatProgress(target.monthly)}
@@ -1350,26 +1384,22 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             <CompactTableHeadingRow
               labels={['Item', 'Price', 'Status']}
               columnsClassName='grid-cols-[minmax(0,1.35fr)_minmax(4rem,0.7fr)_minmax(4rem,0.55fr)]'
+              alignments={['left', 'right', 'right']}
             />
             <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
               {pageItems.map((item) => (
-                <div key={item.id} className={DISPLAY_SECTION_ROW_CLASS}>
-                  <div className='flex items-center justify-between gap-2.5'>
-                    <div className='min-w-0 flex-1 overflow-hidden whitespace-nowrap'>
-                      <div className={cn(DISPLAY_CONTENT_TITLE_CLASS, 'leading-none')}>
-                        {item.itemName}
-                      </div>
-                      <div className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] text-zinc-300'>
-                        {item.category && <RecordChip>{item.category}</RecordChip>}
-                        <RecordChip>{item.status}</RecordChip>
-                      </div>
-                    </div>
-                    <Badge className='!rounded-none border-amber-400/30 bg-amber-400/15 text-amber-100'>
-                      {formatPrice(item.price)}
-                    </Badge>
+                <div
+                  key={item.id}
+                  className='grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none grid-cols-[minmax(0,1.35fr)_minmax(4rem,0.7fr)_minmax(4rem,0.55fr)]'
+                >
+                  <div className='min-w-0 truncate text-[12px] font-bold leading-[1.15] text-zinc-50 xl:text-[13px]'>
+                    {item.itemName}
                   </div>
-                  <div className='mt-1 flex flex-wrap gap-1 text-[10px] text-zinc-400'>
-                    <RecordChip>Sort {item.sortOrder}</RecordChip>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                    {formatPrice(item.price)}
+                  </div>
+                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                    {item.status}
                   </div>
                 </div>
               ))}
@@ -1404,7 +1434,11 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   };
 
   return (
-    <main className='relative min-h-[100dvh] overflow-hidden bg-zinc-950 text-zinc-50'>
+    <main
+      data-display-board-root
+      className='relative min-h-[100dvh] overflow-hidden bg-zinc-950 text-zinc-50'
+      style={{ fontFamily: DISPLAY_FONT_FAMILY }}
+    >
       <DisplayBoardAutoRefresh />
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.2),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.07),transparent_24%),radial-gradient(circle_at_50%_120%,rgba(180,83,9,0.12),transparent_30%),linear-gradient(180deg,#09090b_0%,#020202_100%)]' />
       {wallpaper?.imageUrl ? (
