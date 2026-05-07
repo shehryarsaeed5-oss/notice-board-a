@@ -10,6 +10,7 @@ import {
   DISPLAY_GRID_ROW_MAX,
   DISPLAY_GRID_ROW_MIN,
   DISPLAY_GRID_ROW_SPAN_MAX,
+  DEFAULT_DISPLAY_LAYOUT_BACKGROUND,
   getDefaultDisplayLayoutConfig,
   isHeaderOnlyDisplayBlock
 } from '../lib/display-layout-config';
@@ -24,6 +25,18 @@ function normalizeNumber(value: unknown) {
   }
 
   return typeof value === 'string' ? Number(value) : value;
+}
+
+function normalizeNullableString(value: unknown) {
+  if (value === '' || value === null || value === undefined) {
+    return null;
+  }
+
+  if (typeof value === 'string' && value.trim() === '') {
+    return null;
+  }
+
+  return typeof value === 'string' ? value.trim() : value;
 }
 
 const displayLayoutColumnsSchema = z
@@ -51,12 +64,30 @@ const displayLayoutRowsSchema = z.object({
   )
 });
 
+const displayLayoutBackgroundSchema = z.object({
+  imageUrl: z
+    .preprocess(normalizeNullableString, z.string().nullable())
+    .default(DEFAULT_DISPLAY_LAYOUT_BACKGROUND.imageUrl),
+  opacity: z
+    .preprocess(normalizeNumber, z.number().min(0.1).max(1))
+    .default(DEFAULT_DISPLAY_LAYOUT_BACKGROUND.opacity),
+  blur: z
+    .preprocess(normalizeNumber, z.number().min(0).max(12))
+    .default(DEFAULT_DISPLAY_LAYOUT_BACKGROUND.blur),
+  overlayOpacity: z
+    .preprocess(normalizeNumber, z.number().min(0).max(0.9))
+    .default(DEFAULT_DISPLAY_LAYOUT_BACKGROUND.overlayOpacity),
+  fit: z.enum(['cover', 'contain', 'fill']).default(DEFAULT_DISPLAY_LAYOUT_BACKGROUND.fit),
+  position: z.enum(['center', 'top', 'bottom']).default(DEFAULT_DISPLAY_LAYOUT_BACKGROUND.position)
+});
+
 export const displayLayoutBlockSchema = z
   .object({
     key: z.enum(DISPLAY_BLOCK_KEYS),
     enabled: z.boolean(),
     sortOrder: z.preprocess(normalizeNumber, z.number().int().nonnegative()),
     rowLimit: z.preprocess(normalizeNumber, z.number().int().nonnegative()),
+    contentColumns: z.preprocess(normalizeNumber, z.number().int().min(1).max(3)),
     column: z.preprocess(normalizeNumber, z.number().int().min(1).max(DISPLAY_GRID_COLUMN_COUNT)),
     row: z.preprocess(
       normalizeNumber,
@@ -126,6 +157,7 @@ export const displayLayoutConfigSchema = z
   .object({
     columns: displayLayoutColumnsSchema,
     rows: displayLayoutRowsSchema,
+    background: displayLayoutBackgroundSchema,
     blocks: z.array(displayLayoutBlockSchema).length(DISPLAY_BLOCKS.length)
   })
   .superRefine((value, ctx) => {

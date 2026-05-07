@@ -14,6 +14,8 @@ export const DISPLAY_BLOCK_KEYS = [
 export type DisplayBlockKey = (typeof DISPLAY_BLOCK_KEYS)[number];
 
 export type DisplayLayoutBlockSlot = 'full' | 'top' | 'bottom';
+export type DisplayLayoutBackgroundFit = 'cover' | 'contain' | 'fill';
+export type DisplayLayoutBackgroundPosition = 'center' | 'top' | 'bottom';
 
 export interface DisplayBlockDefinition {
   key: DisplayBlockKey;
@@ -31,6 +33,7 @@ export interface DisplayLayoutBlockConfig {
   enabled: boolean;
   sortOrder: number;
   rowLimit: number;
+  contentColumns: number;
   column: number;
   row: number;
   colSpan: number;
@@ -48,9 +51,19 @@ export interface DisplayLayoutRows {
   heights: number[];
 }
 
+export interface DisplayLayoutBackgroundConfig {
+  imageUrl: string | null;
+  opacity: number;
+  blur: number;
+  overlayOpacity: number;
+  fit: DisplayLayoutBackgroundFit;
+  position: DisplayLayoutBackgroundPosition;
+}
+
 export interface DisplayLayoutConfig {
   columns: DisplayLayoutColumns;
   rows: DisplayLayoutRows;
+  background: DisplayLayoutBackgroundConfig;
   blocks: DisplayLayoutBlockConfig[];
 }
 
@@ -60,6 +73,21 @@ export const DISPLAY_GRID_ROW_MAX = 20;
 export const DISPLAY_GRID_ROW_SPAN_MAX = 6;
 export const DISPLAY_GRID_ROW_HEIGHT_MIN = 0.5;
 export const DISPLAY_GRID_ROW_HEIGHT_MAX = 3;
+export const DISPLAY_LAYOUT_BACKGROUND_OPACITY_MIN = 0.1;
+export const DISPLAY_LAYOUT_BACKGROUND_OPACITY_MAX = 1;
+export const DISPLAY_LAYOUT_BACKGROUND_BLUR_MIN = 0;
+export const DISPLAY_LAYOUT_BACKGROUND_BLUR_MAX = 12;
+export const DISPLAY_LAYOUT_BACKGROUND_OVERLAY_MIN = 0;
+export const DISPLAY_LAYOUT_BACKGROUND_OVERLAY_MAX = 0.9;
+
+export const DEFAULT_DISPLAY_LAYOUT_BACKGROUND: DisplayLayoutBackgroundConfig = {
+  imageUrl: null,
+  opacity: 1,
+  blur: 0,
+  overlayOpacity: 0.55,
+  fit: 'cover',
+  position: 'center'
+};
 
 export const DISPLAY_BLOCKS: DisplayBlockDefinition[] = [
   {
@@ -175,11 +203,13 @@ const DEFAULT_LAYOUT_CONFIG: DisplayLayoutConfig = {
   rows: {
     heights: []
   },
+  background: { ...DEFAULT_DISPLAY_LAYOUT_BACKGROUND },
   blocks: DISPLAY_BLOCKS.map((block) => ({
     key: block.key,
     enabled: block.defaultEnabled,
     sortOrder: block.defaultSortOrder,
     rowLimit: block.defaultRowLimit,
+    contentColumns: 1,
     ...getFlowPlacementFromSortOrder(block.defaultSortOrder),
     colSpan: 1,
     rowSpan: 1,
@@ -222,8 +252,60 @@ function normalizeGridRowSpan(value: number): number {
   return clamp(value, 1, DISPLAY_GRID_ROW_SPAN_MAX);
 }
 
+function normalizeGridContentColumns(value: number): number {
+  return clamp(value, 1, 3);
+}
+
 function normalizeGridRowHeight(value: number): number {
   return clamp(value, DISPLAY_GRID_ROW_HEIGHT_MIN, DISPLAY_GRID_ROW_HEIGHT_MAX);
+}
+
+function normalizeDisplayLayoutBackground(input: unknown): DisplayLayoutBackgroundConfig {
+  const rawBackground =
+    input !== null && typeof input === 'object'
+      ? ((input as Partial<DisplayLayoutBackgroundConfig>) ?? {})
+      : undefined;
+
+  const imageUrl =
+    typeof rawBackground?.imageUrl === 'string' && rawBackground.imageUrl.trim()
+      ? rawBackground.imageUrl.trim()
+      : null;
+  const opacity = clamp(
+    toFiniteNumber(rawBackground?.opacity, DEFAULT_DISPLAY_LAYOUT_BACKGROUND.opacity),
+    DISPLAY_LAYOUT_BACKGROUND_OPACITY_MIN,
+    DISPLAY_LAYOUT_BACKGROUND_OPACITY_MAX
+  );
+  const blur = clamp(
+    toFiniteNumber(rawBackground?.blur, DEFAULT_DISPLAY_LAYOUT_BACKGROUND.blur),
+    DISPLAY_LAYOUT_BACKGROUND_BLUR_MIN,
+    DISPLAY_LAYOUT_BACKGROUND_BLUR_MAX
+  );
+  const overlayOpacity = clamp(
+    toFiniteNumber(rawBackground?.overlayOpacity, DEFAULT_DISPLAY_LAYOUT_BACKGROUND.overlayOpacity),
+    DISPLAY_LAYOUT_BACKGROUND_OVERLAY_MIN,
+    DISPLAY_LAYOUT_BACKGROUND_OVERLAY_MAX
+  );
+  const fit =
+    rawBackground?.fit === 'contain' ||
+    rawBackground?.fit === 'fill' ||
+    rawBackground?.fit === 'cover'
+      ? rawBackground.fit
+      : DEFAULT_DISPLAY_LAYOUT_BACKGROUND.fit;
+  const position =
+    rawBackground?.position === 'top' ||
+    rawBackground?.position === 'bottom' ||
+    rawBackground?.position === 'center'
+      ? rawBackground.position
+      : DEFAULT_DISPLAY_LAYOUT_BACKGROUND.position;
+
+  return {
+    imageUrl,
+    opacity,
+    blur,
+    overlayOpacity,
+    fit,
+    position
+  };
 }
 
 function normalizeGridSlot(value: unknown, headerOnly: boolean): DisplayLayoutBlockSlot {
@@ -370,6 +452,7 @@ export function getDefaultDisplayLayoutConfig(): DisplayLayoutConfig {
   return {
     columns: { ...DEFAULT_DISPLAY_LAYOUT_COLUMNS },
     rows,
+    background: { ...DEFAULT_DISPLAY_LAYOUT_BACKGROUND },
     blocks: DEFAULT_LAYOUT_CONFIG.blocks.map((block) => ({ ...block }))
   };
 }
@@ -377,6 +460,7 @@ export function getDefaultDisplayLayoutConfig(): DisplayLayoutConfig {
 export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfig {
   const rawColumns = (input as { columns?: unknown } | null | undefined)?.columns;
   const rawRows = (input as { rows?: unknown } | null | undefined)?.rows;
+  const rawBackground = (input as { background?: unknown } | null | undefined)?.background;
   const rawBlocks = Array.isArray((input as { blocks?: unknown } | null | undefined)?.blocks)
     ? ((input as { blocks?: unknown[] }).blocks ?? [])
     : [];
@@ -425,6 +509,9 @@ export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfi
       definition.minRowLimit,
       definition.maxRowLimit
     );
+    const contentColumns = normalizeGridContentColumns(
+      rawBlock?.contentColumns !== undefined ? toFiniteInteger(rawBlock.contentColumns, 1) : 1
+    );
     const enabled =
       typeof rawBlock?.enabled === 'boolean'
         ? rawBlock.enabled
@@ -457,6 +544,7 @@ export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfi
       enabled,
       sortOrder,
       rowLimit,
+      contentColumns,
       column,
       row,
       colSpan,
@@ -469,6 +557,7 @@ export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfi
   return {
     columns: normalizeDisplayLayoutColumns(rawColumns),
     rows: normalizeDisplayLayoutRows(rawRows, rowCount),
+    background: normalizeDisplayLayoutBackground(rawBackground),
     blocks
   };
 }

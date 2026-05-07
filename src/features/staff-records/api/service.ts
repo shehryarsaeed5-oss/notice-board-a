@@ -11,6 +11,7 @@ import type {
 import {
   buildStaffImportIdentityKey,
   buildStaffImportPhoneKey,
+  getStaffImportDuplicateStrategy,
   type StaffImportPreparedRow
 } from '../lib/staff-import';
 
@@ -52,6 +53,16 @@ function normalizeSortOrder(value?: number | string | null): number {
 
 function normalizeStaffMemberPhoneKey(value: string | null): string {
   return value ? buildStaffImportPhoneKey(value) : '';
+}
+
+function normalizeImportedStaffStatus(value: string): 'ACTIVE' | 'INACTIVE' | 'ARCHIVED' {
+  const upper = value.trim().toUpperCase();
+
+  if (upper === 'ACTIVE' || upper === 'INACTIVE' || upper === 'ARCHIVED') {
+    return upper;
+  }
+
+  return 'ACTIVE';
 }
 
 function buildExistingImportKeySets(
@@ -240,52 +251,51 @@ export async function importStaffMembers(
     buildExistingImportKeySets(existingStaffMembers);
   const seenIdentityKeys = new Set(existingIdentityKeys);
   const seenPhoneKeys = new Set(existingPhoneKeys);
+  const getDuplicateStrategy = getStaffImportDuplicateStrategy(rows);
   const data: Array<{
     name: string;
     designation: string;
     department: string | null;
     phone: string | null;
     sortOrder: number;
-    status: 'ACTIVE' | 'INACTIVE';
+    status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
   }> = [];
   let skippedCount = 0;
 
   for (const row of rows) {
-    const identityKey = row.identityKey;
-    const phoneKey = row.phoneKey;
+    const { usePhoneDuplicateKey } = getDuplicateStrategy(row);
 
-    if (phoneKey) {
-      if (seenPhoneKeys.has(phoneKey)) {
+    if (usePhoneDuplicateKey) {
+      if (!row.phoneKey || seenPhoneKeys.has(row.phoneKey)) {
         skippedCount += 1;
         continue;
       }
 
-      seenPhoneKeys.add(phoneKey);
-      seenIdentityKeys.add(identityKey);
+      seenPhoneKeys.add(row.phoneKey);
       data.push({
         name: row.name,
         designation: row.designation,
         department: row.department,
         phone: row.phone,
         sortOrder: row.sortOrder,
-        status: row.status
+        status: normalizeImportedStaffStatus(row.status)
       });
       continue;
     }
 
-    if (seenIdentityKeys.has(identityKey)) {
+    if (seenIdentityKeys.has(row.identityKey)) {
       skippedCount += 1;
       continue;
     }
 
-    seenIdentityKeys.add(identityKey);
+    seenIdentityKeys.add(row.identityKey);
     data.push({
       name: row.name,
       designation: row.designation,
       department: row.department,
       phone: row.phone,
       sortOrder: row.sortOrder,
-      status: row.status
+      status: normalizeImportedStaffStatus(row.status)
     });
   }
 

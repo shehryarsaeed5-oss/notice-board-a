@@ -31,7 +31,7 @@ export interface StaffImportPreviewRow {
   department: string;
   phone: string | null;
   sortOrder: number;
-  status: Exclude<StaffRecordStatus, 'ARCHIVED'>;
+  status: StaffRecordStatus;
   validationMessages: string[];
   duplicateKey: string;
   isValid: boolean;
@@ -54,7 +54,7 @@ export interface StaffImportPreparedRow {
   department: string;
   phone: string | null;
   sortOrder: number;
-  status: Exclude<StaffRecordStatus, 'ARCHIVED'>;
+  status: StaffRecordStatus;
   duplicateKey: string;
   identityKey: string;
   phoneKey: string | null;
@@ -65,6 +65,10 @@ function normalizeHeader(value: string): string {
     .replace(/^\uFEFF/, '')
     .trim()
     .toLowerCase();
+}
+
+function normalizeHeaderKey(value: string): string {
+  return normalizeHeader(value).replace(/[_\s-]+/g, '');
 }
 
 function normalizeText(value: string): string {
@@ -83,6 +87,66 @@ function normalizePhoneKey(value: string): string {
 
 function isRowEmpty(values: string[]): boolean {
   return values.every((value) => value.trim() === '');
+}
+
+type StaffImportCanonicalHeader =
+  | 'name'
+  | 'designation'
+  | 'department'
+  | 'phone'
+  | 'sortOrder'
+  | 'status';
+
+const STAFF_IMPORT_HEADER_ALIASES = {
+  name: ['name'],
+  designation: ['designation', 'desigantion'],
+  department: ['department'],
+  phone: ['phone', 'mobile', 'phonenumber', 'contactnumber'],
+  sortOrder: ['sortorder', 'sort_order', 'sort'],
+  status: ['status']
+} satisfies Record<StaffImportCanonicalHeader, readonly string[]>;
+
+function buildHeaderLookup(headers: string[]) {
+  const lookup = new Map<StaffImportCanonicalHeader, number>();
+  const normalizedHeaders = headers.map(normalizeHeaderKey);
+
+  for (const canonicalHeader of Object.keys(
+    STAFF_IMPORT_HEADER_ALIASES
+  ) as StaffImportCanonicalHeader[]) {
+    const aliases = STAFF_IMPORT_HEADER_ALIASES[canonicalHeader];
+    const foundIndex = normalizedHeaders.findIndex((header) =>
+      aliases.some((alias) => alias === header)
+    );
+
+    if (foundIndex >= 0) {
+      lookup.set(canonicalHeader, foundIndex);
+    }
+  }
+
+  return lookup;
+}
+
+export function getStaffImportDuplicateStrategy(rows: StaffImportPreparedRow[]) {
+  const phoneCounts = new Map<string, number>();
+
+  for (const row of rows) {
+    if (!row.phoneKey) {
+      continue;
+    }
+
+    phoneCounts.set(row.phoneKey, (phoneCounts.get(row.phoneKey) ?? 0) + 1);
+  }
+
+  return (row: StaffImportPreparedRow) => {
+    const usePhoneDuplicateKey = Boolean(
+      row.phoneKey && (phoneCounts.get(row.phoneKey) ?? 0) === 1
+    );
+
+    return {
+      usePhoneDuplicateKey,
+      duplicateKey: usePhoneDuplicateKey ? `phone:${row.phoneKey}` : `identity:${row.identityKey}`
+    };
+  };
 }
 
 export function buildStaffImportTemplateCsv(): string {
@@ -176,53 +240,40 @@ export function parseStaffImportCsv(csvText: string): StaffImportCsvParseResult 
   }
 
   const headerRow = rows.shift() ?? [];
-  const normalizedHeaders = headerRow.map(normalizeHeader);
-  const headerLookup = new Map<string, number>();
-
-  const missingHeaders = STAFF_IMPORT_TEMPLATE_HEADERS.filter((header) => {
-    return !normalizedHeaders.includes(header);
-  });
-
-  normalizedHeaders.forEach((header, index) => {
-    if (header) {
-      headerLookup.set(header, index);
-    }
+  const headerLookup = buildHeaderLookup(headerRow);
+  const missingRequiredHeaders = ['name', 'designation', 'department'].filter((header) => {
+    return !headerLookup.has(header as StaffImportCanonicalHeader);
   });
 
   return {
     rows: rows
       .map((row, index): StaffImportCsvRow => {
         const rowNumber = index + 2;
+        const nameIndex = headerLookup.get('name');
+        const designationIndex = headerLookup.get('designation');
+        const departmentIndex = headerLookup.get('department');
+        const phoneIndex = headerLookup.get('phone');
+        const sortOrderIndex = headerLookup.get('sortOrder');
+        const statusIndex = headerLookup.get('status');
+
         return {
           rowNumber,
-          name:
-            headerLookup.get('name') === undefined ? '' : (row[headerLookup.get('name')!] ?? ''),
-          designation:
-            headerLookup.get('designation') === undefined
-              ? ''
-              : (row[headerLookup.get('designation')!] ?? ''),
-          department:
-            headerLookup.get('department') === undefined
-              ? ''
-              : (row[headerLookup.get('department')!] ?? ''),
-          phone:
-            headerLookup.get('phone') === undefined ? '' : (row[headerLookup.get('phone')!] ?? ''),
-          sortOrder:
-            headerLookup.get('sortOrder') === undefined
-              ? ''
-              : (row[headerLookup.get('sortOrder')!] ?? ''),
-          status:
-            headerLookup.get('status') === undefined ? '' : (row[headerLookup.get('status')!] ?? '')
+          name: nameIndex === undefined ? '' : (row[nameIndex] ?? ''),
+          designation: designationIndex === undefined ? '' : (row[designationIndex] ?? ''),
+          department: departmentIndex === undefined ? '' : (row[departmentIndex] ?? ''),
+          phone: phoneIndex === undefined ? '' : (row[phoneIndex] ?? ''),
+          sortOrder: sortOrderIndex === undefined ? '' : (row[sortOrderIndex] ?? ''),
+          status: statusIndex === undefined ? '' : (row[statusIndex] ?? '')
         };
       })
       .filter((row) => {
         const values = STAFF_IMPORT_TEMPLATE_HEADERS.map((header) => row[header]);
         return !isRowEmpty(values);
       }),
-    headerErrors: missingHeaders.length
+    headerErrors: missingRequiredHeaders.length
       ? [
-          `Missing required header(s): ${missingHeaders.join(', ')}.`,
-          `Expected columns: ${STAFF_IMPORT_TEMPLATE_HEADERS.join(', ')}.`
+          `Missing required header(s): ${missingRequiredHeaders.join(', ')}.`,
+          'Required columns: name, designation, department.'
         ]
       : []
   };
@@ -257,7 +308,7 @@ function parseSortOrder(value: string): { value: number; error?: string } {
 }
 
 function parseStatus(value: string): {
-  value: Exclude<StaffRecordStatus, 'ARCHIVED'>;
+  value: StaffRecordStatus;
   error?: string;
 } {
   const trimmed = value.trim().toUpperCase();
@@ -266,13 +317,13 @@ function parseStatus(value: string): {
     return { value: 'ACTIVE' };
   }
 
-  if (trimmed === 'ACTIVE' || trimmed === 'INACTIVE') {
+  if (trimmed === 'ACTIVE' || trimmed === 'INACTIVE' || trimmed === 'ARCHIVED') {
     return { value: trimmed };
   }
 
   return {
     value: 'ACTIVE',
-    error: 'Status must be ACTIVE or INACTIVE.'
+    error: 'Status must be ACTIVE, INACTIVE, or ARCHIVED.'
   };
 }
 

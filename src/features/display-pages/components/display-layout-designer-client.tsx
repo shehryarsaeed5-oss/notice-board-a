@@ -14,9 +14,10 @@ import {
 } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { useMutation } from '@tanstack/react-query';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
 
 import { Icons } from '@/components/icons';
@@ -46,6 +47,8 @@ import {
   DISPLAY_GRID_ROW_MAX,
   DISPLAY_GRID_ROW_MIN,
   DISPLAY_GRID_ROW_SPAN_MAX,
+  DISPLAY_LAYOUT_BACKGROUND_BLUR_MAX,
+  DEFAULT_DISPLAY_LAYOUT_BACKGROUND,
   expandDisplayLayoutRowsForSlots,
   getDisplayBlockGridPlacement,
   getDisplayBlockSlotLabel,
@@ -54,6 +57,7 @@ import {
   normalizeDisplayLayoutConfig,
   type DisplayBlockDefinition,
   type DisplayBlockKey,
+  type DisplayLayoutBackgroundConfig,
   type DisplayLayoutBlockSlot,
   type DisplayLayoutBlockConfig,
   type DisplayLayoutColumns,
@@ -76,8 +80,52 @@ function getRowsPerSlideLabel(block: DisplayLayoutBlockConfig) {
   return `Content ${block.rowLimit}`;
 }
 
+function getContentColumnsLabel(block: DisplayLayoutBlockConfig) {
+  return `${block.contentColumns} col${block.contentColumns === 1 ? '' : 's'}`;
+}
+
+function getBackgroundLabel(background: DisplayLayoutBackgroundConfig) {
+  return background.imageUrl ? 'Wallpaper set' : 'Wallpaper off';
+}
+
+function getBackgroundObjectPosition(position: DisplayLayoutBackgroundConfig['position']) {
+  switch (position) {
+    case 'top':
+      return 'top center';
+    case 'bottom':
+      return 'bottom center';
+    case 'center':
+    default:
+      return 'center center';
+  }
+}
+
+function getBackgroundFitLabel(fit: DisplayLayoutBackgroundConfig['fit']) {
+  switch (fit) {
+    case 'contain':
+      return 'Contain';
+    case 'fill':
+      return 'Fill';
+    case 'cover':
+    default:
+      return 'Cover';
+  }
+}
+
+function getBackgroundPositionLabel(position: DisplayLayoutBackgroundConfig['position']) {
+  switch (position) {
+    case 'top':
+      return 'Top';
+    case 'bottom':
+      return 'Bottom';
+    case 'center':
+    default:
+      return 'Center';
+  }
+}
+
 function getBlockSummaryLabel(block: DisplayLayoutBlockConfig) {
-  return `${getPlacementLabel(block)} • ${getRowsPerSlideLabel(block)}`;
+  return `${getPlacementLabel(block)} • ${getRowsPerSlideLabel(block)} • ${getContentColumnsLabel(block)}`;
 }
 
 function getSlotOptions(): Array<{ label: string; value: DisplayLayoutBlockSlot }> {
@@ -179,6 +227,12 @@ function BlockListItem({
             </span>
             <span className='text-muted-foreground'>•</span>
             <span>{getRowsPerSlideLabel(block)}</span>
+            {!definition.headerOnly ? (
+              <>
+                <span className='text-muted-foreground'>•</span>
+                <span>{getContentColumnsLabel(block)}</span>
+              </>
+            ) : null}
           </div>
         </div>
 
@@ -209,6 +263,8 @@ function BlockListItem({
               <span>C{block.column}</span>
               <span>R{block.row}</span>
               <span>W{block.colSpan}</span>
+              <span>H{block.rowSpan}</span>
+              <span>{getContentColumnsLabel(block)}</span>
             </>
           )}
         </div>
@@ -391,6 +447,7 @@ function DesignerFieldLabel({ children }: { children: ReactNode }) {
 
 export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesignerClientProps) {
   const router = useRouter();
+  const wallpaperInputRef = useRef<HTMLInputElement>(null);
   const [layoutConfig, setLayoutConfig] = useState<DisplayLayoutConfig>(() =>
     normalizeDisplayLayoutConfig(displayPage.layoutConfig)
   );
@@ -400,6 +457,7 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
     );
   });
   const [activeKey, setActiveKey] = useState<DisplayBlockKey | null>(null);
+  const [isWallpaperUploading, setIsWallpaperUploading] = useState(false);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -429,8 +487,12 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
       getDefaultDisplayLayoutConfig().blocks[0],
     [layoutConfig, selectedKey]
   );
+  const selectedDefinition = getBlockDefinition(selectedBlock.key);
+  const canEditContentColumns =
+    !selectedDefinition.headerOnly && selectedBlock.key !== 'movieSchedule';
   const columnTotal =
     layoutConfig.columns.left + layoutConfig.columns.center + layoutConfig.columns.right;
+  const background = layoutConfig.background ?? DEFAULT_DISPLAY_LAYOUT_BACKGROUND;
 
   const gridBlocks = useMemo(
     () =>
@@ -509,6 +571,70 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
         }
       })
     );
+  };
+
+  const updateBackground = (
+    updater: (current: DisplayLayoutBackgroundConfig) => DisplayLayoutBackgroundConfig
+  ) => {
+    setLayoutConfig((current) =>
+      normalizeDisplayLayoutConfig({
+        ...current,
+        background: updater(current.background ?? DEFAULT_DISPLAY_LAYOUT_BACKGROUND)
+      })
+    );
+  };
+
+  const handleWallpaperUpload = async (file: File) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Wallpaper must be a JPG, PNG, or WEBP image.');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Wallpaper image must be 5MB or smaller.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setIsWallpaperUploading(true);
+    try {
+      const response = await fetch('/api/display-pages/wallpaper-upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = (await response.json().catch(() => null)) as {
+        imageUrl?: string;
+        message?: string;
+      } | null;
+
+      if (!response.ok) {
+        throw new Error(data?.message ?? 'Failed to upload wallpaper');
+      }
+
+      const imageUrl = typeof data?.imageUrl === 'string' ? data.imageUrl : null;
+
+      if (!imageUrl) {
+        throw new Error('Wallpaper upload did not return a file URL');
+      }
+
+      updateBackground((current) => ({
+        ...current,
+        imageUrl
+      }));
+
+      toast.success('Wallpaper uploaded');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to upload wallpaper');
+    } finally {
+      setIsWallpaperUploading(false);
+      if (wallpaperInputRef.current) {
+        wallpaperInputRef.current.value = '';
+      }
+    }
   };
 
   const applyRowHeightPreset = (preset: 'equal' | 'top' | 'middle' | 'bottom') => {
@@ -868,6 +994,211 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
               </div>
             </div>
 
+            <div className='rounded-none border border-border/60 bg-muted/20 p-3'>
+              <div className='flex flex-wrap items-start justify-between gap-3'>
+                <div className='space-y-1'>
+                  <div className='text-sm font-medium text-foreground'>TV Wallpaper</div>
+                  <p className='text-xs text-muted-foreground'>
+                    Optional wallpaper shown behind the TV preview and public display content.
+                  </p>
+                </div>
+                <div className='flex flex-wrap items-center gap-2'>
+                  <Badge variant='outline' className='border-border/60 bg-muted/40 text-foreground'>
+                    {getBackgroundLabel(background)}
+                  </Badge>
+                  {background.imageUrl ? (
+                    <>
+                      <Badge
+                        variant='outline'
+                        className='border-border/60 bg-muted/40 text-foreground'
+                      >
+                        {getBackgroundFitLabel(background.fit)}
+                      </Badge>
+                      <Badge
+                        variant='outline'
+                        className='border-border/60 bg-muted/40 text-foreground'
+                      >
+                        {getBackgroundPositionLabel(background.position)}
+                      </Badge>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+
+              <input
+                ref={wallpaperInputRef}
+                type='file'
+                accept='image/jpeg,image/png,image/webp'
+                className='hidden'
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) {
+                    void handleWallpaperUpload(file);
+                  }
+                }}
+              />
+
+              <div className='mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]'>
+                <div className='grid gap-1.5'>
+                  <DesignerFieldLabel>Background Image URL</DesignerFieldLabel>
+                  <Input
+                    type='url'
+                    placeholder='/uploads/display-wallpapers/cinema-lobby.webp'
+                    value={background.imageUrl ?? ''}
+                    onChange={(event) =>
+                      updateBackground((current) => ({
+                        ...current,
+                        imageUrl: event.target.value.trim() ? event.target.value.trim() : null
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className='flex flex-wrap items-end gap-2'>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => wallpaperInputRef.current?.click()}
+                    isLoading={isWallpaperUploading}
+                  >
+                    <Icons.upload className='mr-2 size-4' />
+                    Upload Background Image
+                  </Button>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() =>
+                      updateBackground((current) => ({
+                        ...current,
+                        imageUrl: null
+                      }))
+                    }
+                    disabled={!background.imageUrl}
+                  >
+                    <Icons.trash className='mr-2 size-4' />
+                    Clear Background
+                  </Button>
+                </div>
+              </div>
+
+              <div className='mt-3 grid gap-3 md:grid-cols-3'>
+                <div className='grid gap-1.5'>
+                  <DesignerFieldLabel>Fit</DesignerFieldLabel>
+                  <Select
+                    value={background.fit}
+                    onValueChange={(value) =>
+                      updateBackground((current) => ({
+                        ...current,
+                        fit:
+                          value === 'contain' || value === 'fill' || value === 'cover'
+                            ? value
+                            : current.fit
+                      }))
+                    }
+                  >
+                    <SelectTrigger className='w-full'>
+                      <SelectValue placeholder='Fit' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='cover'>Cover</SelectItem>
+                      <SelectItem value='contain'>Contain</SelectItem>
+                      <SelectItem value='fill'>Fill</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className='grid gap-1.5'>
+                  <DesignerFieldLabel>Position</DesignerFieldLabel>
+                  <Select
+                    value={background.position}
+                    onValueChange={(value) =>
+                      updateBackground((current) => ({
+                        ...current,
+                        position:
+                          value === 'top' || value === 'bottom' || value === 'center'
+                            ? value
+                            : current.position
+                      }))
+                    }
+                  >
+                    <SelectTrigger className='w-full'>
+                      <SelectValue placeholder='Position' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='center'>Center</SelectItem>
+                      <SelectItem value='top'>Top</SelectItem>
+                      <SelectItem value='bottom'>Bottom</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className='grid gap-1.5'>
+                  <DesignerFieldLabel>Image Opacity</DesignerFieldLabel>
+                  <Input
+                    type='number'
+                    min={0.1}
+                    max={1}
+                    step={0.05}
+                    value={background.opacity}
+                    onChange={(event) =>
+                      updateBackground((current) => ({
+                        ...current,
+                        opacity: clampNumber(
+                          toSafeNumber(event.target.value, current.opacity),
+                          0.1,
+                          1
+                        )
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className='mt-3 grid gap-3 md:grid-cols-2'>
+                <div className='grid gap-1.5'>
+                  <DesignerFieldLabel>Overlay Opacity</DesignerFieldLabel>
+                  <Input
+                    type='number'
+                    min={0}
+                    max={0.9}
+                    step={0.05}
+                    value={background.overlayOpacity}
+                    onChange={(event) =>
+                      updateBackground((current) => ({
+                        ...current,
+                        overlayOpacity: clampNumber(
+                          toSafeNumber(event.target.value, current.overlayOpacity),
+                          0,
+                          0.9
+                        )
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className='grid gap-1.5'>
+                  <DesignerFieldLabel>Blur</DesignerFieldLabel>
+                  <Input
+                    type='number'
+                    min={0}
+                    max={DISPLAY_LAYOUT_BACKGROUND_BLUR_MAX}
+                    step={0.5}
+                    value={background.blur}
+                    onChange={(event) =>
+                      updateBackground((current) => ({
+                        ...current,
+                        blur: clampNumber(
+                          toSafeNumber(event.target.value, current.blur),
+                          0,
+                          DISPLAY_LAYOUT_BACKGROUND_BLUR_MAX
+                        )
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -882,8 +1213,33 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                   aspectRatio: `${displayPage.resolutionWidth} / ${displayPage.resolutionHeight}`
                 }}
               >
-                <div className='flex h-full min-h-0 flex-col overflow-hidden !rounded-none bg-zinc-950/90'>
-                  <div className='flex h-16 shrink-0 items-center justify-between gap-4 border-b border-white/10 px-3'>
+                <div className='relative flex h-full min-h-0 flex-col overflow-hidden !rounded-none bg-zinc-950/90'>
+                  {background.imageUrl ? (
+                    <div className='pointer-events-none absolute inset-0'>
+                      <Image
+                        src={background.imageUrl}
+                        alt=''
+                        fill
+                        unoptimized
+                        sizes='100vw'
+                        className='select-none object-cover'
+                        style={{
+                          objectFit: background.fit,
+                          objectPosition: getBackgroundObjectPosition(background.position),
+                          opacity: background.opacity,
+                          filter: background.blur > 0 ? `blur(${background.blur}px)` : 'none'
+                        }}
+                      />
+                    </div>
+                  ) : null}
+                  {background.imageUrl ? (
+                    <div
+                      className='pointer-events-none absolute inset-0 bg-slate-950'
+                      style={{ opacity: background.overlayOpacity }}
+                    />
+                  ) : null}
+
+                  <div className='relative z-10 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-white/10 px-3'>
                     <div className='flex items-center gap-2'>
                       <div className='text-sm font-semibold tracking-[0.28em] text-zinc-100'>
                         CUE
@@ -902,7 +1258,7 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                     </div>
                   </div>
 
-                  <div className='flex min-h-0 flex-1 flex-col p-2'>
+                  <div className='relative z-10 flex min-h-0 flex-1 flex-col p-2'>
                     <div className='relative flex min-h-0 flex-1 flex-col'>
                       <div
                         className='grid gap-2 min-h-0 flex-1'
@@ -1208,6 +1564,38 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                         </div>
                       </div>
 
+                      {canEditContentColumns ? (
+                        <div className='grid gap-1.5'>
+                          <DesignerFieldLabel>Content Columns</DesignerFieldLabel>
+                          <Select
+                            value={String(selectedBlock.contentColumns)}
+                            onValueChange={(value) =>
+                              handleBlockChange(selectedBlock.key, (block) => ({
+                                ...block,
+                                contentColumns: clampInt(
+                                  toSafeInt(value, block.contentColumns),
+                                  1,
+                                  3
+                                )
+                              }))
+                            }
+                          >
+                            <SelectTrigger className='w-full'>
+                              <SelectValue placeholder='Content Columns' />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value='1'>1 column</SelectItem>
+                              <SelectItem value='2'>2 columns</SelectItem>
+                              <SelectItem value='3'>3 columns</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <p className='text-[11px] leading-[1.3] text-muted-foreground'>
+                            Content Columns splits rows inside the card. Card Width controls the TV
+                            grid width.
+                          </p>
+                        </div>
+                      ) : null}
+
                       <div className='grid gap-1.5'>
                         <p className='text-xs text-muted-foreground'>
                           Start Row controls where the card begins on the TV grid. Card Height
@@ -1236,6 +1624,7 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                 <li>Card Height cannot extend beyond layout row 20.</li>
                 <li>Start Row is the row where the card begins.</li>
                 <li>Content Rows / Slide only controls internal slideshow rows.</li>
+                <li>Content Columns splits rows inside the card.</li>
                 <li>Header-only blocks stay in the top header.</li>
               </ul>
             </div>
