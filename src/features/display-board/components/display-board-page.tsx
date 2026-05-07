@@ -19,8 +19,11 @@ import {
   getDisplayBlockDefinition,
   getDisplayBlockGridPlacement,
   getEnabledSortedDisplayBlocks,
+  DEFAULT_DISPLAY_LAYOUT_APPEARANCE,
+  hexToRgba,
   normalizeDisplayLayoutConfig,
   type DisplayBlockKey,
+  type DisplayLayoutAppearanceColorsConfig,
   type DisplayLayoutBackgroundConfig,
   type DisplayLayoutBlockConfig
 } from '@/features/display-pages/lib/display-layout-config';
@@ -50,14 +53,99 @@ const VISIBLE_STAFF_ATTENDANCE_COUNT = 6;
 const VISIBLE_MANAGER_ATTENDANCE_COUNT = 3;
 const DISPLAY_LAYOUT_GAP_CLASS = 'gap-2';
 const DISPLAY_LAYOUT_PADDING_CLASS = 'p-2';
-const DISPLAY_CONTENT_TITLE_CLASS = 'truncate text-[12px] font-bold text-zinc-50 xl:text-[13px]';
-const DISPLAY_CONTENT_SMALL_CLASS = 'text-[11px] font-semibold leading-[1.2]';
+const DISPLAY_HEADER_TEXT_CLASS = '!text-[color:var(--display-header-text,#f8f4e8)]';
+const DISPLAY_HEADER_MUTED_TEXT_CLASS = '!text-[color:var(--display-header-muted-text,#d1b56a)]';
+const DISPLAY_CARD_TITLE_TEXT_CLASS = '!text-[color:var(--display-card-title-text,#f8f4e8)]';
+const DISPLAY_CARD_HEADING_TEXT_CLASS = '!text-[color:var(--display-card-heading-text,#d1b56a)]';
+const DISPLAY_CARD_BODY_TEXT_CLASS = '!text-[color:var(--display-card-body-text,#f8f4e8)]';
+const DISPLAY_CARD_DIVIDER_COLOR = 'var(--display-card-divider, rgba(255,255,255,0.10))';
 const DISPLAY_SECTION_LIST_GAP_CLASS = 'space-y-1';
 const DISPLAY_SECTION_ROW_CLASS =
   'border-b border-white/10 px-3 py-2 last:border-b-0 bg-transparent rounded-none';
 const DISPLAY_META_INLINE_CLASS =
-  'inline-flex min-w-0 items-center truncate text-[10px] font-semibold leading-none text-zinc-100';
-const DISPLAY_META_SEPARATOR_CLASS = 'mx-1 shrink-0 text-zinc-500';
+  'inline-flex min-w-0 items-center truncate text-[10px] font-semibold leading-none';
+
+function getDisplayPanelStyle(
+  transparentPanels: boolean,
+  colors: DisplayLayoutAppearanceColorsConfig
+): CSSProperties {
+  const cardBackground = colors.cardBackground
+    ? hexToRgba(colors.cardBackground, transparentPanels ? 0.72 : 1)
+    : transparentPanels
+      ? 'rgba(255, 255, 255, 0.06)'
+      : 'rgb(9, 9, 11)';
+  const cardBorder =
+    colors.cardBorder ??
+    (transparentPanels ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.15)');
+
+  return {
+    backgroundColor: cardBackground,
+    borderColor: cardBorder
+  };
+}
+
+function getDisplayHeaderStyle(
+  transparentPanels: boolean,
+  colors: DisplayLayoutAppearanceColorsConfig
+): CSSProperties {
+  const headerBackground = colors.headerBackground
+    ? hexToRgba(colors.headerBackground, transparentPanels ? 0.72 : 1)
+    : transparentPanels
+      ? 'rgba(255, 255, 255, 0.06)'
+      : 'rgb(24, 24, 27)';
+  const cardBorder =
+    colors.cardBorder ??
+    (transparentPanels ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.15)');
+
+  return {
+    backgroundColor: headerBackground,
+    borderColor: cardBorder
+  };
+}
+
+function getDisplayTextStyles(colors: DisplayLayoutAppearanceColorsConfig): {
+  headerText: CSSProperties;
+  headerMutedText: CSSProperties;
+  cardTitleText: CSSProperties;
+  cardHeadingText: CSSProperties;
+  cardBodyText: CSSProperties;
+  cardDivider: CSSProperties;
+} {
+  return {
+    headerText: {
+      color: colors.headerText ?? 'var(--display-header-text, #f8f4e8)'
+    },
+    headerMutedText: {
+      color: colors.headerMutedText ?? 'var(--display-header-muted-text, #d1b56a)'
+    },
+    cardTitleText: {
+      color:
+        colors.cardTitleText ?? colors.cardBodyText ?? 'var(--display-card-title-text, #f8f4e8)'
+    },
+    cardHeadingText: {
+      color:
+        colors.cardHeadingText ?? colors.cardBodyText ?? 'var(--display-card-heading-text, #d1b56a)'
+    },
+    cardBodyText: {
+      color: colors.cardBodyText ?? 'var(--display-card-body-text, #f8f4e8)'
+    },
+    cardDivider: {
+      borderColor: colors.cardDivider ?? 'rgba(255, 255, 255, 0.10)'
+    }
+  };
+}
+
+function getDisplayPanelSurfaceClass(transparentPanels: boolean) {
+  return transparentPanels
+    ? 'border-white/10 bg-white/6 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'
+    : 'border-white/15 bg-zinc-950/95 shadow-[0_18px_42px_rgba(0,0,0,0.38)]';
+}
+
+function getDisplayHeaderSurfaceClass(transparentPanels: boolean) {
+  return transparentPanels
+    ? 'border-white/10 bg-white/6 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'
+    : 'border-white/15 bg-zinc-950/95 shadow-[0_18px_42px_rgba(0,0,0,0.38)]';
+}
 
 function getVisibleCount(block: DisplayLayoutBlockConfig, fallback: number) {
   return Math.max(1, block.rowLimit || fallback);
@@ -264,27 +352,48 @@ function getAlertTheme(alertType: DisplayBoardAlertItem['alertType']) {
   }
 }
 
-function AlertBannerCard({ alert }: { alert: DisplayBoardAlertItem }) {
+function AlertBannerCard({
+  alert,
+  transparentPanels,
+  colors
+}: {
+  alert: DisplayBoardAlertItem;
+  transparentPanels: boolean;
+  colors: DisplayLayoutAppearanceColorsConfig;
+}) {
   const theme = getAlertTheme(alert.alertType);
+  const textStyles = getDisplayTextStyles(colors);
 
   return (
     <div
       className={cn(
-        'border-b border-white/10 px-2 py-1.5 text-zinc-50 backdrop-blur-xl',
+        'border-b px-2 py-1.5',
+        transparentPanels ? 'border-white/10 backdrop-blur-xl' : 'border-white/15 bg-zinc-950/95',
         theme.accent,
         alert.alertType === 'URGENT' ? 'animate-pulse' : ''
       )}
+      style={{
+        ...getDisplayPanelStyle(transparentPanels, colors),
+        ...textStyles.cardBodyText,
+        borderColor: colors.cardDivider ?? 'rgba(255, 255, 255, 0.10)'
+      }}
     >
       <div className='flex items-center justify-between gap-2.5'>
         <div className='min-w-0'>
           <div className='flex items-center gap-1.5'>
             <theme.icon className={cn('size-4 shrink-0', theme.iconClass)} />
-            <div className='truncate text-[13px] font-bold tracking-tight text-zinc-50 xl:text-sm'>
+            <div
+              className='truncate text-[13px] font-bold tracking-tight xl:text-sm'
+              style={textStyles.cardBodyText}
+            >
               {alert.title}
             </div>
           </div>
           {alert.message ? (
-            <div className='mt-0.5 max-h-8 overflow-hidden text-[11px] font-semibold leading-[1.2] text-zinc-100'>
+            <div
+              className='mt-0.5 max-h-8 overflow-hidden text-[11px] font-semibold leading-[1.2]'
+              style={textStyles.cardBodyText}
+            >
               {alert.message}
             </div>
           ) : null}
@@ -297,7 +406,7 @@ function AlertBannerCard({ alert }: { alert: DisplayBoardAlertItem }) {
         </Badge>
       </div>
 
-      <div className='mt-1.5 flex flex-wrap gap-1 text-[10px] text-zinc-100'>
+      <div className='mt-1.5 flex flex-wrap gap-1 text-[10px]' style={textStyles.cardBodyText}>
         <RecordChip>Priority {alert.priority}</RecordChip>
         <RecordChip>Until {formatAlertExpiry(alert.endAt)}</RecordChip>
       </div>
@@ -316,7 +425,7 @@ function attendanceStatusTone(status: DisplayBoardAttendanceDisplayStatus) {
     case 'LATE':
       return 'border-orange-400/30 bg-orange-400/10 text-orange-100';
     case 'NOT_MARKED':
-      return 'border-white/10 bg-white/5 text-zinc-200';
+      return `border-white/10 bg-white/5 ${DISPLAY_CARD_BODY_TEXT_CLASS}`;
   }
 }
 
@@ -326,7 +435,12 @@ function attendanceStatusLabel(status: DisplayBoardAttendanceDisplayStatus) {
 
 function AttendanceStatusBadge({ status }: { status: DisplayBoardAttendanceDisplayStatus }) {
   return (
-    <Badge className={cn('!rounded-none px-1.5 py-[1px] text-[9px]', attendanceStatusTone(status))}>
+    <Badge
+      className={cn('!rounded-none px-1.5 py-[1px] text-[9px]', attendanceStatusTone(status))}
+      style={
+        status === 'NOT_MARKED' ? { color: 'var(--display-card-body-text, #f8f4e8)' } : undefined
+      }
+    >
       {attendanceStatusLabel(status)}
     </Badge>
   );
@@ -360,7 +474,7 @@ function getManagerDutyTone(status: DisplayBoardAttendanceDisplayStatus) {
     case 'ABSENT':
     case 'NOT_MARKED':
     default:
-      return 'text-zinc-400';
+      return DISPLAY_CARD_BODY_TEXT_CLASS;
   }
 }
 
@@ -373,7 +487,8 @@ function AttendanceRosterRow({
   status,
   kind,
   contentColumns = 1,
-  phone
+  phone,
+  colors
 }: {
   name: string;
   designation: string | null;
@@ -384,8 +499,10 @@ function AttendanceRosterRow({
   kind: 'staff' | 'manager';
   contentColumns?: number;
   phone?: string | null;
+  colors: DisplayLayoutAppearanceColorsConfig;
 }) {
   const safeContentColumns = Math.min(3, Math.max(1, Math.trunc(contentColumns) || 1));
+  const textStyles = getDisplayTextStyles(colors);
 
   if (kind === 'manager') {
     return (
@@ -394,22 +511,35 @@ function AttendanceRosterRow({
           'grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
           getManagerAvailabilityGridTemplate(safeContentColumns)
         )}
+        style={textStyles.cardDivider}
       >
-        <CompactTableCell className='truncate text-left text-[12px] font-bold text-zinc-50 xl:text-[13px]'>
+        <CompactTableCell
+          className='truncate text-left text-[12px] font-bold xl:text-[13px]'
+          style={textStyles.cardBodyText}
+        >
           {name}
         </CompactTableCell>
         {safeContentColumns === 1 ? (
           <>
-            <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
+            <CompactTableCell
+              className='justify-self-end truncate text-right text-[10px] font-semibold xl:text-[11px]'
+              style={textStyles.cardBodyText}
+            >
               {designation ?? '—'}
             </CompactTableCell>
-            <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
+            <CompactTableCell
+              className='justify-self-end truncate text-right text-[10px] font-semibold xl:text-[11px]'
+              style={textStyles.cardBodyText}
+            >
               {phone ?? '—'}
             </CompactTableCell>
           </>
         ) : null}
         {safeContentColumns === 2 ? (
-          <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
+          <CompactTableCell
+            className='justify-self-end truncate text-right text-[10px] font-semibold xl:text-[11px]'
+            style={textStyles.cardBodyText}
+          >
             {phone ?? '—'}
           </CompactTableCell>
         ) : null}
@@ -418,6 +548,9 @@ function AttendanceRosterRow({
             'min-w-0 truncate text-right text-[10px] font-semibold uppercase tracking-[0.08em]',
             getManagerDutyTone(status)
           )}
+          style={
+            status === 'ABSENT' || status === 'NOT_MARKED' ? textStyles.cardBodyText : undefined
+          }
         >
           {getManagerDutyLabel(status)}
         </div>
@@ -433,22 +566,35 @@ function AttendanceRosterRow({
         'grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
         layout
       )}
+      style={textStyles.cardDivider}
     >
-      <CompactTableCell className='truncate text-left text-[12px] font-bold text-zinc-50 xl:text-[13px]'>
+      <CompactTableCell
+        className='truncate text-left text-[12px] font-bold xl:text-[13px]'
+        style={textStyles.cardBodyText}
+      >
         {name}
       </CompactTableCell>
       {safeContentColumns === 1 ? (
         <>
-          <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
+          <CompactTableCell
+            className='justify-self-end truncate text-right text-[10px] font-semibold xl:text-[11px]'
+            style={textStyles.cardBodyText}
+          >
             {designation || '—'}
           </CompactTableCell>
-          <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
+          <CompactTableCell
+            className='justify-self-end truncate text-right text-[10px] font-semibold xl:text-[11px]'
+            style={textStyles.cardBodyText}
+          >
             {department || '—'}
           </CompactTableCell>
         </>
       ) : null}
       {safeContentColumns === 2 ? (
-        <CompactTableCell className='justify-self-end truncate text-right text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
+        <CompactTableCell
+          className='justify-self-end truncate text-right text-[10px] font-semibold xl:text-[11px]'
+          style={textStyles.cardBodyText}
+        >
           {designation || '—'}
         </CompactTableCell>
       ) : null}
@@ -464,16 +610,19 @@ function ManagerAvailabilityRow({
   designation,
   phone,
   status,
-  contentColumns = 1
+  contentColumns = 1,
+  colors
 }: {
   name: string;
   designation: string | null;
   phone: string | null;
   status: DisplayBoardAttendanceDisplayStatus;
   contentColumns?: number;
+  colors: DisplayLayoutAppearanceColorsConfig;
 }) {
   const safeContentColumns = Math.min(3, Math.max(1, Math.trunc(contentColumns) || 1));
   const layout = getManagerAvailabilityGridTemplate(safeContentColumns);
+  const textStyles = getDisplayTextStyles(colors);
 
   return (
     <div
@@ -481,22 +630,35 @@ function ManagerAvailabilityRow({
         'grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
         layout
       )}
+      style={textStyles.cardDivider}
     >
-      <CompactTableCell className='truncate text-[12px] font-bold text-zinc-50 xl:text-[13px]'>
+      <CompactTableCell
+        className='truncate text-[12px] font-bold xl:text-[13px]'
+        style={textStyles.cardBodyText}
+      >
         {name}
       </CompactTableCell>
       {safeContentColumns === 1 ? (
         <>
-          <CompactTableCell className='justify-self-start truncate text-left text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
+          <CompactTableCell
+            className='justify-self-start truncate text-left text-[10px] font-semibold xl:text-[11px]'
+            style={textStyles.cardBodyText}
+          >
             {designation ?? '—'}
           </CompactTableCell>
-          <CompactTableCell className='justify-self-start truncate text-left text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
+          <CompactTableCell
+            className='justify-self-start truncate text-left text-[10px] font-semibold xl:text-[11px]'
+            style={textStyles.cardBodyText}
+          >
             {phone ?? '—'}
           </CompactTableCell>
         </>
       ) : null}
       {safeContentColumns === 2 ? (
-        <CompactTableCell className='justify-self-start truncate text-left text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
+        <CompactTableCell
+          className='justify-self-start truncate text-left text-[10px] font-semibold xl:text-[11px]'
+          style={textStyles.cardBodyText}
+        >
           {phone ?? '—'}
         </CompactTableCell>
       ) : null}
@@ -516,22 +678,39 @@ function SectionCard({
   title,
   icon: Icon,
   count,
+  transparentPanels,
+  colors,
   children
 }: {
   title: string;
   icon: ComponentType<{ className?: string }>;
   count: number;
+  transparentPanels: boolean;
+  colors: DisplayLayoutAppearanceColorsConfig;
   children: ReactNode;
 }) {
+  const textStyles = getDisplayTextStyles(colors);
   return (
-    <Card className='!rounded-none flex h-full min-h-0 flex-col gap-0 overflow-hidden border-white/10 bg-white/6 py-0 text-zinc-50 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'>
+    <Card
+      className={cn(
+        '!rounded-none flex h-full min-h-0 flex-col gap-0 overflow-hidden py-0',
+        getDisplayPanelSurfaceClass(transparentPanels)
+      )}
+      style={{ ...getDisplayPanelStyle(transparentPanels, colors), ...textStyles.cardBodyText }}
+    >
       <CardHeader className='shrink-0 px-2.5 pt-1 pb-0'>
         <div className='flex items-center justify-between gap-2.5'>
-          <CardTitle className='text-[14px] font-extrabold text-zinc-50 xl:text-[15px]'>
+          <CardTitle
+            className='text-[14px] font-extrabold xl:text-[15px]'
+            style={textStyles.cardTitleText}
+          >
             {title}
           </CardTitle>
-          <div className='flex items-center gap-1 text-[9px] font-semibold text-zinc-100'>
-            <Icon className='size-3 text-zinc-100' />
+          <div
+            className='flex items-center gap-1 text-[9px] font-semibold'
+            style={textStyles.cardHeadingText}
+          >
+            <Icon className='size-3' />
             <span className='font-semibold tabular-nums leading-none'>
               {count.toLocaleString()}
             </span>
@@ -549,9 +728,12 @@ function EmptySection({ message }: { message: string }) {
   return (
     <div
       className={cn(
-        'flex items-center gap-1.5 border-b border-dashed border-white/10 px-2 py-0.5 text-zinc-400 last:border-b-0',
-        DISPLAY_CONTENT_SMALL_CLASS
+        'flex items-center gap-1.5 border-b border-dashed px-2 py-0.5 last:border-b-0 text-[11px] font-semibold leading-[1.2]'
       )}
+      style={{
+        borderColor: DISPLAY_CARD_DIVIDER_COLOR,
+        color: 'var(--display-card-body-text, #f8f4e8)'
+      }}
     >
       <Icons.info className='size-3.5 shrink-0 text-amber-300/80' />
       <span className='max-h-8 overflow-hidden'>{message}</span>
@@ -563,8 +745,20 @@ function RecordChip({ children }: { children: ReactNode }) {
   return <span className={DISPLAY_META_INLINE_CLASS}>{children}</span>;
 }
 
-function CompactTableCell({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('min-w-0 truncate leading-[1.15]', className)}>{children}</div>;
+function CompactTableCell({
+  children,
+  className,
+  style
+}: {
+  children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+}) {
+  return (
+    <div className={cn('min-w-0 truncate leading-[1.15]', className)} style={style}>
+      {children}
+    </div>
+  );
 }
 
 function getSafeContentColumns(block: DisplayLayoutBlockConfig) {
@@ -614,7 +808,7 @@ function getStaffRosterGridTemplate(contentColumns: number) {
 }
 
 const EVENTS_TABLE_GRID_TEMPLATE =
-  'grid-cols-[minmax(130px,1.25fr)_minmax(125px,1.05fr)_minmax(105px,0.9fr)_minmax(75px,0.65fr)_minmax(70px,0.6fr)_minmax(70px,0.6fr)]';
+  'grid-cols-[minmax(120px,1.05fr)_minmax(145px,1.15fr)_minmax(115px,0.9fr)_minmax(75px,0.58fr)_minmax(70px,0.52fr)_minmax(62px,0.45fr)]';
 
 const MEETING_TABLE_GRID_TEMPLATE =
   'grid-cols-[minmax(150px,1.35fr)_minmax(125px,1fr)_minmax(110px,0.9fr)_minmax(75px,0.65fr)_minmax(75px,0.65fr)]';
@@ -656,10 +850,14 @@ function CompactTableHeadingRow({
   return (
     <div
       className={cn(
-        'border-b border-white/10 text-[9px] font-bold uppercase tracking-[0.18em] text-zinc-400 last:border-b-0',
+        'border-b text-[9px] font-bold uppercase tracking-[0.18em] last:border-b-0',
         paddingClassName ?? 'px-2 pb-0.5 pt-0.5',
         className
       )}
+      style={{
+        borderColor: DISPLAY_CARD_DIVIDER_COLOR,
+        color: 'var(--display-card-heading-text, #d1b56a)'
+      }}
     >
       <div
         className={cn(
@@ -686,12 +884,21 @@ function CompactTableHeadingRow({
   );
 }
 
-function HeaderWidgetBadge({ children, className }: { children: ReactNode; className?: string }) {
+function HeaderWidgetBadge({
+  children,
+  className,
+  transparentPanels = true
+}: {
+  children: ReactNode;
+  className?: string;
+  transparentPanels?: boolean;
+}) {
   return (
     <Badge
       variant='outline'
       className={cn(
-        '!rounded-none border-white/10 bg-white/5 px-1.5 py-[2px] text-[9px] text-zinc-100',
+        `!rounded-none border-white/10 px-1.5 py-[2px] text-[9px] ${DISPLAY_HEADER_TEXT_CLASS}`,
+        transparentPanels ? 'bg-white/5' : 'bg-zinc-950/95',
         className
       )}
     >
@@ -700,16 +907,37 @@ function HeaderWidgetBadge({ children, className }: { children: ReactNode; class
   );
 }
 
-function HeaderWeatherWidget({ weather }: { weather: DisplayBoardWeatherData | null }) {
+function HeaderWeatherWidget({
+  weather,
+  transparentPanels,
+  colors
+}: {
+  weather: DisplayBoardWeatherData | null;
+  transparentPanels: boolean;
+  colors: DisplayLayoutAppearanceColorsConfig;
+}) {
   const weatherIconSrc = weather?.iconPath ?? '/weather-icons/meteocons/not-available.svg';
   const temperatureLabel =
     weather && weather.status === 'ready' && weather.temperatureC !== null
       ? `${Math.round(weather.temperatureC)}°C`
       : 'Weather unavailable';
+  const textStyles = getDisplayTextStyles(colors);
 
   return (
-    <div className='flex min-w-0 max-w-[340px] flex-none items-center gap-2 bg-transparent px-0 py-0 shadow-none backdrop-blur-0'>
-      <div className='relative size-10 shrink-0 overflow-hidden bg-transparent'>
+    <div
+      className={cn(
+        'flex min-w-0 max-w-[340px] flex-none items-center gap-2',
+        transparentPanels
+          ? 'bg-transparent px-0 py-0 shadow-none backdrop-blur-0'
+          : 'border border-white/15 bg-zinc-950/95 px-2 py-1.5 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-0'
+      )}
+    >
+      <div
+        className={cn(
+          'relative size-10 shrink-0 overflow-hidden',
+          transparentPanels ? 'bg-transparent' : 'bg-zinc-950/95'
+        )}
+      >
         <Image
           src={weatherIconSrc}
           alt=''
@@ -723,25 +951,38 @@ function HeaderWeatherWidget({ weather }: { weather: DisplayBoardWeatherData | n
         {weather ? (
           weather.status === 'ready' ? (
             <div className='space-y-0.5'>
-              <div className='truncate text-[15px] font-bold leading-none text-zinc-50'>
+              <div
+                className='truncate text-[15px] font-bold leading-none'
+                style={textStyles.headerText}
+              >
                 {temperatureLabel} {weather.city}
               </div>
-              <div className='truncate text-[12px] font-semibold text-zinc-100'>
+              <div
+                className='truncate text-[12px] font-semibold'
+                style={textStyles.headerMutedText}
+              >
                 {weather.condition ?? 'Weather unavailable'}
               </div>
             </div>
           ) : (
             <div className='space-y-0.5'>
-              <div className='truncate text-[15px] font-bold text-zinc-50'>Weather unavailable</div>
-              <div className='truncate text-[12px] font-semibold text-zinc-100'>
+              <div className='truncate text-[15px] font-bold' style={textStyles.headerText}>
+                Weather unavailable
+              </div>
+              <div
+                className='truncate text-[12px] font-semibold'
+                style={textStyles.headerMutedText}
+              >
                 Weather unavailable
               </div>
             </div>
           )
         ) : (
           <div className='space-y-0.5'>
-            <div className='text-[15px] font-bold text-zinc-50'>Weather not set</div>
-            <div className='truncate text-[12px] font-semibold text-zinc-100'>
+            <div className='text-[15px] font-bold' style={textStyles.headerText}>
+              Weather not set
+            </div>
+            <div className='truncate text-[12px] font-semibold' style={textStyles.headerMutedText}>
               Enable the weather block and configure a city
             </div>
           </div>
@@ -756,20 +997,30 @@ function HeaderSummaryWidget({
   icon: Icon,
   countLabel,
   detail,
-  tone
+  tone,
+  transparentPanels,
+  colors
 }: {
   label: string;
   icon: ComponentType<{ className?: string }>;
   countLabel: string;
   detail: string | null;
   tone: 'amber' | 'rose' | 'violet';
+  transparentPanels: boolean;
+  colors: DisplayLayoutAppearanceColorsConfig;
 }) {
-  const toneClass =
-    tone === 'amber'
+  const textStyles = getDisplayTextStyles(colors);
+  const toneClass = transparentPanels
+    ? tone === 'amber'
       ? 'border-amber-400/20 bg-amber-400/10 text-amber-100'
       : tone === 'rose'
         ? 'border-rose-400/20 bg-rose-400/10 text-rose-100'
-        : 'border-violet-400/20 bg-violet-400/10 text-violet-100';
+        : 'border-violet-400/20 bg-violet-400/10 text-violet-100'
+    : tone === 'amber'
+      ? 'border-amber-400/20 bg-zinc-950/95 text-amber-100'
+      : tone === 'rose'
+        ? 'border-rose-400/20 bg-zinc-950/95 text-rose-100'
+        : 'border-violet-400/20 bg-zinc-950/95 text-violet-100';
 
   const iconClass =
     tone === 'amber' ? 'text-amber-200' : tone === 'rose' ? 'text-rose-200' : 'text-violet-200';
@@ -777,22 +1028,33 @@ function HeaderSummaryWidget({
   return (
     <div
       className={cn(
-        'flex min-w-0 items-center gap-1.5 border px-2 py-1.5 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-xl !rounded-none',
-        toneClass
+        'flex min-w-0 items-center gap-1.5 border px-2 py-1.5 !rounded-none shadow-[0_10px_26px_rgba(0,0,0,0.22)]',
+        toneClass,
+        transparentPanels ? 'backdrop-blur-xl' : 'backdrop-blur-0'
       )}
     >
-      <div className='!rounded-none flex size-7 shrink-0 items-center justify-center border border-white/10 bg-black/20'>
+      <div
+        className={cn(
+          '!rounded-none flex size-7 shrink-0 items-center justify-center border border-white/10',
+          transparentPanels ? 'bg-black/20' : 'bg-zinc-950/95'
+        )}
+      >
         <Icon className={cn('size-3.5', iconClass)} />
       </div>
       <div className='min-w-0'>
         <div className='flex items-center gap-1.5'>
-          <div className='text-[9px] font-semibold uppercase tracking-[0.22em] text-zinc-200'>
+          <div
+            className='text-[9px] font-semibold uppercase tracking-[0.22em]'
+            style={textStyles.headerMutedText}
+          >
             {label}
           </div>
-          <HeaderWidgetBadge>{countLabel}</HeaderWidgetBadge>
+          <HeaderWidgetBadge transparentPanels={transparentPanels}>{countLabel}</HeaderWidgetBadge>
         </div>
         {detail ? (
-          <div className='truncate text-[10px] font-semibold text-zinc-50'>{detail}</div>
+          <div className='truncate text-[10px] font-semibold' style={textStyles.headerText}>
+            {detail}
+          </div>
         ) : null}
       </div>
     </div>
@@ -802,19 +1064,28 @@ function HeaderSummaryWidget({
 function StatBlock({
   label,
   value,
-  tone = 'zinc'
+  tone = 'zinc',
+  colors
 }: {
   label: string;
   value: string;
   tone?: 'zinc' | 'emerald' | 'amber';
+  colors: DisplayLayoutAppearanceColorsConfig;
 }) {
+  const textStyles = getDisplayTextStyles(colors);
   const toneClass =
-    tone === 'emerald' ? 'text-emerald-200' : tone === 'amber' ? 'text-amber-100' : 'text-zinc-100';
+    tone === 'emerald'
+      ? 'text-emerald-200'
+      : tone === 'amber'
+        ? 'text-amber-100'
+        : DISPLAY_CARD_BODY_TEXT_CLASS;
 
   return (
-    <div className={`flex items-center justify-between gap-2 py-1 ${toneClass}`}>
-      <div className='text-[9px] uppercase tracking-[0.18em] text-current/70'>{label}</div>
-      <div className='text-[10px] font-semibold leading-[1.15] text-current xl:text-[11px]'>
+    <div className='flex items-center justify-between gap-2 py-1'>
+      <div className='text-[9px] uppercase tracking-[0.18em]' style={textStyles.cardHeadingText}>
+        {label}
+      </div>
+      <div className={cn('text-[10px] font-semibold leading-[1.15] xl:text-[11px]', toneClass)}>
         {value}
       </div>
     </div>
@@ -831,35 +1102,52 @@ function DisplayBoardUnavailable({
   return (
     <main
       data-display-board-root
-      className='relative min-h-[100dvh] overflow-hidden bg-zinc-950 text-zinc-50'
-      style={{ fontFamily: DISPLAY_FONT_FAMILY }}
+      className={cn(
+        'relative min-h-[100dvh] overflow-hidden bg-zinc-950',
+        DISPLAY_CARD_BODY_TEXT_CLASS
+      )}
+      style={{ fontFamily: DISPLAY_FONT_FAMILY, color: 'var(--display-card-body-text, #f8f4e8)' }}
     >
       <DisplayBoardAutoRefresh />
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.16),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.06),transparent_25%),linear-gradient(180deg,#09090b_0%,#020202_100%)]' />
       <div className='relative flex min-h-[100dvh] items-center justify-center p-6'>
-        <Card className='!rounded-none max-w-2xl border-white/10 bg-white/6 text-center shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-xl'>
+        <Card
+          className={cn(
+            '!rounded-none max-w-2xl border-white/10 bg-white/6 text-center shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-xl',
+            DISPLAY_CARD_BODY_TEXT_CLASS
+          )}
+        >
           <CardHeader>
-            <CardDescription className='text-zinc-300'>Public display board</CardDescription>
-            <CardTitle className='text-3xl text-zinc-50'>
+            <CardDescription className={DISPLAY_HEADER_MUTED_TEXT_CLASS}>
+              Public display board
+            </CardDescription>
+            <CardTitle className={cn('text-3xl', DISPLAY_CARD_TITLE_TEXT_CLASS)}>
               {reason === 'not_found' ? 'Display page not found' : 'Display page is inactive'}
             </CardTitle>
           </CardHeader>
           <CardContent className='space-y-4'>
-            <p className='text-zinc-300'>
-              The display route for <span className='text-zinc-100'>/display/{slug}</span> is not
-              currently available on the board.
+            <p className={DISPLAY_HEADER_MUTED_TEXT_CLASS}>
+              The display route for{' '}
+              <span className={DISPLAY_CARD_BODY_TEXT_CLASS}>/display/{slug}</span> is not currently
+              available on the board.
             </p>
             <div className='flex flex-wrap items-center justify-center gap-2'>
               <Badge
                 variant='outline'
-                className='!rounded-none border-white/10 bg-white/5 text-zinc-100'
+                className={cn(
+                  '!rounded-none border-white/10 bg-white/5',
+                  DISPLAY_CARD_BODY_TEXT_CLASS
+                )}
               >
                 <Icons.info className='mr-1 size-3.5' />
                 {reason === 'not_found' ? 'No record found' : 'Status not active'}
               </Badge>
               <Badge
                 variant='outline'
-                className='!rounded-none border-white/10 bg-white/5 text-zinc-100'
+                className={cn(
+                  '!rounded-none border-white/10 bg-white/5',
+                  DISPLAY_CARD_BODY_TEXT_CLASS
+                )}
               >
                 Auto-refresh every 60 seconds
               </Badge>
@@ -902,7 +1190,18 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const layoutBlocks = getEnabledSortedDisplayBlocks(normalizedLayoutConfig);
   const layoutColumns = normalizedLayoutConfig.columns;
   const layoutRowHeights = normalizedLayoutConfig.rows.heights;
+  const transparentPanels = normalizedLayoutConfig.appearance?.transparentPanels ?? true;
+  const appearanceColors = normalizedLayoutConfig.appearance?.colors;
   const wallpaper = normalizedLayoutConfig.background;
+  const displayTextStyles = getDisplayTextStyles(
+    appearanceColors ?? {
+      headerBackground: null,
+      cardBackground: null,
+      cardBorder: null,
+      textPrimary: null,
+      textMuted: null
+    }
+  );
   const displayGridColumns = `${layoutColumns.left}fr ${layoutColumns.center}fr ${layoutColumns.right}fr`;
   const layoutBlockMap = new Map(layoutBlocks.map((block) => [block.key, block] as const));
   const getBlock = (key: DisplayBlockKey) => layoutBlockMap.get(key);
@@ -972,28 +1271,47 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   className={cn(
                     'grid items-center gap-x-3 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none grid-cols-[minmax(125px,1.25fr)_minmax(125px,1.05fr)_minmax(95px,0.75fr)_minmax(65px,0.5fr)_minmax(62px,0.45fr)_minmax(62px,0.45fr)]'
                   )}
+                  style={displayTextStyles.cardDivider}
                 >
-                  <div className='min-w-0 truncate text-[12px] font-bold leading-[1.15] text-zinc-50 xl:text-[13px]'>
+                  <div
+                    className='min-w-0 truncate text-[12px] font-bold leading-[1.15] xl:text-[13px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {event.title}
                   </div>
-                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div
+                    className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] xl:text-[11px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {event.clientName ?? '—'}
                   </div>
-                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div
+                    className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] xl:text-[11px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {event.companyName ?? '—'}
                   </div>
-                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div
+                    className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] xl:text-[11px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {event.screenName ?? '—'}
                   </div>
                   <div
                     className={cn(
                       'min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] xl:text-[11px]',
-                      isSameDay(event.startAt, renderedAt) ? 'text-emerald-200' : 'text-zinc-100'
+                      isSameDay(event.startAt, renderedAt)
+                        ? 'text-emerald-200'
+                        : DISPLAY_CARD_BODY_TEXT_CLASS
                     )}
+                    style={displayTextStyles.cardBodyText}
                   >
                     {formatMeetingDateLabel(event.startAt, renderedAt)}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div
+                    className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] xl:text-[11px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {formatTime(event.startAt)}
                   </div>
                 </div>
@@ -1003,7 +1321,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         );
 
         return [
-          <SectionCard title='Today & Upcoming Events' icon={Icons.calendar} count={events.total}>
+          <SectionCard
+            title='Today & Upcoming Events'
+            icon={Icons.calendar}
+            count={events.total}
+            transparentPanels={transparentPanels}
+            colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
+          >
             {eventPages.length === 0 ? (
               <EmptySection message='No active events scheduled.' />
             ) : eventPages.length === 1 ? (
@@ -1025,7 +1349,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const slideshowMovies = toMovieScheduleSlideshowGroups(groupedMovies);
 
         return [
-          <SectionCard title='Movie Schedule' icon={Icons.video} count={movieSchedules.total}>
+          <SectionCard
+            title='Movie Schedule'
+            icon={Icons.video}
+            count={movieSchedules.total}
+            transparentPanels={transparentPanels}
+            colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
+          >
             {slideshowMovies.length === 0 ? (
               <EmptySection message='No active movie shows scheduled for today.' />
             ) : (
@@ -1054,25 +1384,41 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                     'grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
                     MEETING_TABLE_GRID_TEMPLATE
                   )}
+                  style={displayTextStyles.cardDivider}
                 >
-                  <div className='min-w-0 truncate text-[12px] font-bold leading-[1.15] text-zinc-50 xl:text-[13px]'>
+                  <div
+                    className='min-w-0 truncate text-[12px] font-bold leading-[1.15] xl:text-[13px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {meeting.title}
                   </div>
-                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div
+                    className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] xl:text-[11px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {meeting.organizer ?? '—'}
                   </div>
-                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div
+                    className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] xl:text-[11px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {meeting.location ?? '—'}
                   </div>
                   <div
                     className={cn(
                       'min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] xl:text-[11px]',
-                      isSameDay(meeting.startAt, renderedAt) ? 'text-emerald-200' : 'text-zinc-100'
+                      isSameDay(meeting.startAt, renderedAt)
+                        ? 'text-emerald-200'
+                        : DISPLAY_CARD_BODY_TEXT_CLASS
                     )}
+                    style={displayTextStyles.cardBodyText}
                   >
                     {formatMeetingDateLabel(meeting.startAt, renderedAt)}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div
+                    className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] xl:text-[11px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {formatTime(meeting.startAt)}
                   </div>
                 </div>
@@ -1082,7 +1428,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         );
 
         return [
-          <SectionCard title='Meeting Schedule' icon={Icons.clock} count={meetings.total}>
+          <SectionCard
+            title='Meeting Schedule'
+            icon={Icons.clock}
+            count={meetings.total}
+            transparentPanels={transparentPanels}
+            colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
+          >
             {meetingPages.length === 0 ? (
               <EmptySection message='No active meetings scheduled for today.' />
             ) : meetingPages.length === 1 ? (
@@ -1143,6 +1495,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                       phone={item.phone}
                       status={item.status}
                       contentColumns={contentColumns}
+                      colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
                     />
                   ))}
                 </div>
@@ -1189,6 +1542,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                       remarks={item.remarks}
                       status={item.status}
                       contentColumns={contentColumns}
+                      colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
                     />
                   ))}
                 </div>
@@ -1209,7 +1563,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           const pageChunks = chunkItems(items, pageSize);
 
           return (
-            <SectionCard title={title} icon={icon} count={total}>
+            <SectionCard
+              title={title}
+              icon={icon}
+              count={total}
+              transparentPanels={transparentPanels}
+              colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
+            >
               {pageChunks.length === 0 ? (
                 <EmptySection message={emptyMessage} />
               ) : pageChunks.length === 1 ? (
@@ -1300,17 +1660,30 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                     'grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
                     ADVERTISEMENT_TABLE_GRID_TEMPLATE
                   )}
+                  style={displayTextStyles.cardDivider}
                 >
-                  <div className='min-w-0 truncate text-[12px] font-bold leading-none text-zinc-50 xl:text-[13px]'>
+                  <div
+                    className='min-w-0 truncate text-[12px] font-bold leading-none xl:text-[13px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {ad.title}
                   </div>
-                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-none text-zinc-100'>
+                  <div
+                    className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-none'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {formatShortDate(ad.startAt)}
                   </div>
-                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-none text-zinc-100'>
+                  <div
+                    className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-none'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {formatShortDate(ad.endAt)}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-none text-zinc-100'>
+                  <div
+                    className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-none'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {ad.adLocation?.trim() ? ad.adLocation : 'All Screens'}
                   </div>
                 </div>
@@ -1324,6 +1697,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             title='Advertisement Contracts'
             icon={Icons.media}
             count={advertisements.total}
+            transparentPanels={transparentPanels}
+            colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
           >
             {adPages.length === 0 ? (
               <EmptySection message='No active advertisement contracts are currently available.' />
@@ -1355,12 +1730,19 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                 <div
                   key={target.id}
                   className='grid items-start gap-x-4 gap-y-0 border-b border-white/10 px-2.5 py-1.5 last:border-b-0 rounded-none [grid-template-columns:minmax(0,1.2fr)_minmax(4rem,0.6fr)_minmax(4rem,0.6fr)_minmax(4rem,0.6fr)]'
+                  style={displayTextStyles.cardDivider}
                 >
                   <div className='min-w-0 overflow-hidden whitespace-nowrap'>
-                    <div className='truncate text-[12px] font-bold leading-none text-zinc-50 xl:text-[13px]'>
+                    <div
+                      className='truncate text-[12px] font-bold leading-none xl:text-[13px]'
+                      style={displayTextStyles.cardBodyText}
+                    >
                       {target.itemName}
                     </div>
-                    <div className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] font-semibold text-zinc-100'>
+                    <div
+                      className='mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap text-[10px] font-semibold'
+                      style={displayTextStyles.cardBodyText}
+                    >
                       {target.itemCodes.length > 0 ? (
                         <RecordChip>
                           {target.itemCodes.length} code
@@ -1374,10 +1756,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                         <RecordChip>Start {formatShortDate(target.startDate)}</RecordChip>
                       )}
                     </div>
-                    <div className='mt-0.5 flex flex-wrap gap-1 text-[9px] uppercase tracking-[0.18em] text-zinc-400'>
+                    <div
+                      className='mt-0.5 flex flex-wrap gap-1 text-[9px] uppercase tracking-[0.18em]'
+                      style={displayTextStyles.cardHeadingText}
+                    >
                       <span>Order {target.displayOrder}</span>
                       <span>Last import</span>
-                      <span className='font-semibold text-zinc-100'>
+                      <span className='font-semibold' style={displayTextStyles.cardBodyText}>
                         {formatDateTime(target.lastImportAt)}
                       </span>
                     </div>
@@ -1387,6 +1772,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                       label='Daily'
                       value={formatProgress(target.daily)}
                       tone={target.daily.dataAvailable ? 'emerald' : 'zinc'}
+                      colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
                     />
                   </div>
                   <div className='min-w-0 justify-self-end'>
@@ -1394,6 +1780,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                       label='Weekly'
                       value={formatProgress(target.weekly)}
                       tone={target.weekly.dataAvailable ? 'amber' : 'zinc'}
+                      colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
                     />
                   </div>
                   <div className='min-w-0 justify-self-end'>
@@ -1401,6 +1788,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                       label='Monthly'
                       value={formatProgress(target.monthly)}
                       tone={target.monthly.dataAvailable ? 'emerald' : 'zinc'}
+                      colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
                     />
                   </div>
                 </div>
@@ -1410,7 +1798,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         );
 
         return [
-          <SectionCard title='Sales Targets' icon={Icons.adjustments} count={salesTargets.total}>
+          <SectionCard
+            title='Sales Targets'
+            icon={Icons.adjustments}
+            count={salesTargets.total}
+            transparentPanels={transparentPanels}
+            colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
+          >
             {targetPages.length === 0 ? (
               <EmptySection message='No active sales targets are currently available.' />
             ) : targetPages.length === 1 ? (
@@ -1441,14 +1835,24 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                 <div
                   key={item.id}
                   className='grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none grid-cols-[minmax(0,1.35fr)_minmax(4rem,0.7fr)_minmax(4rem,0.55fr)]'
+                  style={displayTextStyles.cardDivider}
                 >
-                  <div className='min-w-0 truncate text-[12px] font-bold leading-[1.15] text-zinc-50 xl:text-[13px]'>
+                  <div
+                    className='min-w-0 truncate text-[12px] font-bold leading-[1.15] xl:text-[13px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {item.itemName}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div
+                    className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] xl:text-[11px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {formatPrice(item.price)}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div
+                    className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] xl:text-[11px]'
+                    style={displayTextStyles.cardBodyText}
+                  >
                     {item.status}
                   </div>
                 </div>
@@ -1462,6 +1866,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             title='Concession Price List'
             icon={Icons.billing}
             count={concessionPriceList.total}
+            transparentPanels={transparentPanels}
+            colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
           >
             {concessionPages.length === 0 ? (
               <EmptySection message='No active concession price items are currently available.' />
@@ -1486,8 +1892,25 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   return (
     <main
       data-display-board-root
-      className='relative min-h-[100dvh] overflow-hidden bg-zinc-950 text-zinc-50'
-      style={{ fontFamily: DISPLAY_FONT_FAMILY }}
+      className={cn(
+        'relative min-h-[100dvh] overflow-hidden bg-zinc-950',
+        DISPLAY_CARD_BODY_TEXT_CLASS
+      )}
+      style={
+        {
+          fontFamily: DISPLAY_FONT_FAMILY,
+          ['--display-header-bg' as string]: appearanceColors?.headerBackground ?? undefined,
+          ['--display-header-text' as string]: appearanceColors?.headerText ?? undefined,
+          ['--display-header-muted-text' as string]: appearanceColors?.headerMutedText ?? undefined,
+          ['--display-card-bg' as string]: appearanceColors?.cardBackground ?? undefined,
+          ['--display-card-border' as string]: appearanceColors?.cardBorder ?? undefined,
+          ['--display-card-title-text' as string]: appearanceColors?.cardTitleText ?? undefined,
+          ['--display-card-heading-text' as string]: appearanceColors?.cardHeadingText ?? undefined,
+          ['--display-card-body-text' as string]: appearanceColors?.cardBodyText ?? undefined,
+          ['--display-card-divider' as string]: appearanceColors?.cardDivider ?? undefined,
+          color: 'var(--display-card-body-text, #f8f4e8)'
+        } as CSSProperties
+      }
     >
       <DisplayBoardAutoRefresh />
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.2),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.07),transparent_24%),radial-gradient(circle_at_50%_120%,rgba(180,83,9,0.12),transparent_30%),linear-gradient(180deg,#09090b_0%,#020202_100%)]' />
@@ -1525,13 +1948,28 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           minHeight: `${displayPage.resolutionHeight}px`
         }}
       >
-        <header className='relative flex min-h-[76px] shrink-0 items-center overflow-hidden rounded-none border border-white/10 bg-white/6 px-3 py-2 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl xl:min-h-[84px] xl:px-4 xl:py-2.5'>
+        <header
+          className={cn(
+            'relative flex min-h-[76px] shrink-0 items-center overflow-hidden rounded-none px-3 py-2 xl:min-h-[84px] xl:px-4 xl:py-2.5',
+            getDisplayHeaderSurfaceClass(transparentPanels)
+          )}
+        >
           <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
             <div className='flex flex-col items-center justify-center text-center'>
-              <div className='text-[1.65rem] font-semibold leading-none tracking-tight text-zinc-50 md:text-[1.95rem] xl:text-[2.3rem]'>
+              <div
+                className={cn(
+                  'text-[1.65rem] font-semibold leading-none tracking-tight md:text-[1.95rem] xl:text-[2.3rem]',
+                  DISPLAY_HEADER_TEXT_CLASS
+                )}
+              >
                 <DisplayBoardClock initialIso={renderedAt.toISOString()} />
               </div>
-              <div className='mt-0.5 text-[15px] font-medium text-zinc-300 md:text-[16px]'>
+              <div
+                className={cn(
+                  'mt-0.5 text-[15px] font-medium md:text-[16px]',
+                  DISPLAY_HEADER_MUTED_TEXT_CLASS
+                )}
+              >
                 {currentDate}
               </div>
             </div>
@@ -1547,7 +1985,13 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                 priority
                 className='h-[60px] w-auto max-h-[76px] max-w-[145px] shrink-0 object-contain xl:h-[66px]'
               />
-              {weatherBlock ? <HeaderWeatherWidget weather={weather} /> : null}
+              {weatherBlock ? (
+                <HeaderWeatherWidget
+                  weather={weather}
+                  transparentPanels={transparentPanels}
+                  colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
+                />
+              ) : null}
             </div>
           </div>
 
@@ -1560,6 +2004,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   countLabel={`${alerts.total.toLocaleString()} active`}
                   detail={firstAlert ? firstAlert.title : 'No active alerts'}
                   tone='rose'
+                  transparentPanels={transparentPanels}
+                  colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
                 />
               ) : null}
               {!alertsBlock ? <div aria-hidden='true' /> : null}
@@ -1568,10 +2014,17 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         </header>
 
         {layoutBlocks.length === 0 ? (
-          <section className='flex flex-1 items-center justify-center border border-white/10 bg-white/6 px-6 py-10 text-center shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl rounded-none'>
+          <section
+            className={cn(
+              'flex flex-1 items-center justify-center px-6 py-10 text-center rounded-none',
+              getDisplayPanelSurfaceClass(transparentPanels)
+            )}
+          >
             <div className='max-w-xl space-y-3'>
-              <div className='text-2xl font-semibold text-zinc-50'>No display sections enabled</div>
-              <div className='text-sm text-zinc-300'>
+              <div className={cn('text-2xl font-semibold', DISPLAY_CARD_BODY_TEXT_CLASS)}>
+                No display sections enabled
+              </div>
+              <div className={cn('text-sm', DISPLAY_CARD_BODY_TEXT_CLASS)}>
                 Open the display page settings and enable the widgets you want to show on this
                 screen.
               </div>

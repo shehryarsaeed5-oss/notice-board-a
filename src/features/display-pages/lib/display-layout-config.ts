@@ -16,6 +16,7 @@ export type DisplayBlockKey = (typeof DISPLAY_BLOCK_KEYS)[number];
 export type DisplayLayoutBlockSlot = 'full' | 'top' | 'bottom';
 export type DisplayLayoutBackgroundFit = 'cover' | 'contain' | 'fill';
 export type DisplayLayoutBackgroundPosition = 'center' | 'top' | 'bottom';
+export type DisplayLayoutColorHex = string;
 
 export interface DisplayBlockDefinition {
   key: DisplayBlockKey;
@@ -51,6 +52,23 @@ export interface DisplayLayoutRows {
   heights: number[];
 }
 
+export interface DisplayLayoutAppearanceConfig {
+  transparentPanels: boolean;
+  colors: DisplayLayoutAppearanceColorsConfig;
+}
+
+export interface DisplayLayoutAppearanceColorsConfig {
+  headerBackground: DisplayLayoutColorHex | null;
+  headerText: DisplayLayoutColorHex | null;
+  headerMutedText: DisplayLayoutColorHex | null;
+  cardBackground: DisplayLayoutColorHex | null;
+  cardBorder: DisplayLayoutColorHex | null;
+  cardTitleText: DisplayLayoutColorHex | null;
+  cardHeadingText: DisplayLayoutColorHex | null;
+  cardBodyText: DisplayLayoutColorHex | null;
+  cardDivider: DisplayLayoutColorHex | null;
+}
+
 export interface DisplayLayoutBackgroundConfig {
   imageUrl: string | null;
   opacity: number;
@@ -63,6 +81,7 @@ export interface DisplayLayoutBackgroundConfig {
 export interface DisplayLayoutConfig {
   columns: DisplayLayoutColumns;
   rows: DisplayLayoutRows;
+  appearance: DisplayLayoutAppearanceConfig;
   background: DisplayLayoutBackgroundConfig;
   blocks: DisplayLayoutBlockConfig[];
 }
@@ -79,6 +98,20 @@ export const DISPLAY_LAYOUT_BACKGROUND_BLUR_MIN = 0;
 export const DISPLAY_LAYOUT_BACKGROUND_BLUR_MAX = 12;
 export const DISPLAY_LAYOUT_BACKGROUND_OVERLAY_MIN = 0;
 export const DISPLAY_LAYOUT_BACKGROUND_OVERLAY_MAX = 0.9;
+export const DEFAULT_DISPLAY_LAYOUT_APPEARANCE: DisplayLayoutAppearanceConfig = {
+  transparentPanels: true,
+  colors: {
+    headerBackground: null,
+    headerText: null,
+    headerMutedText: null,
+    cardBackground: null,
+    cardBorder: null,
+    cardTitleText: null,
+    cardHeadingText: null,
+    cardBodyText: null,
+    cardDivider: null
+  }
+};
 
 export const DEFAULT_DISPLAY_LAYOUT_BACKGROUND: DisplayLayoutBackgroundConfig = {
   imageUrl: null,
@@ -203,6 +236,7 @@ const DEFAULT_LAYOUT_CONFIG: DisplayLayoutConfig = {
   rows: {
     heights: []
   },
+  appearance: { ...DEFAULT_DISPLAY_LAYOUT_APPEARANCE },
   background: { ...DEFAULT_DISPLAY_LAYOUT_BACKGROUND },
   blocks: DISPLAY_BLOCKS.map((block) => ({
     key: block.key,
@@ -308,6 +342,42 @@ function normalizeDisplayLayoutBackground(input: unknown): DisplayLayoutBackgrou
   };
 }
 
+const DISPLAY_COLOR_HEX_PATTERN = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+
+export function isDisplayColorHex(value: unknown): value is string {
+  return typeof value === 'string' && DISPLAY_COLOR_HEX_PATTERN.test(value.trim());
+}
+
+export function normalizeDisplayColorHex(value: unknown): DisplayLayoutColorHex | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return DISPLAY_COLOR_HEX_PATTERN.test(trimmed) ? trimmed : null;
+}
+
+export function hexToRgba(hex: string, alpha: number): string {
+  const normalized = hex.trim().replace('#', '');
+  const value =
+    normalized.length === 3
+      ? normalized
+          .split('')
+          .map((char) => `${char}${char}`)
+          .join('')
+      : normalized;
+
+  if (value.length !== 6) {
+    return `rgba(0, 0, 0, ${alpha})`;
+  }
+
+  const red = Number.parseInt(value.slice(0, 2), 16);
+  const green = Number.parseInt(value.slice(2, 4), 16);
+  const blue = Number.parseInt(value.slice(4, 6), 16);
+
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
 function normalizeGridSlot(value: unknown, headerOnly: boolean): DisplayLayoutBlockSlot {
   if (headerOnly) {
     return 'full';
@@ -387,6 +457,35 @@ function normalizeDisplayLayoutRows(input: unknown, rowCount: number): DisplayLa
   };
 }
 
+function normalizeDisplayLayoutAppearance(input: unknown): DisplayLayoutAppearanceConfig {
+  const rawAppearance =
+    input !== null && typeof input === 'object'
+      ? ((input as Partial<DisplayLayoutAppearanceConfig>) ?? {})
+      : undefined;
+  const rawColors =
+    rawAppearance && typeof rawAppearance.colors === 'object'
+      ? ((rawAppearance.colors as unknown as Record<string, unknown>) ?? {})
+      : undefined;
+
+  return {
+    transparentPanels:
+      typeof rawAppearance?.transparentPanels === 'boolean'
+        ? rawAppearance.transparentPanels
+        : DEFAULT_DISPLAY_LAYOUT_APPEARANCE.transparentPanels,
+    colors: {
+      headerBackground: normalizeDisplayColorHex(rawColors?.headerBackground),
+      headerText: normalizeDisplayColorHex(rawColors?.headerText),
+      headerMutedText: normalizeDisplayColorHex(rawColors?.headerMutedText),
+      cardBackground: normalizeDisplayColorHex(rawColors?.cardBackground),
+      cardBorder: normalizeDisplayColorHex(rawColors?.cardBorder),
+      cardTitleText: normalizeDisplayColorHex(rawColors?.cardTitleText),
+      cardHeadingText: normalizeDisplayColorHex(rawColors?.cardHeadingText ?? rawColors?.textMuted),
+      cardBodyText: normalizeDisplayColorHex(rawColors?.cardBodyText ?? rawColors?.textPrimary),
+      cardDivider: normalizeDisplayColorHex(rawColors?.cardDivider)
+    }
+  };
+}
+
 function normalizeLegacyAttendanceBlock(rawBlocks: unknown[]): {
   enabled?: boolean;
   sortOrder?: number;
@@ -452,6 +551,7 @@ export function getDefaultDisplayLayoutConfig(): DisplayLayoutConfig {
   return {
     columns: { ...DEFAULT_DISPLAY_LAYOUT_COLUMNS },
     rows,
+    appearance: { ...DEFAULT_DISPLAY_LAYOUT_APPEARANCE },
     background: { ...DEFAULT_DISPLAY_LAYOUT_BACKGROUND },
     blocks: DEFAULT_LAYOUT_CONFIG.blocks.map((block) => ({ ...block }))
   };
@@ -460,6 +560,7 @@ export function getDefaultDisplayLayoutConfig(): DisplayLayoutConfig {
 export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfig {
   const rawColumns = (input as { columns?: unknown } | null | undefined)?.columns;
   const rawRows = (input as { rows?: unknown } | null | undefined)?.rows;
+  const rawAppearance = (input as { appearance?: unknown } | null | undefined)?.appearance;
   const rawBackground = (input as { background?: unknown } | null | undefined)?.background;
   const rawBlocks = Array.isArray((input as { blocks?: unknown } | null | undefined)?.blocks)
     ? ((input as { blocks?: unknown[] }).blocks ?? [])
@@ -557,6 +658,7 @@ export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfi
   return {
     columns: normalizeDisplayLayoutColumns(rawColumns),
     rows: normalizeDisplayLayoutRows(rawRows, rowCount),
+    appearance: normalizeDisplayLayoutAppearance(rawAppearance),
     background: normalizeDisplayLayoutBackground(rawBackground),
     blocks
   };

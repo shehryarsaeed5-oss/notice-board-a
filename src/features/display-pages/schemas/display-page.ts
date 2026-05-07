@@ -11,6 +11,7 @@ import {
   DISPLAY_GRID_ROW_MIN,
   DISPLAY_GRID_ROW_SPAN_MAX,
   DEFAULT_DISPLAY_LAYOUT_BACKGROUND,
+  DEFAULT_DISPLAY_LAYOUT_APPEARANCE,
   getDefaultDisplayLayoutConfig,
   isHeaderOnlyDisplayBlock
 } from '../lib/display-layout-config';
@@ -39,6 +40,31 @@ function normalizeNullableString(value: unknown) {
   return typeof value === 'string' ? value.trim() : value;
 }
 
+function normalizeHexColor(value: unknown) {
+  if (value === '' || value === null || value === undefined) {
+    return null;
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed === '' ? null : trimmed;
+  }
+
+  return value;
+}
+
+const displayHexColorSchema = z
+  .preprocess(
+    normalizeHexColor,
+    z.union([
+      z.string().regex(/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, {
+        message: 'Enter a valid HEX color like #1A1710'
+      }),
+      z.null()
+    ])
+  )
+  .default(null);
+
 const displayLayoutColumnsSchema = z
   .object({
     left: z.preprocess(normalizeNumber, z.number().int().min(20).max(60)),
@@ -62,6 +88,21 @@ const displayLayoutRowsSchema = z.object({
       z.number().min(DISPLAY_GRID_ROW_HEIGHT_MIN).max(DISPLAY_GRID_ROW_HEIGHT_MAX)
     )
   )
+});
+
+const displayLayoutAppearanceSchema = z.object({
+  transparentPanels: z.boolean().default(DEFAULT_DISPLAY_LAYOUT_APPEARANCE.transparentPanels),
+  colors: z.object({
+    headerBackground: displayHexColorSchema,
+    headerText: displayHexColorSchema,
+    headerMutedText: displayHexColorSchema,
+    cardBackground: displayHexColorSchema,
+    cardBorder: displayHexColorSchema,
+    cardTitleText: displayHexColorSchema,
+    cardHeadingText: displayHexColorSchema,
+    cardBodyText: displayHexColorSchema,
+    cardDivider: displayHexColorSchema
+  })
 });
 
 const displayLayoutBackgroundSchema = z.object({
@@ -157,6 +198,7 @@ export const displayLayoutConfigSchema = z
   .object({
     columns: displayLayoutColumnsSchema,
     rows: displayLayoutRowsSchema,
+    appearance: displayLayoutAppearanceSchema.default(DEFAULT_DISPLAY_LAYOUT_APPEARANCE),
     background: displayLayoutBackgroundSchema,
     blocks: z.array(displayLayoutBlockSchema).length(DISPLAY_BLOCKS.length)
   })

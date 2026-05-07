@@ -28,6 +28,12 @@ interface MovieScheduleSlideshowProps {
 
 const DEFAULT_MOVIE_RUNTIME_MINUTES = 150;
 const MOVIE_SCHEDULE_GRID_TEMPLATE = 'grid-cols-[minmax(190px,1.25fr)_minmax(0,2fr)]';
+const MOVIE_CARD_TITLE_TEXT_CLASS = '!text-[color:var(--display-card-title-text,#f8f4e8)]';
+const MOVIE_CARD_BODY_TEXT_CLASS = '!text-[color:var(--display-card-body-text,#f8f4e8)]';
+const MOVIE_CARD_HEADING_TEXT_CLASS = '!text-[color:var(--display-card-heading-text,#d1b56a)]';
+const MOVIE_CARD_DIVIDER_STYLE = {
+  borderColor: 'var(--display-card-divider, rgba(255,255,255,0.10))'
+} as const;
 
 function getCompactScreenLabel(screenName: string) {
   const normalized = screenName.trim().toLowerCase();
@@ -87,7 +93,7 @@ function MovieTimeChip({ label, isActive }: { label: string; isActive: boolean }
         'inline-flex items-center text-[9px] font-semibold leading-none rounded-none',
         isActive
           ? 'text-emerald-200 underline decoration-emerald-400/60 decoration-1 underline-offset-2'
-          : 'text-zinc-100'
+          : MOVIE_CARD_BODY_TEXT_CLASS
       )}
     >
       {label}
@@ -97,7 +103,10 @@ function MovieTimeChip({ label, isActive }: { label: string; isActive: boolean }
 
 function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGroup; now: number }) {
   return (
-    <div className='border-b border-white/10 px-2.5 py-1.5 last:border-b-0 rounded-none'>
+    <div
+      className='border-b px-2.5 py-1.5 last:border-b-0 rounded-none'
+      style={MOVIE_CARD_DIVIDER_STYLE}
+    >
       <div
         className={cn(
           'grid items-center gap-x-5 gap-y-0 whitespace-nowrap',
@@ -105,22 +114,37 @@ function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGrou
         )}
       >
         <div className='min-w-0'>
-          <div className='truncate text-left text-[11px] font-bold leading-[1.05] text-zinc-50 xl:text-[12px]'>
+          <div
+            className={cn(
+              'truncate text-left text-[11px] font-bold leading-[1.05] xl:text-[12px]',
+              MOVIE_CARD_TITLE_TEXT_CLASS
+            )}
+          >
             {group.movieName}
           </div>
         </div>
 
         <div className='min-w-0 flex-1 overflow-hidden'>
-          <div className='flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] font-semibold text-zinc-100'>
+          <div
+            className={cn(
+              'flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] font-semibold',
+              MOVIE_CARD_BODY_TEXT_CLASS
+            )}
+          >
             {group.screenGroups.map((screenGroup) => (
               <span
                 key={`${group.movieName}-${screenGroup.screenName}`}
                 className='inline-flex max-w-full min-w-0 items-center gap-1 rounded-none'
               >
-                <span className='shrink-0 font-semibold text-zinc-100'>
+                <span className={cn('shrink-0 font-semibold', MOVIE_CARD_BODY_TEXT_CLASS)}>
                   {getCompactScreenLabel(screenGroup.screenName)}
                 </span>
-                <span className='flex min-w-0 flex-wrap items-center gap-0.5 whitespace-nowrap font-semibold text-zinc-100'>
+                <span
+                  className={cn(
+                    'flex min-w-0 flex-wrap items-center gap-0.5 whitespace-nowrap font-semibold',
+                    MOVIE_CARD_BODY_TEXT_CLASS
+                  )}
+                >
                   {screenGroup.times.map((time, index) => {
                     const active = isPlayingTime(time.startTimeIso, now);
 
@@ -128,7 +152,14 @@ function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGrou
                       <span
                         key={`${group.movieName}-${screenGroup.screenName}-${time.startTimeIso}`}
                       >
-                        {index > 0 ? <span className='mr-1 text-zinc-500'>|</span> : null}
+                        {index > 0 ? (
+                          <span
+                            className='mr-1'
+                            style={{ color: 'var(--display-card-divider, rgba(255,255,255,0.10))' }}
+                          >
+                            |
+                          </span>
+                        ) : null}
                         <MovieTimeChip label={time.label} isActive={active} />
                       </span>
                     );
@@ -145,7 +176,13 @@ function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGrou
 
 function MovieScheduleHeadingRow() {
   return (
-    <div className='border-b border-white/10 px-2 pb-0.5 pt-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-zinc-400'>
+    <div
+      className={cn(
+        'border-b px-2 pb-0.5 pt-0.5 text-[9px] font-bold uppercase tracking-[0.18em]',
+        MOVIE_CARD_HEADING_TEXT_CLASS
+      )}
+      style={MOVIE_CARD_DIVIDER_STYLE}
+    >
       <div
         className={cn(
           'grid items-center gap-x-5 gap-y-0 whitespace-nowrap',

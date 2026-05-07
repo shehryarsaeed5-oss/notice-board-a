@@ -17,7 +17,7 @@ import { useMutation } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { toast } from 'sonner';
 
 import { Icons } from '@/components/icons';
@@ -48,15 +48,20 @@ import {
   DISPLAY_GRID_ROW_MIN,
   DISPLAY_GRID_ROW_SPAN_MAX,
   DISPLAY_LAYOUT_BACKGROUND_BLUR_MAX,
+  DEFAULT_DISPLAY_LAYOUT_APPEARANCE,
   DEFAULT_DISPLAY_LAYOUT_BACKGROUND,
   expandDisplayLayoutRowsForSlots,
   getDisplayBlockGridPlacement,
   getDisplayBlockSlotLabel,
   getDefaultDisplayLayoutConfig,
+  hexToRgba,
   isHeaderOnlyDisplayBlock,
   normalizeDisplayLayoutConfig,
+  isDisplayColorHex,
   type DisplayBlockDefinition,
   type DisplayBlockKey,
+  type DisplayLayoutAppearanceConfig,
+  type DisplayLayoutAppearanceColorsConfig,
   type DisplayLayoutBackgroundConfig,
   type DisplayLayoutBlockSlot,
   type DisplayLayoutBlockConfig,
@@ -124,6 +129,105 @@ function getBackgroundPositionLabel(position: DisplayLayoutBackgroundConfig['pos
   }
 }
 
+function getDisplaySurfaceClass(transparentPanels: boolean) {
+  return transparentPanels
+    ? 'border-white/10 bg-white/6 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'
+    : 'border-white/15 bg-zinc-950/95 shadow-[0_18px_42px_rgba(0,0,0,0.38)]';
+}
+
+function getDisplayHeaderSurfaceClass(transparentPanels: boolean) {
+  return transparentPanels
+    ? 'border-b border-white/10 bg-white/6 backdrop-blur-xl'
+    : 'border-b border-white/15 bg-zinc-950/95';
+}
+
+function getDisplayColorSurfaceStyle(
+  transparentPanels: boolean,
+  colors: DisplayLayoutAppearanceColorsConfig
+) {
+  const headerBackground = colors.headerBackground
+    ? hexToRgba(colors.headerBackground, transparentPanels ? 0.72 : 1)
+    : transparentPanels
+      ? 'rgba(255, 255, 255, 0.06)'
+      : 'rgb(24, 24, 27)';
+  const cardBackground = colors.cardBackground
+    ? hexToRgba(colors.cardBackground, transparentPanels ? 0.72 : 1)
+    : transparentPanels
+      ? 'rgba(255, 255, 255, 0.06)'
+      : 'rgb(9, 9, 11)';
+  const cardBorder =
+    colors.cardBorder ??
+    (transparentPanels ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.15)');
+
+  return {
+    ['--display-header-bg' as string]: headerBackground,
+    ['--display-card-bg' as string]: cardBackground,
+    ['--display-card-border' as string]: cardBorder,
+    ['--display-header-text' as string]: colors.headerText ?? undefined,
+    ['--display-header-muted-text' as string]: colors.headerMutedText ?? undefined,
+    ['--display-card-title-text' as string]: colors.cardTitleText ?? undefined,
+    ['--display-card-heading-text' as string]: colors.cardHeadingText ?? undefined,
+    ['--display-card-body-text' as string]: colors.cardBodyText ?? undefined,
+    ['--display-card-divider' as string]: colors.cardDivider ?? undefined
+  } as CSSProperties;
+}
+
+function getDisplayPanelStyle(
+  transparentPanels: boolean,
+  colors: DisplayLayoutAppearanceColorsConfig
+): CSSProperties {
+  return {
+    backgroundColor: colors.cardBackground
+      ? hexToRgba(colors.cardBackground, transparentPanels ? 0.72 : 1)
+      : transparentPanels
+        ? 'rgba(255, 255, 255, 0.06)'
+        : 'rgb(9, 9, 11)',
+    borderColor:
+      colors.cardBorder ??
+      (transparentPanels ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.15)')
+  };
+}
+
+function getDisplayHeaderStyle(
+  transparentPanels: boolean,
+  colors: DisplayLayoutAppearanceColorsConfig
+): CSSProperties {
+  return {
+    backgroundColor: colors.headerBackground
+      ? hexToRgba(colors.headerBackground, transparentPanels ? 0.72 : 1)
+      : transparentPanels
+        ? 'rgba(255, 255, 255, 0.06)'
+        : 'rgb(24, 24, 27)',
+    borderColor:
+      colors.cardBorder ??
+      (transparentPanels ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.15)')
+  };
+}
+
+function getDesignerPreviewBlockClass(
+  transparentPanels: boolean,
+  selected: boolean,
+  dragging: boolean
+) {
+  if (!transparentPanels) {
+    return cn(
+      'border border-white/15 bg-zinc-950/95',
+      selected
+        ? 'border-amber-500/50 shadow-[0_0_0_1px_rgba(245,158,11,0.15)]'
+        : 'hover:border-white/25 hover:bg-zinc-950',
+      dragging ? 'opacity-70 ring-2 ring-amber-300/40' : ''
+    );
+  }
+
+  return cn(
+    'border border-white/15 bg-zinc-950/85',
+    selected
+      ? 'border-amber-500/50 bg-amber-500/15 shadow-[0_0_0_1px_rgba(245,158,11,0.15)]'
+      : 'hover:border-white/25 hover:bg-zinc-950',
+    dragging ? 'opacity-70 ring-2 ring-amber-300/40' : ''
+  );
+}
+
 function getBlockSummaryLabel(block: DisplayLayoutBlockConfig) {
   return `${getPlacementLabel(block)} • ${getRowsPerSlideLabel(block)} • ${getContentColumnsLabel(block)}`;
 }
@@ -154,6 +258,14 @@ function createFormValues(
 function getValidationIssues(layoutConfig: DisplayLayoutConfig) {
   const parsed = displayLayoutConfigSchema.safeParse(layoutConfig);
   return parsed.success ? [] : parsed.error.issues.map((issue) => issue.message);
+}
+
+function getDisplayColorError(value: string | null): string | null {
+  if (value === null) {
+    return null;
+  }
+
+  return isDisplayColorHex(value) ? null : 'Enter a valid HEX color like #1A1710';
 }
 
 function normalizeWidthSelection(column: number, colSpan: number) {
@@ -361,16 +473,30 @@ function LayoutDropOverlay({
 function DraggableBlockCard({
   block,
   selected,
-  onSelect
+  onSelect,
+  transparentPanels,
+  colors
 }: {
   block: DisplayLayoutBlockConfig;
   selected: boolean;
   onSelect: (key: DisplayBlockKey) => void;
+  transparentPanels: boolean;
+  colors: DisplayLayoutAppearanceColorsConfig;
 }) {
   const definition = getBlockDefinition(block.key);
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: block.key
   });
+  const cardStyle: CSSProperties = {
+    backgroundColor: colors.cardBackground
+      ? hexToRgba(colors.cardBackground, transparentPanels ? 0.78 : 1)
+      : transparentPanels
+        ? 'rgba(9, 9, 11, 0.85)'
+        : 'rgb(9, 9, 11)',
+    borderColor:
+      colors.cardBorder ??
+      (transparentPanels ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.15)')
+  };
 
   const style = {
     transform: CSS.Transform.toString(transform)
@@ -379,25 +505,26 @@ function DraggableBlockCard({
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{ ...style, ...cardStyle }}
       className={cn(
         'relative z-10 flex h-full min-h-[5.5rem] cursor-default flex-col justify-between border px-3 py-2 shadow-sm transition-colors !rounded-none',
-        selected
-          ? 'border-amber-500/50 bg-amber-500/15 shadow-[0_0_0_1px_rgba(245,158,11,0.15)]'
-          : 'border-white/15 bg-zinc-950/85 hover:border-white/25 hover:bg-zinc-950',
-        isDragging ? 'opacity-70 ring-2 ring-amber-300/40' : ''
+        getDesignerPreviewBlockClass(transparentPanels, selected, isDragging)
       )}
       onClick={() => onSelect(block.key)}
     >
       <div className='flex items-start justify-between gap-2'>
         <div className='min-w-0'>
-          <div className='truncate text-sm font-semibold text-zinc-50'>{definition.label}</div>
-          <div className='mt-0.5 text-[10px] text-zinc-300'>{getPlacementLabel(block)}</div>
+          <div className='truncate text-sm font-semibold !text-[color:var(--display-card-title-text,#f8f4e8)]'>
+            {definition.label}
+          </div>
+          <div className='mt-0.5 text-[10px] !text-[color:var(--display-card-heading-text,#d1b56a)]'>
+            {getPlacementLabel(block)}
+          </div>
         </div>
 
         <button
           type='button'
-          className='inline-flex size-7 items-center justify-center border border-white/10 bg-white/5 text-zinc-200 transition-colors hover:border-white/20 hover:bg-white/10 !rounded-none'
+          className='inline-flex size-7 items-center justify-center border border-white/10 bg-white/5 !text-[color:var(--display-card-body-text,#f8f4e8)] transition-colors hover:border-white/20 hover:bg-white/10 !rounded-none'
           aria-label={`Drag ${definition.label}`}
           {...attributes}
           {...listeners}
@@ -406,7 +533,7 @@ function DraggableBlockCard({
         </button>
       </div>
 
-      <div className='mt-2 flex items-center justify-between gap-2 text-[10px] text-zinc-300'>
+      <div className='mt-2 flex items-center justify-between gap-2 text-[10px] !text-[color:var(--display-card-body-text,#f8f4e8)]'>
         <span>{getRowsPerSlideLabel(block)}</span>
         <Badge
           variant='outline'
@@ -421,7 +548,7 @@ function DraggableBlockCard({
         </Badge>
       </div>
 
-      <div className='mt-1 flex flex-wrap gap-1 text-[9px] text-zinc-400'>
+      <div className='mt-1 flex flex-wrap gap-1 text-[9px] !text-[color:var(--display-card-heading-text,#d1b56a)]'>
         {definition.headerOnly ? (
           <Badge
             variant='outline'
@@ -443,6 +570,51 @@ function DraggableBlockCard({
 
 function DesignerFieldLabel({ children }: { children: ReactNode }) {
   return <div className='text-xs font-medium text-muted-foreground'>{children}</div>;
+}
+
+function DisplayColorField({
+  label,
+  value,
+  error,
+  onChange
+}: {
+  label: string;
+  value: string | null;
+  error?: string;
+  onChange: (value: string | null) => void;
+}) {
+  const hasValidColor = value ? isDisplayColorHex(value) : false;
+
+  return (
+    <div className='grid gap-1.5'>
+      <DesignerFieldLabel>{label}</DesignerFieldLabel>
+      <div className='flex items-center gap-2'>
+        <div
+          className={cn(
+            'size-5 shrink-0 border',
+            hasValidColor ? 'border-border/70' : 'border-border/40 bg-muted/30'
+          )}
+          style={hasValidColor && value ? ({ backgroundColor: value } as CSSProperties) : undefined}
+        />
+        <Input
+          type='text'
+          placeholder='#111418'
+          value={value ?? ''}
+          onChange={(event) => {
+            const next = event.target.value.trim();
+            onChange(next ? next : null);
+          }}
+          className={cn(error ? 'border-rose-500/60 focus-visible:ring-rose-500/30' : '')}
+        />
+      </div>
+      <div className='flex items-center justify-between gap-2'>
+        <p className='text-[10px] text-muted-foreground'>
+          Leave empty to use the default display theme color.
+        </p>
+        {error ? <p className='text-[10px] text-rose-500'>{error}</p> : null}
+      </div>
+    </div>
+  );
 }
 
 export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesignerClientProps) {
@@ -480,6 +652,24 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
   });
 
   const validationIssues = useMemo(() => getValidationIssues(layoutConfig), [layoutConfig]);
+  const appearance = layoutConfig.appearance ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE;
+  const transparentPanels = appearance.transparentPanels;
+  const appearanceColors =
+    layoutConfig.appearance?.colors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors;
+  const appearanceColorErrors = useMemo(
+    () => ({
+      headerBackground: getDisplayColorError(appearanceColors.headerBackground),
+      headerText: getDisplayColorError(appearanceColors.headerText),
+      headerMutedText: getDisplayColorError(appearanceColors.headerMutedText),
+      cardBackground: getDisplayColorError(appearanceColors.cardBackground),
+      cardBorder: getDisplayColorError(appearanceColors.cardBorder),
+      cardTitleText: getDisplayColorError(appearanceColors.cardTitleText),
+      cardHeadingText: getDisplayColorError(appearanceColors.cardHeadingText),
+      cardBodyText: getDisplayColorError(appearanceColors.cardBodyText),
+      cardDivider: getDisplayColorError(appearanceColors.cardDivider)
+    }),
+    [appearanceColors]
+  );
   const selectedBlock = useMemo(
     () =>
       layoutConfig.blocks.find((block) => block.key === selectedKey) ??
@@ -582,6 +772,32 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
         background: updater(current.background ?? DEFAULT_DISPLAY_LAYOUT_BACKGROUND)
       })
     );
+  };
+
+  const updateAppearance = (
+    updater: (current: DisplayLayoutAppearanceConfig) => DisplayLayoutAppearanceConfig
+  ) => {
+    setLayoutConfig((current) =>
+      normalizeDisplayLayoutConfig({
+        ...current,
+        appearance: updater(current.appearance ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE)
+      })
+    );
+  };
+
+  const updateAppearanceColors = (
+    updater: (current: DisplayLayoutAppearanceColorsConfig) => DisplayLayoutAppearanceColorsConfig
+  ) => {
+    setLayoutConfig((current) => ({
+      ...current,
+      appearance: {
+        ...(current.appearance ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE),
+        colors: updater(
+          (current.appearance ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE).colors ??
+            DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors
+        )
+      }
+    }));
   };
 
   const handleWallpaperUpload = async (file: File) => {
@@ -995,6 +1211,166 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
             </div>
 
             <div className='rounded-none border border-border/60 bg-muted/20 p-3'>
+              <div className='flex items-start justify-between gap-3'>
+                <div className='space-y-1'>
+                  <div className='text-sm font-medium text-foreground'>
+                    Transparent Header & Cards
+                  </div>
+                  <p className='text-xs text-muted-foreground'>
+                    When enabled, display header and cards use translucent panels. Turn off for
+                    solid panels on low-quality LCDs.
+                  </p>
+                </div>
+                <Switch
+                  checked={transparentPanels}
+                  onCheckedChange={(checked) =>
+                    updateAppearance((current) => ({
+                      ...current,
+                      transparentPanels: checked
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
+            <div className='rounded-none border border-border/60 bg-muted/20 p-3'>
+              <div className='flex flex-wrap items-start justify-between gap-3'>
+                <div className='space-y-1'>
+                  <div className='text-sm font-medium text-foreground'>Display Colors</div>
+                  <p className='text-xs text-muted-foreground'>
+                    Leave empty to use the default display theme color.
+                  </p>
+                </div>
+                <Button
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  onClick={() =>
+                    updateAppearanceColors((current) => ({
+                      ...current,
+                      headerBackground: null,
+                      headerText: null,
+                      headerMutedText: null,
+                      cardBackground: null,
+                      cardBorder: null,
+                      cardTitleText: null,
+                      cardHeadingText: null,
+                      cardBodyText: null,
+                      cardDivider: null
+                    }))
+                  }
+                >
+                  Reset Colors
+                </Button>
+              </div>
+
+              <div className='mt-3 grid gap-4'>
+                <div className='rounded-none border border-border/60 bg-muted/20 p-3'>
+                  <div className='mb-3'>
+                    <div className='text-sm font-medium text-foreground'>Header Colors</div>
+                    <p className='text-xs text-muted-foreground'>
+                      Leave empty to use the default display theme color.
+                    </p>
+                  </div>
+                  <div className='grid gap-3 md:grid-cols-2'>
+                    <DisplayColorField
+                      label='Header Background HEX'
+                      value={appearanceColors.headerBackground}
+                      error={appearanceColorErrors.headerBackground ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({
+                          ...current,
+                          headerBackground: value
+                        }))
+                      }
+                    />
+                    <DisplayColorField
+                      label='Header Main Text HEX'
+                      value={appearanceColors.headerText}
+                      error={appearanceColorErrors.headerText ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({ ...current, headerText: value }))
+                      }
+                    />
+                    <DisplayColorField
+                      label='Header Muted Text HEX'
+                      value={appearanceColors.headerMutedText}
+                      error={appearanceColorErrors.headerMutedText ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({
+                          ...current,
+                          headerMutedText: value
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className='rounded-none border border-border/60 bg-muted/20 p-3'>
+                  <div className='mb-3'>
+                    <div className='text-sm font-medium text-foreground'>Card Colors</div>
+                    <p className='text-xs text-muted-foreground'>
+                      Leave empty to use the default display theme color.
+                    </p>
+                  </div>
+                  <div className='grid gap-3 md:grid-cols-2'>
+                    <DisplayColorField
+                      label='Card Background HEX'
+                      value={appearanceColors.cardBackground}
+                      error={appearanceColorErrors.cardBackground ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({ ...current, cardBackground: value }))
+                      }
+                    />
+                    <DisplayColorField
+                      label='Card Border HEX'
+                      value={appearanceColors.cardBorder}
+                      error={appearanceColorErrors.cardBorder ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({ ...current, cardBorder: value }))
+                      }
+                    />
+                    <DisplayColorField
+                      label='Card Title Text HEX'
+                      value={appearanceColors.cardTitleText}
+                      error={appearanceColorErrors.cardTitleText ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({ ...current, cardTitleText: value }))
+                      }
+                    />
+                    <DisplayColorField
+                      label='Card Heading Text HEX'
+                      value={appearanceColors.cardHeadingText}
+                      error={appearanceColorErrors.cardHeadingText ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({
+                          ...current,
+                          cardHeadingText: value
+                        }))
+                      }
+                    />
+                    <DisplayColorField
+                      label='Card Body Content HEX'
+                      value={appearanceColors.cardBodyText}
+                      error={appearanceColorErrors.cardBodyText ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({ ...current, cardBodyText: value }))
+                      }
+                    />
+                    <DisplayColorField
+                      label='Card Divider Lines HEX'
+                      value={appearanceColors.cardDivider}
+                      error={appearanceColorErrors.cardDivider ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({ ...current, cardDivider: value }))
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className='rounded-none border border-border/60 bg-muted/20 p-3'>
               <div className='flex flex-wrap items-start justify-between gap-3'>
                 <div className='space-y-1'>
                   <div className='text-sm font-medium text-foreground'>TV Wallpaper</div>
@@ -1207,8 +1583,13 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
               onDragCancel={() => setActiveKey(null)}
             >
               <div
-                className='mx-auto overflow-hidden border border-border/60 bg-muted/20 p-2 !rounded-none'
+                className={cn(
+                  'mx-auto overflow-hidden border p-2 !rounded-none',
+                  getDisplaySurfaceClass(transparentPanels)
+                )}
                 style={{
+                  ...getDisplayColorSurfaceStyle(transparentPanels, appearanceColors),
+                  ...getDisplayPanelStyle(transparentPanels, appearanceColors),
                   width: `min(100%, calc(58vh * ${displayPage.resolutionWidth / displayPage.resolutionHeight}))`,
                   aspectRatio: `${displayPage.resolutionWidth} / ${displayPage.resolutionHeight}`
                 }}
@@ -1239,20 +1620,26 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                     />
                   ) : null}
 
-                  <div className='relative z-10 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-white/10 px-3'>
+                  <div
+                    className={cn(
+                      'relative z-10 flex h-16 shrink-0 items-center justify-between gap-4 px-3',
+                      getDisplayHeaderSurfaceClass(transparentPanels)
+                    )}
+                    style={getDisplayHeaderStyle(transparentPanels, appearanceColors)}
+                  >
                     <div className='flex items-center gap-2'>
-                      <div className='text-sm font-semibold tracking-[0.28em] text-zinc-100'>
+                      <div className='text-sm font-semibold tracking-[0.28em] !text-[color:var(--display-header-text,#f8f4e8)]'>
                         CUE
                       </div>
-                      <div className='text-[10px] uppercase tracking-[0.22em] text-zinc-400'>
+                      <div className='text-[10px] uppercase tracking-[0.22em] !text-[color:var(--display-header-muted-text,#d1b56a)]'>
                         Header preview
                       </div>
                     </div>
-                    <div className='flex items-center gap-3 text-[10px] text-zinc-300'>
+                    <div className='flex items-center gap-3 text-[10px] !text-[color:var(--display-header-muted-text,#d1b56a)]'>
                       <span>Time</span>
                       <span>Date</span>
                     </div>
-                    <div className='flex items-center gap-2 text-[10px] text-zinc-300'>
+                    <div className='flex items-center gap-2 text-[10px] !text-[color:var(--display-header-muted-text,#d1b56a)]'>
                       <span>Weather</span>
                       <span>Alerts</span>
                     </div>
@@ -1282,6 +1669,8 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                               <DraggableBlockCard
                                 block={block}
                                 selected={block.key === selectedKey}
+                                transparentPanels={transparentPanels}
+                                colors={appearanceColors}
                                 onSelect={setSelectedKey}
                               />
                               {isActive ? (
