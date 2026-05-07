@@ -487,16 +487,16 @@ function ManagerAvailabilityRow({
       </CompactTableCell>
       {safeContentColumns === 1 ? (
         <>
-          <CompactTableCell className='truncate text-[10px] text-zinc-100 xl:text-[11px]'>
+          <CompactTableCell className='justify-self-start truncate text-left text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
             {designation ?? '—'}
           </CompactTableCell>
-          <CompactTableCell className='truncate text-[10px] text-zinc-100 xl:text-[11px]'>
+          <CompactTableCell className='justify-self-start truncate text-left text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
             {phone ?? '—'}
           </CompactTableCell>
         </>
       ) : null}
       {safeContentColumns === 2 ? (
-        <CompactTableCell className='truncate text-[10px] text-zinc-100 xl:text-[11px]'>
+        <CompactTableCell className='justify-self-start truncate text-left text-[10px] font-semibold text-zinc-100 xl:text-[11px]'>
           {phone ?? '—'}
         </CompactTableCell>
       ) : null}
@@ -582,7 +582,21 @@ function getManagerAvailabilityGridTemplate(contentColumns: number) {
     return 'grid-cols-[minmax(120px,1.6fr)_minmax(4rem,0.55fr)]';
   }
 
-  return 'grid-cols-[minmax(120px,1.2fr)_minmax(90px,0.9fr)_minmax(110px,0.9fr)_auto]';
+  return 'grid-cols-[minmax(150px,1.4fr)_minmax(120px,1fr)_minmax(105px,0.85fr)_minmax(60px,0.55fr)]';
+}
+
+function getManagerAvailabilityHeadingAlignments(contentColumns: number) {
+  const safeContentColumns = Math.min(3, Math.max(1, Math.trunc(contentColumns) || 1));
+
+  if (safeContentColumns === 2) {
+    return ['left', 'left', 'right'] as const;
+  }
+
+  if (safeContentColumns === 3) {
+    return ['left', 'right'] as const;
+  }
+
+  return ['left', 'left', 'left', 'right'] as const;
 }
 
 function getStaffRosterGridTemplate(contentColumns: number) {
@@ -598,6 +612,15 @@ function getStaffRosterGridTemplate(contentColumns: number) {
 
   return 'grid-cols-[minmax(120px,1.2fr)_minmax(90px,0.9fr)_minmax(110px,0.9fr)_auto]';
 }
+
+const EVENTS_TABLE_GRID_TEMPLATE =
+  'grid-cols-[minmax(130px,1.25fr)_minmax(125px,1.05fr)_minmax(105px,0.9fr)_minmax(75px,0.65fr)_minmax(70px,0.6fr)_minmax(70px,0.6fr)]';
+
+const MEETING_TABLE_GRID_TEMPLATE =
+  'grid-cols-[minmax(150px,1.35fr)_minmax(125px,1fr)_minmax(110px,0.9fr)_minmax(75px,0.65fr)_minmax(75px,0.65fr)]';
+
+const ADVERTISEMENT_TABLE_GRID_TEMPLATE =
+  'grid-cols-[minmax(180px,1.5fr)_minmax(105px,0.8fr)_minmax(105px,0.8fr)_minmax(95px,0.75fr)]';
 
 function splitItemsIntoColumns<T>(items: T[], columnCount: number): T[][] {
   const safeColumnCount = Math.min(3, Math.max(1, Math.trunc(columnCount) || 1));
@@ -619,27 +642,40 @@ function CompactTableHeadingRow({
   labels,
   columnsClassName,
   className,
+  paddingClassName,
+  gapClassName,
   alignments = []
 }: {
   labels: string[];
   columnsClassName: string;
   className?: string;
+  paddingClassName?: string;
+  gapClassName?: string;
   alignments?: Array<'left' | 'right'>;
 }) {
   return (
     <div
       className={cn(
-        'border-b border-white/10 px-2 pb-0.5 pt-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-zinc-400 last:border-b-0',
+        'border-b border-white/10 text-[9px] font-bold uppercase tracking-[0.18em] text-zinc-400 last:border-b-0',
+        paddingClassName ?? 'px-2 pb-0.5 pt-0.5',
         className
       )}
     >
-      <div className={cn('grid items-center gap-x-4 gap-y-0 whitespace-nowrap', columnsClassName)}>
+      <div
+        className={cn(
+          'grid items-center gap-y-0 whitespace-nowrap',
+          gapClassName ?? 'gap-x-4',
+          columnsClassName
+        )}
+      >
         {labels.map((label, index) => (
           <div
             key={label}
             className={cn(
               'truncate',
-              alignments[index] === 'right' ? 'justify-self-end text-right' : 'text-left'
+              alignments[index] === 'right'
+                ? 'justify-self-end text-right'
+                : 'justify-self-start text-left'
             )}
           >
             {label}
@@ -750,11 +786,13 @@ function HeaderSummaryWidget({
       </div>
       <div className='min-w-0'>
         <div className='flex items-center gap-1.5'>
-          <div className='text-[9px] uppercase tracking-[0.22em] text-zinc-300'>{label}</div>
+          <div className='text-[9px] font-semibold uppercase tracking-[0.22em] text-zinc-200'>
+            {label}
+          </div>
           <HeaderWidgetBadge>{countLabel}</HeaderWidgetBadge>
         </div>
         {detail ? (
-          <div className='truncate text-[10px] font-semibold text-zinc-100'>{detail}</div>
+          <div className='truncate text-[10px] font-semibold text-zinc-50'>{detail}</div>
         ) : null}
       </div>
     </div>
@@ -922,30 +960,34 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           <div className='space-y-0.5'>
             <CompactTableHeadingRow
               labels={['Title', 'Client Name', 'Company Name', 'Screen', 'Date', 'Time']}
-              columnsClassName='grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(4rem,0.7fr)_minmax(4.5rem,0.7fr)_minmax(4rem,0.55fr)]'
-              alignments={['left', 'right', 'right', 'right', 'right', 'right']}
+              columnsClassName='grid-cols-[minmax(125px,1.25fr)_minmax(125px,1.05fr)_minmax(95px,0.75fr)_minmax(65px,0.5fr)_minmax(62px,0.45fr)_minmax(62px,0.45fr)]'
+              paddingClassName='px-2 py-[5px]'
+              gapClassName='gap-x-3'
+              alignments={['left', 'left', 'left', 'left', 'left', 'right']}
             />
             <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
               {pageItems.map((event) => (
                 <div
                   key={event.id}
-                  className='grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(4rem,0.7fr)_minmax(4.5rem,0.7fr)_minmax(4rem,0.55fr)]'
+                  className={cn(
+                    'grid items-center gap-x-3 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none grid-cols-[minmax(125px,1.25fr)_minmax(125px,1.05fr)_minmax(95px,0.75fr)_minmax(65px,0.5fr)_minmax(62px,0.45fr)_minmax(62px,0.45fr)]'
+                  )}
                 >
                   <div className='min-w-0 truncate text-[12px] font-bold leading-[1.15] text-zinc-50 xl:text-[13px]'>
                     {event.title}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
                     {event.clientName ?? '—'}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
                     {event.companyName ?? '—'}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
                     {event.screenName ?? '—'}
                   </div>
                   <div
                     className={cn(
-                      'min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] xl:text-[11px]',
+                      'min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] xl:text-[11px]',
                       isSameDay(event.startAt, renderedAt) ? 'text-emerald-200' : 'text-zinc-100'
                     )}
                   >
@@ -1000,27 +1042,31 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           <div className='space-y-0.5'>
             <CompactTableHeadingRow
               labels={['Title', 'Organizer', 'Location', 'Date', 'Time']}
-              columnsClassName='grid-cols-[minmax(0,1.45fr)_minmax(0,0.95fr)_minmax(0,0.95fr)_minmax(4.5rem,0.7fr)_minmax(4rem,0.55fr)]'
-              alignments={['left', 'right', 'right', 'right', 'right']}
+              columnsClassName={MEETING_TABLE_GRID_TEMPLATE}
+              paddingClassName='px-2 py-[5px]'
+              alignments={['left', 'left', 'left', 'left', 'right']}
             />
             <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
               {pageItems.map((meeting) => (
                 <div
                   key={meeting.id}
-                  className='grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none grid-cols-[minmax(0,1.45fr)_minmax(0,0.95fr)_minmax(0,0.95fr)_minmax(4.5rem,0.7fr)_minmax(4rem,0.55fr)]'
+                  className={cn(
+                    'grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
+                    MEETING_TABLE_GRID_TEMPLATE
+                  )}
                 >
                   <div className='min-w-0 truncate text-[12px] font-bold leading-[1.15] text-zinc-50 xl:text-[13px]'>
                     {meeting.title}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
                     {meeting.organizer ?? '—'}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
+                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] text-zinc-100 xl:text-[11px]'>
                     {meeting.location ?? '—'}
                   </div>
                   <div
                     className={cn(
-                      'min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-[1.15] xl:text-[11px]',
+                      'min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-[1.15] xl:text-[11px]',
                       isSameDay(meeting.startAt, renderedAt) ? 'text-emerald-200' : 'text-zinc-100'
                     )}
                   >
@@ -1075,10 +1121,10 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               columnsClassName={managerGridTemplate}
               alignments={
                 contentColumns === 2
-                  ? ['left', 'right', 'right']
+                  ? ['left', 'left', 'right']
                   : contentColumns === 3
                     ? ['left', 'right']
-                    : ['left', 'right', 'right', 'right']
+                    : ['left', 'left', 'left', 'right']
               }
             />
             <div
@@ -1241,23 +1287,27 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const renderAdPage = (pageItems: typeof advertisements.items) => (
           <div className='space-y-0.5'>
             <CompactTableHeadingRow
-              labels={['Company', 'Start', 'End', 'Screens']}
-              columnsClassName='grid-cols-[minmax(0,1.5fr)_minmax(4.5rem,0.7fr)_minmax(4.5rem,0.7fr)_minmax(0,0.95fr)]'
-              alignments={['left', 'right', 'right', 'right']}
+              labels={['Company', 'Start Date', 'End Date', 'Screens']}
+              columnsClassName={ADVERTISEMENT_TABLE_GRID_TEMPLATE}
+              paddingClassName='px-2 py-[5px]'
+              alignments={['left', 'left', 'left', 'right']}
             />
             <div className={DISPLAY_SECTION_LIST_GAP_CLASS}>
               {pageItems.map((ad) => (
                 <div
                   key={ad.id}
-                  className='grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none [grid-template-columns:minmax(0,1.5fr)_minmax(4.5rem,0.7fr)_minmax(4.5rem,0.7fr)_minmax(0,0.95fr)]'
+                  className={cn(
+                    'grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
+                    ADVERTISEMENT_TABLE_GRID_TEMPLATE
+                  )}
                 >
                   <div className='min-w-0 truncate text-[12px] font-bold leading-none text-zinc-50 xl:text-[13px]'>
                     {ad.title}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-none text-zinc-100'>
+                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-none text-zinc-100'>
                     {formatShortDate(ad.startAt)}
                   </div>
-                  <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-none text-zinc-100'>
+                  <div className='min-w-0 justify-self-start truncate text-left text-[10px] font-semibold leading-none text-zinc-100'>
                     {formatShortDate(ad.endAt)}
                   </div>
                   <div className='min-w-0 justify-self-end truncate text-right text-[10px] font-semibold leading-none text-zinc-100'>
@@ -1488,7 +1538,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           </div>
 
           <div className='pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 xl:left-4'>
-            <div className='flex min-w-0 items-center gap-2 overflow-visible pointer-events-auto'>
+            <div className='flex min-w-0 items-center gap-4 overflow-visible pointer-events-auto xl:gap-6'>
               <Image
                 src='/Logo/cue-logo.png'
                 alt='CUE logo'

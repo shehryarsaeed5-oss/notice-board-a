@@ -27,6 +27,7 @@ interface MovieScheduleSlideshowProps {
 }
 
 const DEFAULT_MOVIE_RUNTIME_MINUTES = 150;
+const MOVIE_SCHEDULE_GRID_TEMPLATE = 'grid-cols-[minmax(190px,1.25fr)_minmax(0,2fr)]';
 
 function getCompactScreenLabel(screenName: string) {
   const normalized = screenName.trim().toLowerCase();
@@ -97,8 +98,13 @@ function MovieTimeChip({ label, isActive }: { label: string; isActive: boolean }
 function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGroup; now: number }) {
   return (
     <div className='border-b border-white/10 px-2.5 py-1.5 last:border-b-0 rounded-none'>
-      <div className='grid grid-cols-[minmax(7rem,10rem)_minmax(0,1fr)] items-center gap-x-4 gap-y-0 whitespace-nowrap'>
-        <div className='w-[clamp(7rem,22%,10rem)] shrink-0'>
+      <div
+        className={cn(
+          'grid items-center gap-x-5 gap-y-0 whitespace-nowrap',
+          MOVIE_SCHEDULE_GRID_TEMPLATE
+        )}
+      >
+        <div className='min-w-0'>
           <div className='truncate text-left text-[11px] font-bold leading-[1.05] text-zinc-50 xl:text-[12px]'>
             {group.movieName}
           </div>
@@ -140,8 +146,13 @@ function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGrou
 function MovieScheduleHeadingRow() {
   return (
     <div className='border-b border-white/10 px-2 pb-0.5 pt-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-zinc-400'>
-      <div className='grid grid-cols-[minmax(7rem,10rem)_minmax(0,1fr)] items-center gap-x-4 gap-y-0 whitespace-nowrap'>
-        <div className='w-[clamp(7rem,22%,10rem)] shrink-0'>Movie</div>
+      <div
+        className={cn(
+          'grid items-center gap-x-5 gap-y-0 whitespace-nowrap',
+          MOVIE_SCHEDULE_GRID_TEMPLATE
+        )}
+      >
+        <div className='min-w-0'>Movie</div>
         <div className='min-w-0 flex-1 overflow-hidden'>Showtimes</div>
       </div>
     </div>
