@@ -86,7 +86,7 @@ function MovieTimeChip({ label, isActive }: { label: string; isActive: boolean }
         'inline-flex items-center text-[9px] leading-none rounded-none',
         isActive
           ? 'text-emerald-200 underline decoration-emerald-400/60 decoration-1 underline-offset-2'
-          : 'text-zinc-200'
+          : 'text-zinc-100'
       )}
     >
       {label}
@@ -105,7 +105,7 @@ function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGrou
         </div>
 
         <div className='min-w-0 flex-1 overflow-hidden'>
-          <div className='flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-zinc-200'>
+          <div className='flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-zinc-100'>
             {group.screenGroups.map((screenGroup) => (
               <span
                 key={`${group.movieName}-${screenGroup.screenName}`}
@@ -114,7 +114,7 @@ function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGrou
                 <span className='shrink-0 font-semibold text-zinc-50'>
                   {getCompactScreenLabel(screenGroup.screenName)}
                 </span>
-                <span className='flex min-w-0 flex-wrap items-center gap-0.5 whitespace-nowrap text-zinc-300'>
+                <span className='flex min-w-0 flex-wrap items-center gap-0.5 whitespace-nowrap text-zinc-100'>
                   {screenGroup.times.map((time, index) => {
                     const active = isPlayingTime(time.startTimeIso, now);
 
@@ -137,6 +137,17 @@ function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGrou
   );
 }
 
+function MovieScheduleHeadingRow() {
+  return (
+    <div className='border-b border-white/10 px-2 pb-0.5 pt-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-400'>
+      <div className='flex items-center gap-2 whitespace-nowrap'>
+        <div className='w-[clamp(7rem,22%,10rem)] shrink-0'>Movie</div>
+        <div className='min-w-0 flex-1 overflow-hidden'>Showtimes</div>
+      </div>
+    </div>
+  );
+}
+
 function MovieSchedulePage({
   movieGroups,
   now
@@ -145,10 +156,17 @@ function MovieSchedulePage({
   now: number;
 }) {
   return (
-    <div className='divide-y divide-white/10'>
-      {movieGroups.map((movie) => (
-        <MovieGroupCard key={`${movie.movieName}-${movie.firstShowTime}`} group={movie} now={now} />
-      ))}
+    <div className='space-y-0.5'>
+      <MovieScheduleHeadingRow />
+      <div className='divide-y divide-white/10'>
+        {movieGroups.map((movie) => (
+          <MovieGroupCard
+            key={`${movie.movieName}-${movie.firstShowTime}`}
+            group={movie}
+            now={now}
+          />
+        ))}
+      </div>
     </div>
   );
 }
