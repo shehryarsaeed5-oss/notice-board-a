@@ -53,7 +53,10 @@ export function DisplayCardSlideshow({
         <div
           className={cn('mt-auto flex items-center justify-end gap-1 pt-0.5', indicatorClassName)}
         >
-          <span className='text-[9px] font-medium text-zinc-200 tabular-nums'>
+          <span
+            className='text-[9px] font-semibold tabular-nums'
+            style={{ color: 'var(--display-card-body-text, #3b2d17)' }}
+          >
             {pageIndex + 1}/{pageCount}
           </span>
           <div className='flex items-center gap-0.5'>
@@ -62,7 +65,9 @@ export function DisplayCardSlideshow({
                 key={index}
                 className={cn(
                   'size-1.5 transition-colors',
-                  index === pageIndex ? 'bg-amber-300' : 'bg-white/20'
+                  index === pageIndex
+                    ? 'bg-[color:var(--display-card-body-text,#3b2d17)]'
+                    : 'bg-[color:var(--display-card-heading-text,#9a7b35)] opacity-60'
                 )}
               />
             ))}

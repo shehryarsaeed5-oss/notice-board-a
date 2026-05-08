@@ -39,6 +39,7 @@ export interface DisplayLayoutBlockConfig {
   row: number;
   colSpan: number;
   rowSpan: number;
+  rowSpanUnits?: number;
   slot: DisplayLayoutBlockSlot;
 }
 
@@ -63,6 +64,9 @@ export interface DisplayLayoutAppearanceColorsConfig {
   headerMutedText: DisplayLayoutColorHex | null;
   cardBackground: DisplayLayoutColorHex | null;
   cardBorder: DisplayLayoutColorHex | null;
+  cardTitleBarBackground: DisplayLayoutColorHex | null;
+  cardRowBackground: DisplayLayoutColorHex | null;
+  cardRowAlternateBackground: DisplayLayoutColorHex | null;
   cardTitleText: DisplayLayoutColorHex | null;
   cardHeadingText: DisplayLayoutColorHex | null;
   cardBodyText: DisplayLayoutColorHex | null;
@@ -90,6 +94,7 @@ export const DISPLAY_GRID_COLUMN_COUNT = 3;
 export const DISPLAY_GRID_ROW_MIN = 1;
 export const DISPLAY_GRID_ROW_MAX = 20;
 export const DISPLAY_GRID_ROW_SPAN_MAX = 6;
+export const DISPLAY_GRID_ROW_SPAN_UNITS_MAX = DISPLAY_GRID_ROW_SPAN_MAX * 2;
 export const DISPLAY_GRID_ROW_HEIGHT_MIN = 0.5;
 export const DISPLAY_GRID_ROW_HEIGHT_MAX = 3;
 export const DISPLAY_LAYOUT_BACKGROUND_OPACITY_MIN = 0.1;
@@ -106,6 +111,9 @@ export const DEFAULT_DISPLAY_LAYOUT_APPEARANCE: DisplayLayoutAppearanceConfig = 
     headerMutedText: null,
     cardBackground: null,
     cardBorder: null,
+    cardTitleBarBackground: null,
+    cardRowBackground: null,
+    cardRowAlternateBackground: null,
     cardTitleText: null,
     cardHeadingText: null,
     cardBodyText: null,
@@ -190,7 +198,7 @@ export const DISPLAY_BLOCKS: DisplayBlockDefinition[] = [
     defaultSortOrder: 7,
     defaultRowLimit: 8,
     minRowLimit: 1,
-    maxRowLimit: 12,
+    maxRowLimit: 40,
     headerOnly: false
   },
   {
@@ -247,6 +255,7 @@ const DEFAULT_LAYOUT_CONFIG: DisplayLayoutConfig = {
     ...getFlowPlacementFromSortOrder(block.defaultSortOrder),
     colSpan: 1,
     rowSpan: 1,
+    rowSpanUnits: 2,
     slot: 'full'
   }))
 };
@@ -284,6 +293,10 @@ function normalizeGridColSpan(value: number, column: number): number {
 
 function normalizeGridRowSpan(value: number): number {
   return clamp(value, 1, DISPLAY_GRID_ROW_SPAN_MAX);
+}
+
+function normalizeGridRowSpanUnits(value: number): number {
+  return clamp(value, 1, DISPLAY_GRID_ROW_SPAN_UNITS_MAX);
 }
 
 function normalizeGridContentColumns(value: number): number {
@@ -408,11 +421,35 @@ function getGridRowCount(blocks: DisplayLayoutBlockConfig[]): number {
     blocks.reduce(
       (highest, block) =>
         block.enabled && !findDefinition(block.key).headerOnly
-          ? Math.max(highest, block.row + block.rowSpan - 1)
+          ? Math.max(
+              highest,
+              block.row + Math.max(1, Math.ceil(getDisplayBlockRowSpanUnits(block) / 2)) - 1
+            )
           : highest,
       1
     )
   );
+}
+
+export function getDisplayBlockRowSpanUnits(
+  block: Pick<DisplayLayoutBlockConfig, 'rowSpan' | 'rowSpanUnits' | 'slot'>
+): number {
+  if (typeof block.rowSpanUnits === 'number' && Number.isFinite(block.rowSpanUnits)) {
+    return normalizeGridRowSpanUnits(Math.trunc(block.rowSpanUnits));
+  }
+
+  if (block.slot === 'top' || block.slot === 'bottom') {
+    return 1;
+  }
+
+  return Math.max(1, Math.trunc(block.rowSpan || 1)) * 2;
+}
+
+export function getDisplayBlockRowSpanLabel(
+  block: Pick<DisplayLayoutBlockConfig, 'rowSpan' | 'rowSpanUnits' | 'slot'>
+): string {
+  const rowCount = getDisplayBlockRowSpanUnits(block) / 2;
+  return Number.isInteger(rowCount) ? `${rowCount}` : `${rowCount.toFixed(1)}`;
 }
 
 export function getDisplayBlockSlotLabel(slot: DisplayLayoutBlockSlot): string {
@@ -429,11 +466,11 @@ export function getDisplayBlockSlotLabel(slot: DisplayLayoutBlockSlot): string {
 
 export function getDisplayBlockGridPlacement(block: DisplayLayoutBlockConfig): {
   rowStart: number;
-  rowSpan: number;
+  rowSpanUnits: number;
 } {
   return {
     rowStart: (block.row - 1) * 2 + (block.slot === 'bottom' ? 2 : 1),
-    rowSpan: block.slot === 'full' ? Math.max(1, block.rowSpan) * 2 : 1
+    rowSpanUnits: getDisplayBlockRowSpanUnits(block)
   };
 }
 
@@ -478,6 +515,9 @@ function normalizeDisplayLayoutAppearance(input: unknown): DisplayLayoutAppearan
       headerMutedText: normalizeDisplayColorHex(rawColors?.headerMutedText),
       cardBackground: normalizeDisplayColorHex(rawColors?.cardBackground),
       cardBorder: normalizeDisplayColorHex(rawColors?.cardBorder),
+      cardTitleBarBackground: normalizeDisplayColorHex(rawColors?.cardTitleBarBackground),
+      cardRowBackground: normalizeDisplayColorHex(rawColors?.cardRowBackground),
+      cardRowAlternateBackground: normalizeDisplayColorHex(rawColors?.cardRowAlternateBackground),
       cardTitleText: normalizeDisplayColorHex(rawColors?.cardTitleText),
       cardHeadingText: normalizeDisplayColorHex(rawColors?.cardHeadingText ?? rawColors?.textMuted),
       cardBodyText: normalizeDisplayColorHex(rawColors?.cardBodyText ?? rawColors?.textPrimary),
@@ -628,17 +668,25 @@ export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfi
     const rowSpan = normalizeGridRowSpan(
       rawBlock?.rowSpan !== undefined ? toFiniteInteger(rawBlock.rowSpan, 1) : 1
     );
+    const rawRowSpanUnits = rawBlock?.rowSpanUnits;
     let slot = normalizeGridSlot(rawBlock?.slot, definition.headerOnly);
-    let normalizedRowSpan = rowSpan;
+    let normalizedRowSpanUnits =
+      rawRowSpanUnits !== undefined
+        ? normalizeGridRowSpanUnits(toFiniteInteger(rawRowSpanUnits, 1))
+        : 0;
 
     if (definition.headerOnly) {
       slot = 'full';
-      normalizedRowSpan = 1;
-    } else if (slot !== 'full' && normalizedRowSpan > 1) {
-      slot = 'full';
-    } else if (slot !== 'full') {
-      normalizedRowSpan = 1;
+      normalizedRowSpanUnits = 2;
+    } else if (normalizedRowSpanUnits > 0) {
+      // use explicit half-row units when present
+    } else if (slot === 'full') {
+      normalizedRowSpanUnits = rowSpan * 2;
+    } else {
+      normalizedRowSpanUnits = 1;
     }
+
+    const normalizedRowSpan = Math.max(1, Math.ceil(normalizedRowSpanUnits / 2));
 
     return {
       key: definition.key,
@@ -650,6 +698,7 @@ export function normalizeDisplayLayoutConfig(input: unknown): DisplayLayoutConfi
       row,
       colSpan,
       rowSpan: normalizedRowSpan,
+      rowSpanUnits: normalizedRowSpanUnits,
       slot
     };
   });

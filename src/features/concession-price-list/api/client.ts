@@ -1,4 +1,8 @@
-import type { ConcessionPriceItemFormValues, ConcessionPriceItemRecord } from './types';
+import type {
+  ConcessionPriceItemFormValues,
+  ConcessionPriceItemImportResult,
+  ConcessionPriceItemRecord
+} from './types';
 
 interface ConcessionPriceItemResponse {
   concessionPriceItem: ConcessionPriceItemRecord;
@@ -8,6 +12,10 @@ interface ConcessionPriceItemsResponse {
   concessionPriceItems: ConcessionPriceItemRecord[];
   categories: string[];
   total: number;
+}
+
+interface ConcessionPriceImportRequest {
+  csvText: string;
 }
 
 async function requestJson<T>(url: string, init: RequestInit): Promise<T> {
@@ -68,5 +76,12 @@ export function updateConcessionPriceItem(id: string, values: ConcessionPriceIte
 export function archiveConcessionPriceItem(id: string) {
   return requestJson<ConcessionPriceItemResponse>(`/api/concession-price-list/${id}`, {
     method: 'PATCH'
+  });
+}
+
+export function importConcessionPriceItemsCsv(values: ConcessionPriceImportRequest) {
+  return requestJson<ConcessionPriceItemImportResult>('/api/concession-price-list/import', {
+    method: 'POST',
+    body: JSON.stringify(values)
   });
 }

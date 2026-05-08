@@ -32,3 +32,15 @@ export interface ConcessionPriceItemListResult {
   categories: string[];
   total: number;
 }
+
+export interface ConcessionPriceItemImportRowError {
+  rowNumber: number;
+  messages: string[];
+}
+
+export interface ConcessionPriceItemImportResult {
+  importedCount: number;
+  skippedCount: number;
+  failedCount: number;
+  rowErrors?: ConcessionPriceItemImportRowError[];
+}

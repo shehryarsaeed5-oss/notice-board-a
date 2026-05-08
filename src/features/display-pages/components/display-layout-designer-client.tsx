@@ -47,11 +47,13 @@ import {
   DISPLAY_GRID_ROW_MAX,
   DISPLAY_GRID_ROW_MIN,
   DISPLAY_GRID_ROW_SPAN_MAX,
+  DISPLAY_GRID_ROW_SPAN_UNITS_MAX,
   DISPLAY_LAYOUT_BACKGROUND_BLUR_MAX,
   DEFAULT_DISPLAY_LAYOUT_APPEARANCE,
   DEFAULT_DISPLAY_LAYOUT_BACKGROUND,
   expandDisplayLayoutRowsForSlots,
   getDisplayBlockGridPlacement,
+  getDisplayBlockRowSpanLabel,
   getDisplayBlockSlotLabel,
   getDefaultDisplayLayoutConfig,
   hexToRgba,
@@ -78,7 +80,7 @@ function getBlockDefinition(key: DisplayBlockKey): DisplayBlockDefinition {
 }
 
 function getPlacementLabel(block: DisplayLayoutBlockConfig): string {
-  return `C${block.column} • Start R${block.row} • W${block.colSpan} • H${block.rowSpan} • ${getDisplayBlockSlotLabel(block.slot)}`;
+  return `C${block.column} • Start R${block.row} • W${block.colSpan} • H${getDisplayBlockRowSpanLabel(block)} • ${getDisplayBlockSlotLabel(block.slot)}`;
 }
 
 function getRowsPerSlideLabel(block: DisplayLayoutBlockConfig) {
@@ -87,6 +89,16 @@ function getRowsPerSlideLabel(block: DisplayLayoutBlockConfig) {
 
 function getContentColumnsLabel(block: DisplayLayoutBlockConfig) {
   return `${block.contentColumns} col${block.contentColumns === 1 ? '' : 's'}`;
+}
+
+function getCardHeightOptionLabel(rowSpanUnits: number) {
+  const rows = rowSpanUnits / 2;
+
+  if (rows === 0.5) {
+    return 'Half row';
+  }
+
+  return `${rows} row${rows === 1 ? '' : 's'}`;
 }
 
 function getBackgroundLabel(background: DisplayLayoutBackgroundConfig) {
@@ -158,11 +170,23 @@ function getDisplayColorSurfaceStyle(
   const cardBorder =
     colors.cardBorder ??
     (transparentPanels ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.15)');
+  const cardTitleBarBackground = colors.cardTitleBarBackground
+    ? hexToRgba(colors.cardTitleBarBackground, transparentPanels ? 0.72 : 1)
+    : undefined;
+  const cardRowBackground = colors.cardRowBackground
+    ? hexToRgba(colors.cardRowBackground, transparentPanels ? 0.55 : 1)
+    : undefined;
+  const cardRowAlternateBackground = colors.cardRowAlternateBackground
+    ? hexToRgba(colors.cardRowAlternateBackground, transparentPanels ? 0.55 : 1)
+    : undefined;
 
   return {
     ['--display-header-bg' as string]: headerBackground,
     ['--display-card-bg' as string]: cardBackground,
     ['--display-card-border' as string]: cardBorder,
+    ['--display-card-title-bar-bg' as string]: cardTitleBarBackground,
+    ['--display-card-row-bg' as string]: cardRowBackground,
+    ['--display-card-row-alt-bg' as string]: cardRowAlternateBackground,
     ['--display-header-text' as string]: colors.headerText ?? undefined,
     ['--display-header-muted-text' as string]: colors.headerMutedText ?? undefined,
     ['--display-card-title-text' as string]: colors.cardTitleText ?? undefined,
@@ -375,7 +399,7 @@ function BlockListItem({
               <span>C{block.column}</span>
               <span>R{block.row}</span>
               <span>W{block.colSpan}</span>
-              <span>H{block.rowSpan}</span>
+              <span>H{getDisplayBlockRowSpanLabel(block)}</span>
               <span>{getContentColumnsLabel(block)}</span>
             </>
           )}
@@ -663,6 +687,9 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
       headerMutedText: getDisplayColorError(appearanceColors.headerMutedText),
       cardBackground: getDisplayColorError(appearanceColors.cardBackground),
       cardBorder: getDisplayColorError(appearanceColors.cardBorder),
+      cardTitleBarBackground: getDisplayColorError(appearanceColors.cardTitleBarBackground),
+      cardRowBackground: getDisplayColorError(appearanceColors.cardRowBackground),
+      cardRowAlternateBackground: getDisplayColorError(appearanceColors.cardRowAlternateBackground),
       cardTitleText: getDisplayColorError(appearanceColors.cardTitleText),
       cardHeadingText: getDisplayColorError(appearanceColors.cardHeadingText),
       cardBodyText: getDisplayColorError(appearanceColors.cardBodyText),
@@ -1253,6 +1280,9 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                       headerMutedText: null,
                       cardBackground: null,
                       cardBorder: null,
+                      cardTitleBarBackground: null,
+                      cardRowBackground: null,
+                      cardRowAlternateBackground: null,
                       cardTitleText: null,
                       cardHeadingText: null,
                       cardBodyText: null,
@@ -1328,6 +1358,39 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                       error={appearanceColorErrors.cardBorder ?? undefined}
                       onChange={(value) =>
                         updateAppearanceColors((current) => ({ ...current, cardBorder: value }))
+                      }
+                    />
+                    <DisplayColorField
+                      label='Card Title Bar Background HEX'
+                      value={appearanceColors.cardTitleBarBackground}
+                      error={appearanceColorErrors.cardTitleBarBackground ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({
+                          ...current,
+                          cardTitleBarBackground: value
+                        }))
+                      }
+                    />
+                    <DisplayColorField
+                      label='Card Row Background HEX'
+                      value={appearanceColors.cardRowBackground}
+                      error={appearanceColorErrors.cardRowBackground ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({
+                          ...current,
+                          cardRowBackground: value
+                        }))
+                      }
+                    />
+                    <DisplayColorField
+                      label='Card Row Alternate Background HEX'
+                      value={appearanceColors.cardRowAlternateBackground}
+                      error={appearanceColorErrors.cardRowAlternateBackground ?? undefined}
+                      onChange={(value) =>
+                        updateAppearanceColors((current) => ({
+                          ...current,
+                          cardRowAlternateBackground: value
+                        }))
                       }
                     />
                     <DisplayColorField
@@ -1662,7 +1725,7 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                               key={block.key}
                               style={{
                                 gridColumn: `${block.column} / span ${block.colSpan}`,
-                                gridRow: `${placement.rowStart} / span ${placement.rowSpan}`
+                                gridRow: `${placement.rowStart} / span ${placement.rowSpanUnits}`
                               }}
                               className='relative z-10'
                             >
@@ -1898,37 +1961,45 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                         <div className='grid gap-1.5'>
                           <DesignerFieldLabel>Card Height</DesignerFieldLabel>
                           <Select
-                            value={String(selectedBlock.rowSpan)}
+                            value={String(selectedBlock.rowSpanUnits ?? selectedBlock.rowSpan * 2)}
                             onValueChange={(value) =>
-                              handleBlockChange(selectedBlock.key, (block) => ({
-                                ...block,
-                                rowSpan: clampInt(
-                                  toSafeInt(value, 1),
+                              handleBlockChange(selectedBlock.key, (block) => {
+                                const rowSpanUnits = clampInt(
+                                  toSafeInt(value, 2),
                                   1,
-                                  DISPLAY_GRID_ROW_SPAN_MAX
-                                ),
-                                slot:
-                                  clampInt(toSafeInt(value, 1), 1, DISPLAY_GRID_ROW_SPAN_MAX) > 1
-                                    ? 'full'
-                                    : block.slot
-                              }))
+                                  DISPLAY_GRID_ROW_SPAN_UNITS_MAX
+                                );
+
+                                return {
+                                  ...block,
+                                  rowSpanUnits,
+                                  rowSpan: Math.max(1, Math.ceil(rowSpanUnits / 2))
+                                };
+                              })
                             }
                           >
                             <SelectTrigger className='w-full'>
                               <SelectValue placeholder='Card Height' />
                             </SelectTrigger>
                             <SelectContent>
-                              {Array.from({ length: DISPLAY_GRID_ROW_SPAN_MAX }, (_, index) => {
-                                const rowCount = index + 1;
+                              {Array.from(
+                                { length: DISPLAY_GRID_ROW_SPAN_UNITS_MAX },
+                                (_, index) => {
+                                  const rowSpanUnits = index + 1;
 
-                                return (
-                                  <SelectItem key={rowCount} value={String(rowCount)}>
-                                    {rowCount} row{rowCount === 1 ? '' : 's'}
-                                  </SelectItem>
-                                );
-                              })}
+                                  return (
+                                    <SelectItem key={rowSpanUnits} value={String(rowSpanUnits)}>
+                                      {getCardHeightOptionLabel(rowSpanUnits)}
+                                    </SelectItem>
+                                  );
+                                }
+                              )}
                             </SelectContent>
                           </Select>
+                          <p className='text-[11px] leading-[1.3] text-muted-foreground'>
+                            Card Height supports half rows. Example: 2.5 rows means the card covers
+                            two full TV rows plus the top half of the next row.
+                          </p>
                         </div>
 
                         <div className='grid gap-1.5'>
@@ -1950,6 +2021,17 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                               }))
                             }
                           />
+                          {selectedBlock.key === 'concessionPriceList' ? (
+                            <p className='text-[11px] leading-[1.3] text-muted-foreground'>
+                              Concession Price List supports up to 40 rows per slide.
+                            </p>
+                          ) : null}
+                          {selectedBlock.key === 'staffRoster' ? (
+                            <p className='text-[11px] leading-[1.3] text-muted-foreground'>
+                              Staff Roster uses rows per internal column. 3 columns with 12 rows can
+                              show up to 36 staff.
+                            </p>
+                          ) : null}
                         </div>
                       </div>
 
@@ -1987,10 +2069,14 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
 
                       <div className='grid gap-1.5'>
                         <p className='text-xs text-muted-foreground'>
+                          Card Height supports half rows. Example: 2.5 rows means the card covers
+                          two full TV rows plus the top half of the next row.
+                        </p>
+                        <p className='text-xs text-muted-foreground'>
                           Start Row controls where the card begins on the TV grid. Card Height
                           controls how many TV rows the card covers vertically. Cell Slot lets two
                           cards share the same row using top and bottom halves. Content Rows / Slide
-                          controls how many records show inside the card before slideshow.
+                          controls how many rows show inside the card before slideshow.
                         </p>
                       </div>
                     </div>
@@ -2012,7 +2098,10 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                 <li>Cell Slot Top or Bottom only works with Card Height 1.</li>
                 <li>Card Height cannot extend beyond layout row 20.</li>
                 <li>Start Row is the row where the card begins.</li>
-                <li>Content Rows / Slide only controls internal slideshow rows.</li>
+                <li>
+                  Staff Roster: Content Rows / Slide means rows per internal column. Other blocks
+                  keep total rows per slide.
+                </li>
                 <li>Content Columns splits rows inside the card.</li>
                 <li>Header-only blocks stay in the top header.</li>
               </ul>

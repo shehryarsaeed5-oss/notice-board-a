@@ -10,8 +10,10 @@ import {
   DISPLAY_GRID_ROW_MAX,
   DISPLAY_GRID_ROW_MIN,
   DISPLAY_GRID_ROW_SPAN_MAX,
+  DISPLAY_GRID_ROW_SPAN_UNITS_MAX,
   DEFAULT_DISPLAY_LAYOUT_BACKGROUND,
   DEFAULT_DISPLAY_LAYOUT_APPEARANCE,
+  getDisplayBlockRowSpanUnits,
   getDefaultDisplayLayoutConfig,
   isHeaderOnlyDisplayBlock
 } from '../lib/display-layout-config';
@@ -98,6 +100,9 @@ const displayLayoutAppearanceSchema = z.object({
     headerMutedText: displayHexColorSchema,
     cardBackground: displayHexColorSchema,
     cardBorder: displayHexColorSchema,
+    cardTitleBarBackground: displayHexColorSchema,
+    cardRowBackground: displayHexColorSchema,
+    cardRowAlternateBackground: displayHexColorSchema,
     cardTitleText: displayHexColorSchema,
     cardHeadingText: displayHexColorSchema,
     cardBodyText: displayHexColorSchema,
@@ -136,6 +141,9 @@ export const displayLayoutBlockSchema = z
     ),
     colSpan: z.preprocess(normalizeNumber, z.number().int().min(1).max(2)),
     rowSpan: z.preprocess(normalizeNumber, z.number().int().min(1).max(DISPLAY_GRID_ROW_SPAN_MAX)),
+    rowSpanUnits: z
+      .preprocess(normalizeNumber, z.number().int().min(1).max(DISPLAY_GRID_ROW_SPAN_UNITS_MAX))
+      .optional(),
     slot: z.enum(['full', 'top', 'bottom']).default('full')
   })
   .superRefine((value, ctx) => {
@@ -172,20 +180,10 @@ export const displayLayoutBlockSchema = z
       });
     }
 
-    if (
-      !isHeaderOnlyDisplayBlock(value.key) &&
-      value.slot &&
-      value.slot !== 'full' &&
-      value.rowSpan > 1
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['rowSpan'],
-        message: 'Card Height must be 1 when Cell Slot is Top or Bottom'
-      });
-    }
+    const rowSpanUnits = getDisplayBlockRowSpanUnits(value);
+    const logicalRowSpan = Math.max(1, Math.ceil(rowSpanUnits / 2));
 
-    if (value.row + value.rowSpan - 1 > DISPLAY_GRID_ROW_MAX) {
+    if (value.row + logicalRowSpan - 1 > DISPLAY_GRID_ROW_MAX) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['rowSpan'],
@@ -205,8 +203,8 @@ export const displayLayoutConfigSchema = z
   .superRefine((value, ctx) => {
     const occupied: Array<{
       key: string;
-      rowStart: number;
-      rowEnd: number;
+      subRowStart: number;
+      subRowEnd: number;
       start: number;
       end: number;
       slot: 'full' | 'top' | 'bottom';
@@ -219,39 +217,19 @@ export const displayLayoutConfigSchema = z
 
       const startColumn = block.column;
       const endColumn = Math.min(DISPLAY_GRID_COLUMN_COUNT, block.column + block.colSpan - 1);
-      const startRow = block.row;
-      const endRow = Math.min(DISPLAY_GRID_ROW_MAX, block.row + block.rowSpan - 1);
+      const rowSpanUnits = getDisplayBlockRowSpanUnits(block);
+      const subRowStart = (block.row - 1) * 2 + (block.slot === 'bottom' ? 2 : 1);
+      const subRowEnd = subRowStart + rowSpanUnits;
       const overlaps = occupied.filter(
         (item) =>
           !(
-            endRow < item.rowStart ||
-            startRow > item.rowEnd ||
+            subRowEnd <= item.subRowStart ||
+            subRowStart >= item.subRowEnd ||
             endColumn < item.start ||
             startColumn > item.end
           )
       );
-      const sameArea =
-        overlaps.length === 1 &&
-        overlaps[0] &&
-        overlaps[0].start === startColumn &&
-        overlaps[0].end === endColumn &&
-        overlaps[0].rowStart === startRow &&
-        overlaps[0].rowEnd === endRow;
-      const currentSlot = block.slot ?? 'full';
-      const overlapping = overlaps.find((item) => {
-        if (
-          sameArea &&
-          currentSlot !== 'full' &&
-          item.slot !== 'full' &&
-          item.slot !== currentSlot
-        ) {
-          return false;
-        }
-
-        return true;
-      });
-
-      if (overlapping) {
+      if (overlaps.length > 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['blocks', index, 'column'],
@@ -262,11 +240,11 @@ export const displayLayoutConfigSchema = z
 
       occupied.push({
         key: block.key,
-        rowStart: startRow,
-        rowEnd: endRow,
+        subRowStart,
+        subRowEnd,
         start: startColumn,
         end: endColumn,
-        slot: currentSlot
+        slot: block.slot ?? 'full'
       });
     });
   });

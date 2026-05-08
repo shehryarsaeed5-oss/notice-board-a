@@ -3,12 +3,18 @@ import 'server-only';
 import { prisma } from '@/lib/prisma';
 import { invalidateDisplayBoardCache } from '@/features/display-board/api/cache';
 
+import {
+  buildConcessionImportDuplicateKey,
+  type ConcessionImportPreparedRow
+} from '../lib/concession-import';
+
 import type {
   ConcessionPriceItemFormValues,
   ConcessionPriceItemListFilters,
   ConcessionPriceItemListResult,
   ConcessionPriceItemRecord,
-  ConcessionPriceItemStatus
+  ConcessionPriceItemStatus,
+  ConcessionPriceItemImportResult
 } from './types';
 
 export class ConcessionPriceItemNotFoundError extends Error {
@@ -57,6 +63,10 @@ function normalizeSortOrder(value?: number | string | null): number {
 
   const parsed = typeof value === 'string' ? Number(value) : value;
   return Number.isFinite(parsed) && parsed >= 0 ? Math.trunc(parsed) : 0;
+}
+
+function buildNormalizedDuplicateKey(itemName: string, category: string | null): string {
+  return buildConcessionImportDuplicateKey({ itemName, category });
 }
 
 async function getDistinctCategories(): Promise<string[]> {
@@ -195,4 +205,53 @@ export async function archiveConcessionPriceItem(id: string) {
   await invalidateDisplayBoardCache();
 
   return concessionPriceItem;
+}
+
+export async function importConcessionPriceItems(
+  rows: ConcessionImportPreparedRow[]
+): Promise<ConcessionPriceItemImportResult> {
+  const existingItems = await prisma.concessionPriceItem.findMany({
+    select: {
+      itemName: true,
+      category: true
+    }
+  });
+
+  const existingKeys = new Set(
+    existingItems.map((item) => buildNormalizedDuplicateKey(item.itemName, item.category))
+  );
+  const data = [];
+  let skippedCount = 0;
+
+  for (const row of rows) {
+    if (existingKeys.has(row.duplicateKey)) {
+      skippedCount += 1;
+      continue;
+    }
+
+    existingKeys.add(row.duplicateKey);
+    data.push({
+      itemName: normalizeRequiredText(row.itemName),
+      category: normalizeOptionalText(row.category ?? undefined),
+      price: row.price,
+      sortOrder: row.sortOrder,
+      status: row.status
+    });
+  }
+
+  if (data.length > 0) {
+    await prisma.concessionPriceItem.createMany({
+      data
+    });
+  }
+
+  if (data.length > 0 || skippedCount > 0) {
+    await invalidateDisplayBoardCache();
+  }
+
+  return {
+    importedCount: data.length,
+    skippedCount,
+    failedCount: 0
+  };
 }

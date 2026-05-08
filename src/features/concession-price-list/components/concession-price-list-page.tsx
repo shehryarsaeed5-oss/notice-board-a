@@ -4,8 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import type { ConcessionPriceItemStatus } from '../api/types';
 import { getConcessionPriceItems } from '../api/service';
 import { ConcessionPriceItemEmptyState } from './concession-price-list-empty-state';
-import { ConcessionPriceItemFormSheetTrigger } from './concession-price-list-form-sheet';
 import { ConcessionPriceListFilters } from './concession-price-list-filters';
+import { ConcessionPriceListPageActions } from './concession-price-list-page-actions';
 import { ConcessionPriceListTable } from './concession-price-list-table';
 
 interface ConcessionPriceListPageProps {
@@ -29,7 +29,7 @@ export async function ConcessionPriceListPage({
     <PageContainer
       pageTitle='Concession Price List'
       pageDescription='Create, update, and manage concession prices for the cinema notice board.'
-      pageHeaderAction={<ConcessionPriceItemFormSheetTrigger />}
+      pageHeaderAction={<ConcessionPriceListPageActions />}
     >
       <div className='flex flex-col gap-4'>
         <Card className='border-border/60 bg-card/90 shadow-sm'>
