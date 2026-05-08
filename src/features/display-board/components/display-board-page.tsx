@@ -202,14 +202,14 @@ function getDisplayTextStyles(colors: DisplayLayoutAppearanceColorsConfig): {
 
 function getDisplayPanelSurfaceClass(transparentPanels: boolean) {
   return transparentPanels
-    ? 'border-[#8A6520]/45 bg-[#FBF7EE]/95 shadow-[0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-sm'
-    : 'border-[#8A6520]/80 bg-[#FBF7EE] shadow-[0_18px_42px_rgba(0,0,0,0.22)]';
+    ? 'border-[#8A6520]/45 bg-[#FBF7EE]/95 shadow-[0_12px_28px_rgba(0,0,0,0.22)] backdrop-blur-sm'
+    : 'border-[#8A6520]/80 bg-[#FBF7EE] shadow-[0_12px_28px_rgba(0,0,0,0.22)]';
 }
 
 function getDisplayHeaderSurfaceClass(transparentPanels: boolean) {
   return transparentPanels
-    ? 'border-[#8A6520]/45 bg-[#0D0D0D]/95 shadow-[0_18px_42px_rgba(0,0,0,0.24)] backdrop-blur-sm'
-    : 'border-[#8A6520]/90 bg-[#0D0D0D] shadow-[0_18px_42px_rgba(0,0,0,0.32)]';
+    ? 'border-[#8A6520]/45 bg-[#0D0D0D]/95 shadow-[0_12px_28px_rgba(0,0,0,0.22)] backdrop-blur-sm'
+    : 'border-[#8A6520]/90 bg-[#0D0D0D] shadow-[0_12px_28px_rgba(0,0,0,0.22)]';
 }
 
 function getVisibleCount(block: DisplayLayoutBlockConfig, fallback: number) {
@@ -261,7 +261,7 @@ function formatProgress(progress: {
   dataAvailable: boolean;
 }) {
   if (!progress.dataAvailable) {
-    return 'Sales data not imported';
+    return 'Not imported';
   }
 
   const sold = progress.soldQty.toLocaleString();
@@ -1221,7 +1221,7 @@ function DisplayBoardUnavailable({
       <div className='relative flex min-h-[100dvh] items-center justify-center p-6'>
         <Card
           className={cn(
-            '!rounded-none max-w-2xl border-[#8A6520]/80 bg-[#FBF7EE] text-center shadow-[0_30px_90px_rgba(0,0,0,0.18)]',
+            '!rounded-none max-w-2xl border-[#8A6520]/80 bg-[#FBF7EE] text-center shadow-[0_24px_60px_rgba(0,0,0,0.45)]',
             DISPLAY_CARD_BODY_TEXT_CLASS
           )}
         >
@@ -2021,104 +2021,112 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = getVisibleCount(block, VISIBLE_TARGET_COUNT);
         const targetPages = chunkItems(salesTargets.items, pageSize);
         const renderTargetPage = (pageItems: typeof salesTargets.items) => (
-          <div className='space-y-0.5'>
-            <CompactTableHeadingRow
-              labels={['Item', 'Daily', 'Weekly', 'Monthly']}
-              columnsClassName='grid-cols-[minmax(0,1.2fr)_minmax(4rem,0.6fr)_minmax(4rem,0.6fr)_minmax(4rem,0.6fr)]'
-              alignments={['left', 'right', 'right', 'right']}
-              surfaceStyle={
-                hasZebraRows
-                  ? getDisplayHeadingRowStyle(
-                      transparentPanels,
-                      appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors
-                    )
-                  : undefined
-              }
-            />
-            <div className='divide-y divide-white/10'>
-              {pageItems.map((target, rowIndex) => (
-                <div
-                  key={target.id}
-                  className={cn(
-                    DISPLAY_TABLE_ROW_CLASS,
-                    'items-start gap-x-4 border-b border-white/10 last:border-b-0 rounded-none [grid-template-columns:minmax(0,1.2fr)_minmax(4rem,0.6fr)_minmax(4rem,0.6fr)_minmax(4rem,0.6fr)]'
-                  )}
-                  style={{
-                    ...displayTextStyles.cardDivider,
-                    ...getDisplayZebraRowBackgroundStyle(
-                      transparentPanels,
-                      appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors,
-                      rowIndex
-                    )
-                  }}
-                >
-                  <div className='min-w-0 overflow-hidden whitespace-nowrap'>
-                    <div
-                      className={DISPLAY_TABLE_BODY_CLASS}
-                      style={displayTextStyles.cardBodyText}
-                    >
-                      {target.itemName}
-                    </div>
-                    <div
-                      className={cn(
-                        'mt-0.5 flex min-w-0 items-center gap-1 overflow-hidden whitespace-nowrap',
-                        DISPLAY_TABLE_STATUS_CLASS
-                      )}
-                      style={displayTextStyles.cardBodyText}
-                    >
-                      {target.itemCodes.length > 0 ? (
-                        <RecordChip>
-                          {target.itemCodes.length} code
-                          {target.itemCodes.length === 1 ? '' : 's'}
-                        </RecordChip>
-                      ) : target.itemCode ? (
-                        <RecordChip>{target.itemCode}</RecordChip>
-                      ) : null}
-                      <RecordChip>{target.status}</RecordChip>
-                      {target.startDate && (
-                        <RecordChip>Start {formatShortDate(target.startDate)}</RecordChip>
-                      )}
-                    </div>
-                    <div
-                      className={cn('mt-0.5 flex flex-wrap gap-1', DISPLAY_TABLE_HEADING_CLASS)}
-                      style={displayTextStyles.cardHeadingText}
-                    >
-                      <span>Order {target.displayOrder}</span>
-                      <span>Last import</span>
-                      <span
-                        className={DISPLAY_TABLE_BODY_CLASS}
+          <div className='space-y-1'>
+            <div className='space-y-1'>
+              {pageItems.map((target, rowIndex) => {
+                const codesCount = Math.max(
+                  0,
+                  target.itemCodes.length || (target.itemCode ? 1 : 0)
+                );
+
+                return (
+                  <div
+                    key={target.id}
+                    className={cn(
+                      'space-y-1 border-b border-white/10 px-2 py-[4px] last:border-b-0 rounded-none'
+                    )}
+                    style={{
+                      ...displayTextStyles.cardDivider,
+                      ...getDisplayZebraRowBackgroundStyle(
+                        transparentPanels,
+                        appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors,
+                        rowIndex
+                      )
+                    }}
+                  >
+                    <div className='flex min-w-0 items-start justify-between gap-2 whitespace-nowrap'>
+                      <div
+                        className='min-w-0 flex-1 truncate text-left text-[14px] font-bold leading-[1.1]'
                         style={displayTextStyles.cardBodyText}
                       >
-                        {formatDateTime(target.lastImportAt)}
-                      </span>
+                        {target.itemName}
+                      </div>
+                      <div
+                        className='shrink-0 rounded-full border px-1.5 py-[1px] text-[10px] font-extrabold uppercase leading-none tracking-[0.08em]'
+                        style={{
+                          ...displayTextStyles.cardHeadingText,
+                          borderColor: DISPLAY_CARD_DIVIDER_COLOR
+                        }}
+                      >
+                        Order {target.displayOrder}
+                      </div>
+                    </div>
+                    <div
+                      className='min-w-0 truncate text-[11px] font-semibold leading-none'
+                      style={displayTextStyles.cardHeadingText}
+                    >
+                      {`${codesCount} code${codesCount === 1 ? '' : 's'} • ${target.status} • Start ${formatShortDate(target.startDate)}`}
+                    </div>
+                    <div className='overflow-hidden border border-[color:var(--display-card-divider)] rounded-none'>
+                      <div
+                        className='grid grid-cols-3 border-b px-1.5 py-[2px]'
+                        style={
+                          hasZebraRows
+                            ? getDisplayHeadingRowStyle(
+                                transparentPanels,
+                                appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors
+                              )
+                            : {
+                                backgroundColor: 'rgba(245, 236, 221, 0.92)',
+                                borderColor: DISPLAY_CARD_DIVIDER_COLOR
+                              }
+                        }
+                      >
+                        {['Daily', 'Weekly', 'Monthly'].map((label) => (
+                          <div
+                            key={label}
+                            className='min-w-0 truncate text-center text-[10px] font-extrabold uppercase tracking-[0.1em] leading-none'
+                            style={displayTextStyles.cardHeadingText}
+                          >
+                            {label}
+                          </div>
+                        ))}
+                      </div>
+                      <div className='grid grid-cols-3'>
+                        {[
+                          {
+                            value: formatProgress(target.daily),
+                            tone: target.daily.dataAvailable ? 'emerald' : 'zinc'
+                          },
+                          {
+                            value: formatProgress(target.weekly),
+                            tone: target.weekly.dataAvailable ? 'amber' : 'zinc'
+                          },
+                          {
+                            value: formatProgress(target.monthly),
+                            tone: target.monthly.dataAvailable ? 'emerald' : 'zinc'
+                          }
+                        ].map((metric, metricIndex) => (
+                          <div
+                            key={metricIndex}
+                            className='min-w-0 truncate border-l px-1.5 py-[3px] text-center text-[12px] font-semibold leading-none tabular-nums first:border-l-0'
+                            style={{
+                              color:
+                                metric.tone === 'emerald'
+                                  ? '#2F7A4D'
+                                  : metric.tone === 'amber'
+                                    ? '#8A6520'
+                                    : 'var(--display-card-body-text, #17120d)'
+                            }}
+                          >
+                            {metric.value}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  <div className='min-w-0 justify-self-end'>
-                    <StatBlock
-                      label='Daily'
-                      value={formatProgress(target.daily)}
-                      tone={target.daily.dataAvailable ? 'emerald' : 'zinc'}
-                      colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
-                    />
-                  </div>
-                  <div className='min-w-0 justify-self-end'>
-                    <StatBlock
-                      label='Weekly'
-                      value={formatProgress(target.weekly)}
-                      tone={target.weekly.dataAvailable ? 'amber' : 'zinc'}
-                      colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
-                    />
-                  </div>
-                  <div className='min-w-0 justify-self-end'>
-                    <StatBlock
-                      label='Monthly'
-                      value={formatProgress(target.monthly)}
-                      tone={target.monthly.dataAvailable ? 'emerald' : 'zinc'}
-                      colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         );
