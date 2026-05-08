@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 
 import { cn } from '@/lib/utils';
 import { DisplayCardSlideshow } from './display-card-slideshow';
@@ -24,16 +24,27 @@ export interface MovieScheduleSlideshowMovieGroup {
 interface MovieScheduleSlideshowProps {
   movieGroups: MovieScheduleSlideshowMovieGroup[];
   rowLimit: number;
+  hasZebraRows?: boolean;
 }
 
 const DEFAULT_MOVIE_RUNTIME_MINUTES = 150;
 const MOVIE_SCHEDULE_GRID_TEMPLATE = 'grid-cols-[minmax(190px,1.25fr)_minmax(0,2fr)]';
-const MOVIE_CARD_TITLE_TEXT_CLASS = '!text-[color:var(--display-card-title-text,#f8f4e8)]';
-const MOVIE_CARD_BODY_TEXT_CLASS = '!text-[color:var(--display-card-body-text,#f8f4e8)]';
-const MOVIE_CARD_HEADING_TEXT_CLASS = '!text-[color:var(--display-card-heading-text,#d1b56a)]';
+const MOVIE_TABLE_HEADING_CLASS =
+  'text-[11px] font-extrabold uppercase tracking-[0.14em] leading-none';
+const MOVIE_TABLE_BODY_CLASS = 'text-[14px] font-semibold leading-[1.2]';
+const MOVIE_TABLE_ROW_CLASS = 'grid items-center min-h-[24px] gap-y-0 px-2 py-[4px] leading-[1.2]';
 const MOVIE_CARD_DIVIDER_STYLE = {
   borderColor: 'var(--display-card-divider, rgba(255,255,255,0.10))'
 } as const;
+
+function getMovieRowBackgroundStyle(rowIndex: number): CSSProperties {
+  return {
+    backgroundColor:
+      rowIndex % 2 === 1
+        ? 'var(--display-card-row-alt-bg, transparent)'
+        : 'var(--display-card-row-bg, transparent)'
+  };
+}
 
 function getCompactScreenLabel(screenName: string) {
   const normalized = screenName.trim().toLowerCase();
@@ -90,10 +101,11 @@ function MovieTimeChip({ label, isActive }: { label: string; isActive: boolean }
   return (
     <span
       className={cn(
-        'inline-flex items-center text-[9px] font-semibold leading-none rounded-none',
+        'inline-flex items-center rounded-none',
+        MOVIE_TABLE_BODY_CLASS,
         isActive
           ? 'text-emerald-200 underline decoration-emerald-400/60 decoration-1 underline-offset-2'
-          : MOVIE_CARD_BODY_TEXT_CLASS
+          : ''
       )}
     >
       {label}
@@ -101,48 +113,53 @@ function MovieTimeChip({ label, isActive }: { label: string; isActive: boolean }
   );
 }
 
-function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGroup; now: number }) {
+function MovieGroupCard({
+  group,
+  now,
+  rowIndex,
+  hasZebraRows = false
+}: {
+  group: MovieScheduleSlideshowMovieGroup;
+  now: number;
+  rowIndex: number;
+  hasZebraRows?: boolean;
+}) {
   return (
     <div
-      className='border-b px-2.5 py-1.5 last:border-b-0 rounded-none'
-      style={MOVIE_CARD_DIVIDER_STYLE}
+      className='border-b last:border-b-0 rounded-none'
+      style={{
+        ...MOVIE_CARD_DIVIDER_STYLE,
+        borderColor: hasZebraRows ? 'transparent' : MOVIE_CARD_DIVIDER_STYLE.borderColor,
+        ...getMovieRowBackgroundStyle(rowIndex)
+      }}
     >
       <div
         className={cn(
-          'grid items-center gap-x-5 gap-y-0 whitespace-nowrap',
+          MOVIE_TABLE_ROW_CLASS,
+          'gap-x-5 whitespace-nowrap',
           MOVIE_SCHEDULE_GRID_TEMPLATE
         )}
       >
         <div className='min-w-0'>
-          <div
-            className={cn(
-              'truncate text-left text-[11px] font-bold leading-[1.05] xl:text-[12px]',
-              MOVIE_CARD_TITLE_TEXT_CLASS
-            )}
-          >
-            {group.movieName}
-          </div>
+          <div className={cn('truncate text-left', MOVIE_TABLE_BODY_CLASS)}>{group.movieName}</div>
         </div>
 
         <div className='min-w-0 flex-1 overflow-hidden'>
           <div
-            className={cn(
-              'flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] font-semibold',
-              MOVIE_CARD_BODY_TEXT_CLASS
-            )}
+            className={cn('flex flex-wrap items-center gap-x-3 gap-y-0', MOVIE_TABLE_BODY_CLASS)}
           >
             {group.screenGroups.map((screenGroup) => (
               <span
                 key={`${group.movieName}-${screenGroup.screenName}`}
                 className='inline-flex max-w-full min-w-0 items-center gap-1 rounded-none'
               >
-                <span className={cn('shrink-0 font-semibold', MOVIE_CARD_BODY_TEXT_CLASS)}>
+                <span className={cn('shrink-0', MOVIE_TABLE_BODY_CLASS)}>
                   {getCompactScreenLabel(screenGroup.screenName)}
                 </span>
                 <span
                   className={cn(
-                    'flex min-w-0 flex-wrap items-center gap-0.5 whitespace-nowrap font-semibold',
-                    MOVIE_CARD_BODY_TEXT_CLASS
+                    'flex min-w-0 flex-wrap items-center gap-0 whitespace-nowrap',
+                    MOVIE_TABLE_BODY_CLASS
                   )}
                 >
                   {screenGroup.times.map((time, index) => {
@@ -174,18 +191,20 @@ function MovieGroupCard({ group, now }: { group: MovieScheduleSlideshowMovieGrou
   );
 }
 
-function MovieScheduleHeadingRow() {
+function MovieScheduleHeadingRow({ hasZebraRows = false }: { hasZebraRows?: boolean }) {
   return (
     <div
-      className={cn(
-        'border-b px-2 pb-0.5 pt-0.5 text-[9px] font-bold uppercase tracking-[0.18em]',
-        MOVIE_CARD_HEADING_TEXT_CLASS
-      )}
-      style={MOVIE_CARD_DIVIDER_STYLE}
+      className={cn('border-b', MOVIE_TABLE_ROW_CLASS, MOVIE_TABLE_HEADING_CLASS)}
+      style={{
+        ...MOVIE_CARD_DIVIDER_STYLE,
+        backgroundColor: hasZebraRows ? 'var(--display-card-row-alt-bg, transparent)' : undefined,
+        borderColor: hasZebraRows ? 'transparent' : MOVIE_CARD_DIVIDER_STYLE.borderColor
+      }}
     >
       <div
         className={cn(
-          'grid items-center gap-x-5 gap-y-0 whitespace-nowrap',
+          MOVIE_TABLE_ROW_CLASS,
+          'gap-x-5 whitespace-nowrap',
           MOVIE_SCHEDULE_GRID_TEMPLATE
         )}
       >
@@ -198,20 +217,24 @@ function MovieScheduleHeadingRow() {
 
 function MovieSchedulePage({
   movieGroups,
-  now
+  now,
+  hasZebraRows = false
 }: {
   movieGroups: MovieScheduleSlideshowMovieGroup[];
   now: number;
+  hasZebraRows?: boolean;
 }) {
   return (
     <div className='space-y-0.5'>
-      <MovieScheduleHeadingRow />
+      <MovieScheduleHeadingRow hasZebraRows={hasZebraRows} />
       <div className='divide-y divide-white/10'>
-        {movieGroups.map((movie) => (
+        {movieGroups.map((movie, rowIndex) => (
           <MovieGroupCard
             key={`${movie.movieName}-${movie.firstShowTime}`}
             group={movie}
             now={now}
+            rowIndex={rowIndex}
+            hasZebraRows={hasZebraRows}
           />
         ))}
       </div>
@@ -219,7 +242,11 @@ function MovieSchedulePage({
   );
 }
 
-export function MovieScheduleSlideshow({ movieGroups, rowLimit }: MovieScheduleSlideshowProps) {
+export function MovieScheduleSlideshow({
+  movieGroups,
+  rowLimit,
+  hasZebraRows = false
+}: MovieScheduleSlideshowProps) {
   const now = useLiveNow();
 
   const pages = useMemo(() => {
@@ -238,13 +265,18 @@ export function MovieScheduleSlideshow({ movieGroups, rowLimit }: MovieScheduleS
   }
 
   if (pages.length === 1) {
-    return <MovieSchedulePage movieGroups={pages[0]} now={now} />;
+    return <MovieSchedulePage movieGroups={pages[0]} now={now} hasZebraRows={hasZebraRows} />;
   }
 
   return (
     <DisplayCardSlideshow className='h-full min-h-0' intervalMs={7_000}>
       {pages.map((pageMovies, index) => (
-        <MovieSchedulePage key={index} movieGroups={pageMovies} now={now} />
+        <MovieSchedulePage
+          key={index}
+          movieGroups={pageMovies}
+          now={now}
+          hasZebraRows={hasZebraRows}
+        />
       ))}
     </DisplayCardSlideshow>
   );
