@@ -12,6 +12,7 @@ import type {
   DisplayBoardAlertItem,
   DisplayBoardAttendanceDisplayStatus,
   DisplayBoardMovieItem,
+  DisplayBoardSalesTargetItem,
   DisplayBoardWeatherData
 } from '../api/types';
 import {
@@ -294,6 +295,343 @@ function formatProgress(progress: {
   const percent = progress.percent === null ? '—' : `${progress.percent}%`;
 
   return `${sold} / ${target} • Rem ${remaining} • ${percent}`;
+}
+
+type SalesTargetMode = 'daily' | 'weekly' | 'monthly';
+
+const SALES_TARGET_MODES: SalesTargetMode[] = ['daily', 'weekly', 'monthly'];
+
+function getSalesTargetModeLabel(mode: SalesTargetMode): string {
+  switch (mode) {
+    case 'weekly':
+      return 'TARGET WEEKLY';
+    case 'monthly':
+      return 'TARGET MONTHLY';
+    case 'daily':
+    default:
+      return 'TARGET DAILY';
+  }
+}
+
+function getSalesTargetPeriodLabel(mode: SalesTargetMode): string {
+  switch (mode) {
+    case 'weekly':
+      return 'Week';
+    case 'monthly':
+      return 'Month';
+    case 'daily':
+    default:
+      return 'Day';
+  }
+}
+
+function getSalesTargetSummaryLabel(
+  progress: {
+    soldQty: number;
+    targetQty: number | null;
+    remainingQty: number | null;
+    percent: number | null;
+    dataAvailable: boolean;
+  },
+  mode: SalesTargetMode
+) {
+  if (!progress.dataAvailable) {
+    return 'Sales data not imported';
+  }
+
+  const sold = progress.soldQty.toLocaleString();
+  const target = progress.targetQty === null ? '—' : progress.targetQty.toLocaleString();
+
+  return `${getSalesTargetPeriodLabel(mode).toUpperCase()} ${sold}/${target}`;
+}
+
+function formatSalesTargetMetricValue(
+  progress: {
+    soldQty: number;
+    targetQty: number | null;
+    remainingQty: number | null;
+    percent: number | null;
+    dataAvailable: boolean;
+  },
+  key: 'target' | 'paid' | 'remaining'
+) {
+  if (key === 'target') {
+    return progress.targetQty === null ? 'Not imported' : progress.targetQty.toLocaleString();
+  }
+
+  if (key === 'paid') {
+    return progress.dataAvailable ? progress.soldQty.toLocaleString() : 'Not imported';
+  }
+
+  if (progress.remainingQty !== null) {
+    return progress.remainingQty.toLocaleString();
+  }
+
+  if (progress.targetQty !== null) {
+    return progress.targetQty.toLocaleString();
+  }
+
+  return progress.dataAvailable ? '—' : 'Not imported';
+}
+
+function SalesTargetGauge({
+  percent,
+  textStyles
+}: {
+  percent: number | null;
+  textStyles: ReturnType<typeof getDisplayTextStyles>;
+}) {
+  const safePercent = percent === null ? null : Math.max(0, Math.min(100, percent));
+  const radius = 42;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset =
+    safePercent === null ? circumference : circumference * (1 - safePercent / 100);
+
+  return (
+    <div className='flex items-center justify-center'>
+      <svg
+        viewBox='0 0 100 100'
+        className='h-[106px] w-[106px] shrink-0 drop-shadow-[0_1px_0_rgba(255,255,255,0.2)]'
+      >
+        <circle
+          cx='50'
+          cy='50'
+          r={radius}
+          fill='none'
+          stroke='rgba(245, 236, 221, 0.92)'
+          strokeWidth='10'
+        />
+        <circle
+          cx='50'
+          cy='50'
+          r={radius}
+          fill='none'
+          stroke='rgba(138, 101, 32, 0.92)'
+          strokeWidth='10'
+          strokeLinecap='round'
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          transform='rotate(-90 50 50)'
+        />
+        <text
+          x='50'
+          y='54'
+          textAnchor='middle'
+          className='fill-current text-[16px] font-extrabold'
+          style={textStyles.cardBodyText}
+        >
+          {safePercent === null ? '—' : `${Math.round(safePercent)}%`}
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+function SalesTargetMetricRow({
+  label,
+  value,
+  tone,
+  colors,
+  cornerStyle,
+  textStyles
+}: {
+  label: string;
+  value: string;
+  tone: 'neutral' | 'paid' | 'remaining';
+  colors: DisplayLayoutAppearanceColorsConfig;
+  cornerStyle: DisplayLayoutCornerStyle;
+  textStyles: ReturnType<typeof getDisplayTextStyles>;
+}) {
+  const backgroundColor =
+    tone === 'paid'
+      ? 'rgba(47, 122, 77, 0.12)'
+      : tone === 'remaining'
+        ? 'rgba(138, 101, 32, 0.12)'
+        : 'rgba(245, 236, 221, 0.84)';
+  const valueColor =
+    tone === 'paid'
+      ? '#2F7A4D'
+      : tone === 'remaining'
+        ? '#8A6520'
+        : 'var(--display-card-body-text, #17120d)';
+
+  return (
+    <div
+      className={cn(
+        'flex items-center justify-between gap-2 border px-3 py-1.5',
+        getDisplayCornerClass(cornerStyle, 'rounded-[11px]')
+      )}
+      style={{
+        backgroundColor,
+        borderColor: colors.cardDivider ?? DISPLAY_CARD_DIVIDER_COLOR
+      }}
+    >
+      <div className='min-w-0 text-[10px] font-extrabold uppercase tracking-[0.12em] leading-none'>
+        <span style={textStyles.cardHeadingText}>{label}</span>
+      </div>
+      <div
+        className={cn(
+          'min-w-0 text-right text-[13px] font-extrabold leading-none tabular-nums',
+          tone === 'paid'
+            ? 'text-emerald-700'
+            : tone === 'remaining'
+              ? 'text-amber-800'
+              : 'text-[color:var(--display-card-body-text,#17120d)]'
+        )}
+        style={{ color: valueColor }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function SalesTargetModeCard({
+  target,
+  mode,
+  transparentPanels,
+  cornerStyle,
+  colors,
+  textStyles
+}: {
+  target: DisplayBoardSalesTargetItem;
+  mode: SalesTargetMode;
+  transparentPanels: boolean;
+  cornerStyle: DisplayLayoutCornerStyle;
+  colors: DisplayLayoutAppearanceColorsConfig;
+  textStyles: ReturnType<typeof getDisplayTextStyles>;
+}) {
+  const progress = target[mode];
+  const summaryLabel = getSalesTargetSummaryLabel(progress, mode);
+  const startLabel = `Start ${formatShortDate(target.startDate)}`;
+
+  return (
+    <div
+      className={cn(
+        'flex h-full min-h-0 flex-col gap-2 overflow-hidden border px-3 py-2',
+        getDisplayCornerClass(cornerStyle)
+      )}
+      style={{
+        ...getDisplayPanelStyle(transparentPanels, colors),
+        borderColor: colors.cardDivider ?? DISPLAY_CARD_DIVIDER_COLOR
+      }}
+    >
+      <div className='flex h-[22px] items-center justify-center pb-1'>
+        <div
+          className={cn(
+            'shrink-0 border px-2.5 py-[2px] text-[9px] font-extrabold uppercase tracking-[0.08em] leading-none',
+            getDisplayCornerClass(cornerStyle, 'rounded-full')
+          )}
+          style={{
+            ...textStyles.cardHeadingText,
+            backgroundColor: 'rgba(245, 236, 221, 0.96)',
+            borderColor: colors.cardDivider ?? DISPLAY_CARD_DIVIDER_COLOR
+          }}
+        >
+          {getSalesTargetModeLabel(mode)}
+        </div>
+      </div>
+
+      <div className='grid flex-1 min-h-0 items-center gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(110px,110px)_minmax(170px,176px)]'>
+        <div className='min-w-0 space-y-0.5'>
+          <div
+            className='min-w-0 text-[15px] font-extrabold leading-[1.05]'
+            style={{
+              ...textStyles.cardBodyText,
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 2,
+              overflow: 'hidden'
+            }}
+          >
+            {target.itemName}
+          </div>
+          <div
+            className='min-w-0 truncate text-[10px] font-extrabold uppercase tracking-[0.12em] leading-none'
+            style={textStyles.cardHeadingText}
+          >
+            {summaryLabel}
+          </div>
+          <div
+            className='min-w-0 truncate text-[10px] font-semibold leading-none'
+            style={textStyles.cardBodyText}
+          >
+            {startLabel}
+          </div>
+          {!progress.dataAvailable ? (
+            <div
+              className='min-w-0 truncate text-[10px] font-semibold leading-none'
+              style={textStyles.cardHeadingText}
+            >
+              Sales data not imported
+            </div>
+          ) : null}
+        </div>
+
+        <SalesTargetGauge
+          percent={progress.dataAvailable ? progress.percent : null}
+          textStyles={textStyles}
+        />
+
+        <div className='grid gap-1.5 self-stretch'>
+          <SalesTargetMetricRow
+            label='Target'
+            value={formatSalesTargetMetricValue(progress, 'target')}
+            tone='neutral'
+            colors={colors}
+            cornerStyle={cornerStyle}
+            textStyles={textStyles}
+          />
+          <SalesTargetMetricRow
+            label='Paid'
+            value={formatSalesTargetMetricValue(progress, 'paid')}
+            tone='paid'
+            colors={colors}
+            cornerStyle={cornerStyle}
+            textStyles={textStyles}
+          />
+          <SalesTargetMetricRow
+            label='Remaining'
+            value={formatSalesTargetMetricValue(progress, 'remaining')}
+            tone='remaining'
+            colors={colors}
+            cornerStyle={cornerStyle}
+            textStyles={textStyles}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SalesTargetWidget({
+  target,
+  transparentPanels,
+  cornerStyle,
+  colors,
+  textStyles
+}: {
+  target: DisplayBoardSalesTargetItem;
+  transparentPanels: boolean;
+  cornerStyle: DisplayLayoutCornerStyle;
+  colors: DisplayLayoutAppearanceColorsConfig;
+  textStyles: ReturnType<typeof getDisplayTextStyles>;
+}) {
+  return (
+    <DisplayCardSlideshow className='h-full min-h-0' indicatorClassName='px-0.5 pt-0.5'>
+      {SALES_TARGET_MODES.map((mode) => (
+        <SalesTargetModeCard
+          key={mode}
+          target={target}
+          mode={mode}
+          transparentPanels={transparentPanels}
+          cornerStyle={cornerStyle}
+          colors={colors}
+          textStyles={textStyles}
+        />
+      ))}
+    </DisplayCardSlideshow>
+  );
 }
 
 function formatShortDate(value: Date | null) {
@@ -1218,6 +1556,8 @@ function DisplayBoardUnavailable({
   slug: string;
   reason: 'inactive' | 'not_found';
 }) {
+  const wallpaper = undefined as DisplayLayoutBackgroundConfig | undefined;
+
   return (
     <main
       data-display-board-root
@@ -1364,7 +1704,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
       cardDivider: null
     }
   );
-  const displayGridColumns = `${layoutColumns.left}fr ${layoutColumns.center}fr ${layoutColumns.right}fr`;
+  const displayGridColumns = `minmax(0, ${layoutColumns.left}fr) minmax(0, ${layoutColumns.center}fr) minmax(0, ${layoutColumns.right}fr)`;
   const layoutBlockMap = new Map(layoutBlocks.map((block) => [block.key, block] as const));
   const getBlock = (key: DisplayBlockKey) => layoutBlockMap.get(key);
   const weatherBlock = getBlock('weather');
@@ -2070,117 +2410,20 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
       }
 
       case 'itemSalesTarget': {
-        const pageSize = getVisibleCount(block, VISIBLE_TARGET_COUNT);
+        const pageSize = 1;
         const targetPages = chunkItems(salesTargets.items, pageSize);
         const renderTargetPage = (pageItems: typeof salesTargets.items) => (
-          <div className='space-y-0'>
-            <div className='space-y-0'>
-              {pageItems.map((target, rowIndex) => {
-                const codesCount = Math.max(
-                  0,
-                  target.itemCodes.length || (target.itemCode ? 1 : 0)
-                );
-
-                return (
-                  <div
-                    key={target.id}
-                    className={cn(
-                      'space-y-1 border px-2 py-[4px] rounded-none',
-                      rowIndex > 0 ? '-mt-px' : ''
-                    )}
-                    style={{
-                      ...displayTextStyles.cardDivider,
-                      ...getDisplayZebraRowBackgroundStyle(
-                        transparentPanels,
-                        appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors,
-                        rowIndex
-                      )
-                    }}
-                  >
-                    <div className='flex min-w-0 items-start justify-between gap-2 whitespace-nowrap'>
-                      <div
-                        className='min-w-0 flex-1 truncate text-left text-[14px] font-bold leading-[1.1]'
-                        style={displayTextStyles.cardBodyText}
-                      >
-                        {target.itemName}
-                      </div>
-                      <div
-                        className='shrink-0 rounded-full border px-1.5 py-[1px] text-[10px] font-extrabold uppercase leading-none tracking-[0.08em]'
-                        style={{
-                          ...displayTextStyles.cardHeadingText,
-                          borderColor: DISPLAY_CARD_DIVIDER_COLOR
-                        }}
-                      >
-                        Order {target.displayOrder}
-                      </div>
-                    </div>
-                    <div
-                      className='min-w-0 truncate text-[11px] font-semibold leading-none'
-                      style={displayTextStyles.cardHeadingText}
-                    >
-                      {`${codesCount} code${codesCount === 1 ? '' : 's'} • ${target.status} • Start ${formatShortDate(target.startDate)}`}
-                    </div>
-                    <div className='overflow-hidden border border-[color:var(--display-card-divider)] rounded-none'>
-                      <div
-                        className='grid grid-cols-3 border-b px-1.5 py-[2px]'
-                        style={
-                          hasZebraRows
-                            ? getDisplayHeadingRowStyle(
-                                transparentPanels,
-                                appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors
-                              )
-                            : {
-                                backgroundColor: 'rgba(245, 236, 221, 0.92)',
-                                borderColor: DISPLAY_CARD_DIVIDER_COLOR
-                              }
-                        }
-                      >
-                        {['Daily', 'Weekly', 'Monthly'].map((label) => (
-                          <div
-                            key={label}
-                            className='min-w-0 truncate text-center text-[10px] font-extrabold uppercase tracking-[0.1em] leading-none'
-                            style={displayTextStyles.cardHeadingText}
-                          >
-                            {label}
-                          </div>
-                        ))}
-                      </div>
-                      <div className='grid grid-cols-3'>
-                        {[
-                          {
-                            value: formatProgress(target.daily),
-                            tone: target.daily.dataAvailable ? 'emerald' : 'zinc'
-                          },
-                          {
-                            value: formatProgress(target.weekly),
-                            tone: target.weekly.dataAvailable ? 'amber' : 'zinc'
-                          },
-                          {
-                            value: formatProgress(target.monthly),
-                            tone: target.monthly.dataAvailable ? 'emerald' : 'zinc'
-                          }
-                        ].map((metric, metricIndex) => (
-                          <div
-                            key={metricIndex}
-                            className='min-w-0 truncate border-l px-1.5 py-[3px] text-center text-[12px] font-semibold leading-none tabular-nums first:border-l-0'
-                            style={{
-                              color:
-                                metric.tone === 'emerald'
-                                  ? '#2F7A4D'
-                                  : metric.tone === 'amber'
-                                    ? '#8A6520'
-                                    : 'var(--display-card-body-text, #17120d)'
-                            }}
-                          >
-                            {metric.value}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          <div className='space-y-2'>
+            {pageItems.map((target) => (
+              <SalesTargetWidget
+                key={target.id}
+                target={target}
+                transparentPanels={transparentPanels}
+                cornerStyle={cornerStyle}
+                colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
+                textStyles={displayTextStyles}
+              />
+            ))}
           </div>
         );
 
