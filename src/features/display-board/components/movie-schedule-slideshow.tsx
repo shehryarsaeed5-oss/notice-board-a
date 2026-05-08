@@ -34,7 +34,7 @@ const MOVIE_TABLE_HEADING_CLASS =
 const MOVIE_TABLE_BODY_CLASS = 'text-[14px] font-semibold leading-[1.2]';
 const MOVIE_TABLE_ROW_CLASS = 'grid items-center min-h-[24px] gap-y-0 px-2 py-[4px] leading-[1.2]';
 const MOVIE_CARD_DIVIDER_STYLE = {
-  borderColor: 'var(--display-card-divider, rgba(138,101,32,0.28))'
+  borderColor: 'var(--display-card-divider, rgba(95,75,49,0.65))'
 } as const;
 
 function getMovieRowBackgroundStyle(rowIndex: number): CSSProperties {
@@ -126,10 +126,10 @@ function MovieGroupCard({
 }) {
   return (
     <div
-      className='border-b last:border-b-0 rounded-none'
+      className={cn('border rounded-none', rowIndex > 0 ? '-mt-px' : '')}
       style={{
         ...MOVIE_CARD_DIVIDER_STYLE,
-        borderColor: hasZebraRows ? 'transparent' : MOVIE_CARD_DIVIDER_STYLE.borderColor,
+        borderColor: MOVIE_CARD_DIVIDER_STYLE.borderColor,
         ...getMovieRowBackgroundStyle(rowIndex)
       }}
     >
@@ -194,11 +194,11 @@ function MovieGroupCard({
 function MovieScheduleHeadingRow({ hasZebraRows = false }: { hasZebraRows?: boolean }) {
   return (
     <div
-      className={cn('border-b', MOVIE_TABLE_ROW_CLASS, MOVIE_TABLE_HEADING_CLASS)}
+      className={cn('border rounded-none', MOVIE_TABLE_ROW_CLASS, MOVIE_TABLE_HEADING_CLASS)}
       style={{
         ...MOVIE_CARD_DIVIDER_STYLE,
         backgroundColor: hasZebraRows ? 'var(--display-card-row-alt-bg, #F5ECDD)' : '#F5ECDD',
-        borderColor: hasZebraRows ? 'transparent' : MOVIE_CARD_DIVIDER_STYLE.borderColor
+        borderColor: MOVIE_CARD_DIVIDER_STYLE.borderColor
       }}
     >
       <div

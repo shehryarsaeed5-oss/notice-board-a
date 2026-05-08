@@ -17,6 +17,7 @@ export type DisplayLayoutBlockSlot = 'full' | 'top' | 'bottom';
 export type DisplayLayoutBackgroundFit = 'cover' | 'contain' | 'fill';
 export type DisplayLayoutBackgroundPosition = 'center' | 'top' | 'bottom';
 export type DisplayLayoutColorHex = string;
+export type DisplayLayoutCornerStyle = 'sharp' | 'rounded';
 
 export interface DisplayBlockDefinition {
   key: DisplayBlockKey;
@@ -55,6 +56,7 @@ export interface DisplayLayoutRows {
 
 export interface DisplayLayoutAppearanceConfig {
   transparentPanels: boolean;
+  cornerStyle: DisplayLayoutCornerStyle;
   colors: DisplayLayoutAppearanceColorsConfig;
 }
 
@@ -105,6 +107,7 @@ export const DISPLAY_LAYOUT_BACKGROUND_OVERLAY_MIN = 0;
 export const DISPLAY_LAYOUT_BACKGROUND_OVERLAY_MAX = 0.9;
 export const DEFAULT_DISPLAY_LAYOUT_APPEARANCE: DisplayLayoutAppearanceConfig = {
   transparentPanels: false,
+  cornerStyle: 'rounded',
   colors: {
     headerBackground: null,
     headerText: null,
@@ -355,6 +358,10 @@ function normalizeDisplayLayoutBackground(input: unknown): DisplayLayoutBackgrou
   };
 }
 
+function normalizeDisplayCornerStyle(value: unknown): DisplayLayoutCornerStyle {
+  return value === 'rounded' ? 'rounded' : 'sharp';
+}
+
 const DISPLAY_COLOR_HEX_PATTERN = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 
 export function isDisplayColorHex(value: unknown): value is string {
@@ -368,6 +375,13 @@ export function normalizeDisplayColorHex(value: unknown): DisplayLayoutColorHex 
 
   const trimmed = value.trim();
   return DISPLAY_COLOR_HEX_PATTERN.test(trimmed) ? trimmed : null;
+}
+
+export function getDisplayCornerRadiusClass(
+  cornerStyle: DisplayLayoutCornerStyle,
+  roundedClass = 'rounded-[14px]'
+): string {
+  return cornerStyle === 'rounded' ? roundedClass : '!rounded-none';
 }
 
 export function hexToRgba(hex: string, alpha: number): string {
@@ -509,6 +523,7 @@ function normalizeDisplayLayoutAppearance(input: unknown): DisplayLayoutAppearan
       typeof rawAppearance?.transparentPanels === 'boolean'
         ? rawAppearance.transparentPanels
         : DEFAULT_DISPLAY_LAYOUT_APPEARANCE.transparentPanels,
+    cornerStyle: normalizeDisplayCornerStyle(rawAppearance?.cornerStyle),
     colors: {
       headerBackground: normalizeDisplayColorHex(rawColors?.headerBackground),
       headerText: normalizeDisplayColorHex(rawColors?.headerText),

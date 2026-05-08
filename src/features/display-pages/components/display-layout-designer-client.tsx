@@ -55,6 +55,7 @@ import {
   getDisplayBlockGridPlacement,
   getDisplayBlockRowSpanLabel,
   getDisplayBlockSlotLabel,
+  getDisplayCornerRadiusClass,
   getDefaultDisplayLayoutConfig,
   hexToRgba,
   isHeaderOnlyDisplayBlock,
@@ -68,7 +69,8 @@ import {
   type DisplayLayoutBlockSlot,
   type DisplayLayoutBlockConfig,
   type DisplayLayoutColumns,
-  type DisplayLayoutConfig
+  type DisplayLayoutConfig,
+  type DisplayLayoutCornerStyle
 } from '../lib/display-layout-config';
 
 interface DisplayLayoutDesignerClientProps {
@@ -141,16 +143,28 @@ function getBackgroundPositionLabel(position: DisplayLayoutBackgroundConfig['pos
   }
 }
 
-function getDisplaySurfaceClass(transparentPanels: boolean) {
+function getDisplaySurfaceClass(transparentPanels: boolean, cornerStyle: DisplayLayoutCornerStyle) {
   return transparentPanels
-    ? 'border-white/10 bg-white/6 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'
-    : 'border-white/15 bg-zinc-950/95 shadow-[0_18px_42px_rgba(0,0,0,0.38)]';
+    ? cn(
+        'border-white/10 bg-white/6 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl',
+        getDisplayCornerRadiusClass(cornerStyle)
+      )
+    : cn(
+        'border-white/15 bg-zinc-950/95 shadow-[0_18px_42px_rgba(0,0,0,0.38)]',
+        getDisplayCornerRadiusClass(cornerStyle)
+      );
 }
 
-function getDisplayHeaderSurfaceClass(transparentPanels: boolean) {
+function getDisplayHeaderSurfaceClass(
+  transparentPanels: boolean,
+  cornerStyle: DisplayLayoutCornerStyle
+) {
   return transparentPanels
-    ? 'border-b border-white/10 bg-white/6 backdrop-blur-xl'
-    : 'border-b border-white/15 bg-zinc-950/95';
+    ? cn(
+        'border-b border-white/10 bg-white/6 backdrop-blur-xl',
+        getDisplayCornerRadiusClass(cornerStyle)
+      )
+    : cn('border-b border-white/15 bg-zinc-950/95', getDisplayCornerRadiusClass(cornerStyle));
 }
 
 function getDisplayColorSurfaceStyle(
@@ -230,12 +244,14 @@ function getDisplayHeaderStyle(
 
 function getDesignerPreviewBlockClass(
   transparentPanels: boolean,
+  cornerStyle: DisplayLayoutCornerStyle,
   selected: boolean,
   dragging: boolean
 ) {
   if (!transparentPanels) {
     return cn(
       'border border-white/15 bg-zinc-950/95',
+      getDisplayCornerRadiusClass(cornerStyle, 'rounded-[18px]'),
       selected
         ? 'border-amber-500/50 shadow-[0_0_0_1px_rgba(245,158,11,0.15)]'
         : 'hover:border-white/25 hover:bg-zinc-950',
@@ -245,6 +261,7 @@ function getDesignerPreviewBlockClass(
 
   return cn(
     'border border-white/15 bg-zinc-950/85',
+    getDisplayCornerRadiusClass(cornerStyle, 'rounded-[18px]'),
     selected
       ? 'border-amber-500/50 bg-amber-500/15 shadow-[0_0_0_1px_rgba(245,158,11,0.15)]'
       : 'hover:border-white/25 hover:bg-zinc-950',
@@ -499,12 +516,14 @@ function DraggableBlockCard({
   selected,
   onSelect,
   transparentPanels,
+  cornerStyle,
   colors
 }: {
   block: DisplayLayoutBlockConfig;
   selected: boolean;
   onSelect: (key: DisplayBlockKey) => void;
   transparentPanels: boolean;
+  cornerStyle: DisplayLayoutCornerStyle;
   colors: DisplayLayoutAppearanceColorsConfig;
 }) {
   const definition = getBlockDefinition(block.key);
@@ -531,8 +550,8 @@ function DraggableBlockCard({
       ref={setNodeRef}
       style={{ ...style, ...cardStyle }}
       className={cn(
-        'relative z-10 flex h-full min-h-[5.5rem] cursor-default flex-col justify-between border px-3 py-2 shadow-sm transition-colors !rounded-none',
-        getDesignerPreviewBlockClass(transparentPanels, selected, isDragging)
+        'relative z-10 flex h-full min-h-[5.5rem] cursor-default flex-col justify-between border px-3 py-2 shadow-sm transition-colors',
+        getDesignerPreviewBlockClass(transparentPanels, cornerStyle, selected, isDragging)
       )}
       onClick={() => onSelect(block.key)}
     >
@@ -678,6 +697,7 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
   const validationIssues = useMemo(() => getValidationIssues(layoutConfig), [layoutConfig]);
   const appearance = layoutConfig.appearance ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE;
   const transparentPanels = appearance.transparentPanels;
+  const cornerStyle = appearance.cornerStyle ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.cornerStyle;
   const appearanceColors =
     layoutConfig.appearance?.colors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors;
   const appearanceColorErrors = useMemo(
@@ -1263,6 +1283,39 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
             <div className='rounded-none border border-border/60 bg-muted/20 p-3'>
               <div className='flex flex-wrap items-start justify-between gap-3'>
                 <div className='space-y-1'>
+                  <div className='text-sm font-medium text-foreground'>Display Corner Style</div>
+                  <p className='text-xs text-muted-foreground'>
+                    Classic rounded matches the old notice board display. Sharp removes corner
+                    radius.
+                  </p>
+                </div>
+              </div>
+
+              <div className='mt-3 grid gap-1.5'>
+                <DesignerFieldLabel>Corner Style</DesignerFieldLabel>
+                <Select
+                  value={cornerStyle}
+                  onValueChange={(value) =>
+                    updateAppearance((current) => ({
+                      ...current,
+                      cornerStyle: value === 'rounded' ? 'rounded' : 'sharp'
+                    }))
+                  }
+                >
+                  <SelectTrigger className='w-full'>
+                    <SelectValue placeholder='Display Corner Style' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='sharp'>Sharp corners</SelectItem>
+                    <SelectItem value='rounded'>Classic rounded corners</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className='rounded-none border border-border/60 bg-muted/20 p-3'>
+              <div className='flex flex-wrap items-start justify-between gap-3'>
+                <div className='space-y-1'>
                   <div className='text-sm font-medium text-foreground'>Display Colors</div>
                   <p className='text-xs text-muted-foreground'>
                     Leave empty to use the default display theme color.
@@ -1647,8 +1700,8 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
             >
               <div
                 className={cn(
-                  'mx-auto overflow-hidden border p-2 !rounded-none',
-                  getDisplaySurfaceClass(transparentPanels)
+                  'mx-auto overflow-hidden border p-2',
+                  getDisplaySurfaceClass(transparentPanels, cornerStyle)
                 )}
                 style={{
                   ...getDisplayColorSurfaceStyle(transparentPanels, appearanceColors),
@@ -1657,7 +1710,12 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                   aspectRatio: `${displayPage.resolutionWidth} / ${displayPage.resolutionHeight}`
                 }}
               >
-                <div className='relative flex h-full min-h-0 flex-col overflow-hidden !rounded-none bg-zinc-950/90'>
+                <div
+                  className={cn(
+                    'relative flex h-full min-h-0 flex-col overflow-hidden bg-zinc-950/90',
+                    getDisplayCornerRadiusClass(cornerStyle)
+                  )}
+                >
                   {background.imageUrl ? (
                     <div className='pointer-events-none absolute inset-0'>
                       <Image
@@ -1686,7 +1744,7 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                   <div
                     className={cn(
                       'relative z-10 flex h-16 shrink-0 items-center justify-between gap-4 px-3',
-                      getDisplayHeaderSurfaceClass(transparentPanels)
+                      getDisplayHeaderSurfaceClass(transparentPanels, cornerStyle)
                     )}
                     style={getDisplayHeaderStyle(transparentPanels, appearanceColors)}
                   >
@@ -1733,6 +1791,7 @@ export function DisplayLayoutDesignerClient({ displayPage }: DisplayLayoutDesign
                                 block={block}
                                 selected={block.key === selectedKey}
                                 transparentPanels={transparentPanels}
+                                cornerStyle={cornerStyle}
                                 colors={appearanceColors}
                                 onSelect={setSelectedKey}
                               />

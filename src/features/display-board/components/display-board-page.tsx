@@ -20,11 +20,13 @@ import {
   getDisplayBlockGridPlacement,
   getEnabledSortedDisplayBlocks,
   DEFAULT_DISPLAY_LAYOUT_APPEARANCE,
+  getDisplayCornerRadiusClass,
   hexToRgba,
   normalizeDisplayLayoutConfig,
   type DisplayBlockKey,
   type DisplayLayoutAppearanceColorsConfig,
   type DisplayLayoutBackgroundConfig,
+  type DisplayLayoutCornerStyle,
   type DisplayLayoutBlockConfig
 } from '@/features/display-pages/lib/display-layout-config';
 import { DisplayBoardAutoRefresh } from './display-board-auto-refresh';
@@ -53,6 +55,7 @@ const VISIBLE_STAFF_ATTENDANCE_COUNT = 6;
 const VISIBLE_MANAGER_ATTENDANCE_COUNT = 3;
 const DISPLAY_LAYOUT_GAP_CLASS = 'gap-2';
 const DISPLAY_LAYOUT_PADDING_CLASS = 'p-2';
+const CLASSIC_BOARD_BACKGROUND = '#FEC828';
 const DISPLAY_TABLE_HEADING_CLASS =
   'text-[11px] font-extrabold uppercase tracking-[0.14em] leading-none';
 const DISPLAY_TABLE_BODY_CLASS = 'text-[14px] font-semibold leading-[1.2]';
@@ -67,12 +70,19 @@ const DISPLAY_HEADER_MUTED_TEXT_CLASS = '!text-[color:var(--display-header-muted
 const DISPLAY_CARD_TITLE_TEXT_CLASS = '!text-[color:var(--display-card-title-text,#f6e4a5)]';
 const DISPLAY_CARD_HEADING_TEXT_CLASS = '!text-[color:var(--display-card-heading-text,#5f4b31)]';
 const DISPLAY_CARD_BODY_TEXT_CLASS = '!text-[color:var(--display-card-body-text,#17120d)]';
-const DISPLAY_CARD_DIVIDER_COLOR = 'var(--display-card-divider, rgba(138,101,32,0.28))';
+const DISPLAY_CARD_DIVIDER_COLOR = 'var(--display-card-divider, rgba(95,75,49,0.65))';
 const DISPLAY_SECTION_LIST_GAP_CLASS = 'space-y-0';
 const DISPLAY_SECTION_ROW_CLASS =
   'border-b border-white/10 px-3 py-2 last:border-b-0 bg-transparent rounded-none';
 const DISPLAY_META_INLINE_CLASS =
   'inline-flex min-w-0 items-center truncate text-[11px] font-bold leading-none';
+
+function getDisplayCornerClass(
+  cornerStyle: DisplayLayoutCornerStyle,
+  roundedClass = 'rounded-[14px]'
+) {
+  return getDisplayCornerRadiusClass(cornerStyle, roundedClass);
+}
 
 function getDisplayPanelStyle(
   transparentPanels: boolean,
@@ -125,7 +135,9 @@ function getDisplayRowStyle(
     : (colors.cardRowBackground ?? '#FFFDF8');
 
   return {
-    borderColor: hasZebraRows ? 'transparent' : undefined,
+    borderColor:
+      colors.cardDivider ??
+      (hasZebraRows ? 'rgba(138, 101, 32, 0.42)' : 'rgba(138, 101, 32, 0.42)'),
     backgroundColor: rowColor ? hexToRgba(rowColor, transparentPanels ? 0.94 : 1) : undefined
   };
 }
@@ -148,7 +160,7 @@ function getDisplayHeadingRowStyle(
     backgroundColor: headingRowColor
       ? hexToRgba(headingRowColor, transparentPanels ? 0.94 : 1)
       : undefined,
-    borderColor: 'transparent'
+    borderColor: colors.cardDivider ?? 'rgba(138, 101, 32, 0.42)'
   };
 }
 
@@ -195,21 +207,33 @@ function getDisplayTextStyles(colors: DisplayLayoutAppearanceColorsConfig): {
       color: colors.cardBodyText ?? 'var(--display-card-body-text, #17120d)'
     },
     cardDivider: {
-      borderColor: colors.cardDivider ?? 'rgba(138, 101, 32, 0.28)'
+      borderColor: colors.cardDivider ?? 'rgba(138, 101, 32, 0.42)'
     }
   };
 }
 
-function getDisplayPanelSurfaceClass(transparentPanels: boolean) {
-  return transparentPanels
-    ? 'border-[#8A6520]/45 bg-[#FBF7EE]/95 shadow-[0_12px_28px_rgba(0,0,0,0.22)] backdrop-blur-sm'
-    : 'border-[#8A6520]/80 bg-[#FBF7EE] shadow-[0_12px_28px_rgba(0,0,0,0.22)]';
+function getDisplayPanelSurfaceClass(
+  transparentPanels: boolean,
+  cornerStyle: DisplayLayoutCornerStyle
+) {
+  return cn(
+    transparentPanels
+      ? 'border-[#8A6520]/45 bg-[#FBF7EE]/95 shadow-[0_12px_28px_rgba(0,0,0,0.22)] backdrop-blur-sm'
+      : 'border-[#8A6520]/80 bg-[#FBF7EE] shadow-[0_12px_28px_rgba(0,0,0,0.22)]',
+    getDisplayCornerClass(cornerStyle)
+  );
 }
 
-function getDisplayHeaderSurfaceClass(transparentPanels: boolean) {
-  return transparentPanels
-    ? 'border-[#8A6520]/45 bg-[#0D0D0D]/95 shadow-[0_12px_28px_rgba(0,0,0,0.22)] backdrop-blur-sm'
-    : 'border-[#8A6520]/90 bg-[#0D0D0D] shadow-[0_12px_28px_rgba(0,0,0,0.22)]';
+function getDisplayHeaderSurfaceClass(
+  transparentPanels: boolean,
+  cornerStyle: DisplayLayoutCornerStyle
+) {
+  return cn(
+    transparentPanels
+      ? 'border-[#8A6520]/45 bg-[#0D0D0D]/95 shadow-[0_12px_28px_rgba(0,0,0,0.22)] backdrop-blur-sm'
+      : 'border-[#8A6520]/90 bg-[#0D0D0D] shadow-[0_12px_28px_rgba(0,0,0,0.22)]',
+    getDisplayCornerClass(cornerStyle)
+  );
 }
 
 function getVisibleCount(block: DisplayLayoutBlockConfig, fallback: number) {
@@ -579,7 +603,8 @@ function AttendanceRosterRow({
       <div
         className={cn(
           DISPLAY_TABLE_ROW_CLASS,
-          'gap-x-4 border-b border-white/10 last:border-b-0 rounded-none',
+          'gap-x-4 border rounded-none',
+          rowIndex > 0 ? '-mt-px' : '',
           getManagerAvailabilityGridTemplate(safeContentColumns)
         )}
         style={{
@@ -632,7 +657,8 @@ function AttendanceRosterRow({
     <div
       className={cn(
         DISPLAY_TABLE_ROW_CLASS,
-        'gap-x-4 border-b border-white/10 last:border-b-0 rounded-none',
+        'gap-x-4 border rounded-none',
+        rowIndex > 0 ? '-mt-px' : '',
         layout
       )}
       style={{
@@ -699,10 +725,7 @@ function ManagerAvailabilityRow({
 
   return (
     <div
-      className={cn(
-        'grid items-center gap-x-4 gap-y-0 border-b border-white/10 px-2 py-[5px] last:border-b-0 rounded-none',
-        layout
-      )}
+      className={cn('grid items-center gap-x-4 gap-y-0 border px-2 py-[5px] rounded-none', layout)}
       style={{
         ...textStyles.cardDivider,
         ...getDisplayRowStyle(transparentPanels, colors, rowIndex)
@@ -753,6 +776,7 @@ function SectionCard({
   icon: Icon,
   count,
   transparentPanels,
+  cornerStyle,
   colors,
   children
 }: {
@@ -760,6 +784,7 @@ function SectionCard({
   icon: ComponentType<{ className?: string }>;
   count: number;
   transparentPanels: boolean;
+  cornerStyle: DisplayLayoutCornerStyle;
   colors: DisplayLayoutAppearanceColorsConfig;
   children: ReactNode;
 }) {
@@ -767,8 +792,9 @@ function SectionCard({
   return (
     <Card
       className={cn(
-        '!rounded-none flex h-full min-h-0 flex-col gap-0 overflow-hidden py-0',
-        getDisplayPanelSurfaceClass(transparentPanels)
+        'flex h-full min-h-0 flex-col gap-0 overflow-hidden py-0',
+        getDisplayCornerClass(cornerStyle),
+        getDisplayPanelSurfaceClass(transparentPanels, cornerStyle)
       )}
       style={{ ...getDisplayPanelStyle(transparentPanels, colors), ...textStyles.cardBodyText }}
     >
@@ -933,7 +959,7 @@ function CompactTableHeadingRow({
   return (
     <div
       className={cn(
-        'border-b last:border-b-0',
+        'border rounded-none',
         DISPLAY_TABLE_HEADING_ROW_CLASS,
         DISPLAY_TABLE_HEADING_CLASS,
         paddingClassName,
@@ -997,10 +1023,12 @@ function HeaderWidgetBadge({
 function HeaderWeatherWidget({
   weather,
   transparentPanels,
+  cornerStyle,
   colors
 }: {
   weather: DisplayBoardWeatherData | null;
   transparentPanels: boolean;
+  cornerStyle: DisplayLayoutCornerStyle;
   colors: DisplayLayoutAppearanceColorsConfig;
 }) {
   const weatherIconSrc = weather?.iconPath ?? '/weather-icons/meteocons/not-available.svg';
@@ -1014,6 +1042,7 @@ function HeaderWeatherWidget({
     <div
       className={cn(
         'flex min-w-0 max-w-[340px] flex-none items-center gap-2',
+        getDisplayCornerClass(cornerStyle, 'rounded-[14px]'),
         transparentPanels
           ? 'bg-transparent px-0 py-0 shadow-none backdrop-blur-0'
           : 'border border-white/15 bg-zinc-950/95 px-2 py-1.5 shadow-[0_10px_26px_rgba(0,0,0,0.22)] backdrop-blur-0'
@@ -1022,6 +1051,7 @@ function HeaderWeatherWidget({
       <div
         className={cn(
           'relative size-10 shrink-0 overflow-hidden',
+          getDisplayCornerClass(cornerStyle, 'rounded-[10px]'),
           transparentPanels ? 'bg-transparent' : 'bg-zinc-950/95'
         )}
       >
@@ -1086,6 +1116,7 @@ function HeaderSummaryWidget({
   detail,
   tone,
   transparentPanels,
+  cornerStyle,
   colors
 }: {
   label: string;
@@ -1094,6 +1125,7 @@ function HeaderSummaryWidget({
   detail: string | null;
   tone: 'amber' | 'rose' | 'violet';
   transparentPanels: boolean;
+  cornerStyle: DisplayLayoutCornerStyle;
   colors: DisplayLayoutAppearanceColorsConfig;
 }) {
   const textStyles = getDisplayTextStyles(colors);
@@ -1115,14 +1147,16 @@ function HeaderSummaryWidget({
   return (
     <div
       className={cn(
-        'flex min-w-0 items-center gap-1.5 border px-2 py-1.5 !rounded-none shadow-[0_10px_26px_rgba(0,0,0,0.22)]',
+        'flex min-w-0 items-center gap-1.5 border px-2 py-1.5 shadow-[0_10px_26px_rgba(0,0,0,0.22)]',
+        getDisplayCornerClass(cornerStyle, 'rounded-[14px]'),
         toneClass,
         transparentPanels ? 'backdrop-blur-xl' : 'backdrop-blur-0'
       )}
     >
       <div
         className={cn(
-          '!rounded-none flex size-7 shrink-0 items-center justify-center border border-white/10',
+          'flex size-7 shrink-0 items-center justify-center border border-white/10',
+          getDisplayCornerClass(cornerStyle, 'rounded-[10px]'),
           transparentPanels ? 'bg-black/20' : 'bg-zinc-950/95'
         )}
       >
@@ -1187,41 +1221,47 @@ function DisplayBoardUnavailable({
   return (
     <main
       data-display-board-root
-      className={cn(
-        'relative min-h-[100dvh] overflow-hidden bg-[#FEC828]',
-        DISPLAY_CARD_BODY_TEXT_CLASS
-      )}
-      style={{ fontFamily: DISPLAY_FONT_FAMILY, color: 'var(--display-card-body-text, #17120d)' }}
+      className={cn('relative min-h-[100dvh] overflow-hidden', DISPLAY_CARD_BODY_TEXT_CLASS)}
+      style={{
+        backgroundColor: CLASSIC_BOARD_BACKGROUND,
+        fontFamily: DISPLAY_FONT_FAMILY,
+        color: 'var(--display-card-body-text, #17120d)'
+      }}
     >
       <DisplayBoardAutoRefresh />
-      <div
-        className='pointer-events-none absolute inset-0'
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at 50% 40%, rgba(255, 250, 226, 0.56) 0%, rgba(255, 242, 196, 0.34) 26%, rgba(254, 200, 40, 0) 66%), linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 34%, rgba(132, 93, 18, 0.08) 100%), radial-gradient(circle, rgba(117, 84, 18, 0.045) 0.45px, transparent 0.8px)',
-          backgroundPosition: 'center center, center center, 0 0',
-          backgroundRepeat: 'no-repeat, no-repeat, repeat',
-          backgroundSize: 'auto, auto, 6px 6px',
-          opacity: 0.96,
-          mixBlendMode: 'multiply'
-        }}
-      />
-      <div
-        className='pointer-events-none absolute inset-0'
-        style={{
-          backgroundImage:
-            'repeating-radial-gradient(circle at top right, rgba(118, 85, 21, 0.14) 0 1px, transparent 1px 12px), repeating-radial-gradient(circle at bottom left, rgba(118, 85, 21, 0.12) 0 1px, transparent 1px 12px)',
-          backgroundPosition: 'top right, bottom left',
-          backgroundRepeat: 'no-repeat, no-repeat',
-          backgroundSize: '240px 240px, 240px 240px',
-          opacity: 0.24,
-          mixBlendMode: 'multiply'
-        }}
-      />
+      {wallpaper?.imageUrl ? (
+        <>
+          <div
+            className='pointer-events-none absolute inset-0'
+            style={{
+              backgroundImage:
+                'radial-gradient(circle at 50% 40%, rgba(255, 250, 226, 0.56) 0%, rgba(255, 242, 196, 0.34) 26%, rgba(254, 200, 40, 0) 66%), linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 34%, rgba(132, 93, 18, 0.08) 100%), radial-gradient(circle, rgba(117, 84, 18, 0.045) 0.45px, transparent 0.8px)',
+              backgroundPosition: 'center center, center center, 0 0',
+              backgroundRepeat: 'no-repeat, no-repeat, repeat',
+              backgroundSize: 'auto, auto, 6px 6px',
+              opacity: 0.96,
+              mixBlendMode: 'multiply'
+            }}
+          />
+          <div
+            className='pointer-events-none absolute inset-0'
+            style={{
+              backgroundImage:
+                'repeating-radial-gradient(circle at top right, rgba(118, 85, 21, 0.14) 0 1px, transparent 1px 12px), repeating-radial-gradient(circle at bottom left, rgba(118, 85, 21, 0.12) 0 1px, transparent 1px 12px)',
+              backgroundPosition: 'top right, bottom left',
+              backgroundRepeat: 'no-repeat, no-repeat',
+              backgroundSize: '240px 240px, 240px 240px',
+              opacity: 0.24,
+              mixBlendMode: 'multiply'
+            }}
+          />
+        </>
+      ) : null}
       <div className='relative flex min-h-[100dvh] items-center justify-center p-6'>
         <Card
           className={cn(
-            '!rounded-none max-w-2xl border-[#8A6520]/80 bg-[#FBF7EE] text-center shadow-[0_24px_60px_rgba(0,0,0,0.45)]',
+            'max-w-2xl border-[#8A6520]/80 bg-[#FBF7EE] text-center shadow-[0_24px_60px_rgba(0,0,0,0.45)]',
+            getDisplayCornerClass(DEFAULT_DISPLAY_LAYOUT_APPEARANCE.cornerStyle),
             DISPLAY_CARD_BODY_TEXT_CLASS
           )}
         >
@@ -1301,6 +1341,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const transparentPanels =
     normalizedLayoutConfig.appearance?.transparentPanels ??
     DEFAULT_DISPLAY_LAYOUT_APPEARANCE.transparentPanels;
+  const cornerStyle =
+    normalizedLayoutConfig.appearance?.cornerStyle ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.cornerStyle;
   const appearanceColors = normalizedLayoutConfig.appearance?.colors;
   const hasZebraRows = Boolean(
     appearanceColors?.cardRowBackground || appearanceColors?.cardRowAlternateBackground
@@ -1376,7 +1418,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = getVisibleCount(block, VISIBLE_EVENT_COUNT);
         const eventPages = chunkItems(events.items, pageSize);
         const renderEventPage = (pageItems: typeof events.items) => (
-          <div className='space-y-0.5'>
+          <div className='space-y-0'>
             <CompactTableHeadingRow
               labels={['Title', 'Client Name', 'Company Name', 'Screen', 'Date', 'Time']}
               columnsClassName='grid-cols-[minmax(125px,1.1fr)_minmax(170px,1.35fr)_minmax(130px,1fr)_minmax(85px,0.65fr)_minmax(70px,0.5fr)_minmax(76px,0.55fr)]'
@@ -1400,7 +1442,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   className={cn(
                     DISPLAY_TABLE_ROW_CLASS,
                     'grid-cols-[minmax(125px,1.1fr)_minmax(170px,1.35fr)_minmax(130px,1fr)_minmax(85px,0.65fr)_minmax(70px,0.5fr)_minmax(76px,0.55fr)]',
-                    'gap-x-5 border-b border-white/10 last:border-b-0 rounded-none'
+                    'gap-x-5 border rounded-none',
+                    rowIndex > 0 ? '-mt-px' : ''
                   )}
                   style={{
                     ...displayTextStyles.cardDivider,
@@ -1481,6 +1524,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             icon={Icons.calendar}
             count={events.total}
             transparentPanels={transparentPanels}
+            cornerStyle={cornerStyle}
             colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
           >
             {eventPages.length === 0 ? (
@@ -1509,6 +1553,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             icon={Icons.video}
             count={movieSchedules.total}
             transparentPanels={transparentPanels}
+            cornerStyle={cornerStyle}
             colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
           >
             {slideshowMovies.length === 0 ? (
@@ -1528,7 +1573,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = getVisibleCount(block, VISIBLE_MEETING_COUNT);
         const meetingPages = chunkItems(meetings.items, pageSize);
         const renderMeetingPage = (pageItems: typeof meetings.items) => (
-          <div className='space-y-0.5'>
+          <div className='space-y-0'>
             <CompactTableHeadingRow
               labels={['Title', 'Organizer', 'Location', 'Date', 'Time']}
               columnsClassName={MEETING_TABLE_GRID_TEMPLATE}
@@ -1549,7 +1594,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   key={meeting.id}
                   className={cn(
                     DISPLAY_TABLE_ROW_CLASS,
-                    'gap-x-4 border-b border-white/10 last:border-b-0 rounded-none',
+                    'gap-x-4 border rounded-none',
+                    rowIndex > 0 ? '-mt-px' : '',
                     MEETING_TABLE_GRID_TEMPLATE
                   )}
                   style={{
@@ -1616,6 +1662,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             icon={Icons.clock}
             count={meetings.total}
             transparentPanels={transparentPanels}
+            cornerStyle={cornerStyle}
             colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
           >
             {meetingPages.length === 0 ? (
@@ -1644,7 +1691,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const staffGridTemplate = getStaffRosterGridTemplate(contentColumns);
 
         const renderManagerPage = (pageItems: typeof activeManagersWithAttendanceToday.items) => (
-          <div className='space-y-0.5'>
+          <div className='space-y-0'>
             <CompactTableHeadingRow
               labels={
                 contentColumns === 2
@@ -1677,7 +1724,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               }}
             >
               {splitItemsIntoColumns(pageItems, contentColumns).map((columnItems, columnIndex) => (
-                <div key={columnIndex} className='space-y-0.5'>
+                <div key={columnIndex} className='space-y-0'>
                   {columnItems.map((item, rowIndex) => (
                     <ManagerAvailabilityRow
                       key={item.id}
@@ -1701,7 +1748,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           const rowsPerColumn = getVisibleCount(block, VISIBLE_STAFF_ATTENDANCE_COUNT);
 
           return (
-            <div className='space-y-0.5'>
+            <div className='space-y-0'>
               {contentColumns === 1 ? (
                 <>
                   <CompactTableHeadingRow
@@ -1746,7 +1793,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   {Array.from({ length: contentColumns }, (_, columnIndex) =>
                     pageItems.slice(columnIndex * rowsPerColumn, (columnIndex + 1) * rowsPerColumn)
                   ).map((columnItems, columnIndex) => (
-                    <div key={columnIndex} className='space-y-0.5'>
+                    <div key={columnIndex} className='space-y-0'>
                       <CompactTableHeadingRow
                         labels={['Name', 'Designation', 'Status']}
                         columnsClassName={STAFF_ROSTER_MULTI_COLUMN_ENTRY_TEMPLATE}
@@ -1766,7 +1813,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                             key={item.id}
                             className={cn(
                               DISPLAY_TABLE_ROW_CLASS,
-                              'gap-x-2 border-b border-white/10 last:border-b-0 rounded-none',
+                              'gap-x-2 border rounded-none',
+                              rowIndex > 0 ? '-mt-px' : '',
                               STAFF_ROSTER_MULTI_COLUMN_ENTRY_TEMPLATE
                             )}
                             style={{
@@ -1832,6 +1880,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               icon={icon}
               count={total}
               transparentPanels={transparentPanels}
+              cornerStyle={cornerStyle}
               colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
             >
               {pageChunks.length === 0 ? (
@@ -1880,6 +1929,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
               icon={Icons.user}
               count={activeStaffWithAttendanceToday.total}
               transparentPanels={transparentPanels}
+              cornerStyle={cornerStyle}
               colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
             >
               {pageChunks.length === 0 ? (
@@ -1925,7 +1975,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = getVisibleCount(block, VISIBLE_AD_COUNT);
         const adPages = chunkItems(advertisements.items, pageSize);
         const renderAdPage = (pageItems: typeof advertisements.items) => (
-          <div className='space-y-0.5'>
+          <div className='space-y-0'>
             <CompactTableHeadingRow
               labels={['Company', 'Start Date', 'End Date', 'Screens']}
               columnsClassName={ADVERTISEMENT_TABLE_GRID_TEMPLATE}
@@ -1946,7 +1996,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   key={ad.id}
                   className={cn(
                     DISPLAY_TABLE_ROW_CLASS,
-                    'gap-x-4 border-b border-white/10 last:border-b-0 rounded-none',
+                    'gap-x-4 border rounded-none',
+                    rowIndex > 0 ? '-mt-px' : '',
                     ADVERTISEMENT_TABLE_GRID_TEMPLATE
                   )}
                   style={{
@@ -2000,6 +2051,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             icon={Icons.media}
             count={advertisements.total}
             transparentPanels={transparentPanels}
+            cornerStyle={cornerStyle}
             colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
           >
             {adPages.length === 0 ? (
@@ -2021,8 +2073,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = getVisibleCount(block, VISIBLE_TARGET_COUNT);
         const targetPages = chunkItems(salesTargets.items, pageSize);
         const renderTargetPage = (pageItems: typeof salesTargets.items) => (
-          <div className='space-y-1'>
-            <div className='space-y-1'>
+          <div className='space-y-0'>
+            <div className='space-y-0'>
               {pageItems.map((target, rowIndex) => {
                 const codesCount = Math.max(
                   0,
@@ -2033,7 +2085,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   <div
                     key={target.id}
                     className={cn(
-                      'space-y-1 border-b border-white/10 px-2 py-[4px] last:border-b-0 rounded-none'
+                      'space-y-1 border px-2 py-[4px] rounded-none',
+                      rowIndex > 0 ? '-mt-px' : ''
                     )}
                     style={{
                       ...displayTextStyles.cardDivider,
@@ -2137,6 +2190,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             icon={Icons.adjustments}
             count={salesTargets.total}
             transparentPanels={transparentPanels}
+            cornerStyle={cornerStyle}
             colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
           >
             {targetPages.length === 0 ? (
@@ -2160,7 +2214,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         const pageSize = rowsPerColumn * contentColumns;
         const concessionPages = chunkItems(concessionPriceList.items, pageSize);
         const renderConcessionPage = (pageItems: typeof concessionPriceList.items) => (
-          <div className='space-y-0.5'>
+          <div className='space-y-0'>
             {contentColumns === 1 ? (
               <>
                 <CompactTableHeadingRow
@@ -2182,7 +2236,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                       key={item.id}
                       className={cn(
                         DISPLAY_TABLE_ROW_CLASS,
-                        'gap-x-4 border-b border-white/10 last:border-b-0 rounded-none',
+                        'gap-x-4 border rounded-none',
+                        rowIndex > 0 ? '-mt-px' : '',
                         CONCESSION_PRICE_TABLE_GRID_TEMPLATE
                       )}
                       style={{
@@ -2220,7 +2275,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                 {Array.from({ length: contentColumns }, (_, columnIndex) =>
                   pageItems.slice(columnIndex * rowsPerColumn, (columnIndex + 1) * rowsPerColumn)
                 ).map((columnItems, columnIndex) => (
-                  <div key={columnIndex} className='space-y-0.5'>
+                  <div key={columnIndex} className='space-y-0'>
                     <CompactTableHeadingRow
                       labels={['Item', 'Price']}
                       columnsClassName={CONCESSION_PRICE_TABLE_GRID_TEMPLATE}
@@ -2240,7 +2295,8 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                           key={item.id}
                           className={cn(
                             DISPLAY_TABLE_ROW_CLASS,
-                            'gap-x-4 border-b border-white/10 last:border-b-0 rounded-none',
+                            'gap-x-4 border rounded-none',
+                            rowIndex > 0 ? '-mt-px' : '',
                             CONCESSION_PRICE_TABLE_GRID_TEMPLATE
                           )}
                           style={{
@@ -2280,6 +2336,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
             icon={Icons.billing}
             count={concessionPriceList.total}
             transparentPanels={transparentPanels}
+            cornerStyle={cornerStyle}
             colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
           >
             {concessionPages.length === 0 ? (
@@ -2394,8 +2451,9 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
       >
         <header
           className={cn(
-            'relative flex min-h-[76px] shrink-0 items-center overflow-hidden rounded-none px-3 py-2 xl:min-h-[84px] xl:px-4 xl:py-2.5',
-            getDisplayHeaderSurfaceClass(transparentPanels)
+            'relative flex min-h-[76px] shrink-0 items-center overflow-hidden px-3 py-2 xl:min-h-[84px] xl:px-4 xl:py-2.5',
+            getDisplayCornerClass(cornerStyle),
+            getDisplayHeaderSurfaceClass(transparentPanels, cornerStyle)
           )}
         >
           <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
@@ -2433,6 +2491,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                 <HeaderWeatherWidget
                   weather={weather}
                   transparentPanels={transparentPanels}
+                  cornerStyle={cornerStyle}
                   colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
                 />
               ) : null}
@@ -2449,6 +2508,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
                   detail={firstAlert ? firstAlert.title : 'No active alerts'}
                   tone='rose'
                   transparentPanels={transparentPanels}
+                  cornerStyle={cornerStyle}
                   colors={appearanceColors ?? DEFAULT_DISPLAY_LAYOUT_APPEARANCE.colors}
                 />
               ) : null}
@@ -2460,8 +2520,9 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
         {layoutBlocks.length === 0 ? (
           <section
             className={cn(
-              'flex flex-1 items-center justify-center px-6 py-10 text-center rounded-none',
-              getDisplayPanelSurfaceClass(transparentPanels)
+              'flex flex-1 items-center justify-center px-6 py-10 text-center',
+              getDisplayCornerClass(cornerStyle),
+              getDisplayPanelSurfaceClass(transparentPanels, cornerStyle)
             )}
           >
             <div className='max-w-xl space-y-3'>

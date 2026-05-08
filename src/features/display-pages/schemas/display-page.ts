@@ -94,6 +94,7 @@ const displayLayoutRowsSchema = z.object({
 
 const displayLayoutAppearanceSchema = z.object({
   transparentPanels: z.boolean().default(DEFAULT_DISPLAY_LAYOUT_APPEARANCE.transparentPanels),
+  cornerStyle: z.enum(['sharp', 'rounded']).default(DEFAULT_DISPLAY_LAYOUT_APPEARANCE.cornerStyle),
   colors: z.object({
     headerBackground: displayHexColorSchema,
     headerText: displayHexColorSchema,
