@@ -104,7 +104,7 @@ export const DISPLAY_LAYOUT_BACKGROUND_BLUR_MAX = 12;
 export const DISPLAY_LAYOUT_BACKGROUND_OVERLAY_MIN = 0;
 export const DISPLAY_LAYOUT_BACKGROUND_OVERLAY_MAX = 0.9;
 export const DEFAULT_DISPLAY_LAYOUT_APPEARANCE: DisplayLayoutAppearanceConfig = {
-  transparentPanels: true,
+  transparentPanels: false,
   colors: {
     headerBackground: null,
     headerText: null,

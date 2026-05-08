@@ -62,13 +62,13 @@ const DISPLAY_TABLE_ROW_CLASS =
   'grid items-center min-h-[24px] gap-y-0 px-2 py-[4px] leading-[1.2]';
 const DISPLAY_TABLE_HEADING_ROW_CLASS =
   'grid items-center min-h-[24px] gap-y-0 px-2 py-[4px] leading-[1.2]';
-const DISPLAY_HEADER_TEXT_CLASS = '!text-[color:var(--display-header-text,#f8f4e8)]';
-const DISPLAY_HEADER_MUTED_TEXT_CLASS = '!text-[color:var(--display-header-muted-text,#d1b56a)]';
-const DISPLAY_CARD_TITLE_TEXT_CLASS = '!text-[color:var(--display-card-title-text,#f8f4e8)]';
-const DISPLAY_CARD_HEADING_TEXT_CLASS = '!text-[color:var(--display-card-heading-text,#d1b56a)]';
-const DISPLAY_CARD_BODY_TEXT_CLASS = '!text-[color:var(--display-card-body-text,#f8f4e8)]';
-const DISPLAY_CARD_DIVIDER_COLOR = 'var(--display-card-divider, rgba(255,255,255,0.10))';
-const DISPLAY_SECTION_LIST_GAP_CLASS = 'space-y-1';
+const DISPLAY_HEADER_TEXT_CLASS = '!text-[color:var(--display-header-text,#f8e8b0)]';
+const DISPLAY_HEADER_MUTED_TEXT_CLASS = '!text-[color:var(--display-header-muted-text,#d8c4a1)]';
+const DISPLAY_CARD_TITLE_TEXT_CLASS = '!text-[color:var(--display-card-title-text,#f6e4a5)]';
+const DISPLAY_CARD_HEADING_TEXT_CLASS = '!text-[color:var(--display-card-heading-text,#5f4b31)]';
+const DISPLAY_CARD_BODY_TEXT_CLASS = '!text-[color:var(--display-card-body-text,#17120d)]';
+const DISPLAY_CARD_DIVIDER_COLOR = 'var(--display-card-divider, rgba(138,101,32,0.28))';
+const DISPLAY_SECTION_LIST_GAP_CLASS = 'space-y-0';
 const DISPLAY_SECTION_ROW_CLASS =
   'border-b border-white/10 px-3 py-2 last:border-b-0 bg-transparent rounded-none';
 const DISPLAY_META_INLINE_CLASS =
@@ -79,13 +79,12 @@ function getDisplayPanelStyle(
   colors: DisplayLayoutAppearanceColorsConfig
 ): CSSProperties {
   const cardBackground = colors.cardBackground
-    ? hexToRgba(colors.cardBackground, transparentPanels ? 0.72 : 1)
+    ? hexToRgba(colors.cardBackground, transparentPanels ? 0.94 : 1)
     : transparentPanels
-      ? 'rgba(255, 255, 255, 0.06)'
-      : 'rgb(9, 9, 11)';
+      ? 'rgba(251, 247, 238, 0.94)'
+      : '#FBF7EE';
   const cardBorder =
-    colors.cardBorder ??
-    (transparentPanels ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.15)');
+    colors.cardBorder ?? (transparentPanels ? 'rgba(138, 101, 32, 0.44)' : '#8A6520');
 
   return {
     backgroundColor: cardBackground,
@@ -98,19 +97,19 @@ function getDisplayCardTitleBarStyle(
   colors: DisplayLayoutAppearanceColorsConfig
 ): CSSProperties {
   const fallbackBackground = colors.cardBackground
-    ? hexToRgba(colors.cardBackground, transparentPanels ? 0.72 : 1)
+    ? hexToRgba(colors.cardBackground, transparentPanels ? 0.94 : 1)
     : transparentPanels
-      ? 'rgba(255, 255, 255, 0.06)'
-      : 'rgb(9, 9, 11)';
+      ? 'rgba(251, 247, 238, 0.94)'
+      : '#FBF7EE';
 
   return {
     backgroundColor: colors.cardTitleBarBackground
-      ? hexToRgba(colors.cardTitleBarBackground, transparentPanels ? 0.72 : 1)
-      : fallbackBackground,
+      ? hexToRgba(colors.cardTitleBarBackground, transparentPanels ? 0.94 : 1)
+      : '#0D0D0D',
     borderColor:
       colors.cardDivider ??
       colors.cardBorder ??
-      (transparentPanels ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.15)')
+      (transparentPanels ? 'rgba(138, 101, 32, 0.28)' : 'rgba(138, 101, 32, 0.34)')
   };
 }
 
@@ -121,11 +120,13 @@ function getDisplayRowStyle(
 ): CSSProperties {
   const hasZebraRows = Boolean(colors.cardRowBackground || colors.cardRowAlternateBackground);
   const useAlternateRow = rowIndex % 2 === 1;
-  const rowColor = useAlternateRow ? colors.cardRowAlternateBackground : colors.cardRowBackground;
+  const rowColor = useAlternateRow
+    ? (colors.cardRowAlternateBackground ?? '#F5ECDD')
+    : (colors.cardRowBackground ?? '#FFFDF8');
 
   return {
     borderColor: hasZebraRows ? 'transparent' : undefined,
-    backgroundColor: rowColor ? hexToRgba(rowColor, transparentPanels ? 0.55 : 1) : undefined
+    backgroundColor: rowColor ? hexToRgba(rowColor, transparentPanels ? 0.94 : 1) : undefined
   };
 }
 
@@ -141,11 +142,11 @@ function getDisplayHeadingRowStyle(
   transparentPanels: boolean,
   colors: DisplayLayoutAppearanceColorsConfig
 ): CSSProperties {
-  const headingRowColor = colors.cardRowAlternateBackground;
+  const headingRowColor = colors.cardRowAlternateBackground ?? '#F5ECDD';
 
   return {
     backgroundColor: headingRowColor
-      ? hexToRgba(headingRowColor, transparentPanels ? 0.55 : 1)
+      ? hexToRgba(headingRowColor, transparentPanels ? 0.94 : 1)
       : undefined,
     borderColor: 'transparent'
   };
@@ -156,13 +157,10 @@ function getDisplayHeaderStyle(
   colors: DisplayLayoutAppearanceColorsConfig
 ): CSSProperties {
   const headerBackground = colors.headerBackground
-    ? hexToRgba(colors.headerBackground, transparentPanels ? 0.72 : 1)
-    : transparentPanels
-      ? 'rgba(255, 255, 255, 0.06)'
-      : 'rgb(24, 24, 27)';
+    ? hexToRgba(colors.headerBackground, transparentPanels ? 0.94 : 1)
+    : '#0D0D0D';
   const cardBorder =
-    colors.cardBorder ??
-    (transparentPanels ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.15)');
+    colors.cardBorder ?? (transparentPanels ? 'rgba(138, 101, 32, 0.34)' : '#8A6520');
 
   return {
     backgroundColor: headerBackground,
@@ -180,38 +178,38 @@ function getDisplayTextStyles(colors: DisplayLayoutAppearanceColorsConfig): {
 } {
   return {
     headerText: {
-      color: colors.headerText ?? 'var(--display-header-text, #f8f4e8)'
+      color: colors.headerText ?? 'var(--display-header-text, #f8e8b0)'
     },
     headerMutedText: {
-      color: colors.headerMutedText ?? 'var(--display-header-muted-text, #d1b56a)'
+      color: colors.headerMutedText ?? 'var(--display-header-muted-text, #d8c4a1)'
     },
     cardTitleText: {
       color:
-        colors.cardTitleText ?? colors.cardBodyText ?? 'var(--display-card-title-text, #f8f4e8)'
+        colors.cardTitleText ?? colors.cardBodyText ?? 'var(--display-card-title-text, #f6e4a5)'
     },
     cardHeadingText: {
       color:
-        colors.cardHeadingText ?? colors.cardBodyText ?? 'var(--display-card-heading-text, #d1b56a)'
+        colors.cardHeadingText ?? colors.cardBodyText ?? 'var(--display-card-heading-text, #5f4b31)'
     },
     cardBodyText: {
-      color: colors.cardBodyText ?? 'var(--display-card-body-text, #f8f4e8)'
+      color: colors.cardBodyText ?? 'var(--display-card-body-text, #17120d)'
     },
     cardDivider: {
-      borderColor: colors.cardDivider ?? 'rgba(255, 255, 255, 0.10)'
+      borderColor: colors.cardDivider ?? 'rgba(138, 101, 32, 0.28)'
     }
   };
 }
 
 function getDisplayPanelSurfaceClass(transparentPanels: boolean) {
   return transparentPanels
-    ? 'border-white/10 bg-white/6 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'
-    : 'border-white/15 bg-zinc-950/95 shadow-[0_18px_42px_rgba(0,0,0,0.38)]';
+    ? 'border-[#8A6520]/45 bg-[#FBF7EE]/95 shadow-[0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-sm'
+    : 'border-[#8A6520]/80 bg-[#FBF7EE] shadow-[0_18px_42px_rgba(0,0,0,0.22)]';
 }
 
 function getDisplayHeaderSurfaceClass(transparentPanels: boolean) {
   return transparentPanels
-    ? 'border-white/10 bg-white/6 shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl'
-    : 'border-white/15 bg-zinc-950/95 shadow-[0_18px_42px_rgba(0,0,0,0.38)]';
+    ? 'border-[#8A6520]/45 bg-[#0D0D0D]/95 shadow-[0_18px_42px_rgba(0,0,0,0.24)] backdrop-blur-sm'
+    : 'border-[#8A6520]/90 bg-[#0D0D0D] shadow-[0_18px_42px_rgba(0,0,0,0.32)]';
 }
 
 function getVisibleCount(block: DisplayLayoutBlockConfig, fallback: number) {
@@ -489,7 +487,7 @@ function attendanceStatusTone(status: DisplayBoardAttendanceDisplayStatus) {
     case 'LATE':
       return 'border-orange-400/30 bg-orange-400/10 text-orange-100';
     case 'NOT_MARKED':
-      return `border-white/10 bg-white/5 ${DISPLAY_CARD_BODY_TEXT_CLASS}`;
+      return `border-[#D8C4A1] bg-[#FFFDF8] ${DISPLAY_CARD_BODY_TEXT_CLASS}`;
   }
 }
 
@@ -506,7 +504,7 @@ function AttendanceStatusBadge({ status }: { status: DisplayBoardAttendanceDispl
         attendanceStatusTone(status)
       )}
       style={
-        status === 'NOT_MARKED' ? { color: 'var(--display-card-body-text, #f8f4e8)' } : undefined
+        status === 'NOT_MARKED' ? { color: 'var(--display-card-body-text, #17120d)' } : undefined
       }
     >
       {attendanceStatusLabel(status)}
@@ -808,7 +806,7 @@ function EmptySection({ message }: { message: string }) {
       className={cn('flex items-center gap-1.5 border-b border-dashed px-2 py-0.5 last:border-b-0')}
       style={{
         borderColor: DISPLAY_CARD_DIVIDER_COLOR,
-        color: 'var(--display-card-body-text, #f8f4e8)'
+        color: 'var(--display-card-body-text, #17120d)'
       }}
     >
       <Icons.info className='size-3.5 shrink-0 text-amber-300/80' />
@@ -943,6 +941,7 @@ function CompactTableHeadingRow({
       )}
       style={{
         borderColor: DISPLAY_CARD_DIVIDER_COLOR,
+        backgroundColor: '#F5ECDD',
         color: 'var(--display-card-heading-text, #d1b56a)',
         ...surfaceStyle
       }}
@@ -1189,21 +1188,44 @@ function DisplayBoardUnavailable({
     <main
       data-display-board-root
       className={cn(
-        'relative min-h-[100dvh] overflow-hidden bg-zinc-950',
+        'relative min-h-[100dvh] overflow-hidden bg-[#FEC828]',
         DISPLAY_CARD_BODY_TEXT_CLASS
       )}
-      style={{ fontFamily: DISPLAY_FONT_FAMILY, color: 'var(--display-card-body-text, #f8f4e8)' }}
+      style={{ fontFamily: DISPLAY_FONT_FAMILY, color: 'var(--display-card-body-text, #17120d)' }}
     >
       <DisplayBoardAutoRefresh />
-      <div className='absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.16),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.06),transparent_25%),linear-gradient(180deg,#09090b_0%,#020202_100%)]' />
+      <div
+        className='pointer-events-none absolute inset-0'
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 50% 40%, rgba(255, 250, 226, 0.56) 0%, rgba(255, 242, 196, 0.34) 26%, rgba(254, 200, 40, 0) 66%), linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 34%, rgba(132, 93, 18, 0.08) 100%), radial-gradient(circle, rgba(117, 84, 18, 0.045) 0.45px, transparent 0.8px)',
+          backgroundPosition: 'center center, center center, 0 0',
+          backgroundRepeat: 'no-repeat, no-repeat, repeat',
+          backgroundSize: 'auto, auto, 6px 6px',
+          opacity: 0.96,
+          mixBlendMode: 'multiply'
+        }}
+      />
+      <div
+        className='pointer-events-none absolute inset-0'
+        style={{
+          backgroundImage:
+            'repeating-radial-gradient(circle at top right, rgba(118, 85, 21, 0.14) 0 1px, transparent 1px 12px), repeating-radial-gradient(circle at bottom left, rgba(118, 85, 21, 0.12) 0 1px, transparent 1px 12px)',
+          backgroundPosition: 'top right, bottom left',
+          backgroundRepeat: 'no-repeat, no-repeat',
+          backgroundSize: '240px 240px, 240px 240px',
+          opacity: 0.24,
+          mixBlendMode: 'multiply'
+        }}
+      />
       <div className='relative flex min-h-[100dvh] items-center justify-center p-6'>
         <Card
           className={cn(
-            '!rounded-none max-w-2xl border-white/10 bg-white/6 text-center shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-xl',
+            '!rounded-none max-w-2xl border-[#8A6520]/80 bg-[#FBF7EE] text-center shadow-[0_30px_90px_rgba(0,0,0,0.18)]',
             DISPLAY_CARD_BODY_TEXT_CLASS
           )}
         >
-          <CardHeader className='shrink-0 grid-rows-[auto] items-center gap-0 border-b px-2 py-[2px] !pb-0'>
+          <CardHeader className='shrink-0 grid-rows-[auto] items-center gap-0 border-b px-2 py-[5px] !pb-[5px]'>
             <CardDescription className={DISPLAY_HEADER_MUTED_TEXT_CLASS}>
               Public display board
             </CardDescription>
@@ -1221,7 +1243,7 @@ function DisplayBoardUnavailable({
               <Badge
                 variant='outline'
                 className={cn(
-                  '!rounded-none border-white/10 bg-white/5',
+                  '!rounded-none border-[#8A6520]/30 bg-[#FFFDF8]',
                   DISPLAY_CARD_BODY_TEXT_CLASS
                 )}
               >
@@ -1231,7 +1253,7 @@ function DisplayBoardUnavailable({
               <Badge
                 variant='outline'
                 className={cn(
-                  '!rounded-none border-white/10 bg-white/5',
+                  '!rounded-none border-[#8A6520]/30 bg-[#FFFDF8]',
                   DISPLAY_CARD_BODY_TEXT_CLASS
                 )}
               >
@@ -1276,7 +1298,9 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
   const layoutBlocks = getEnabledSortedDisplayBlocks(normalizedLayoutConfig);
   const layoutColumns = normalizedLayoutConfig.columns;
   const layoutRowHeights = normalizedLayoutConfig.rows.heights;
-  const transparentPanels = normalizedLayoutConfig.appearance?.transparentPanels ?? true;
+  const transparentPanels =
+    normalizedLayoutConfig.appearance?.transparentPanels ??
+    DEFAULT_DISPLAY_LAYOUT_APPEARANCE.transparentPanels;
   const appearanceColors = normalizedLayoutConfig.appearance?.colors;
   const hasZebraRows = Boolean(
     appearanceColors?.cardRowBackground || appearanceColors?.cardRowAlternateBackground
@@ -2274,7 +2298,7 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
     <main
       data-display-board-root
       className={cn(
-        'relative min-h-[100dvh] overflow-hidden bg-zinc-950',
+        'relative min-h-[100dvh] overflow-hidden bg-[#FEC828]',
         DISPLAY_CARD_BODY_TEXT_CLASS
       )}
       style={
@@ -2297,12 +2321,35 @@ export async function DisplayBoardPage({ slug }: DisplayBoardPageProps) {
           ['--display-card-heading-text' as string]: appearanceColors?.cardHeadingText ?? undefined,
           ['--display-card-body-text' as string]: appearanceColors?.cardBodyText ?? undefined,
           ['--display-card-divider' as string]: appearanceColors?.cardDivider ?? undefined,
-          color: 'var(--display-card-body-text, #f8f4e8)'
+          color: 'var(--display-card-body-text, #17120d)'
         } as CSSProperties
       }
     >
       <DisplayBoardAutoRefresh />
-      <div className='absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.2),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.07),transparent_24%),radial-gradient(circle_at_50%_120%,rgba(180,83,9,0.12),transparent_30%),linear-gradient(180deg,#09090b_0%,#020202_100%)]' />
+      <div
+        className='pointer-events-none absolute inset-0'
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 50% 40%, rgba(255, 250, 226, 0.56) 0%, rgba(255, 242, 196, 0.34) 26%, rgba(254, 200, 40, 0) 66%), linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 34%, rgba(132, 93, 18, 0.08) 100%), radial-gradient(circle, rgba(117, 84, 18, 0.045) 0.45px, transparent 0.8px)',
+          backgroundPosition: 'center center, center center, 0 0',
+          backgroundRepeat: 'no-repeat, no-repeat, repeat',
+          backgroundSize: 'auto, auto, 6px 6px',
+          opacity: 0.96,
+          mixBlendMode: 'multiply'
+        }}
+      />
+      <div
+        className='pointer-events-none absolute inset-0'
+        style={{
+          backgroundImage:
+            'repeating-radial-gradient(circle at top right, rgba(118, 85, 21, 0.14) 0 1px, transparent 1px 12px), repeating-radial-gradient(circle at bottom left, rgba(118, 85, 21, 0.12) 0 1px, transparent 1px 12px)',
+          backgroundPosition: 'top right, bottom left',
+          backgroundRepeat: 'no-repeat, no-repeat',
+          backgroundSize: '240px 240px, 240px 240px',
+          opacity: 0.24,
+          mixBlendMode: 'multiply'
+        }}
+      />
       {wallpaper?.imageUrl ? (
         <div className='absolute inset-0'>
           <Image

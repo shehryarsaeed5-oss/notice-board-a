@@ -34,15 +34,15 @@ const MOVIE_TABLE_HEADING_CLASS =
 const MOVIE_TABLE_BODY_CLASS = 'text-[14px] font-semibold leading-[1.2]';
 const MOVIE_TABLE_ROW_CLASS = 'grid items-center min-h-[24px] gap-y-0 px-2 py-[4px] leading-[1.2]';
 const MOVIE_CARD_DIVIDER_STYLE = {
-  borderColor: 'var(--display-card-divider, rgba(255,255,255,0.10))'
+  borderColor: 'var(--display-card-divider, rgba(138,101,32,0.28))'
 } as const;
 
 function getMovieRowBackgroundStyle(rowIndex: number): CSSProperties {
   return {
     backgroundColor:
       rowIndex % 2 === 1
-        ? 'var(--display-card-row-alt-bg, transparent)'
-        : 'var(--display-card-row-bg, transparent)'
+        ? 'var(--display-card-row-alt-bg, #F5ECDD)'
+        : 'var(--display-card-row-bg, #FFFDF8)'
   };
 }
 
@@ -197,7 +197,7 @@ function MovieScheduleHeadingRow({ hasZebraRows = false }: { hasZebraRows?: bool
       className={cn('border-b', MOVIE_TABLE_ROW_CLASS, MOVIE_TABLE_HEADING_CLASS)}
       style={{
         ...MOVIE_CARD_DIVIDER_STYLE,
-        backgroundColor: hasZebraRows ? 'var(--display-card-row-alt-bg, transparent)' : undefined,
+        backgroundColor: hasZebraRows ? 'var(--display-card-row-alt-bg, #F5ECDD)' : '#F5ECDD',
         borderColor: hasZebraRows ? 'transparent' : MOVIE_CARD_DIVIDER_STYLE.borderColor
       }}
     >
@@ -225,9 +225,9 @@ function MovieSchedulePage({
   hasZebraRows?: boolean;
 }) {
   return (
-    <div className='space-y-0.5'>
+    <div className='space-y-0'>
       <MovieScheduleHeadingRow hasZebraRows={hasZebraRows} />
-      <div className='divide-y divide-white/10'>
+      <div>
         {movieGroups.map((movie, rowIndex) => (
           <MovieGroupCard
             key={`${movie.movieName}-${movie.firstShowTime}`}
