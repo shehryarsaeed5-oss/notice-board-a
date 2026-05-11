@@ -33,9 +33,24 @@ const MOVIE_TABLE_HEADING_CLASS =
   'text-[11px] font-extrabold uppercase tracking-[0.14em] leading-none';
 const MOVIE_TABLE_BODY_CLASS = 'text-[14px] font-semibold leading-[1.2]';
 const MOVIE_TABLE_ROW_CLASS = 'grid items-center min-h-[24px] gap-y-0 px-2 py-[4px] leading-[1.2]';
-const MOVIE_CARD_DIVIDER_STYLE = {
-  borderColor: 'var(--display-card-divider, rgba(95,75,49,0.65))'
-} as const;
+const MOVIE_TABLE_INNER_SHADOW_CLASS =
+  'shadow-[0_5px_12px_rgba(74,52,26,0.20),0_1px_2px_rgba(74,52,26,0.16),inset_0_1px_0_rgba(255,255,255,0.18)]';
+
+function getMovieTableBorderStyle(): CSSProperties {
+  return {
+    borderColor: '#8A6520',
+    borderStyle: 'solid',
+    borderWidth: 'var(--display-table-outline-width, 1px)'
+  };
+}
+
+function getMovieTableRowSeparatorStyle(): CSSProperties {
+  return {
+    borderBottomColor: '#8A6520',
+    borderBottomStyle: 'solid',
+    borderBottomWidth: 'var(--display-table-outline-width, 1px)'
+  };
+}
 
 function getMovieRowBackgroundStyle(rowIndex: number): CSSProperties {
   return {
@@ -117,19 +132,21 @@ function MovieGroupCard({
   group,
   now,
   rowIndex,
+  isLastRow = false,
   hasZebraRows = false
 }: {
   group: MovieScheduleSlideshowMovieGroup;
   now: number;
   rowIndex: number;
+  isLastRow?: boolean;
   hasZebraRows?: boolean;
 }) {
   return (
     <div
-      className={cn('border rounded-none', rowIndex > 0 ? '-mt-px' : '')}
+      className='border-b rounded-none'
       style={{
-        ...MOVIE_CARD_DIVIDER_STYLE,
-        borderColor: MOVIE_CARD_DIVIDER_STYLE.borderColor,
+        ...getMovieTableRowSeparatorStyle(),
+        ...(isLastRow ? { borderBottomWidth: 0 } : null),
         ...getMovieRowBackgroundStyle(rowIndex)
       }}
     >
@@ -194,11 +211,10 @@ function MovieGroupCard({
 function MovieScheduleHeadingRow({ hasZebraRows = false }: { hasZebraRows?: boolean }) {
   return (
     <div
-      className={cn('border rounded-none', MOVIE_TABLE_ROW_CLASS, MOVIE_TABLE_HEADING_CLASS)}
+      className={cn('border-b rounded-none', MOVIE_TABLE_ROW_CLASS, MOVIE_TABLE_HEADING_CLASS)}
       style={{
-        ...MOVIE_CARD_DIVIDER_STYLE,
-        backgroundColor: hasZebraRows ? 'var(--display-card-row-alt-bg, #F5ECDD)' : '#F5ECDD',
-        borderColor: MOVIE_CARD_DIVIDER_STYLE.borderColor
+        ...getMovieTableRowSeparatorStyle(),
+        backgroundColor: hasZebraRows ? 'var(--display-card-row-alt-bg, #F5ECDD)' : '#F5ECDD'
       }}
     >
       <div
@@ -225,7 +241,16 @@ function MovieSchedulePage({
   hasZebraRows?: boolean;
 }) {
   return (
-    <div className='space-y-0'>
+    <div
+      className={cn(
+        'space-y-0 overflow-hidden border',
+        MOVIE_TABLE_INNER_SHADOW_CLASS,
+        'rounded-[10px]'
+      )}
+      style={{
+        ...getMovieTableBorderStyle()
+      }}
+    >
       <MovieScheduleHeadingRow hasZebraRows={hasZebraRows} />
       <div>
         {movieGroups.map((movie, rowIndex) => (
@@ -234,6 +259,7 @@ function MovieSchedulePage({
             group={movie}
             now={now}
             rowIndex={rowIndex}
+            isLastRow={rowIndex === movieGroups.length - 1}
             hasZebraRows={hasZebraRows}
           />
         ))}
